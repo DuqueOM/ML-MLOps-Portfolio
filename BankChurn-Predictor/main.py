@@ -288,13 +288,22 @@ class BankChurnPredictor:
         # Eliminar columnas irrelevantes
         df_clean = df.drop(columns=self.config["data"]["drop_columns"], errors="ignore")
 
+        # Feature engineering simple: indicador de clientes seniors
+        if "Age" in df_clean.columns and "Age_over_60" not in df_clean.columns:
+            df_clean["Age_over_60"] = (df_clean["Age"] > 60).astype(int)
+
         # Separar features y target
         X = df_clean.drop(columns=[self.config["data"]["target_column"]])
         y = df_clean[self.config["data"]["target_column"]]
 
         # Crear pipeline de preprocesamiento
         categorical_features = self.config["data"]["categorical_features"]
-        numerical_features = self.config["data"]["numerical_features"]
+        numerical_features = list(self.config["data"]["numerical_features"])
+        if (
+            "Age_over_60" in df_clean.columns
+            and "Age_over_60" not in numerical_features
+        ):
+            numerical_features.append("Age_over_60")
 
         # Transformadores
         categorical_transformer = OneHotEncoder(
