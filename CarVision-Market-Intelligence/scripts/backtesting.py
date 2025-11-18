@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
@@ -31,7 +31,7 @@ def backtest_price_model(
     target: str = "price",
     n_splits: int = 5,
     output_json: Path = Path("artifacts/backtesting.json"),
-) -> Dict[str, float]:
+) -> Dict[str, Any]:
     df = time_order(df, by="model_year")
 
     num_cols, cat_cols = infer_feature_types(df, target=target)
