@@ -1,18 +1,14 @@
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
 
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
-from data.preprocess import build_preprocessor  # noqa: E402
-from sklearn.linear_model import LogisticRegression  # noqa: E402
-from sklearn.model_selection import train_test_split  # noqa: E402
-from sklearn.pipeline import Pipeline  # noqa: E402
+from data.preprocess import build_preprocessor
 
 
 def test_training_pipeline_runs():
@@ -29,9 +25,7 @@ def test_training_pipeline_runs():
     )
 
     preprocessor = build_preprocessor(features)
-    clf = LogisticRegression(
-        C=1.0, penalty="l2", solver="liblinear", class_weight="balanced"
-    )
+    clf = LogisticRegression(C=1.0, penalty="l2", solver="liblinear", class_weight="balanced")
 
     pipe = Pipeline(steps=[("preprocess", preprocessor), ("clf", clf)])
     pipe.fit(X_train, y_train)
