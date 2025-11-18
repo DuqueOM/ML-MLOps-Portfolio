@@ -159,7 +159,7 @@ class MarketAnalyzer:
 
     def __init__(self, df: pd.DataFrame):
         self.df = df
-        self.analysis_results = {}
+        self.analysis_results: Dict[str, Any] = {}
 
     def analyze_price_distribution(self) -> Dict[str, Any]:
         """Analiza la distribución de precios."""
@@ -512,12 +512,12 @@ class ReportGenerator:
         <head>
             <title>CarVision Market Intelligence Report</title>
             <style>
-                body { font-family: Arial, sans-serif; margin: 40px; }
-                .kpi { background: #f0f0f0; padding: 20px; margin: 10px 0; border-radius: 5px; }
-                .insight { background: #e8f4fd; padding: 15px; margin: 10px 0; border-left: 4px solid #007acc; }
-                table { border-collapse: collapse; width: 100%; }
-                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                th { background-color: #f2f2f2; }
+                body {{ font-family: Arial, sans-serif; margin: 40px; }}
+                .kpi {{ background: #f0f0f0; padding: 20px; margin: 10px 0; border-radius: 5px; }}
+                .insight {{ background: #e8f4fd; padding: 15px; margin: 10px 0; border-left: 4px solid #007acc; }}
+                table {{ border-collapse: collapse; width: 100%; }}
+                th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
+                th {{ background-color: #f2f2f2; }}
             </style>
         </head>
         <body>

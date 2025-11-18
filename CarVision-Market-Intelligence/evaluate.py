@@ -85,7 +85,7 @@ def evaluate_model(cfg: Dict) -> Dict:
         n = int(boot_cfg.get("n_resamples", 200))
         rng = np.random.default_rng(int(boot_cfg.get("random_state", 42)))
         idx = np.arange(len(y_test))
-        deltas = []
+        deltas: list[float] = []
         for _ in range(n):
             bs_idx = rng.choice(idx, size=len(idx), replace=True)
             y_true_bs = np.array(y_test)[bs_idx]
@@ -94,10 +94,14 @@ def evaluate_model(cfg: Dict) -> Dict:
             rmse_model = rmse(y_true_bs, y_model_bs)
             rmse_base = rmse(y_true_bs, y_base_bs)
             deltas.append(rmse_model - rmse_base)
-        deltas = np.array(deltas)
-        ci_low, ci_high = np.percentile(deltas, [2.5, 97.5])
+
+        deltas_arr = np.array(deltas, dtype=float)
+        ci_low, ci_high = np.percentile(deltas_arr, [2.5, 97.5])
         # two-sided p-value: proportion of bootstrap deltas > 0 (model worse) or < 0
-        p_value = 2 * min(np.mean(deltas > 0), np.mean(deltas < 0))
+        p_value = 2 * min(
+            float(np.mean(deltas_arr > 0)),
+            float(np.mean(deltas_arr < 0)),
+        )
         bootstrap = {
             "delta_rmse_mean": float(deltas.mean()),
             "delta_rmse_ci95": [float(ci_low), float(ci_high)],
