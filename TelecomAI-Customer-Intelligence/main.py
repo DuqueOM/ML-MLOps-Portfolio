@@ -237,7 +237,7 @@ def parse_args() -> argparse.Namespace:
             "Examples:\n"
             "  python main.py --mode train --config configs/config.yaml\n"
             "  python main.py --mode eval --config configs/config.yaml\n"
-            "  python main.py --mode predict --config configs/config.yaml --input_csv data.csv --output_path preds.csv\n"
+            "  python main.py --mode predict --config configs/config.yaml \\\n+    --input_csv data.csv --output_path preds.csv\n"
         )
     )
     parser.add_argument("--mode", choices=["train", "eval", "predict"], required=True)
