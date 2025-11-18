@@ -56,6 +56,8 @@ jobs:
             mypy main.py app monitoring scripts tests
           elif [ "${{ matrix.project }}" = "GoldRecovery-Process-Optimizer" ]; then
             mypy main.py app monitoring scripts tests
+          elif [ "${{ matrix.project }}" = "Gaming-Market-Intelligence" ]; then
+            mypy main.py app monitoring scripts tests
           else
             mypy .
           fi

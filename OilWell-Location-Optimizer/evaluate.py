@@ -22,7 +22,8 @@ class TrainResult:
 
 
 def rmse_score(y_true: np.ndarray | pd.Series, y_pred: np.ndarray) -> float:
-    return float(mean_squared_error(y_true, y_pred, squared=False))
+    mse = mean_squared_error(y_true, y_pred)
+    return float(np.sqrt(mse))
 
 
 def split_train_val(
