@@ -436,10 +436,10 @@ class BankChurnPredictor:
         self.is_fitted = True
 
         # Calcular estadísticas de CV
-        cv_stats = {}
+        cv_stats: Dict[str, float] = {}
         for metric, scores in cv_scores.items():
-            cv_stats[f"{metric}_mean"] = np.mean(scores)
-            cv_stats[f"{metric}_std"] = np.std(scores)
+            cv_stats[f"{metric}_mean"] = float(np.mean(scores))
+            cv_stats[f"{metric}_std"] = float(np.std(scores))
 
         logger.info("Entrenamiento completado")
         for metric, value in cv_stats.items():
