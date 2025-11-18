@@ -49,7 +49,6 @@ import numpy as np
 import optuna
 import pandas as pd
 import yaml
-from sklearn.calibration import CalibratedClassifierCV
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.linear_model import LogisticRegression
@@ -338,17 +337,18 @@ class BankChurnPredictor:
 
         # Modelos base
         lr = LogisticRegression(
-            C=0.1,
+            C=1.0,
             class_weight="balanced",
             solver="liblinear",
+            max_iter=2000,
             random_state=self.config["training"]["random_state"],
         )
 
         rf = RandomForestClassifier(
-            n_estimators=100,
-            max_depth=10,
-            min_samples_split=10,
-            min_samples_leaf=5,
+            n_estimators=200,
+            max_depth=None,
+            min_samples_split=2,
+            min_samples_leaf=1,
             class_weight="balanced_subsample",
             random_state=self.config["training"]["random_state"],
         )
@@ -419,16 +419,6 @@ class BankChurnPredictor:
 
         # Entrenar modelo final en todos los datos
         self.model.fit(X, y)
-        # Platt scaling (calibración sigmoide) usando prefit
-        try:
-            calibrated = CalibratedClassifierCV(
-                self.model, method="sigmoid", cv="prefit"
-            )
-            calibrated.fit(X, y)
-            self.model = calibrated
-        except Exception:
-            # Si la calibración falla, mantener el modelo original
-            pass
         self.is_fitted = True
 
         # Calcular estadísticas de CV

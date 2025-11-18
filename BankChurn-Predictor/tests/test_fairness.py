@@ -12,7 +12,7 @@ def _make_synth(n: int = 600, seed: int = 0) -> pd.DataFrame:
     age = rng.integers(18, 92, size=n)
     x1 = rng.normal(0, 1, n)
     x2 = rng.normal(0, 1, n)
-    logits = -0.5 + 0.02 * (age - 50) + 0.3 * (geo == "Germany") + 0.6 * (x1 > 0)
+    logits = -0.5 + 0.02 * (age - 50) + 0.15 * (geo == "Germany") + 0.6 * (x1 > 0)
     p = 1 / (1 + np.exp(-logits))
     y = rng.binomial(1, p)
     df = pd.DataFrame(
