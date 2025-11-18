@@ -58,6 +58,7 @@ joblib>=1.2.0
 
 # Testing
 pytest>=7.0.0
+pytest-cov>=3.0.0
 
 # MLOps / Monitoring (optional)
 mlflow>=2.9
