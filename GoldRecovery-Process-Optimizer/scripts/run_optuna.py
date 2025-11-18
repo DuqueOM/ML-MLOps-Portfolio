@@ -37,8 +37,6 @@ def objective(trial: optuna.Trial) -> float:
         "n_jobs": -1,
     }
 
-    dtrain = xgb.DMatrix(X, label=y)
-
     # Simple train/validation split
     n = len(y)
     idx = np.arange(n)
@@ -51,7 +49,7 @@ def objective(trial: optuna.Trial) -> float:
     dval_split = xgb.DMatrix(X.iloc[val_idx], label=y.iloc[val_idx])
 
     evals_result: Dict[str, Any] = {}
-    booster = xgb.train(
+    xgb.train(
         params,
         dtrain_split,
         num_boost_round=params["n_estimators"],
