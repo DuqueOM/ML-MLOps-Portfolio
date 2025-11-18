@@ -42,7 +42,7 @@ import sys
 import time
 import warnings
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import joblib
 import numpy as np
@@ -104,7 +104,7 @@ class ResampleClassifier:
         self.estimator = estimator
         self.strategy = strategy
         self.random_state = random_state
-        self._estimator_ = None
+        self._estimator_: Any = None
 
     def fit(self, X: pd.DataFrame, y: pd.Series) -> "ResampleClassifier":
         """
@@ -198,8 +198,8 @@ class BankChurnPredictor:
             config_path: Ruta al archivo de configuración YAML
         """
         self.config = self._load_config(config_path)
-        self.model = None
-        self.preprocessor = None
+        self.model: Any = None
+        self.preprocessor: Any = None
         self.is_fitted = False
 
     def _load_config(self, config_path: Optional[str]) -> Dict[str, Any]:
@@ -402,7 +402,12 @@ class BankChurnPredictor:
             random_state=self.config["training"]["random_state"],
         )
 
-        cv_scores = {"f1": [], "roc_auc": [], "precision": [], "recall": []}
+        cv_scores: Dict[str, List[float]] = {
+            "f1": [],
+            "roc_auc": [],
+            "precision": [],
+            "recall": [],
+        }
 
         for fold, (train_idx, val_idx) in enumerate(cv.split(X, y)):
             logger.info(f"Entrenando fold {fold + 1}/5")
