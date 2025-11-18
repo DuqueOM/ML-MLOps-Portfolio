@@ -292,13 +292,24 @@ class BankChurnPredictor:
         if "Age" in df_clean.columns and "Age_over_60" not in df_clean.columns:
             df_clean["Age_over_60"] = (df_clean["Age"] > 60).astype(int)
 
+        # Imputación básica de valores faltantes para evitar NaN en el modelo
+        numerical_features_cfg = self.config["data"]["numerical_features"]
+        num_cols = [c for c in numerical_features_cfg if c in df_clean.columns]
+        if num_cols:
+            df_clean[num_cols] = df_clean[num_cols].fillna(df_clean[num_cols].median())
+
+        categorical_features_cfg = self.config["data"]["categorical_features"]
+        cat_cols = [c for c in categorical_features_cfg if c in df_clean.columns]
+        if cat_cols:
+            df_clean[cat_cols] = df_clean[cat_cols].fillna("missing")
+
         # Separar features y target
         X = df_clean.drop(columns=[self.config["data"]["target_column"]])
         y = df_clean[self.config["data"]["target_column"]]
 
         # Crear pipeline de preprocesamiento
-        categorical_features = self.config["data"]["categorical_features"]
-        numerical_features = list(self.config["data"]["numerical_features"])
+        categorical_features = categorical_features_cfg
+        numerical_features = list(numerical_features_cfg)
         if (
             "Age_over_60" in df_clean.columns
             and "Age_over_60" not in numerical_features
