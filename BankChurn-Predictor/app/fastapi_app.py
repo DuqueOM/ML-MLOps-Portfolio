@@ -50,11 +50,11 @@ app.add_middleware(
 )
 
 # Variables globales para el modelo
-predictor = None
-model_metadata = {}
-prediction_cache = {}
-request_count = 0
-total_prediction_time = 0.0
+predictor: Optional[BankChurnPredictor] = None
+model_metadata: Dict[str, Any] = {}
+prediction_cache: Dict[str, Any] = {}
+request_count: int = 0
+total_prediction_time: float = 0.0
 
 
 class CustomerData(BaseModel):
@@ -63,10 +63,8 @@ class CustomerData(BaseModel):
     CreditScore: int = Field(
         ..., ge=300, le=850, description="Puntaje crediticio (300-850)"
     )
-    Geography: str = Field(
-        ..., description="País de residencia", regex="^(France|Spain|Germany)$"
-    )
-    Gender: str = Field(..., description="Género", regex="^(Male|Female)$")
+    Geography: str = Field(..., description="País de residencia")
+    Gender: str = Field(..., description="Género")
     Age: int = Field(..., ge=18, le=100, description="Edad del cliente (18-100)")
     Tenure: int = Field(..., ge=0, le=10, description="Años como cliente (0-10)")
     Balance: float = Field(..., ge=0, description="Saldo de cuenta")
