@@ -12,7 +12,11 @@ def csv_to_geoparquet(csv_path: Path, lat_col: str, lon_col: str, out_path: Path
     df = pd.read_csv(csv_path)
     if lat_col not in df.columns or lon_col not in df.columns:
         raise SystemExit(f"Columns {lat_col}/{lon_col} not in CSV")
-    gdf = gpd.GeoDataFrame(df, geometry=[Point(xy) for xy in zip(df[lon_col], df[lat_col])], crs="EPSG:4326")
+    gdf = gpd.GeoDataFrame(
+        df,
+        geometry=[Point(xy) for xy in zip(df[lon_col], df[lat_col])],
+        crs="EPSG:4326",
+    )
     out_path.parent.mkdir(parents=True, exist_ok=True)
     gdf.to_parquet(out_path)
 

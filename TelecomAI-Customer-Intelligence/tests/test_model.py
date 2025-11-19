@@ -4,11 +4,10 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from data.preprocess import build_preprocessor
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-
-from data.preprocess import build_preprocessor
 
 
 def test_training_pipeline_runs():
@@ -20,9 +19,7 @@ def test_training_pipeline_runs():
 
     X = df[features]
     y = df[target]
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, stratify=y, random_state=42
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
 
     preprocessor = build_preprocessor(features)
     clf = LogisticRegression(C=1.0, penalty="l2", solver="liblinear", class_weight="balanced")

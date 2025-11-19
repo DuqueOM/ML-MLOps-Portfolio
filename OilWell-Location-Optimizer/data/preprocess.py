@@ -37,9 +37,9 @@ def clean_deduplicate_and_shuffle(
     # keep row with max product per id
     df_sorted = df.sort_values([id_col, target_col], ascending=[True, False])
     df_clean = df_sorted.drop_duplicates(subset=id_col, keep="first")
-    df_clean = df_clean.sample(frac=1.0, random_state=random_state).reset_index(
-        drop=True
-    )
+    df_clean = df_clean.sample(
+        frac=1.0, random_state=random_state
+    ).reset_index(drop=True)
     return df_clean
 
 

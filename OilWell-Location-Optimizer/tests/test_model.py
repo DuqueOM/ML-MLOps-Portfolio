@@ -18,9 +18,7 @@ def _toy_df(n: int = 100) -> pd.DataFrame:
     X = rng.normal(size=(n, 3))
     w = np.array([5.0, -2.0, 1.0])
     y = X @ w + rng.normal(scale=0.5, size=n) + 50.0
-    df = pd.DataFrame(X, columns=["f0", "f1", "f2"]).assign(
-        id=[f"id{i}" for i in range(n)], product=y
-    )
+    df = pd.DataFrame(X, columns=["f0", "f1", "f2"]).assign(id=[f"id{i}" for i in range(n)], product=y)
     return df
 
 

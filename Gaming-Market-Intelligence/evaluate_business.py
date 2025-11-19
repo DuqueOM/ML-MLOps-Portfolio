@@ -44,9 +44,7 @@ def compute_investment_kpis(y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str,
 
     relative_failure_reduction = 0.0
     if failure_rate_all > 0 and invested_model > 0:
-        relative_failure_reduction = (
-            failure_rate_all - failure_rate_model
-        ) / failure_rate_all
+        relative_failure_reduction = (failure_rate_all - failure_rate_model) / failure_rate_all
 
     failures_avoided = baseline_failures - model_failures
 
@@ -70,18 +68,14 @@ def main(cfg_path: str = "configs/config.yaml") -> None:
 
     model_path = Path(cfg["paths"]["model_dir"]) / "model.joblib"
     if not model_path.exists():
-        raise FileNotFoundError(
-            f"Model artifact not found at {model_path}. Train first."
-        )
+        raise FileNotFoundError(f"Model artifact not found at {model_path}. Train first.")
 
     pipe = joblib.load(model_path)
 
     df = load_raw_dataset(cfg["paths"]["dataset_path"])
     pre_cfg = PreprocessConfig(
         numeric_imputer_strategy=cfg["preprocessing"]["numeric_imputer_strategy"],
-        categorical_imputer_strategy=cfg["preprocessing"][
-            "categorical_imputer_strategy"
-        ],
+        categorical_imputer_strategy=cfg["preprocessing"]["categorical_imputer_strategy"],
         scale_numeric=cfg["preprocessing"]["scale_numeric"],
         one_hot_drop=cfg["preprocessing"]["one_hot_drop"],
         include_features=cfg["preprocessing"]["features"]["include"],

@@ -68,17 +68,17 @@ def create_features(df: pd.DataFrame) -> pd.DataFrame:
         "rougher.output.concentrate_au",
         "primary_cleaner.output.concentrate_au",
     }.issubset(df.columns):
-        df["au_recovery_ratio"] = df["primary_cleaner.output.concentrate_au"] / (
-            df["rougher.output.concentrate_au"] + 1e-6
-        )
+        df["au_recovery_ratio"] = df[
+            "primary_cleaner.output.concentrate_au"
+        ] / (df["rougher.output.concentrate_au"] + 1e-6)
 
     if {
         "rougher.output.concentrate_ag",
         "primary_cleaner.output.concentrate_ag",
     }.issubset(df.columns):
-        df["ag_recovery_ratio"] = df["primary_cleaner.output.concentrate_ag"] / (
-            df["rougher.output.concentrate_ag"] + 1e-6
-        )
+        df["ag_recovery_ratio"] = df[
+            "primary_cleaner.output.concentrate_ag"
+        ] / (df["rougher.output.concentrate_ag"] + 1e-6)
 
     if "date" in df.columns:
         df["hour"] = df["date"].dt.hour
@@ -103,12 +103,17 @@ def load_csvs(paths: List[str]) -> pd.DataFrame:
     return df
 
 
-def preprocess(paths: List[str], compute_missing_recovery: bool = True) -> pd.DataFrame:
+def preprocess(
+    paths: List[str], compute_missing_recovery: bool = True
+) -> pd.DataFrame:
     """Carga y preprocesa datos para entrenamiento/prediccion."""
     df = load_csvs(paths)
 
     # Si falta rougher.output.recovery, calcularlo si hay columnas necesarias
-    if compute_missing_recovery and "rougher.output.recovery" not in df.columns:
+    if (
+        compute_missing_recovery
+        and "rougher.output.recovery" not in df.columns
+    ):
         req = {
             "rougher.input.feed_au",
             "rougher.output.concentrate_au",

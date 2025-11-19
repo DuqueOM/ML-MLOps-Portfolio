@@ -60,18 +60,14 @@ total_prediction_time: float = 0.0
 class CustomerData(BaseModel):
     """Schema para datos de un cliente individual."""
 
-    CreditScore: int = Field(
-        ..., ge=300, le=850, description="Puntaje crediticio (300-850)"
-    )
+    CreditScore: int = Field(..., ge=300, le=850, description="Puntaje crediticio (300-850)")
     Geography: str = Field(..., description="País de residencia")
     Gender: str = Field(..., description="Género")
     Age: int = Field(..., ge=18, le=100, description="Edad del cliente (18-100)")
     Tenure: int = Field(..., ge=0, le=10, description="Años como cliente (0-10)")
     Balance: float = Field(..., ge=0, description="Saldo de cuenta")
     NumOfProducts: int = Field(..., ge=1, le=4, description="Número de productos (1-4)")
-    HasCrCard: int = Field(
-        ..., ge=0, le=1, description="Posee tarjeta de crédito (0/1)"
-    )
+    HasCrCard: int = Field(..., ge=0, le=1, description="Posee tarjeta de crédito (0/1)")
     IsActiveMember: int = Field(..., ge=0, le=1, description="Cliente activo (0/1)")
     EstimatedSalary: float = Field(..., ge=0, description="Salario estimado")
 
@@ -93,9 +89,7 @@ class CustomerData(BaseModel):
 class BatchCustomerData(BaseModel):
     """Schema para predicción en lote."""
 
-    customers: List[CustomerData] = Field(
-        ..., description="Lista de clientes para predicción"
-    )
+    customers: List[CustomerData] = Field(..., description="Lista de clientes para predicción")
 
     @validator("customers")
     def validate_batch_size(cls, v):
@@ -113,9 +107,7 @@ class PredictionResponse(BaseModel):
     churn_prediction: int = Field(..., description="Predicción binaria (0/1)")
     risk_level: str = Field(..., description="Nivel de riesgo (LOW/MEDIUM/HIGH)")
     confidence: float = Field(..., description="Confianza de la predicción")
-    feature_contributions: Dict[str, float] = Field(
-        ..., description="Contribución de cada feature"
-    )
+    feature_contributions: Dict[str, float] = Field(..., description="Contribución de cada feature")
     model_version: str = Field(..., description="Versión del modelo")
     prediction_timestamp: str = Field(..., description="Timestamp de la predicción")
 
@@ -123,9 +115,7 @@ class PredictionResponse(BaseModel):
 class BatchPredictionResponse(BaseModel):
     """Schema para respuesta de predicción en lote."""
 
-    predictions: List[PredictionResponse] = Field(
-        ..., description="Lista de predicciones"
-    )
+    predictions: List[PredictionResponse] = Field(..., description="Lista de predicciones")
     batch_id: str = Field(..., description="ID único del batch")
     total_customers: int = Field(..., description="Total de clientes procesados")
     processing_time_seconds: float = Field(..., description="Tiempo de procesamiento")
@@ -144,9 +134,7 @@ class ModelMetrics(BaseModel):
     """Schema para métricas del modelo."""
 
     total_predictions: int = Field(..., description="Total de predicciones realizadas")
-    average_prediction_time_ms: float = Field(
-        ..., description="Tiempo promedio de predicción (ms)"
-    )
+    average_prediction_time_ms: float = Field(..., description="Tiempo promedio de predicción (ms)")
     model_accuracy: Optional[float] = Field(None, description="Accuracy del modelo")
     model_f1_score: Optional[float] = Field(None, description="F1-Score del modelo")
     model_auc_roc: Optional[float] = Field(None, description="AUC-ROC del modelo")
@@ -198,7 +186,9 @@ def load_model():
         return False
 
 
-def calculate_feature_contributions(customer_data: Dict[str, Any]) -> Dict[str, float]:
+def calculate_feature_contributions(
+    customer_data: Dict[str, Any],
+) -> Dict[str, float]:
     """
     Calcula contribuciones aproximadas de features usando valores promedio.
     En producción, se usaría SHAP o LIME para explicaciones precisas.
@@ -328,9 +318,7 @@ async def get_model_info():
 async def get_metrics():
     """Métricas del modelo y API."""
 
-    avg_time_ms = (
-        (total_prediction_time / request_count * 1000) if request_count > 0 else 0
-    )
+    avg_time_ms = (total_prediction_time / request_count * 1000) if request_count > 0 else 0
 
     # Métricas del modelo desde metadatos (si están disponibles)
     model_accuracy = model_metadata.get("test_accuracy")
@@ -400,9 +388,7 @@ async def predict_churn(customer: CustomerData):
 
 
 @app.post("/predict_batch", response_model=BatchPredictionResponse)
-async def predict_batch(
-    batch_data: BatchCustomerData, background_tasks: BackgroundTasks
-):
+async def predict_batch(batch_data: BatchCustomerData, background_tasks: BackgroundTasks):
     """Predicción de churn para múltiples clientes."""
     if predictor is None:
         raise HTTPException(status_code=503, detail="Modelo no disponible")
@@ -425,18 +411,14 @@ async def predict_batch(
 
         # Crear respuestas individuales
         individual_predictions = []
-        for i, (customer_dict, prob, pred) in enumerate(
-            zip(customers_list, probabilities, predictions)
-        ):
+        for i, (customer_dict, prob, pred) in enumerate(zip(customers_list, probabilities, predictions)):
             individual_predictions.append(
                 PredictionResponse(
                     churn_probability=float(prob),
                     churn_prediction=int(pred),
                     risk_level=determine_risk_level(float(prob)),
                     confidence=calculate_confidence(float(prob)),
-                    feature_contributions=calculate_feature_contributions(
-                        customer_dict
-                    ),
+                    feature_contributions=calculate_feature_contributions(customer_dict),
                     model_version=model_metadata.get("version", "1.0.0"),
                     prediction_timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 )
@@ -458,9 +440,7 @@ async def predict_batch(
 
     except Exception as e:
         logger.error(f"Error en predicción batch: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Error en predicción batch: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error en predicción batch: {str(e)}")
 
 
 @app.post("/reload_model")

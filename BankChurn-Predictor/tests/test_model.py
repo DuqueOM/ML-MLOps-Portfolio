@@ -51,9 +51,7 @@ class TestResampleClassifier:
     def test_init(self):
         """Test inicialización de ResampleClassifier."""
         base_estimator = LogisticRegression()
-        classifier = ResampleClassifier(
-            estimator=base_estimator, strategy="oversample", random_state=42
-        )
+        classifier = ResampleClassifier(estimator=base_estimator, strategy="oversample", random_state=42)
 
         assert classifier.estimator == base_estimator
         assert classifier.strategy == "oversample"
@@ -63,9 +61,7 @@ class TestResampleClassifier:
     def test_oversample_strategy(self):
         """Test estrategia de oversampling."""
         base_estimator = LogisticRegression(random_state=42)
-        classifier = ResampleClassifier(
-            estimator=base_estimator, strategy="oversample", random_state=42
-        )
+        classifier = ResampleClassifier(estimator=base_estimator, strategy="oversample", random_state=42)
 
         # Entrenar
         classifier.fit(self.X, self.y)
@@ -85,9 +81,7 @@ class TestResampleClassifier:
     def test_undersample_strategy(self):
         """Test estrategia de undersampling."""
         base_estimator = RandomForestClassifier(n_estimators=10, random_state=42)
-        classifier = ResampleClassifier(
-            estimator=base_estimator, strategy="undersample", random_state=42
-        )
+        classifier = ResampleClassifier(estimator=base_estimator, strategy="undersample", random_state=42)
 
         classifier.fit(self.X, self.y)
 
@@ -99,9 +93,7 @@ class TestResampleClassifier:
     def test_no_resampling(self):
         """Test sin resampling (strategy='none')."""
         base_estimator = LogisticRegression(random_state=42)
-        classifier = ResampleClassifier(
-            estimator=base_estimator, strategy="none", random_state=42
-        )
+        classifier = ResampleClassifier(estimator=base_estimator, strategy="none", random_state=42)
 
         classifier.fit(self.X, self.y)
         predictions = classifier.predict(self.X)
@@ -110,9 +102,7 @@ class TestResampleClassifier:
 
     def test_predict_before_fit_raises_error(self):
         """Test que predict sin fit lanza error."""
-        classifier = ResampleClassifier(
-            estimator=LogisticRegression(), strategy="oversample"
-        )
+        classifier = ResampleClassifier(estimator=LogisticRegression(), strategy="oversample")
 
         with pytest.raises(ValueError, match="Modelo no entrenado"):
             classifier.predict(self.X)
@@ -136,9 +126,7 @@ class TestBankChurnPredictor:
                 "CustomerId": range(10000, 10000 + n_samples),
                 "Surname": [f"Customer_{i}" for i in range(n_samples)],
                 "CreditScore": np.random.randint(350, 851, n_samples),
-                "Geography": np.random.choice(
-                    ["France", "Spain", "Germany"], n_samples
-                ),
+                "Geography": np.random.choice(["France", "Spain", "Germany"], n_samples),
                 "Gender": np.random.choice(["Male", "Female"], n_samples),
                 "Age": np.random.randint(18, 93, n_samples),
                 "Tenure": np.random.randint(0, 11, n_samples),
@@ -147,16 +135,12 @@ class TestBankChurnPredictor:
                 "HasCrCard": np.random.choice([0, 1], n_samples),
                 "IsActiveMember": np.random.choice([0, 1], n_samples),
                 "EstimatedSalary": np.random.uniform(11, 200000, n_samples),
-                "Exited": np.random.choice(
-                    [0, 1], n_samples, p=[0.8, 0.2]
-                ),  # Desbalanceado
+                "Exited": np.random.choice([0, 1], n_samples, p=[0.8, 0.2]),  # Desbalanceado
             }
         )
 
         # Crear archivo temporal
-        self.temp_file = tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        )
+        self.temp_file = tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False)
         self.df.to_csv(self.temp_file.name, index=False)
         self.temp_file.close()
 
@@ -194,9 +178,7 @@ class TestBankChurnPredictor:
         """Test que carga de datos sin target lanza error."""
         # Crear DataFrame sin columna target
         df_no_target = self.df.drop(columns=["Exited"])
-        temp_file_no_target = tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        )
+        temp_file_no_target = tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False)
         df_no_target.to_csv(temp_file_no_target.name, index=False)
         temp_file_no_target.close()
 
@@ -255,9 +237,7 @@ class TestBankChurnPredictor:
         # Split train/test
         from sklearn.model_selection import train_test_split
 
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42, stratify=y
-        )
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
         # Entrenar
         cv_results = predictor.train(X_train, y_train)
@@ -358,9 +338,7 @@ class TestIntegration:
         age = np.random.normal(40, 15, n_samples)
         age = np.clip(age, 18, 92)
 
-        geography = np.random.choice(
-            ["France", "Spain", "Germany"], n_samples, p=[0.5, 0.25, 0.25]
-        )
+        geography = np.random.choice(["France", "Spain", "Germany"], n_samples, p=[0.5, 0.25, 0.25])
         is_active = np.random.choice([0, 1], n_samples, p=[0.4, 0.6])
 
         # Probabilidad de churn correlacionada con edad y otros factores
@@ -383,9 +361,7 @@ class TestIntegration:
                 "Age": age.astype(int),
                 "Tenure": np.random.randint(0, 11, n_samples),
                 "Balance": np.random.exponential(50000, n_samples),
-                "NumOfProducts": np.random.choice(
-                    [1, 2, 3, 4], n_samples, p=[0.5, 0.3, 0.15, 0.05]
-                ),
+                "NumOfProducts": np.random.choice([1, 2, 3, 4], n_samples, p=[0.5, 0.3, 0.15, 0.05]),
                 "HasCrCard": np.random.choice([0, 1], n_samples, p=[0.3, 0.7]),
                 "IsActiveMember": is_active,
                 "EstimatedSalary": np.random.uniform(20000, 150000, n_samples),
@@ -405,9 +381,7 @@ class TestIntegration:
         # Split
         from sklearn.model_selection import train_test_split
 
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.3, random_state=42, stratify=y
-        )
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
 
         # Entrenar
         _ = predictor.train(X_train, y_train)

@@ -70,18 +70,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def symmetric_mean_absolute_percentage_error(
-    y_true: np.ndarray, y_pred: np.ndarray
-) -> float:
+def symmetric_mean_absolute_percentage_error(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """
     Calcula sMAPE (Symmetric Mean Absolute Percentage Error).
 
     Métrica especializada para procesos industriales que maneja
     valores cercanos a cero mejor que MAPE tradicional.
     """
-    return 100 * np.mean(
-        2 * np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred))
-    )
+    return 100 * np.mean(2 * np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred)))
 
 
 class ProcessDataLoader:
@@ -118,9 +114,7 @@ class ProcessDataLoader:
                 df = pd.read_csv(file_path)
                 df["source_file"] = Path(file_path).stem
                 dataframes.append(df)
-                logger.info(
-                    f"Cargado {file_path}: {df.shape[0]} filas, {df.shape[1]} columnas"
-                )
+                logger.info(f"Cargado {file_path}: {df.shape[0]} filas, {df.shape[1]} columnas")
             except Exception as e:
                 logger.error(f"Error cargando {file_path}: {e}")
                 continue
@@ -130,9 +124,7 @@ class ProcessDataLoader:
 
         # Consolidar datos
         consolidated_df = pd.concat(dataframes, ignore_index=True)
-        logger.info(
-            f"Datos consolidados: {consolidated_df.shape[0]} filas, {consolidated_df.shape[1]} columnas"
-        )
+        logger.info(f"Datos consolidados: {consolidated_df.shape[0]} filas, {consolidated_df.shape[1]} columnas")
 
         return consolidated_df
 
@@ -158,10 +150,7 @@ class ProcessDataLoader:
         # Filtrar valores válidos de recovery
         if "final.output.recovery" in df_clean.columns:
             initial_count = len(df_clean)
-            df_clean = df_clean[
-                (df_clean["final.output.recovery"] >= 0)
-                & (df_clean["final.output.recovery"] <= 100)
-            ]
+            df_clean = df_clean[(df_clean["final.output.recovery"] >= 0) & (df_clean["final.output.recovery"] <= 100)]
             logger.info(f"Filtrado recovery: {initial_count} -> {len(df_clean)} filas")
 
         # Eliminar filas con demasiados valores faltantes
@@ -171,9 +160,7 @@ class ProcessDataLoader:
         # Crear features derivadas
         df_clean = self._create_derived_features(df_clean)
 
-        logger.info(
-            f"Datos después de limpieza: {df_clean.shape[0]} filas, {df_clean.shape[1]} columnas"
-        )
+        logger.info(f"Datos después de limpieza: {df_clean.shape[0]} filas, {df_clean.shape[1]} columnas")
 
         return df_clean
 
@@ -204,11 +191,7 @@ class ProcessDataLoader:
             )
 
         # Eficiencia de concentración
-        concentrate_cols = [
-            col
-            for col in df.columns
-            if "concentrate" in col and ("au" in col or "ag" in col)
-        ]
+        concentrate_cols = [col for col in df.columns if "concentrate" in col and ("au" in col or "ag" in col)]
         if concentrate_cols:
             df["total_concentrate_efficiency"] = df[concentrate_cols].sum(axis=1)
 
@@ -220,12 +203,8 @@ class ProcessDataLoader:
 
             # Rolling features para capturar tendencias
             if "final.output.recovery" in df.columns:
-                df["recovery_rolling_mean_24h"] = (
-                    df["final.output.recovery"].rolling(24, min_periods=1).mean()
-                )
-                df["recovery_rolling_std_24h"] = (
-                    df["final.output.recovery"].rolling(24, min_periods=1).std()
-                )
+                df["recovery_rolling_mean_24h"] = df["final.output.recovery"].rolling(24, min_periods=1).mean()
+                df["recovery_rolling_std_24h"] = df["final.output.recovery"].rolling(24, min_periods=1).std()
 
         return df
 
@@ -343,9 +322,7 @@ class MetallurgicalPredictor:
         self.models = {
             "xgboost": xgb.XGBRegressor(**self.config["models"]["xgboost"]),
             "lightgbm": lgb.LGBMRegressor(**self.config["models"]["lightgbm"]),
-            "random_forest": RandomForestRegressor(
-                **self.config["models"]["random_forest"]
-            ),
+            "random_forest": RandomForestRegressor(**self.config["models"]["random_forest"]),
         }
 
         # Entrenar cada modelo y evaluar con CV
@@ -358,16 +335,12 @@ class MetallurgicalPredictor:
             model.fit(X, y)
 
             # Validación cruzada
-            cv_scores = cross_val_score(
-                model, X, y, cv=5, scoring="neg_mean_absolute_error", n_jobs=-1
-            )
+            cv_scores = cross_val_score(model, X, y, cv=5, scoring="neg_mean_absolute_error", n_jobs=-1)
 
             cv_results[f"{model_name}_mae"] = -cv_scores.mean()
             cv_results[f"{model_name}_mae_std"] = cv_scores.std()
 
-            logger.info(
-                f"{model_name} - MAE CV: {-cv_scores.mean():.4f} ± {cv_scores.std():.4f}"
-            )
+            logger.info(f"{model_name} - MAE CV: {-cv_scores.mean():.4f} ± {cv_scores.std():.4f}")
 
         self.is_fitted = True
         logger.info("Entrenamiento completado")
@@ -397,9 +370,7 @@ class MetallurgicalPredictor:
 
         # Ensemble ponderado
         weights = self.config["ensemble_weights"]
-        ensemble_pred = sum(
-            [weights[name] * pred for name, pred in predictions.items()]
-        )
+        ensemble_pred = sum([weights[name] * pred for name, pred in predictions.items()])
 
         return ensemble_pred
 
@@ -431,7 +402,13 @@ class MetallurgicalPredictor:
         ss_tot = np.sum((y_test - np.mean(y_test)) ** 2)
         r2 = 1 - (ss_res / ss_tot)
 
-        metrics = {"mae": mae, "mse": mse, "rmse": rmse, "smape": smape, "r2_score": r2}
+        metrics = {
+            "mae": mae,
+            "mse": mse,
+            "rmse": rmse,
+            "smape": smape,
+            "r2_score": r2,
+        }
 
         logger.info("Métricas de evaluación:")
         for metric, value in metrics.items():
@@ -513,21 +490,16 @@ class ProcessOptimizer:
                     test_conditions = current_conditions.copy()
                     test_conditions[param] = test_val
 
-                    predicted_recovery = self._predict_recovery_from_conditions(
-                        test_conditions
-                    )
+                    predicted_recovery = self._predict_recovery_from_conditions(test_conditions)
 
-                    if abs(predicted_recovery - target_recovery) < abs(
-                        best_recovery - target_recovery
-                    ):
+                    if abs(predicted_recovery - target_recovery) < abs(best_recovery - target_recovery):
                         best_recovery = predicted_recovery
                         best_params[param] = test_val
 
         optimization_result = {
             "optimized_parameters": best_params,
             "predicted_recovery": best_recovery,
-            "improvement": best_recovery
-            - self._predict_recovery_from_conditions(current_conditions),
+            "improvement": best_recovery - self._predict_recovery_from_conditions(current_conditions),
             "target_achieved": abs(best_recovery - target_recovery) < 1.0,
         }
 
@@ -557,7 +529,14 @@ def main():
         "--mode",
         type=str,
         required=True,
-        choices=["train", "eval", "evaluate", "predict", "optimize", "monitor"],
+        choices=[
+            "train",
+            "eval",
+            "evaluate",
+            "predict",
+            "optimize",
+            "monitor",
+        ],
         help="Modo de ejecución (train | eval | predict | optimize | monitor)",
     )
 
@@ -606,7 +585,9 @@ def main():
     )
 
     parser.add_argument(
-        "--dashboard", action="store_true", help="Lanzar dashboard de monitoreo"
+        "--dashboard",
+        action="store_true",
+        help="Lanzar dashboard de monitoreo",
     )
 
     parser.add_argument("--port", type=int, default=8501, help="Puerto para dashboard")
@@ -657,17 +638,13 @@ def main():
             df_clean = loader.validate_and_clean_data(df)
 
             # Preparar datos
-            predictor_cfg = (
-                cfg.get("model") if isinstance(cfg.get("model"), dict) else None
-            )
+            predictor_cfg = cfg.get("model") if isinstance(cfg.get("model"), dict) else None
             predictor = MetallurgicalPredictor(config=predictor_cfg)
             X, y = predictor.prepare_features(df_clean, args.target)
 
             # Split train/test
             test_size = cfg.get("training", {}).get("test_size", 0.2)
-            X_train, X_test, y_train, y_test = train_test_split(
-                X, y, test_size=test_size, random_state=seed
-            )
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=seed)
 
             # Entrenar modelos
             cv_results = predictor.train(X_train, y_train)
@@ -725,9 +702,7 @@ def main():
             logger.info("=== MODO EVALUACIÓN ===")
 
             # Cargar modelo
-            predictor_cfg = (
-                cfg.get("model") if isinstance(cfg.get("model"), dict) else None
-            )
+            predictor_cfg = cfg.get("model") if isinstance(cfg.get("model"), dict) else None
             predictor = MetallurgicalPredictor(config=predictor_cfg)
             predictor.load_models(args.model)
 
@@ -778,13 +753,9 @@ def main():
             )
 
             print("\n=== RESULTADOS DE OPTIMIZACIÓN ===")
-            print(
-                f"Recovery predicho: {optimization_result['predicted_recovery']:.2f}%"
-            )
+            print(f"Recovery predicho: {optimization_result['predicted_recovery']:.2f}%")
             print(f"Mejora esperada: +{optimization_result['improvement']:.2f}%")
-            print(
-                f"Objetivo alcanzado: {'Sí' if optimization_result['target_achieved'] else 'No'}"
-            )
+            print(f"Objetivo alcanzado: {'Sí' if optimization_result['target_achieved'] else 'No'}")
 
         elif args.mode == "monitor":
             logger.info("=== MODO MONITOREO ===")

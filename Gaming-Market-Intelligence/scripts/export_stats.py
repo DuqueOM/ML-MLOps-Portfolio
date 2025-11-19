@@ -30,10 +30,7 @@ def export_hypothesis_tests_summary(
     if {"platform", "global_sales"}.issubset(df.columns):
         platform_counts = df["platform"].value_counts()
         major_platforms = platform_counts[platform_counts >= 50].index.tolist()
-        groups = [
-            df.loc[df["platform"] == p, "global_sales"].dropna().to_numpy()
-            for p in major_platforms
-        ]
+        groups = [df.loc[df["platform"] == p, "global_sales"].dropna().to_numpy() for p in major_platforms]
         groups = [g for g in groups if g.size > 0]
         if len(groups) >= 2:
             f_stat, p_val = stats.f_oneway(*groups)
@@ -55,18 +52,12 @@ def export_hypothesis_tests_summary(
     if {"genre", "global_sales"}.issubset(df.columns):
         genre_counts = df["genre"].value_counts()
         major_genres = genre_counts[genre_counts >= 50].index.tolist()
-        groups = [
-            df.loc[df["genre"] == g, "global_sales"].dropna().to_numpy()
-            for g in major_genres
-        ]
+        groups = [df.loc[df["genre"] == g, "global_sales"].dropna().to_numpy() for g in major_genres]
         groups = [g for g in groups if g.size > 0]
         if len(groups) >= 2:
             f_stat, p_val = stats.f_oneway(*groups)
             means = (
-                df[df["genre"].isin(major_genres)]
-                .groupby("genre")["global_sales"]
-                .mean()
-                .sort_values(ascending=False)
+                df[df["genre"].isin(major_genres)].groupby("genre")["global_sales"].mean().sort_values(ascending=False)
             )
             summary["genre_performance"] = {
                 "test": "one_way_anova",
@@ -94,9 +85,7 @@ def export_hypothesis_tests_summary(
     # Tendencia temporal de ventas medias por año
     if {"year_of_release", "global_sales"}.issubset(df.columns):
         year_sales = (
-            df.dropna(subset=["year_of_release", "global_sales"])
-            .groupby("year_of_release")["global_sales"]
-            .mean()
+            df.dropna(subset=["year_of_release", "global_sales"]).groupby("year_of_release")["global_sales"].mean()
         )
         years = year_sales.index.to_numpy()
         vals = year_sales.to_numpy()

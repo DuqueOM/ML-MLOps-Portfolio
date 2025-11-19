@@ -14,9 +14,7 @@ def test_dedup_keeps_highest_product():
             "product": [10.0, 5.0, 7.0],
         }
     )
-    out = clean_deduplicate_and_shuffle(
-        df, id_col="id", target_col="product", random_state=1
-    )
+    out = clean_deduplicate_and_shuffle(df, id_col="id", target_col="product", random_state=1)
     assert len(out) == 2
     # id "a" should keep product=10
     assert out[out["id"] == "a"]["product"].iloc[0] == 10.0

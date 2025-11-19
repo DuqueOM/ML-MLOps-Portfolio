@@ -26,9 +26,7 @@ def load_model() -> None:
     cfg = yaml.safe_load(open("configs/config.yaml", "r", encoding="utf-8"))
     model_path = Path(cfg["paths"]["model_dir"]) / "model.joblib"
     if not model_path.exists():
-        raise RuntimeError(
-            f"Model artifact not found at {model_path}. Train the model first."
-        )
+        raise RuntimeError(f"Model artifact not found at {model_path}. Train the model first.")
     app.state.model = joblib.load(model_path)
 
 

@@ -26,7 +26,10 @@ else:
         if "odometer" in df.columns:
             st.plotly_chart(
                 px.scatter(
-                    df.sample(min(2000, len(df))), x="odometer", y="price", opacity=0.4
+                    df.sample(min(2000, len(df))),
+                    x="odometer",
+                    y="price",
+                    opacity=0.4,
                 ),
                 use_container_width=True,
             )

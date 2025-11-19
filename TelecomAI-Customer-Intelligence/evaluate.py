@@ -44,9 +44,7 @@ def save_metrics(metrics_dict: Dict[str, float], path: str | Path) -> None:
     logger.info("Metrics saved to %s", path)
 
 
-def plot_confusion_matrix(
-    y_true: np.ndarray, y_pred: np.ndarray, out_path: str | Path
-) -> None:
+def plot_confusion_matrix(y_true: np.ndarray, y_pred: np.ndarray, out_path: str | Path) -> None:
     cm = metrics.confusion_matrix(y_true, y_pred)
     fig, ax = plt.subplots(figsize=(4, 4))
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", cbar=False, ax=ax)
@@ -60,9 +58,7 @@ def plot_confusion_matrix(
     logger.info("Confusion matrix saved to %s", out_path)
 
 
-def plot_roc_curve(
-    y_true: np.ndarray, y_proba: Optional[np.ndarray], out_path: str | Path
-) -> None:
+def plot_roc_curve(y_true: np.ndarray, y_proba: Optional[np.ndarray], out_path: str | Path) -> None:
     if y_proba is None:
         logger.warning("ROC curve cannot be plotted without probabilities.")
         return

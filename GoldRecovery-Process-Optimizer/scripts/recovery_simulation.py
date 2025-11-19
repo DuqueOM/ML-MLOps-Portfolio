@@ -10,9 +10,7 @@ import pandas as pd
 from main import symmetric_mean_absolute_percentage_error as smape
 
 
-def bootstrap_ci(
-    values: np.ndarray, n: int = 1000, alpha: float = 0.05
-) -> tuple[float, float]:
+def bootstrap_ci(values: np.ndarray, n: int = 1000, alpha: float = 0.05) -> tuple[float, float]:
     rng = np.random.default_rng(0)
     stats = []
     for _ in range(n):
@@ -25,11 +23,7 @@ def bootstrap_ci(
 
 def run_simulation(model_path: Path, csv_path: Path, target_col: str) -> dict:
     model_data = joblib.load(model_path)
-    models = (
-        model_data["models"]
-        if isinstance(model_data, dict) and "models" in model_data
-        else None
-    )
+    models = model_data["models"] if isinstance(model_data, dict) and "models" in model_data else None
 
     df = pd.read_csv(csv_path)
     y = df[target_col].values

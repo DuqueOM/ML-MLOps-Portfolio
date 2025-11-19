@@ -29,14 +29,11 @@ import plotly.graph_objects as go
 import yaml
 
 # ML utilities from project
-from data.preprocess import (
-    build_preprocessor,
-    infer_feature_types,
-    save_split_indices,
-    split_data,
-)
+from data.preprocess import build_preprocessor
 from data.preprocess import clean_data as ds_clean_data
+from data.preprocess import infer_feature_types
 from data.preprocess import load_data as ds_load_data
+from data.preprocess import save_split_indices, split_data
 from evaluate import evaluate_model as eval_model
 from plotly.subplots import make_subplots
 from sklearn.ensemble import RandomForestRegressor
@@ -56,7 +53,10 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("carvision.log"), logging.StreamHandler(sys.stdout)],
+    handlers=[
+        logging.FileHandler("carvision.log"),
+        logging.StreamHandler(sys.stdout),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -97,19 +97,13 @@ class VehicleDataLoader:
             logger.info(f"Datos cargados: {df.shape[0]} filas, {df.shape[1]} columnas")
 
             # Validar columnas requeridas
-            missing_cols = [
-                col for col in self.required_columns if col not in df.columns
-            ]
+            missing_cols = [col for col in self.required_columns if col not in df.columns]
             if missing_cols:
                 logger.warning(f"Columnas faltantes: {missing_cols}")
 
             # Información básica del dataset
-            logger.info(
-                f"Rango de precios: ${df['price'].min():,.0f} - ${df['price'].max():,.0f}"
-            )
-            logger.info(
-                f"Años de modelo: {df['model_year'].min()} - {df['model_year'].max()}"
-            )
+            logger.info(f"Rango de precios: ${df['price'].min():,.0f} - ${df['price'].max():,.0f}")
+            logger.info(f"Años de modelo: {df['model_year'].min()} - {df['model_year'].max()}")
 
             return df
 
@@ -136,15 +130,11 @@ class VehicleDataLoader:
 
         # Filtrar años válidos
         current_year = pd.Timestamp.now().year
-        df_clean = df_clean[
-            (df_clean["model_year"] >= 1990) & (df_clean["model_year"] <= current_year)
-        ]
+        df_clean = df_clean[(df_clean["model_year"] >= 1990) & (df_clean["model_year"] <= current_year)]
 
         # Limpiar odometer
         if "odometer" in df_clean.columns:
-            df_clean = df_clean[
-                (df_clean["odometer"] > 0) & (df_clean["odometer"] < 500000)
-            ]
+            df_clean = df_clean[(df_clean["odometer"] > 0) & (df_clean["odometer"] < 500000)]
 
         # Crear features derivadas
         df_clean["vehicle_age"] = current_year - df_clean["model_year"]
@@ -202,12 +192,8 @@ class MarketAnalyzer:
 
         # Precio promedio por marca
         self.df["brand"] = self.df["model"].str.split().str[0]
-        brand_price = (
-            self.df.groupby("brand")["price"].agg(["mean", "median", "count"]).round(0)
-        )
-        brand_price = brand_price[brand_price["count"] >= 100].sort_values(
-            "mean", ascending=False
-        )
+        brand_price = self.df.groupby("brand")["price"].agg(["mean", "median", "count"]).round(0)
+        brand_price = brand_price[brand_price["count"] >= 100].sort_values("mean", ascending=False)
 
         self.analysis_results["market_by_brand"] = {
             "volume": brand_volume.to_dict(),
@@ -259,8 +245,7 @@ class MarketAnalyzer:
                         "category": category,
                         "count": len(undervalued),
                         "avg_price": undervalued["price"].mean(),
-                        "potential_value": category_data["price"].median()
-                        - undervalued["price"].mean(),
+                        "potential_value": category_data["price"].median() - undervalued["price"].mean(),
                     }
                 )
 
@@ -288,15 +273,8 @@ class MarketAnalyzer:
         total_market_value = self.df["price"].sum()
 
         # Oportunidades identificadas
-        total_opportunities = sum(
-            [opp["count"] for opp in self.analysis_results["opportunities"]]
-        )
-        potential_value = sum(
-            [
-                opp["potential_value"] * opp["count"]
-                for opp in self.analysis_results["opportunities"]
-            ]
-        )
+        total_opportunities = sum([opp["count"] for opp in self.analysis_results["opportunities"]])
+        potential_value = sum([opp["potential_value"] * opp["count"] for opp in self.analysis_results["opportunities"]])
 
         summary = {
             "kpis": {
@@ -307,15 +285,9 @@ class MarketAnalyzer:
                 "potential_arbitrage_value": potential_value,
             },
             "insights": {
-                "most_popular_brand": list(
-                    self.analysis_results["market_by_brand"]["volume"].keys()
-                )[0],
-                "highest_value_brand": list(
-                    self.analysis_results["market_by_brand"]["pricing"]["mean"].keys()
-                )[0],
-                "avg_depreciation_rate": np.mean(
-                    list(self.analysis_results["depreciation"]["annual_rate"].values())
-                ),
+                "most_popular_brand": list(self.analysis_results["market_by_brand"]["volume"].keys())[0],
+                "highest_value_brand": list(self.analysis_results["market_by_brand"]["pricing"]["mean"].keys())[0],
+                "avg_depreciation_rate": np.mean(list(self.analysis_results["depreciation"]["annual_rate"].values())),
             },
             "recommendations": [
                 f"Focus on {total_opportunities} undervalued vehicles for potential ${potential_value:,.0f} profit",
@@ -392,15 +364,16 @@ class VisualizationEngine:
         top_brands = self.df["brand"].value_counts().head(10)
         fig.add_trace(
             go.Bar(
-                x=top_brands.values, y=top_brands.index, orientation="h", name="Volumen"
+                x=top_brands.values,
+                y=top_brands.index,
+                orientation="h",
+                name="Volumen",
             ),
             row=2,
             col=2,
         )
 
-        fig.update_layout(
-            height=800, title_text="Análisis de Precios del Mercado Automotriz"
-        )
+        fig.update_layout(height=800, title_text="Análisis de Precios del Mercado Automotriz")
 
         return fig
 
@@ -447,7 +420,9 @@ class VisualizationEngine:
             categories = [opp["category"] for opp in opportunities]
             values = [opp["potential_value"] for opp in opportunities]
             fig.add_trace(
-                go.Bar(x=categories, y=values, name="Valor Potencial"), row=1, col=2
+                go.Bar(x=categories, y=values, name="Valor Potencial"),
+                row=1,
+                col=2,
             )
 
         # Depreciación
@@ -465,13 +440,13 @@ class VisualizationEngine:
         brands = list(brand_volume.keys())[:5]  # Top 5
         volumes = [brand_volume[brand] for brand in brands]
         fig.add_trace(
-            go.Pie(labels=brands, values=volumes, name="Market Share"), row=2, col=2
+            go.Pie(labels=brands, values=volumes, name="Market Share"),
+            row=2,
+            col=2,
         )
 
         # Precio vs Millaje
-        sample_data = self.df.sample(
-            min(1000, len(self.df))
-        )  # Muestra para performance
+        sample_data = self.df.sample(min(1000, len(self.df)))  # Muestra para performance
         fig.add_trace(
             go.Scatter(
                 x=sample_data["odometer"],
@@ -496,9 +471,7 @@ class VisualizationEngine:
             col=2,
         )
 
-        fig.update_layout(
-            height=1200, title_text="CarVision Market Intelligence Dashboard"
-        )
+        fig.update_layout(height=1200, title_text="CarVision Market Intelligence Dashboard")
 
         return fig
 
@@ -534,7 +507,7 @@ class ReportGenerator:
         <body>
             <h1>🚗 CarVision Market Intelligence Report</h1>
             <p><strong>Fecha de generación:</strong> {timestamp}</p>
-            
+
             <h2>📊 KPIs Principales</h2>
             <div class="kpi">
                 <h3>Métricas del Mercado</h3>
@@ -546,7 +519,7 @@ class ReportGenerator:
                     <li><strong>Valor Potencial de Arbitraje:</strong> ${arbitrage_value:,.0f}</li>
                 </ul>
             </div>
-            
+
             <h2>💡 Insights Clave</h2>
             <div class="insight">
                 <h3>Análisis de Mercado</h3>
@@ -556,7 +529,7 @@ class ReportGenerator:
                     <li><strong>Tasa de Depreciación Promedio:</strong> {depreciation_rate:.1%}</li>
                 </ul>
             </div>
-            
+
             <h2>🎯 Recomendaciones</h2>
             <ul>
         """.format(
@@ -577,7 +550,7 @@ class ReportGenerator:
 
         html_template += """
             </ul>
-            
+
             <h2>📈 Oportunidades de Mercado</h2>
             <table>
                 <tr>
@@ -601,7 +574,7 @@ class ReportGenerator:
 
         html_template += """
             </table>
-            
+
             <footer>
                 <p><em>Reporte generado por CarVision Market Intelligence v1.0.0</em></p>
             </footer>
@@ -646,7 +619,12 @@ def train_model(cfg: Dict[str, Any]) -> Dict[str, Any]:
 
     # Split
     X_train, X_val, X_test, y_train, y_val, y_test, split_indices = split_data(
-        df, tr["target"], tr["test_size"], tr["val_size"], cfg["seed"], tr["shuffle"]
+        df,
+        tr["target"],
+        tr["test_size"],
+        tr["val_size"],
+        cfg["seed"],
+        tr["shuffle"],
     )
     save_split_indices(split_indices, paths["split_indices_path"])
 
@@ -679,9 +657,7 @@ def train_model(cfg: Dict[str, Any]) -> Dict[str, Any]:
     val_metrics = {
         "rmse": rmse(y_val, yv),
         "mae": float(mean_absolute_error(y_val, yv)),
-        "mape": float(
-            np.mean(np.abs((np.array(y_val) - yv) / (np.array(y_val) + 1e-8))) * 100
-        ),
+        "mape": float(np.mean(np.abs((np.array(y_val) - yv) / (np.array(y_val) + 1e-8))) * 100),
         "r2": float(r2_score(y_val, yv)),
     }
     logger.info(f"Métricas de validación: {val_metrics}")
@@ -706,9 +682,7 @@ def train_model(cfg: Dict[str, Any]) -> Dict[str, Any]:
 
 def main():
     """Función principal con CLI."""
-    parser = argparse.ArgumentParser(
-        description="CarVision Market Intelligence - Análisis de mercado automotriz"
-    )
+    parser = argparse.ArgumentParser(description="CarVision Market Intelligence - Análisis de mercado automotriz")
 
     parser.add_argument(
         "--mode",
@@ -749,7 +723,10 @@ def main():
     )
 
     parser.add_argument(
-        "--port", type=int, default=8501, help="Puerto para dashboard Streamlit"
+        "--port",
+        type=int,
+        default=8501,
+        help="Puerto para dashboard Streamlit",
     )
 
     parser.add_argument(
@@ -799,16 +776,10 @@ def main():
 
             # Mostrar resultados
             print("\n=== RESUMEN EJECUTIVO ===")
-            print(
-                f"Total de vehículos analizados: {summary['kpis']['total_vehicles']:,}"
-            )
+            print(f"Total de vehículos analizados: {summary['kpis']['total_vehicles']:,}")
             print(f"Precio promedio: ${summary['kpis']['average_price']:,.0f}")
-            print(
-                f"Oportunidades identificadas: {summary['kpis']['total_opportunities']}"
-            )
-            print(
-                f"Valor potencial de arbitraje: ${summary['kpis']['potential_arbitrage_value']:,.0f}"
-            )
+            print(f"Oportunidades identificadas: {summary['kpis']['total_opportunities']}")
+            print(f"Valor potencial de arbitraje: ${summary['kpis']['potential_arbitrage_value']:,.0f}")
 
             print("\n=== INSIGHTS CLAVE ===")
             for key, value in summary["insights"].items():
@@ -848,11 +819,7 @@ def main():
             report_gen = ReportGenerator(analyzer)
 
             if args.format == "html":
-                output_file = (
-                    f"{args.output}.html"
-                    if not args.output.endswith(".html")
-                    else args.output
-                )
+                output_file = f"{args.output}.html" if not args.output.endswith(".html") else args.output
                 report_gen.generate_html_report(output_file)
 
             logger.info(f"Reporte generado: {output_file}")
@@ -867,18 +834,10 @@ def main():
 
             # Exportar según formato
             if args.format == "excel":
-                output_file = (
-                    f"{args.output}.xlsx"
-                    if not args.output.endswith(".xlsx")
-                    else args.output
-                )
+                output_file = f"{args.output}.xlsx" if not args.output.endswith(".xlsx") else args.output
                 df_clean.to_excel(output_file, index=False)
             elif args.format == "json":
-                output_file = (
-                    f"{args.output}.json"
-                    if not args.output.endswith(".json")
-                    else args.output
-                )
+                output_file = f"{args.output}.json" if not args.output.endswith(".json") else args.output
                 df_clean.to_json(output_file, orient="records", indent=2)
 
             logger.info(f"Datos exportados: {output_file}")
@@ -914,9 +873,7 @@ def main():
                 # fallback: try to introspect ColumnTransformer
                 try:
                     pre = model.named_steps["pre"]
-                    feature_columns = list(pre.transformers_[0][2]) + list(
-                        pre.transformers_[1][2]
-                    )
+                    feature_columns = list(pre.transformers_[0][2]) + list(pre.transformers_[1][2])
                 except Exception:
                     raise RuntimeError(
                         "No se pudo determinar columnas de features. Falta artifacts/feature_columns.json"

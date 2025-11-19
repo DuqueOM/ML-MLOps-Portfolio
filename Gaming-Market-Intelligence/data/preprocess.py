@@ -69,7 +69,8 @@ def load_raw_dataset(path: str) -> pd.DataFrame:
     else:
         missing = [c for c in required_sales if c not in df.columns]
         logging.warning(
-            "Missing sales columns: %s. total_sales won't be computed.", missing
+            "Missing sales columns: %s. total_sales won't be computed.",
+            missing,
         )
         df["total_sales"] = np.nan
 
@@ -87,7 +88,9 @@ def make_features_and_target(
     df = df.copy()
 
     if "total_sales" not in df.columns:
-        raise ValueError("total_sales not found. Ensure load_raw_dataset computed it.")
+        raise ValueError(
+            "total_sales not found. Ensure load_raw_dataset computed it."
+        )
 
     # Build target
     threshold = float(config.target_threshold_million)
@@ -123,7 +126,9 @@ def build_preprocessor(
     X: pd.DataFrame, *, config: PreprocessConfig
 ) -> ColumnTransformer:
     """Create a ColumnTransformer for numeric/categorical preprocessing."""
-    numeric_cols = [c for c in X.columns if pd.api.types.is_numeric_dtype(X[c])]
+    numeric_cols = [
+        c for c in X.columns if pd.api.types.is_numeric_dtype(X[c])
+    ]
     categorical_cols = [c for c in X.columns if c not in numeric_cols]
 
     num_steps: List[tuple] = [
@@ -133,7 +138,10 @@ def build_preprocessor(
         num_steps.append(("scaler", StandardScaler()))
 
     cat_steps: List[tuple] = [
-        ("imputer", SimpleImputer(strategy=config.categorical_imputer_strategy)),
+        (
+            "imputer",
+            SimpleImputer(strategy=config.categorical_imputer_strategy),
+        ),
         (
             "ohe",
             OneHotEncoder(handle_unknown="ignore", drop=config.one_hot_drop),

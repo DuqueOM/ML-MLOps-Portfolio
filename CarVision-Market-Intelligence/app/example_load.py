@@ -15,9 +15,7 @@ def load_model():
     for p in CANDIDATE_PATHS:
         if p.exists():
             return joblib.load(p)
-    raise FileNotFoundError(
-        f"No model found. Tried: {[str(p) for p in CANDIDATE_PATHS]}"
-    )
+    raise FileNotFoundError(f"No model found. Tried: {[str(p) for p in CANDIDATE_PATHS]}")
 
 
 def demo_predict():

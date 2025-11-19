@@ -7,13 +7,7 @@ import joblib
 import numpy as np
 import yaml
 from data.preprocess import PreprocessConfig, load_raw_dataset, make_features_and_target
-from sklearn.metrics import (
-    accuracy_score,
-    f1_score,
-    precision_score,
-    recall_score,
-    roc_auc_score,
-)
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 
 
@@ -22,18 +16,14 @@ def main(cfg_path: str = "configs/config.yaml") -> None:
 
     model_path = Path(cfg["paths"]["model_dir"]) / "model.joblib"
     if not model_path.exists():
-        raise FileNotFoundError(
-            f"Model artifact not found at {model_path}. Train first."
-        )
+        raise FileNotFoundError(f"Model artifact not found at {model_path}. Train first.")
 
     pipe = joblib.load(model_path)
 
     df = load_raw_dataset(cfg["paths"]["dataset_path"])
     pre_cfg = PreprocessConfig(
         numeric_imputer_strategy=cfg["preprocessing"]["numeric_imputer_strategy"],
-        categorical_imputer_strategy=cfg["preprocessing"][
-            "categorical_imputer_strategy"
-        ],
+        categorical_imputer_strategy=cfg["preprocessing"]["categorical_imputer_strategy"],
         scale_numeric=cfg["preprocessing"]["scale_numeric"],
         one_hot_drop=cfg["preprocessing"]["one_hot_drop"],
         include_features=cfg["preprocessing"]["features"]["include"],
@@ -54,9 +44,7 @@ def main(cfg_path: str = "configs/config.yaml") -> None:
     y_proba = pipe.predict_proba(X_test)[:, 1]
 
     # Majority-class baseline on y_test
-    majority = (
-        int(np.round(y_test.mean())) if y_test.nunique() == 2 else int(y_test.mode()[0])
-    )
+    majority = int(np.round(y_test.mean())) if y_test.nunique() == 2 else int(y_test.mode()[0])
     y_base = np.full_like(y_test, fill_value=majority)
 
     metrics = {

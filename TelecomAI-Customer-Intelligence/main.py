@@ -12,12 +12,7 @@ import joblib
 import pandas as pd
 import yaml
 from data.preprocess import build_preprocessor, get_features_target, load_dataset
-from evaluate import (
-    compute_classification_metrics,
-    plot_confusion_matrix,
-    plot_roc_curve,
-    save_metrics,
-)
+from evaluate import compute_classification_metrics, plot_confusion_matrix, plot_roc_curve, save_metrics
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
@@ -104,15 +99,9 @@ def train(cfg: Config) -> Dict[str, float]:
         use_mlflow = bool(mlflow_cfg.get("enable", True))
 
     if use_mlflow and mlflow_cfg is not None:
-        tracking_uri = (
-            os.getenv("MLFLOW_TRACKING_URI")
-            or mlflow_cfg.get("tracking_uri")
-            or "file:./mlruns"
-        )
+        tracking_uri = os.getenv("MLFLOW_TRACKING_URI") or mlflow_cfg.get("tracking_uri") or "file:./mlruns"
         mlflow.set_tracking_uri(tracking_uri)
-        experiment_name = os.getenv("MLFLOW_EXPERIMENT_NAME") or mlflow_cfg.get(
-            "experiment"
-        )
+        experiment_name = os.getenv("MLFLOW_EXPERIMENT_NAME") or mlflow_cfg.get("experiment")
         if experiment_name:
             mlflow.set_experiment(experiment_name)
 
@@ -133,18 +122,10 @@ def train(cfg: Config) -> Dict[str, float]:
 
             # Evaluate
             y_pred = pipeline.predict(X_test)
-            y_proba = (
-                pipeline.predict_proba(X_test)[:, 1]
-                if hasattr(pipeline, "predict_proba")
-                else None
-            )
-            metrics_dict = compute_classification_metrics(
-                y_test.to_numpy(), y_pred, y_proba
-            )
+            y_proba = pipeline.predict_proba(X_test)[:, 1] if hasattr(pipeline, "predict_proba") else None
+            metrics_dict = compute_classification_metrics(y_test.to_numpy(), y_pred, y_proba)
             save_metrics(metrics_dict, cfg.paths["metrics_path"])
-            plot_confusion_matrix(
-                y_test.to_numpy(), y_pred, cfg.paths["confusion_matrix_path"]
-            )
+            plot_confusion_matrix(y_test.to_numpy(), y_pred, cfg.paths["confusion_matrix_path"])
             plot_roc_curve(y_test.to_numpy(), y_proba, cfg.paths["roc_curve_path"])
 
             # Log metrics and artifacts
@@ -198,11 +179,7 @@ def evaluate(cfg: Config) -> Dict[str, float]:
 
     pipeline = Pipeline(steps=[("preprocess", preprocessor), ("clf", clf)])
     y_pred = pipeline.predict(X_test)
-    y_proba = (
-        pipeline.predict_proba(X_test)[:, 1]
-        if hasattr(pipeline, "predict_proba")
-        else None
-    )
+    y_proba = pipeline.predict_proba(X_test)[:, 1] if hasattr(pipeline, "predict_proba") else None
 
     metrics_dict = compute_classification_metrics(y_test.to_numpy(), y_pred, y_proba)
     save_metrics(metrics_dict, cfg.paths["metrics_path"])
@@ -226,11 +203,7 @@ def predict(cfg: Config, input_csv: str | None, output_path: str | None) -> None
     if missing:
         raise ValueError(f"Missing columns in input: {missing}")
     preds = pipeline.predict(df[cfg.features])
-    probas = (
-        pipeline.predict_proba(df[cfg.features])[:, 1]
-        if hasattr(pipeline, "predict_proba")
-        else None
-    )
+    probas = pipeline.predict_proba(df[cfg.features])[:, 1] if hasattr(pipeline, "predict_proba") else None
 
     out_df = df.copy()
     out_df["pred_is_ultra"] = preds

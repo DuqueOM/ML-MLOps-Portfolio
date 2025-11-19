@@ -19,9 +19,7 @@ def test_make_features_and_target_synthetic():
             "other_sales": [0.05, 0.03, 0.02, 0.0],
         }
     )
-    df["total_sales"] = df[["na_sales", "eu_sales", "jp_sales", "other_sales"]].sum(
-        axis=1
-    )
+    df["total_sales"] = df[["na_sales", "eu_sales", "jp_sales", "other_sales"]].sum(axis=1)
 
     cfg = PreprocessConfig(target_threshold_million=1.0)
     X, y = make_features_and_target(df, config=cfg)

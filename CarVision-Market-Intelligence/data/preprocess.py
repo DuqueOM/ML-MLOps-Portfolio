@@ -42,7 +42,9 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
         dfc = dfc[(dfc["price"] > 1000) & (dfc["price"] < 500000)]
     if "model_year" in dfc:
         current_year = pd.Timestamp.now().year
-        dfc = dfc[(dfc["model_year"] >= 1990) & (dfc["model_year"] <= current_year)]
+        dfc = dfc[
+            (dfc["model_year"] >= 1990) & (dfc["model_year"] <= current_year)
+        ]
     if "odometer" in dfc:
         dfc = dfc[(dfc["odometer"] > 0) & (dfc["odometer"] < 500000)]
 
@@ -66,19 +68,27 @@ def infer_feature_types(
     """Infer numeric and categorical features from dataframe if not provided."""
     drops = set((drop_columns or []) + [target])
     if numeric_features:
-        num_cols = [c for c in numeric_features if c in df.columns and c not in drops]
+        num_cols = [
+            c for c in numeric_features if c in df.columns and c not in drops
+        ]
     else:
         num_cols = [
-            c for c in df.select_dtypes(include=[np.number]).columns if c not in drops
+            c
+            for c in df.select_dtypes(include=[np.number]).columns
+            if c not in drops
         ]
     if categorical_features:
         cat_cols = [
-            c for c in categorical_features if c in df.columns and c not in drops
+            c
+            for c in categorical_features
+            if c in df.columns and c not in drops
         ]
     else:
         cat_cols = [
             c
-            for c in df.select_dtypes(include=["object", "category", "bool"]).columns
+            for c in df.select_dtypes(
+                include=["object", "category", "bool"]
+            ).columns
             if c not in drops
         ]
     return num_cols, cat_cols

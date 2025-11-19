@@ -36,7 +36,11 @@ def main() -> None:
         mlflow.log_params({"run_type": "demo", "note": "GoldRecovery MLflow demo"})
         if metrics:
             mlflow.log_metrics(metrics)
-        for art in [Path("results/cv_results.json"), Path("results/metrics.json"), Path("configs/config.yaml")]:
+        for art in [
+            Path("results/cv_results.json"),
+            Path("results/metrics.json"),
+            Path("configs/config.yaml"),
+        ]:
             if art.exists():
                 mlflow.log_artifact(str(art))
         pack = Path("models/model_v1.0.0.pkl")

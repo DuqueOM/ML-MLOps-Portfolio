@@ -38,7 +38,9 @@ def load_raw_weather_data(csv_path: Path) -> pd.DataFrame:
     return pd.read_csv(csv_path)
 
 
-def engineer_features(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame]:
+def engineer_features(
+    df: pd.DataFrame,
+) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame]:
     """Genera variables de tiempo y clima a partir del dataframe crudo."""
 
     data = df.copy()

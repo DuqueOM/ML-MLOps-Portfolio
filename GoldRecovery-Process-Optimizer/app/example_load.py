@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from pathlib import Path
 import json
+from pathlib import Path
+
+import joblib
 import numpy as np
 import pandas as pd
-import joblib
 
 MODELS_DIR = Path(__file__).resolve().parents[1] / "models"
 

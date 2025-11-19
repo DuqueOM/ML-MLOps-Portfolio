@@ -52,7 +52,11 @@ def test_group_predictions_finite_by_synthetic_flag():
                 "random_state": 0,
             },
         },
-        "ensemble_weights": {"xgboost": 0.4, "lightgbm": 0.35, "random_forest": 0.25},
+        "ensemble_weights": {
+            "xgboost": 0.4,
+            "lightgbm": 0.35,
+            "random_forest": 0.25,
+        },
     }
 
     predictor = MetallurgicalPredictor(config=small_cfg)
