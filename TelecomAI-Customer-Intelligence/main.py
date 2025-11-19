@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import logging
 import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -22,8 +23,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 
 BASE_DIR = Path(__file__).resolve().parents[1]
-if str(BASE_DIR) not in os.sys.path:
-    os.sys.path.insert(0, str(BASE_DIR))
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
 
 from common_utils.seed import set_seed
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
+from collections.abc import Generator
 from pathlib import Path
 
 import pytest
@@ -14,7 +15,7 @@ from common_utils.seed import set_seed
 
 
 @pytest.fixture(autouse=True)
-def deterministic_seed() -> None:
+def deterministic_seed() -> Generator[None, None, None]:
     """Set a deterministic global seed for every test.
 
     Resolution order:
