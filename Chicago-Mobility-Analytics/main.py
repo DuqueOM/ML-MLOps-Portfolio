@@ -57,13 +57,9 @@ def train_model(cfg: Dict, seed: int) -> Dict:
     test_size = cfg["training"]["test_size"]
     val_size = cfg["training"]["validation_size"]
 
-    X_trainval, X_test, y_trainval, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=seed
-    )
+    X_trainval, X_test, y_trainval, y_test = train_test_split(X, y, test_size=test_size, random_state=seed)
     val_rel = val_size / (1.0 - test_size)
-    X_train, X_val, y_train, y_val = train_test_split(
-        X_trainval, y_trainval, test_size=val_rel, random_state=seed
-    )
+    X_train, X_val, y_train, y_val = train_test_split(X_trainval, y_trainval, test_size=val_rel, random_state=seed)
 
     model_cfg = cfg["model"]["params"]
     model = RandomForestRegressor(random_state=seed, **model_cfg)
@@ -87,7 +83,8 @@ def train_model(cfg: Dict, seed: int) -> Dict:
     # Export combined model pack for demo usage
     try:
         joblib.dump(
-            {"model": model, "version": "1.0.0"}, models_dir / "model_v1.0.0.pkl"
+            {"model": model, "version": "1.0.0"},
+            models_dir / "model_v1.0.0.pkl",
         )
     except Exception:
         pass
@@ -201,10 +198,7 @@ def cli_main() -> None:
             print(json.dumps(metrics, indent=2))
         elif args.mode == "predict":
             if not args.start_ts or not args.weather_conditions:
-                msg = (
-                    "Debe proporcionar --start_ts y --weather_conditions para "
-                    "predict."
-                )
+                msg = "Debe proporcionar --start_ts y --weather_conditions para " "predict."
                 raise ValueError(msg)
             pred = predict_single(cfg, args.start_ts, args.weather_conditions)
             print(json.dumps({"duration_seconds": pred}, indent=2))

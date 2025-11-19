@@ -12,11 +12,7 @@ except Exception:  # pragma: no cover
 
 def main() -> None:
     tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "file:./mlruns")
-    experiment = (
-        os.getenv("MLFLOW_EXPERIMENT_NAME")
-        or os.getenv("MLFLOW_EXPERIMENT")
-        or "TelecomAI"
-    )
+    experiment = os.getenv("MLFLOW_EXPERIMENT_NAME") or os.getenv("MLFLOW_EXPERIMENT") or "TelecomAI"
 
     metrics_path = Path("artifacts/metrics.json")
     metrics: dict[str, float] = {"placeholder_metric": 0.0}
@@ -41,14 +37,10 @@ def main() -> None:
     #   - recall sobre la clase is_ultra=1 (si está en metrics.json)
     #   - número total de clientes elegibles en users_behavior.csv (leído vía configs/config.yaml)
     try:
-        recall = metrics.get(
-            "recall"
-        )  # asumimos que `recall` es para la clase positiva
+        recall = metrics.get("recall")  # asumimos que `recall` es para la clase positiva
         cfg_path = Path("configs/config.yaml")
         if recall is not None and cfg_path.exists():
-            cfg = json.loads(
-                json.dumps(__import__("yaml").safe_load(cfg_path.read_text()))
-            )
+            cfg = json.loads(json.dumps(__import__("yaml").safe_load(cfg_path.read_text())))
             data_csv = cfg.get("paths", {}).get("data_csv", "users_behavior.csv")
             data_path = Path(data_csv)
             if data_path.exists():

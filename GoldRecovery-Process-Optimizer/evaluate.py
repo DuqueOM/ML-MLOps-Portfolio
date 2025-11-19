@@ -9,18 +9,12 @@ from typing import Any, Dict, List, Tuple
 import numpy as np
 import pandas as pd
 import yaml
-from main import (
-    MetallurgicalPredictor,
-    ProcessDataLoader,
-    symmetric_mean_absolute_percentage_error,
-)
+from main import MetallurgicalPredictor, ProcessDataLoader, symmetric_mean_absolute_percentage_error
 from sklearn.dummy import DummyRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 
-def bootstrap_mae(
-    y_true: np.ndarray, y_pred: np.ndarray, n_iter: int = 200, seed: int = 42
-) -> Tuple[float, float]:
+def bootstrap_mae(y_true: np.ndarray, y_pred: np.ndarray, n_iter: int = 200, seed: int = 42) -> Tuple[float, float]:
     rng = np.random.default_rng(seed)
     n = len(y_true)
     maes = []
@@ -31,7 +25,10 @@ def bootstrap_mae(
 
 
 def evaluate(
-    test_paths: List[str], model_path: str, target: str, bootstrap_iters: int = 200
+    test_paths: List[str],
+    model_path: str,
+    target: str,
+    bootstrap_iters: int = 200,
 ) -> Dict[str, Any]:
     loader = ProcessDataLoader()
     predictor = MetallurgicalPredictor()
@@ -79,9 +76,7 @@ def cli() -> None:
         with open(args.config, "r") as f:
             cfg = yaml.safe_load(f) or {}
 
-    test_paths = args.input or [
-        cfg.get("data", {}).get("test_csv", "gold_recovery_test.csv")
-    ]
+    test_paths = args.input or [cfg.get("data", {}).get("test_csv", "gold_recovery_test.csv")]
     target = cfg.get("training", {}).get("target", "final.output.recovery")
     bootstrap_iters = cfg.get("evaluation", {}).get("bootstrap_iters", 200)
 

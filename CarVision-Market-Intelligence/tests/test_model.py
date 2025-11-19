@@ -10,8 +10,26 @@ def test_model_fit_predict():
         {
             "price": [10000, 15000, 12000, 18000, 22000, 13000, 17000, 21000],
             "model_year": [2011, 2014, 2012, 2016, 2017, 2013, 2015, 2018],
-            "odometer": [90000, 60000, 80000, 50000, 40000, 75000, 62000, 35000],
-            "fuel": ["gas", "gas", "diesel", "gas", "gas", "diesel", "gas", "gas"],
+            "odometer": [
+                90000,
+                60000,
+                80000,
+                50000,
+                40000,
+                75000,
+                62000,
+                35000,
+            ],
+            "fuel": [
+                "gas",
+                "gas",
+                "diesel",
+                "gas",
+                "gas",
+                "diesel",
+                "gas",
+                "gas",
+            ],
             "model": [
                 "ford focus",
                 "ford focus",

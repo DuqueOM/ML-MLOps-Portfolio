@@ -17,11 +17,7 @@ except Exception:  # pragma: no cover
 
 def main() -> None:
     tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "file:./mlruns")
-    experiment = (
-        os.getenv("MLFLOW_EXPERIMENT_NAME")
-        or os.getenv("MLFLOW_EXPERIMENT")
-        or "BankChurn"
-    )
+    experiment = os.getenv("MLFLOW_EXPERIMENT_NAME") or os.getenv("MLFLOW_EXPERIMENT") or "BankChurn"
 
     results_path = Path("results/training_results.json")
     metrics: dict[str, float] = {}
@@ -43,11 +39,7 @@ def main() -> None:
             # Derivar métricas de negocio (proxy) a partir de la matriz de confusión
             # Supuestos: CLV medio y tasa de retención efectiva configurables vía entorno.
             cm = test_results.get("confusion_matrix")
-            if (
-                isinstance(cm, list)
-                and len(cm) == 2
-                and all(isinstance(row, list) and len(row) == 2 for row in cm)
-            ):
+            if isinstance(cm, list) and len(cm) == 2 and all(isinstance(row, list) and len(row) == 2 for row in cm):
                 tn, fp = cm[0]
                 fn, tp = cm[1]
                 total_at_risk = tp + fn
@@ -90,7 +82,10 @@ def main() -> None:
             mlflow.log_metrics(metrics)
         if business_metrics:
             mlflow.log_metrics(business_metrics)
-        for p in [Path("results/training_results.json"), Path("configs/config.yaml")]:
+        for p in [
+            Path("results/training_results.json"),
+            Path("configs/config.yaml"),
+        ]:
             if p.exists():
                 mlflow.log_artifact(str(p))
 
@@ -109,9 +104,7 @@ def main() -> None:
                             ("model", obj["model"]),
                         ]
                     )
-                    registered_name = os.getenv(
-                        "MLFLOW_REGISTERED_MODEL", "BankChurnClassifier"
-                    )
+                    registered_name = os.getenv("MLFLOW_REGISTERED_MODEL", "BankChurnClassifier")
                     import mlflow.sklearn as mlflow_sklearn  # type: ignore
 
                     mlflow_sklearn.log_model(
@@ -145,9 +138,7 @@ def main() -> None:
         if model_registered and MlflowClient is not None:
             try:
                 client = MlflowClient()
-                registered_name = os.getenv(
-                    "MLFLOW_REGISTERED_MODEL", "BankChurnClassifier"
-                )
+                registered_name = os.getenv("MLFLOW_REGISTERED_MODEL", "BankChurnClassifier")
                 versions = client.search_model_versions(f"name='{registered_name}'")
                 if versions:
                     latest_version = max(int(v.version) for v in versions)

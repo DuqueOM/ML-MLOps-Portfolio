@@ -25,9 +25,7 @@ class TelecomFeatures(BaseModel):
 
 def _load_pipeline() -> Pipeline:
     if not Path(MODEL_PATH).exists() or not Path(PREPROCESSOR_PATH).exists():
-        raise FileNotFoundError(
-            "Model or preprocessor not found. Train the model first (main.py --mode train)."
-        )
+        raise FileNotFoundError("Model or preprocessor not found. Train the model first (main.py --mode train).")
     clf = joblib.load(MODEL_PATH)
     pre = joblib.load(PREPROCESSOR_PATH)
     return Pipeline(steps=[("preprocess", pre), ("clf", clf)])

@@ -52,12 +52,7 @@ import yaml
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import (
-    classification_report,
-    confusion_matrix,
-    f1_score,
-    roc_auc_score,
-)
+from sklearn.metrics import classification_report, confusion_matrix, f1_score, roc_auc_score
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -75,7 +70,10 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("bankchurn.log"), logging.StreamHandler(sys.stdout)],
+    handlers=[
+        logging.FileHandler("bankchurn.log"),
+        logging.StreamHandler(sys.stdout),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -132,15 +130,15 @@ class ResampleClassifier:
             majority_class = df[df["__target__"] == 0]
 
             minority_oversampled = minority_class.sample(
-                n=len(majority_class), replace=True, random_state=self.random_state
+                n=len(majority_class),
+                replace=True,
+                random_state=self.random_state,
             )
 
             df_resampled = pd.concat([majority_class, minority_oversampled], axis=0)
             df_resampled = df_resampled.sample(frac=1, random_state=self.random_state)
 
-            logger.info(
-                f"Oversampling aplicado: {len(minority_class)} -> {len(minority_oversampled)}"
-            )
+            logger.info(f"Oversampling aplicado: {len(minority_class)} -> {len(minority_oversampled)}")
 
         elif self.strategy == "undersample":
             # Undersampling de la clase mayoritaria
@@ -148,15 +146,15 @@ class ResampleClassifier:
             majority_class = df[df["__target__"] == 0]
 
             majority_undersampled = majority_class.sample(
-                n=len(minority_class), replace=False, random_state=self.random_state
+                n=len(minority_class),
+                replace=False,
+                random_state=self.random_state,
             )
 
             df_resampled = pd.concat([majority_undersampled, minority_class], axis=0)
             df_resampled = df_resampled.sample(frac=1, random_state=self.random_state)
 
-            logger.info(
-                f"Undersampling aplicado: {len(majority_class)} -> {len(majority_undersampled)}"
-            )
+            logger.info(f"Undersampling aplicado: {len(majority_class)} -> {len(majority_undersampled)}")
 
         else:
             df_resampled = df.copy()
@@ -263,9 +261,7 @@ class BankChurnPredictor:
 
             # Validaciones básicas
             if self.config["data"]["target_column"] not in df.columns:
-                raise ValueError(
-                    f"Columna target '{self.config['data']['target_column']}' no encontrada"
-                )
+                raise ValueError(f"Columna target '{self.config['data']['target_column']}' no encontrada")
 
             # Información sobre distribución de clases
             target_dist = df[self.config["data"]["target_column"]].value_counts()
@@ -314,16 +310,11 @@ class BankChurnPredictor:
         # Crear pipeline de preprocesamiento
         categorical_features = categorical_features_cfg
         numerical_features = list(numerical_features_cfg)
-        if (
-            "Age_over_60" in df_clean.columns
-            and "Age_over_60" not in numerical_features
-        ):
+        if "Age_over_60" in df_clean.columns and "Age_over_60" not in numerical_features:
             numerical_features.append("Age_over_60")
 
         # Transformadores
-        categorical_transformer = OneHotEncoder(
-            drop="first", sparse_output=False, handle_unknown="ignore"
-        )
+        categorical_transformer = OneHotEncoder(drop="first", sparse_output=False, handle_unknown="ignore")
         numerical_transformer = StandardScaler()
 
         # Pipeline completo
@@ -340,9 +331,7 @@ class BankChurnPredictor:
 
         # Convertir a DataFrame para mantener compatibilidad
         feature_names = numerical_features + list(
-            self.preprocessor.named_transformers_["cat"].get_feature_names_out(
-                categorical_features
-            )
+            self.preprocessor.named_transformers_["cat"].get_feature_names_out(categorical_features)
         )
         X_processed = pd.DataFrame(X_processed, columns=feature_names, index=X.index)
 
@@ -379,7 +368,9 @@ class BankChurnPredictor:
 
         # Ensemble con voting
         ensemble = VotingClassifier(
-            estimators=[("lr", lr), ("rf", rf)], voting="soft", weights=[0.4, 0.6]
+            estimators=[("lr", lr), ("rf", rf)],
+            voting="soft",
+            weights=[0.4, 0.6],
         )
 
         # Aplicar resampling si está configurado
@@ -566,9 +557,7 @@ class BankChurnPredictor:
         logger.info(f"Modelo cargado desde: {model_path}")
 
 
-def hyperparameter_optimization(
-    X: pd.DataFrame, y: pd.Series, n_trials: int = 100
-) -> Dict[str, Any]:
+def hyperparameter_optimization(X: pd.DataFrame, y: pd.Series, n_trials: int = 100) -> Dict[str, Any]:
     """
     Optimización de hiperparámetros con Optuna.
 
@@ -611,7 +600,10 @@ def hyperparameter_optimization(
         ensemble = VotingClassifier(
             estimators=[("lr", lr), ("rf", rf)],
             voting="soft",
-            weights=[params["ensemble_lr_weight"], 1 - params["ensemble_lr_weight"]],
+            weights=[
+                params["ensemble_lr_weight"],
+                1 - params["ensemble_lr_weight"],
+            ],
         )
 
         # Validación cruzada
@@ -640,9 +632,7 @@ def hyperparameter_optimization(
 
 def main():
     """Función principal con CLI."""
-    parser = argparse.ArgumentParser(
-        description="BankChurn Predictor - Sistema de predicción de churn bancario"
-    )
+    parser = argparse.ArgumentParser(description="BankChurn Predictor - Sistema de predicción de churn bancario")
 
     parser.add_argument(
         "--mode",
@@ -736,7 +726,7 @@ def main():
                 y,
                 test_size=predictor.config["training"]["test_size"],
                 random_state=predictor.config["training"]["random_state"],
-                stratify=y if predictor.config["training"]["stratify"] else None,
+                stratify=(y if predictor.config["training"]["stratify"] else None),
             )
 
             # Entrenar modelo
@@ -751,11 +741,7 @@ def main():
             # Guardar resultados
             results = {
                 "cv_results": cv_results,
-                "test_results": {
-                    k: v
-                    for k, v in test_results.items()
-                    if k not in ["predictions", "probabilities"]
-                },
+                "test_results": {k: v for k, v in test_results.items() if k not in ["predictions", "probabilities"]},
             }
 
             import json
@@ -821,7 +807,9 @@ def main():
             results_df["churn_prediction"] = predictions
             results_df["churn_probability"] = probabilities
             results_df["risk_level"] = pd.cut(
-                probabilities, bins=[0, 0.3, 0.7, 1.0], labels=["LOW", "MEDIUM", "HIGH"]
+                probabilities,
+                bins=[0, 0.3, 0.7, 1.0],
+                labels=["LOW", "MEDIUM", "HIGH"],
             )
 
             results_df.to_csv(args.output, index=False)

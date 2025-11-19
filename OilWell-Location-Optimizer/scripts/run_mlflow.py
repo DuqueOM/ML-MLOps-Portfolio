@@ -22,19 +22,13 @@ def main() -> None:
         try:
             metrics_data = json.loads(metrics_path.read_text())
             regions = metrics_data.get("regions", {})
-            rmses = [
-                v.get("rmse")
-                for v in regions.values()
-                if isinstance(v.get("rmse"), (int, float))
-            ]
+            rmses = [v.get("rmse") for v in regions.values() if isinstance(v.get("rmse"), (int, float))]
             if rmses:
                 agg_metrics["rmse_avg"] = float(sum(rmses) / len(rmses))
             for rid, vals in regions.items():
                 if isinstance(vals, dict):
                     if "rmse" in vals:
-                        agg_metrics[f"rmse_region_{rid}"] = float(
-                            vals["rmse"]
-                        )  # type: ignore[arg-type]
+                        agg_metrics[f"rmse_region_{rid}"] = float(vals["rmse"])  # type: ignore[arg-type]
                     if "baseline_rmse" in vals:
                         agg_metrics[f"baseline_rmse_region_{rid}"] = float(
                             vals["baseline_rmse"]

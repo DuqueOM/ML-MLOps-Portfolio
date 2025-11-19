@@ -11,7 +11,14 @@ def test_training_pipeline_fits():
         {
             "platform": ["PS4", "PS4", "XOne", "PC", "PS4", "XOne"],
             "year_of_release": [2015, 2016, 2014, 2012, 2011, 2016],
-            "genre": ["Action", "Sports", "Action", "Strategy", "Action", "Sports"],
+            "genre": [
+                "Action",
+                "Sports",
+                "Action",
+                "Strategy",
+                "Action",
+                "Sports",
+            ],
             "critic_score": [80, 82, 75, 70, 65, 85],
             "user_score": [8.0, 7.5, 8.5, 7.0, 6.0, 9.0],
             "rating": ["M", "E", "M", "T", "M", "E"],

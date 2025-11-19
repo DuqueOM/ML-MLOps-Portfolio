@@ -14,7 +14,11 @@ def ks_stat(x: np.ndarray, y: np.ndarray, n_bins: int = 50) -> float:
     y = y[~np.isnan(y)]
     if len(x) == 0 or len(y) == 0:
         return 0.0
-    bins = np.linspace(np.min(np.concatenate([x, y])), np.max(np.concatenate([x, y])), n_bins + 1)
+    bins = np.linspace(
+        np.min(np.concatenate([x, y])),
+        np.max(np.concatenate([x, y])),
+        n_bins + 1,
+    )
     x_cdf = np.cumsum(np.histogram(x, bins=bins)[0]) / max(len(x), 1)
     y_cdf = np.cumsum(np.histogram(y, bins=bins)[0]) / max(len(y), 1)
     return float(np.max(np.abs(x_cdf - y_cdf)))
@@ -51,7 +55,12 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="GoldRecovery drift check (KS, PSI)")
     ap.add_argument("--ref", required=True, help="Reference CSV path")
     ap.add_argument("--cur", required=True, help="Current CSV path")
-    ap.add_argument("--cols", nargs="+", default=["final.output.recovery"], help="Columns to analyze")
+    ap.add_argument(
+        "--cols",
+        nargs="+",
+        default=["final.output.recovery"],
+        help="Columns to analyze",
+    )
     ap.add_argument("--out-json", default="results/drift.json", help="Output JSON path")
     args = ap.parse_args()
 

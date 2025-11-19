@@ -48,7 +48,12 @@ def evaluate_model(cfg: Dict) -> Dict:
     feature_cols = num_cols + cat_cols
 
     X_train, X_val, X_test, y_train, y_val, y_test, _ = split_data(
-        df, tr["target"], tr["test_size"], tr["val_size"], cfg["seed"], tr["shuffle"]
+        df,
+        tr["target"],
+        tr["test_size"],
+        tr["val_size"],
+        cfg["seed"],
+        tr["shuffle"],
     )
 
     model = joblib.load(paths["model_path"])

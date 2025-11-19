@@ -35,16 +35,17 @@ def split_train_val(
     return train_test_split(X, y, test_size=test_size, random_state=random_state)
 
 
-def train_linear_regression(
-    X_train: pd.DataFrame, y_train: pd.Series
-) -> LinearRegression:
+def train_linear_regression(X_train: pd.DataFrame, y_train: pd.Series) -> LinearRegression:
     model = LinearRegression()
     model.fit(X_train, y_train)
     return model
 
 
 def evaluate_baseline(
-    X_train: pd.DataFrame, y_train: pd.Series, X_val: pd.DataFrame, y_val: pd.Series
+    X_train: pd.DataFrame,
+    y_train: pd.Series,
+    X_val: pd.DataFrame,
+    y_val: pd.Series,
 ) -> float:
     dummy = DummyRegressor(strategy="mean")
     dummy.fit(X_train, y_train)

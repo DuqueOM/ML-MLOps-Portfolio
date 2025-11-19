@@ -14,8 +14,26 @@ def test_platform_groups_produce_finite_predictions():
 
     df = pd.DataFrame(
         {
-            "platform": ["PS4", "PS4", "XOne", "PC", "PS4", "XOne", "PC", "PS4"],
-            "year_of_release": [2015, 2016, 2014, 2012, 2011, 2016, 2013, 2015],
+            "platform": [
+                "PS4",
+                "PS4",
+                "XOne",
+                "PC",
+                "PS4",
+                "XOne",
+                "PC",
+                "PS4",
+            ],
+            "year_of_release": [
+                2015,
+                2016,
+                2014,
+                2012,
+                2011,
+                2016,
+                2013,
+                2015,
+            ],
             "genre": [
                 "Action",
                 "Sports",

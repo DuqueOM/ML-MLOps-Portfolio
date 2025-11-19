@@ -17,7 +17,9 @@ def ks_stat(x: np.ndarray, y: np.ndarray, n_bins: int = 50) -> float:
     if len(x) == 0 or len(y) == 0:
         return 0.0
     bins = np.linspace(
-        np.min(np.concatenate([x, y])), np.max(np.concatenate([x, y])), n_bins + 1
+        np.min(np.concatenate([x, y])),
+        np.max(np.concatenate([x, y])),
+        n_bins + 1,
     )
     x_cdf = np.cumsum(np.histogram(x, bins=bins)[0]) / max(len(x), 1)
     y_cdf = np.cumsum(np.histogram(y, bins=bins)[0]) / max(len(y), 1)
@@ -42,9 +44,7 @@ def psi_stat(x: np.ndarray, y: np.ndarray, n_bins: int = 10) -> float:
     return float(np.sum((y_perc - x_perc) * np.log(y_perc / x_perc)))
 
 
-def compute_drift(
-    ref: pd.DataFrame, cur: pd.DataFrame, cols: List[str]
-) -> Dict[str, Dict[str, float]]:
+def compute_drift(ref: pd.DataFrame, cur: pd.DataFrame, cols: List[str]) -> Dict[str, Dict[str, float]]:
     out: Dict[str, Dict[str, float]] = {}
     for c in cols:
         x = ref[c].to_numpy(dtype=float)
@@ -57,11 +57,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Gaming drift check (KS, PSI)")
     ap.add_argument("--ref", required=True, help="Reference CSV path")
     ap.add_argument("--cur", required=True, help="Current CSV path")
+    ap.add_argument("--cols", nargs="*", default=DEFAULT_COLS, help="Columns to analyze")
     ap.add_argument(
-        "--cols", nargs="*", default=DEFAULT_COLS, help="Columns to analyze"
-    )
-    ap.add_argument(
-        "--out-json", default="artifacts/metrics/drift.json", help="Output JSON path"
+        "--out-json",
+        default="artifacts/metrics/drift.json",
+        help="Output JSON path",
     )
     args = ap.parse_args()
 

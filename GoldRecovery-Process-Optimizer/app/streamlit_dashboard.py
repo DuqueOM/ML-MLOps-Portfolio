@@ -28,11 +28,12 @@ with col1:
     target_col = st.selectbox(
         "Columna objetivo",
         options=[c for c in df.columns if "recovery" in c],
-        index=0 if any("final.output.recovery" == c for c in df.columns) else 0,
+        index=(0 if any("final.output.recovery" == c for c in df.columns) else 0),
     )
 with col2:
     var = st.selectbox(
-        "Variable a inspeccionar", options=[c for c in numeric_cols if c != target_col]
+        "Variable a inspeccionar",
+        options=[c for c in numeric_cols if c != target_col],
     )
 
 st.line_chart(df[[target_col]].rename(columns={target_col: "target"}))

@@ -32,9 +32,7 @@ class DurationRequest(BaseModel):
     """Esquema de entrada para predicción de duración."""
 
     start_ts: datetime = Field(..., description="Fecha y hora de inicio del viaje")
-    weather_conditions: Literal["Good", "Bad"] = Field(
-        ..., description="Condición climática en el momento del viaje"
-    )
+    weather_conditions: Literal["Good", "Bad"] = Field(..., description="Condición climática en el momento del viaje")
 
 
 class DurationResponse(BaseModel):
@@ -60,9 +58,7 @@ async def predict_duration(payload: DurationRequest) -> DurationResponse:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except Exception as exc:  # noqa: BLE001
         logger.exception("Error durante la predicción: %s", exc)
-        raise HTTPException(
-            status_code=500, detail="Error interno del servidor"
-        ) from exc
+        raise HTTPException(status_code=500, detail="Error interno del servidor") from exc
 
     return DurationResponse(
         duration_seconds=prediction,

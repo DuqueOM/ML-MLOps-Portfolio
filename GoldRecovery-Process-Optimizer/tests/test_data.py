@@ -1,11 +1,6 @@
 import numpy as np
 import pandas as pd
-from data.preprocess import (
-    basic_clean,
-    compute_recovery,
-    create_features,
-    fill_missing_with_median,
-)
+from data.preprocess import basic_clean, compute_recovery, create_features, fill_missing_with_median
 
 
 def test_compute_recovery_basic():

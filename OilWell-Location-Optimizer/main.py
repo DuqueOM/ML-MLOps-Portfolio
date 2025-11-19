@@ -27,11 +27,7 @@ import joblib
 import numpy as np
 import pandas as pd
 import yaml
-from data.preprocess import (
-    clean_deduplicate_and_shuffle,
-    load_region_csv,
-    split_features_target,
-)
+from data.preprocess import clean_deduplicate_and_shuffle, load_region_csv, split_features_target
 from evaluate import (
     bootstrap_region_profit,
     evaluate_baseline,
@@ -104,9 +100,7 @@ def cmd_train(cfg: Dict, base: Path) -> None:
             target_col=data_cfg["target_column"],
             random_state=train_cfg["random_state"],
         )
-        X, y = split_features_target(
-            df, data_cfg["feature_columns"], data_cfg["target_column"]
-        )
+        X, y = split_features_target(df, data_cfg["feature_columns"], data_cfg["target_column"])
         Xtr, Xva, ytr, yva = split_train_val(
             X,
             y,
@@ -120,9 +114,7 @@ def cmd_train(cfg: Dict, base: Path) -> None:
 
         model_path = paths["models"] / f"region_{region}.joblib"
         joblib.dump(model, model_path)
-        logging.info(
-            f"[train] region={region} rmse={rmse:.2f} baseline_rmse={baseline_rmse:.2f} -> {model_path}"
-        )
+        logging.info(f"[train] region={region} rmse={rmse:.2f} baseline_rmse={baseline_rmse:.2f} -> {model_path}")
 
         region_metrics[str(region)] = {
             "rmse": round(rmse, 4),
@@ -158,9 +150,7 @@ def cmd_eval(cfg: Dict, base: Path, seed: int) -> None:
         region = int(region_key)
         model_path = paths["models"] / f"region_{region}.joblib"
         if not model_path.exists():
-            logging.warning(
-                f"[eval] skipping region={region} (model not found). Run train first."
-            )
+            logging.warning(f"[eval] skipping region={region} (model not found). Run train first.")
             continue
         model = joblib.load(model_path)
 
@@ -198,7 +188,11 @@ def cmd_eval(cfg: Dict, base: Path, seed: int) -> None:
 
 
 def cmd_predict(
-    cfg: Dict, base: Path, region: int, payload: str | None, input_file: Path | None
+    cfg: Dict,
+    base: Path,
+    region: int,
+    payload: str | None,
+    input_file: Path | None,
 ) -> None:
     paths = ensure_dirs(cfg, base)
     model_path = paths["models"] / f"region_{region}.joblib"
@@ -232,9 +226,7 @@ def parse_args() -> argparse.Namespace:
         choices=["train", "eval", "predict"],
         help="Execution mode",
     )
-    p.add_argument(
-        "--config", default="configs/default.yaml", help="Path to YAML config"
-    )
+    p.add_argument("--config", default="configs/default.yaml", help="Path to YAML config")
     p.add_argument(
         "--seed",
         type=int,
@@ -244,7 +236,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--region", type=int, help="Region id for predict mode")
     p.add_argument("--payload", type=str, help="Inline JSON payload for predict mode")
     p.add_argument(
-        "--input-file", type=str, help="Path to JSON payload file for predict mode"
+        "--input-file",
+        type=str,
+        help="Path to JSON payload file for predict mode",
     )
     return p.parse_args()
 

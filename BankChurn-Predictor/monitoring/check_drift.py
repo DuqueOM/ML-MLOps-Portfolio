@@ -27,7 +27,9 @@ def ks_stat(x: np.ndarray, y: np.ndarray, n_bins: int = 50) -> float:
     if len(x) == 0 or len(y) == 0:
         return 0.0
     bins = np.linspace(
-        np.min(np.concatenate([x, y])), np.max(np.concatenate([x, y])), n_bins + 1
+        np.min(np.concatenate([x, y])),
+        np.max(np.concatenate([x, y])),
+        n_bins + 1,
     )
     x_cdf = np.cumsum(np.histogram(x, bins=bins)[0]) / max(len(x), 1)
     y_cdf = np.cumsum(np.histogram(y, bins=bins)[0]) / max(len(y), 1)
@@ -52,9 +54,7 @@ def psi_stat(x: np.ndarray, y: np.ndarray, n_bins: int = 10) -> float:
     return float(np.sum((y_perc - x_perc) * np.log(y_perc / x_perc)))
 
 
-def compute_drift(
-    ref: pd.DataFrame, cur: pd.DataFrame, cols: List[str]
-) -> Dict[str, Dict[str, float]]:
+def compute_drift(ref: pd.DataFrame, cur: pd.DataFrame, cols: List[str]) -> Dict[str, Dict[str, float]]:
     out: Dict[str, Dict[str, float]] = {}
     for c in cols:
         x = ref[c].to_numpy(dtype=float)
@@ -64,7 +64,10 @@ def compute_drift(
 
 
 def maybe_evidently_report(
-    ref: pd.DataFrame, cur: pd.DataFrame, cols: List[str], html_path: Path | None
+    ref: pd.DataFrame,
+    cur: pd.DataFrame,
+    cols: List[str],
+    html_path: Path | None,
 ) -> None:
     if html_path is None:
         return
@@ -74,7 +77,11 @@ def maybe_evidently_report(
     mapping = ColumnMapping()
     mapping.numerical_features = cols
     report = Report(metrics=[DataDriftPreset()])
-    report.run(reference_data=ref[cols], current_data=cur[cols], column_mapping=mapping)
+    report.run(
+        reference_data=ref[cols],
+        current_data=cur[cols],
+        column_mapping=mapping,
+    )
     report.save_html(str(html_path))
 
 
@@ -82,9 +89,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="BankChurn drift check (KS, PSI)")
     ap.add_argument("--ref", required=True, help="Reference CSV path")
     ap.add_argument("--cur", required=True, help="Current CSV path")
-    ap.add_argument(
-        "--cols", nargs="*", default=DEFAULT_COLS, help="Columns to analyze"
-    )
+    ap.add_argument("--cols", nargs="*", default=DEFAULT_COLS, help="Columns to analyze")
     ap.add_argument("--out-json", default="results/drift.json", help="Output JSON path")
     ap.add_argument("--report-html", default=None, help="Optional Evidently HTML path")
     args = ap.parse_args()

@@ -12,12 +12,7 @@ import joblib
 import numpy as np
 import pandas as pd
 import yaml
-from data.preprocess import (
-    PreprocessConfig,
-    build_preprocessor,
-    load_raw_dataset,
-    make_features_and_target,
-)
+from data.preprocess import PreprocessConfig, build_preprocessor, load_raw_dataset, make_features_and_target
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score,
@@ -61,7 +56,13 @@ def load_config(path: str | Path) -> Dict[str, Any]:
 
 
 def ensure_dirs(cfg: Dict[str, Any]) -> None:
-    for k in ["artifacts_dir", "model_dir", "processed_dir", "metrics_dir", "logs_dir"]:
+    for k in [
+        "artifacts_dir",
+        "model_dir",
+        "processed_dir",
+        "metrics_dir",
+        "logs_dir",
+    ]:
         Path(cfg["paths"][k]).mkdir(parents=True, exist_ok=True)
 
 
@@ -91,9 +92,7 @@ def cmd_train(cfg_path: str, seed: int | None = None) -> None:
 
     pre_cfg = PreprocessConfig(
         numeric_imputer_strategy=cfg["preprocessing"]["numeric_imputer_strategy"],
-        categorical_imputer_strategy=cfg["preprocessing"][
-            "categorical_imputer_strategy"
-        ],
+        categorical_imputer_strategy=cfg["preprocessing"]["categorical_imputer_strategy"],
         scale_numeric=cfg["preprocessing"]["scale_numeric"],
         one_hot_drop=cfg["preprocessing"]["one_hot_drop"],
         include_features=cfg["preprocessing"]["features"]["include"],
@@ -172,9 +171,7 @@ def cmd_eval(cfg_path: str, seed: int | None = None) -> None:
 
     model_path = Path(cfg["paths"]["model_dir"]) / "model.joblib"
     if not model_path.exists():
-        raise FileNotFoundError(
-            f"Model not found at {model_path}. Run --mode train first."
-        )
+        raise FileNotFoundError(f"Model not found at {model_path}. Run --mode train first.")
 
     logging.info("Loading model from %s", model_path)
     pipe: Pipeline = joblib.load(model_path)
@@ -182,9 +179,7 @@ def cmd_eval(cfg_path: str, seed: int | None = None) -> None:
     df = load_raw_dataset(cfg["paths"]["dataset_path"])
     pre_cfg = PreprocessConfig(
         numeric_imputer_strategy=cfg["preprocessing"]["numeric_imputer_strategy"],
-        categorical_imputer_strategy=cfg["preprocessing"][
-            "categorical_imputer_strategy"
-        ],
+        categorical_imputer_strategy=cfg["preprocessing"]["categorical_imputer_strategy"],
         scale_numeric=cfg["preprocessing"]["scale_numeric"],
         one_hot_drop=cfg["preprocessing"]["one_hot_drop"],
         include_features=cfg["preprocessing"]["features"]["include"],
@@ -211,9 +206,7 @@ def cmd_predict(cfg_path: str, payload_json: str | None) -> None:
     cfg = load_config(cfg_path)
     model_path = Path(cfg["paths"]["model_dir"]) / "model.joblib"
     if not model_path.exists():
-        raise FileNotFoundError(
-            f"Model not found at {model_path}. Run --mode train first."
-        )
+        raise FileNotFoundError(f"Model not found at {model_path}. Run --mode train first.")
 
     pipe: Pipeline = joblib.load(model_path)
 

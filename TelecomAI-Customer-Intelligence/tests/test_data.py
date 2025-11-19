@@ -12,9 +12,7 @@ def test_dataset_schema():
 
     df = pd.read_csv(csv_path)
     expected_cols = {"calls", "minutes", "messages", "mb_used", "is_ultra"}
-    assert expected_cols.issubset(
-        df.columns
-    ), f"Columnas faltantes: {expected_cols - set(df.columns)}"
+    assert expected_cols.issubset(df.columns), f"Columnas faltantes: {expected_cols - set(df.columns)}"
 
     # Chequeos simples
     assert df.shape[0] > 100, "Dataset demasiado pequeño"
@@ -23,6 +21,4 @@ def test_dataset_schema():
     assert set(df["is_ultra"].unique()).issubset({0, 1}), "Target debe ser binario 0/1"
     # Chequeo de proporciones de clase: evitar clases extremadamente desbalanceadas
     pos_ratio = df["is_ultra"].mean()
-    assert (
-        0.1 <= pos_ratio <= 0.9
-    ), f"Proporción de clase positiva fuera de rango: {pos_ratio:.3f}"
+    assert 0.1 <= pos_ratio <= 0.9, f"Proporción de clase positiva fuera de rango: {pos_ratio:.3f}"

@@ -47,7 +47,10 @@ def main() -> None:
             if flat_metrics:
                 mlflow.log_metrics(flat_metrics)
         # Log artifacts if exist
-        for art in ["artifacts/metrics_val.json", "artifacts/feature_columns.json"]:
+        for art in [
+            "artifacts/metrics_val.json",
+            "artifacts/feature_columns.json",
+        ]:
             p = Path(art)
             if p.exists():
                 mlflow.log_artifact(str(p))

@@ -48,9 +48,7 @@ def compute_psi(ref: np.ndarray, cur: np.ndarray, buckets: int = 10) -> float:
     return float(psi)
 
 
-def calc_drift(
-    ref_df: pd.DataFrame, cur_df: pd.DataFrame, features: List[str]
-) -> DriftResult:
+def calc_drift(ref_df: pd.DataFrame, cur_df: pd.DataFrame, features: List[str]) -> DriftResult:
     ks_metrics: Dict[str, Dict[str, float]] = {}
     psi_metrics: Dict[str, float] = {}
     for col in features:
@@ -64,9 +62,7 @@ def calc_drift(
     return DriftResult(ks=ks_metrics, psi=psi_metrics)
 
 
-def maybe_generate_evidently(
-    ref_df: pd.DataFrame, cur_df: pd.DataFrame, output_html: Path
-) -> Optional[str]:
+def maybe_generate_evidently(ref_df: pd.DataFrame, cur_df: pd.DataFrame, output_html: Path) -> Optional[str]:
     if Report is None or DataDriftPreset is None:
         return None
     try:
@@ -80,17 +76,16 @@ def maybe_generate_evidently(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Simple drift check (KS & PSI) with optional Evidently report"
-    )
+    parser = argparse.ArgumentParser(description="Simple drift check (KS & PSI) with optional Evidently report")
     parser.add_argument("--ref", required=True, help="Reference CSV path")
     parser.add_argument("--cur", required=True, help="Current CSV path")
     parser.add_argument(
-        "--features", nargs="+", required=True, help="List of numeric feature columns"
+        "--features",
+        nargs="+",
+        required=True,
+        help="List of numeric feature columns",
     )
-    parser.add_argument(
-        "--out", default="artifacts/drift_report.json", help="Output JSON path"
-    )
+    parser.add_argument("--out", default="artifacts/drift_report.json", help="Output JSON path")
     parser.add_argument(
         "--evidently_html",
         default="artifacts/evidently_drift_report.html",

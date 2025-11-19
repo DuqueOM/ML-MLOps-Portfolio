@@ -20,9 +20,7 @@ def load_model() -> Any:
     p = MODELS_DIR / "duration_model.pkl"
     if p.exists():
         return joblib.load(p)
-    raise SystemExit(
-        "No model artifacts found. Train first: python main.py --mode train --config configs/default.yaml"
-    )
+    raise SystemExit("No model artifacts found. Train first: python main.py --mode train --config configs/default.yaml")
 
 
 def demo_predict() -> None:

@@ -62,8 +62,6 @@ async def predict(req: PredictRequest) -> PredictResponse:
             detail=f"Model for region {req.region} not available. Train first.",
         )
     model = models[req.region]
-    X = pd.DataFrame(
-        [r.dict() for r in req.records], columns=["f0", "f1", "f2"]
-    )  # fixed order
+    X = pd.DataFrame([r.dict() for r in req.records], columns=["f0", "f1", "f2"])  # fixed order
     preds = model.predict(X)
     return PredictResponse(region=req.region, predictions=[float(p) for p in preds])

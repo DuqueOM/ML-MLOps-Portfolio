@@ -15,10 +15,7 @@ def optimize_selection(csv_path: Path, n_select: int) -> dict:
 
     n = len(df)
     prob = pulp.LpProblem("well_selection", pulp.LpMaximize)
-    x = [
-        pulp.LpVariable(f"x_{i}", lowBound=0, upBound=1, cat=pulp.LpBinary)
-        for i in range(n)
-    ]
+    x = [pulp.LpVariable(f"x_{i}", lowBound=0, upBound=1, cat=pulp.LpBinary) for i in range(n)]
 
     # Objective: maximize total expected product
     prob += pulp.lpSum(df.loc[i, "product"] * x[i] for i in range(n))
