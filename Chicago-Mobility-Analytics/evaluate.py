@@ -12,13 +12,17 @@ import logging
 import sys
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parents[1]
-if str(BASE_DIR) not in sys.path:
-    sys.path.insert(0, str(BASE_DIR))
+try:
+    from main import evaluate_model, load_config, setup_logging
 
-from main import evaluate_model, load_config, setup_logging
+    from common_utils.seed import set_seed
+except ModuleNotFoundError:  # pragma: no cover
+    BASE_DIR = Path(__file__).resolve().parents[1]
+    if str(BASE_DIR) not in sys.path:
+        sys.path.insert(0, str(BASE_DIR))
+    from main import evaluate_model, load_config, setup_logging
 
-from common_utils.seed import set_seed
+    from common_utils.seed import set_seed
 
 
 def parse_args() -> argparse.Namespace:

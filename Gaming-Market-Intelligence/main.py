@@ -31,11 +31,13 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 
-BASE_DIR = Path(__file__).resolve().parents[1]
-if str(BASE_DIR) not in sys.path:
-    sys.path.insert(0, str(BASE_DIR))
-
-from common_utils.seed import set_seed
+try:
+    from common_utils.seed import set_seed
+except ModuleNotFoundError:  # pragma: no cover
+    BASE_DIR = Path(__file__).resolve().parents[1]
+    if str(BASE_DIR) not in sys.path:
+        sys.path.insert(0, str(BASE_DIR))
+    from common_utils.seed import set_seed
 
 
 def setup_logging(log_dir: Path) -> None:
