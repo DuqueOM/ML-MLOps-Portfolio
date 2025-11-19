@@ -9,13 +9,19 @@ from sklearn.pipeline import Pipeline
 
 try:
     import mlflow  # type: ignore
+    from mlflow.tracking import MlflowClient  # type: ignore
 except Exception:  # pragma: no cover
     mlflow = None  # type: ignore
+    MlflowClient = None  # type: ignore
 
 
 def main() -> None:
     tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "file:./mlruns")
-    experiment = os.getenv("MLFLOW_EXPERIMENT", "BankChurn")
+    experiment = (
+        os.getenv("MLFLOW_EXPERIMENT_NAME")
+        or os.getenv("MLFLOW_EXPERIMENT")
+        or "BankChurn"
+    )
 
     results_path = Path("results/training_results.json")
     metrics: dict[str, float] = {}
@@ -69,6 +75,12 @@ def main() -> None:
         print("MLflow not installed; skipping logging. Metrics:", metrics)
         return
 
+    # Optional quality thresholds from environment
+    min_f1 = float(os.getenv("BC_MIN_F1", "0.0"))
+    min_roc_auc = float(os.getenv("BC_MIN_ROC_AUC", "0.0"))
+    test_f1 = metrics.get("test_f1_score")
+    test_roc_auc = metrics.get("test_roc_auc")
+
     mlflow.set_tracking_uri(tracking_uri)
     mlflow.set_experiment(experiment)
 
@@ -84,6 +96,7 @@ def main() -> None:
 
         # Log combined model pack as artifact if present
         combined = Path("models/model_v1.0.0.pkl")
+        model_registered = False
         if combined.exists():
             mlflow.log_artifact(str(combined))
             # Try to register a sklearn Pipeline for the combined pack (optional)
@@ -96,13 +109,53 @@ def main() -> None:
                             ("model", obj["model"]),
                         ]
                     )
-                    registered_name = os.getenv("MLFLOW_REGISTERED_MODEL", "BankChurn")
+                    registered_name = os.getenv(
+                        "MLFLOW_REGISTERED_MODEL", "BankChurnClassifier"
+                    )
                     import mlflow.sklearn as mlflow_sklearn  # type: ignore
 
                     mlflow_sklearn.log_model(
                         pipe,
                         artifact_path="model",
                         registered_model_name=registered_name,
+                    )
+                    model_registered = True
+            except Exception:
+                # registry may be unavailable (e.g., file store); ignore
+                model_registered = False
+
+        # Enforce minimum performance thresholds if provided
+        if (min_f1 > 0 and test_f1 is not None and test_f1 < min_f1) or (
+            min_roc_auc > 0 and test_roc_auc is not None and test_roc_auc < min_roc_auc
+        ):
+            print(
+                "Performance below thresholds:",
+                "test_f1_score=",
+                test_f1,
+                "min_f1=",
+                min_f1,
+                "test_roc_auc=",
+                test_roc_auc,
+                "min_roc_auc=",
+                min_roc_auc,
+            )
+            raise SystemExit(1)
+
+        # Promote latest registered version to target stage if possible
+        if model_registered and MlflowClient is not None:
+            try:
+                client = MlflowClient()
+                registered_name = os.getenv(
+                    "MLFLOW_REGISTERED_MODEL", "BankChurnClassifier"
+                )
+                versions = client.search_model_versions(f"name='{registered_name}'")
+                if versions:
+                    latest_version = max(int(v.version) for v in versions)
+                    client.transition_model_version_stage(
+                        name=registered_name,
+                        version=latest_version,
+                        stage=os.getenv("MLFLOW_TARGET_STAGE", "Staging"),
+                        archive_existing_versions=False,
                     )
             except Exception:
                 # registry may be unavailable (e.g., file store); ignore
