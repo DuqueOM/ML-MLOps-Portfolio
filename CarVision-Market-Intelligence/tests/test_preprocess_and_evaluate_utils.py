@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
+import yaml
 from data.preprocess import build_preprocessor, clean_data, infer_feature_types, load_data, split_data
 from evaluate import evaluate_model, rmse
 
@@ -95,7 +95,7 @@ def test_split_data_returns_consistent_shapes() -> None:
 def test_evaluate_model_creates_artifacts(tmp_path: Path) -> None:
     project_root = Path(__file__).resolve().parents[1]
     cfg_path = project_root / "configs" / "config.yaml"
-    cfg = json.loads(cfg_path.read_text())
+    cfg = yaml.safe_load(cfg_path.read_text())
 
     # Override paths to stay inside tmp_path
     data_csv = project_root / cfg["paths"]["data_path"]
