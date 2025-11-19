@@ -12,7 +12,11 @@ except Exception:  # pragma: no cover
 
 def main() -> None:
     tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "file:./mlruns")
-    experiment = os.getenv("MLFLOW_EXPERIMENT", "TelecomAI")
+    experiment = (
+        os.getenv("MLFLOW_EXPERIMENT_NAME")
+        or os.getenv("MLFLOW_EXPERIMENT")
+        or "TelecomAI"
+    )
 
     metrics_path = Path("artifacts/metrics.json")
     metrics: dict[str, float] = {"placeholder_metric": 0.0}

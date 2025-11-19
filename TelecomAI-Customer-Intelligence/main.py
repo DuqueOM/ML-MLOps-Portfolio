@@ -105,12 +105,14 @@ def train(cfg: Config) -> Dict[str, float]:
 
     if use_mlflow and mlflow_cfg is not None:
         tracking_uri = (
-            mlflow_cfg.get("tracking_uri")
-            or os.getenv("MLFLOW_TRACKING_URI")
+            os.getenv("MLFLOW_TRACKING_URI")
+            or mlflow_cfg.get("tracking_uri")
             or "file:./mlruns"
         )
         mlflow.set_tracking_uri(tracking_uri)
-        experiment_name = mlflow_cfg.get("experiment")
+        experiment_name = os.getenv("MLFLOW_EXPERIMENT_NAME") or mlflow_cfg.get(
+            "experiment"
+        )
         if experiment_name:
             mlflow.set_experiment(experiment_name)
 
