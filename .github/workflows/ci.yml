@@ -133,10 +133,14 @@ jobs:
       - name: Build Docker image
         working-directory: ${{ matrix.project }}
         run: |
-          docker build -t ${{ matrix.project }}:ci-test .
+          # Convert project name to lowercase for Docker tag
+          IMAGE_NAME=$(echo "${{ matrix.project }}" | tr '[:upper:]' '[:lower:]')
+          docker build -t ${IMAGE_NAME}:ci-test .
       - name: Test Docker healthcheck
         run: |
-          docker run -d --name test-container -p 8000:8000 ${{ matrix.project }}:ci-test || true
+          # Convert project name to lowercase for Docker tag
+          IMAGE_NAME=$(echo "${{ matrix.project }}" | tr '[:upper:]' '[:lower:]')
+          docker run -d --name test-container -p 8000:8000 ${IMAGE_NAME}:ci-test || true
           sleep 10
           docker ps -a
           docker logs test-container || true
