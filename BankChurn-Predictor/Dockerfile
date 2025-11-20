@@ -28,8 +28,9 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Instalar dependencias Python
+# Desactivar verificación de hashes para evitar error con dependencias transitivas
+ENV PIP_NO_REQUIRE_HASHES=1
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir --no-deps -r requirements.txt && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copiar código fuente
