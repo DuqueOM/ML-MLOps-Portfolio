@@ -1,0 +1,98 @@
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    open-pull-requests-limit: 5
+
+  # Python dependencies - BankChurn-Predictor
+  - package-ecosystem: "pip"
+    directory: "/BankChurn-Predictor"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+      - "BankChurn-Predictor"
+    open-pull-requests-limit: 5
+
+  # Python dependencies - CarVision-Market-Intelligence
+  - package-ecosystem: "pip"
+    directory: "/CarVision-Market-Intelligence"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+      - "CarVision"
+    open-pull-requests-limit: 5
+
+  # Python dependencies - TelecomAI-Customer-Intelligence
+  - package-ecosystem: "pip"
+    directory: "/TelecomAI-Customer-Intelligence"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+      - "TelecomAI"
+    open-pull-requests-limit: 5
+
+  # Python dependencies - Chicago-Mobility-Analytics
+  - package-ecosystem: "pip"
+    directory: "/Chicago-Mobility-Analytics"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+      - "Chicago"
+    open-pull-requests-limit: 5
+
+  # Python dependencies - GoldRecovery-Process-Optimizer
+  - package-ecosystem: "pip"
+    directory: "/GoldRecovery-Process-Optimizer"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+      - "GoldRecovery"
+    open-pull-requests-limit: 5
+
+  # Python dependencies - Gaming-Market-Intelligence
+  - package-ecosystem: "pip"
+    directory: "/Gaming-Market-Intelligence"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+      - "Gaming"
+    open-pull-requests-limit: 5
+
+  # Python dependencies - OilWell-Location-Optimizer
+  - package-ecosystem: "pip"
+    directory: "/OilWell-Location-Optimizer"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+      - "OilWell"
+    open-pull-requests-limit: 5
+
+  # Docker
+  - package-ecosystem: "docker"
+    directory: "/infra"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "docker"
+    open-pull-requests-limit: 5
