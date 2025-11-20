@@ -75,3 +75,12 @@ repos:
             ^.*\/__pycache__\/|
             ^.*\.ipynb$
           )
+
+  # Security linting with bandit
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.9
+    hooks:
+      - id: bandit
+        args: ['-ll', '-i']
+        files: ^(BankChurn-Predictor|CarVision-Market-Intelligence|TelecomAI-Customer-Intelligence|Chicago-Mobility-Analytics|Gaming-Market-Intelligence|GoldRecovery-Process-Optimizer|OilWell-Location-Optimizer)/
+        exclude: ^.*\/tests\/

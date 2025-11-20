@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import os
 import random
-from typing import Final, Optional
+from typing import Final
 
 import numpy as np
 
@@ -16,7 +16,7 @@ import numpy as np
 DEFAULT_SEED: Final[int] = 42
 
 
-def set_seed(seed: Optional[int] = None) -> int:
+def set_seed(seed: int | None = None) -> int:
     """Set global random seeds for reproducible experiments.
 
     Resolution order:

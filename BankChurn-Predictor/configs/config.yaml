@@ -190,7 +190,7 @@ security:
   rate_limiting: true
   input_validation: true
   
-  # Configuración de secrets (usar variables de entorno)
-  secrets:
-    model_encryption_key: null
-    api_secret_key: null
+  # Secrets should be managed via environment variables
+  # Set these in your .env file (not committed to git):
+  # - MODEL_ENCRYPTION_KEY
+  # - API_SECRET_KEY
