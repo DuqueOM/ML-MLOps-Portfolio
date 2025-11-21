@@ -150,12 +150,14 @@ class ChurnTrainer:
         else:
             numerical_features = [col for col in self.config.data.numerical_features if col in X.columns]
 
-        # If after filtering no features remain, fall back to using
-        # all columns as numerical features. This makes the
-        # preprocessor robust for synthetic test DataFrames that do
-        # not include the full set of configured feature names.
+        # If after filtering no features remain, fall back to
+        # automatic type detection based on the actual DataFrame
+        # dtypes. This makes the preprocessor robust for synthetic
+        # test DataFrames that do not include the full set of
+        # configured feature names.
         if not categorical_features and not numerical_features:
-            numerical_features = X.columns.tolist()
+            categorical_features = X.select_dtypes(include=["object", "category"]).columns.tolist()
+            numerical_features = X.select_dtypes(include=[np.number]).columns.tolist()
 
         logger.info(f"Categorical features: {len(categorical_features)}")
         logger.info(f"Numerical features: {len(numerical_features)}")
