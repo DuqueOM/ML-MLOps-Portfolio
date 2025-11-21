@@ -1,0 +1,35 @@
+# Git LFS Configuration - Portfolio ML/MLOps
+# https://git-lfs.github.com/
+
+# Model files (PyTorch, TensorFlow, Scikit-learn serialized)
+*.pt filter=lfs diff=lfs merge=lfs -text
+*.pth filter=lfs diff=lfs merge=lfs -text
+*.h5 filter=lfs diff=lfs merge=lfs -text
+*.hdf5 filter=lfs diff=lfs merge=lfs -text
+*.onnx filter=lfs diff=lfs merge=lfs -text
+*.pb filter=lfs diff=lfs merge=lfs -text
+*.pkl filter=lfs diff=lfs merge=lfs -text
+*.joblib filter=lfs diff=lfs merge=lfs -text
+*.sav filter=lfs diff=lfs merge=lfs -text
+
+# Large model artifacts
+models/**/*.pkl filter=lfs diff=lfs merge=lfs -text
+models/**/*.joblib filter=lfs diff=lfs merge=lfs -text
+models/**/*.h5 filter=lfs diff=lfs merge=lfs -text
+
+# Binary data files (>100MB typically)
+*.parquet filter=lfs diff=lfs merge=lfs -text
+*.feather filter=lfs diff=lfs merge=lfs -text
+
+# Compressed archives with models
+*.tar.gz filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text
+
+# Database files
+*.db filter=lfs diff=lfs merge=lfs -text
+*.sqlite filter=lfs diff=lfs merge=lfs -text
+
+# Exclude virtual environments and cache from LFS
+.venv/** -filter -diff -merge -text
+__pycache__/** -filter -diff -merge -text
+*.pyc -filter -diff -merge -text
