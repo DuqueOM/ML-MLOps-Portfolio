@@ -1,10 +1,8 @@
 name: CI
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  # Legacy CI kept for manual runs only. Main automated CI is
+  # defined in ci-mlops.yml.
   workflow_dispatch:
 
 jobs:
