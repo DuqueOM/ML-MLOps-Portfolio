@@ -194,3 +194,11 @@ security:
   # Set these in your .env file (not committed to git):
   # - MODEL_ENCRYPTION_KEY
   # - API_SECRET_KEY
+
+# Configuración de MLflow
+mlflow:
+  # Para usar el stack Docker (docker-compose.mlflow.yml): http://localhost:5000
+  # Para desarrollo local sin Docker: file:./mlruns
+  tracking_uri: "file:./mlruns"
+  experiment_name: "bankchurn-experiment"
+  enabled: true
