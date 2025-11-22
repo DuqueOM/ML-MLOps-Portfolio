@@ -47,11 +47,10 @@ cat reports/coverage-summary-TOP3.csv
 ### Reports
 - `reports/initial-scan-COMPLETE.md` - Audit completo
 - `reports/PORTFOLIO_TIER1_FINAL.md` - Reporte ejecutivo
-- `WORKFLOW_COMPLETE.md` - Resumen del workflow
-- `ARCHIVED_PROJECTS.md` - Proyectos archivados
+- `FINAL_PORTFOLIO_STATUS.md` - Estado detallado del portfolio
 
 ### Configuration
-- `.github/workflows/ci-portfolio-top3.yml` - CI/CD
+- `.github/workflows/ci-mlops.yml` - CI/CD Unificado
 - `docker-compose.mlflow.yml` - MLflow stack
 - `.gitattributes` - Git LFS config
 - `.gitleaksignore` - Security exceptions
