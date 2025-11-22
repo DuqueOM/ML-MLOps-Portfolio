@@ -41,9 +41,15 @@ jobs:
         working-directory: ${{ matrix.project }}
         run: |
           python -m pip install --upgrade pip
+          # Install minimal deps for drift detection first
           pip install evidently pandas numpy scikit-learn
+          # If a hashed requirements.txt exists (with --require-hashes),
+          # clean it before installing to avoid pip --require-hashes errors
           if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
+            sed -e '/--hash=/d' -e '/--require-hashes/d' -e 's/ \\$//' \
+                -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' \
+                requirements.txt > requirements_no_hash.txt
+            pip install -r requirements_no_hash.txt
           fi
       
       - name: Create reports directory
