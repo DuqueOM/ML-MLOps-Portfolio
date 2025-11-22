@@ -490,7 +490,7 @@ GitHub Actions ejecuta automáticamente:
 ```yaml
 jobs:
   test:
-    - ✅ pytest con coverage (threshold: 75%)
+    - ✅ pytest con coverage (threshold: 65%)
     - ✅ black (formateo)
     - ✅ flake8 (linting)
     - ✅ mypy (type checking)
@@ -501,7 +501,7 @@ jobs:
     - ✅ Smoke test (training rápido)
 ```
 
-Ver: `.github/workflows/ci.yml`
+Ver: `.github/workflows/ci-mlops.yml`
 
 ---
 

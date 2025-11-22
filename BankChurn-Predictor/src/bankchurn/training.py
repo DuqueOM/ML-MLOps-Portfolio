@@ -14,10 +14,12 @@ import logging
 from pathlib import Path
 
 import joblib
+import mlflow
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
+from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score, roc_auc_score
 from sklearn.model_selection import StratifiedKFold, train_test_split
@@ -59,6 +61,14 @@ class ChurnTrainer:
         self.preprocessor_: ColumnTransformer | None = None
         self.train_score_: float | None = None
         self.test_score_: float | None = None
+
+        if self.config.mlflow.enabled:
+            try:
+                mlflow.set_tracking_uri(self.config.mlflow.tracking_uri)
+                mlflow.set_experiment(self.config.mlflow.experiment_name)
+                logger.info(f"MLflow tracking enabled: {self.config.mlflow.tracking_uri}")
+            except Exception as e:
+                logger.warning(f"Failed to configure MLflow: {e}")
 
     def load_data(self, input_path: str | Path) -> pd.DataFrame:
         """Load and validate input data.
@@ -166,12 +176,22 @@ class ChurnTrainer:
         transformers = []
 
         if categorical_features:
-            transformers.append(
-                ("cat", OneHotEncoder(drop="first", sparse_output=False, handle_unknown="ignore"), categorical_features)
+            cat_pipeline = Pipeline(
+                [
+                    ("imputer", SimpleImputer(strategy="constant", fill_value="missing")),
+                    ("onehot", OneHotEncoder(drop="first", sparse_output=False, handle_unknown="ignore")),
+                ]
             )
+            transformers.append(("cat", cat_pipeline, categorical_features))
 
         if numerical_features:
-            transformers.append(("num", StandardScaler(), numerical_features))
+            num_pipeline = Pipeline(
+                [
+                    ("imputer", SimpleImputer(strategy="median")),
+                    ("scaler", StandardScaler()),
+                ]
+            )
+            transformers.append(("num", num_pipeline, numerical_features))
 
         preprocessor = ColumnTransformer(transformers=transformers, remainder="drop")
 
@@ -307,6 +327,19 @@ class ChurnTrainer:
         }
 
         logger.info(f"Training complete - Train F1: {self.train_score_:.4f}, Test F1: {self.test_score_:.4f}")
+
+        if self.config.mlflow.enabled:
+            with mlflow.start_run():
+                # Log parameters
+                mlflow.log_params(self.config.model.dict())
+                mlflow.log_params(self.config.data.dict())
+
+                # Log metrics
+                mlflow.log_metrics(metrics)
+
+                # Log model (optional, might be large)
+                # mlflow.sklearn.log_model(self.model_, "model")
+                logger.info("Logged params and metrics to MLflow")
 
         return self.model_, metrics
 

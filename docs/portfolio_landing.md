@@ -49,7 +49,7 @@ Esta landing sintetiza el valor de cada proyecto, el stack técnico y qué parte
 - **APIs y Frontends**: FastAPI, Streamlit.
 - **Monitoreo de datos**: scripts KS/PSI, integración opcional con Evidently.
 - **Optimización**: PuLP/CVXPY (OilWell y Chicago streaming demo), OR-Tools cuando aplica.
-- **Infraestructura**: Docker, `docker-compose`, GitHub Actions (`.github/workflows/ci.yml`).
+- **Infraestructura**: Docker, `docker-compose`, GitHub Actions (`.github/workflows/ci-mlops.yml`).
 
 ---
 
@@ -99,8 +99,8 @@ Por proyecto, el trabajo realizado incluye (además del desarrollo original del 
 
 ## 5. Calidad, CI y Smoke Tests
 
-- Workflow CI (`.github/workflows/ci.yml`):
-  - Matriz sobre los 7 subproyectos.
+- Workflow CI (`.github/workflows/ci-mlops.yml`):
+  - Matriz sobre los 3 proyectos TOP-3 (BankChurn, CarVision, TelecomAI).
   - Para cada uno: instala dependencias, corre `pytest --cov=. --cov-report=term-missing`, `mypy .` y `flake8 .`.
   - Para **BankChurn**: paso adicional de smoke-train (`SMOKE=1`) para validar el pipeline de entrenamiento end-to-end.
 
