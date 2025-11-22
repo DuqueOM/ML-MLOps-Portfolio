@@ -45,9 +45,8 @@ cat reports/coverage-summary-TOP3.csv
 ## 📁 Key Files
 
 ### Reports
-- `reports/initial-scan-COMPLETE.md` - Audit completo
-- `reports/PORTFOLIO_TIER1_FINAL.md` - Reporte ejecutivo
-- `FINAL_PORTFOLIO_STATUS.md` - Estado detallado del portfolio
+-- `reports/PORTFOLIO_TIER1_FINAL.md` - Reporte ejecutivo (Top-3)
+-- `FINAL_PORTFOLIO_STATUS.md` - Estado detallado del portfolio Top-3
 
 ### Configuration
 - `.github/workflows/ci-mlops.yml` - CI/CD Unificado
