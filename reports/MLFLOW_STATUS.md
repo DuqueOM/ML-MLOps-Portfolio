@@ -75,6 +75,7 @@ with mlflow.start_run():
 - ✅ Docker Compose file ready
 - ✅ Configuration complete
 - ⏳ Stack not running (start with `docker compose up`)
-- ⏳ Projects not yet integrated with MLflow
+- ✅ BankChurn training pipeline integrado con MLflow en modo local (`file:./mlruns`)
+- ⏳ Integración vía stack Docker opcional para entornos de demostración
 
-**Next steps**: Start MLflow stack and integrate with training pipelines.
+**Next steps**: Arrancar el stack Docker solo si se requiere demo centralizada; para desarrollo local, el tracking `file:./mlruns` ya está operativo.

@@ -10,9 +10,9 @@ Directorio central para todos los reportes de auditoría, tests, seguridad y an�
 
 | Archivo | Descripción |
 |---------|-------------|
-| `initial-scan.md` | **Reporte maestro** de auditoría inicial |
-| `IMPLEMENTATION_STATUS.md` | Estado detallado de implementación |
-| `README.md` | Este archivo |
+| `FINAL_PORTFOLIO_STATUS.md` | Estado detallado del portfolio TOP-3 (BankChurn, CarVision, TelecomAI) |
+| `PORTFOLIO_TIER1_FINAL.md` | Resumen ejecutivo de calidad, coverage y métricas clave |
+| `README.md` | Este archivo del directorio `reports/` |
 
 ### Scripts de Automatización
 
@@ -73,8 +73,8 @@ bash run_tests_all_projects.sh
 # Security scans
 bash run_security_scan.sh
 
-# Ver reporte final
-cat initial-scan.md
+# Ver estado final del portfolio TOP-3
+cat FINAL_PORTFOLIO_STATUS.md
 ```
 
 ### 3. Ver Resultados
@@ -87,7 +87,7 @@ cat coverage-summary.csv
 cat gitleaks-report.json
 
 # Status general
-cat IMPLEMENTATION_STATUS.md
+cat FINAL_PORTFOLIO_STATUS.md
 ```
 
 ---
@@ -112,10 +112,9 @@ cat IMPLEMENTATION_STATUS.md
 
 ## 📈 Estado Actual
 
-Ver archivos:
-- `initial-scan.md` - Reporte completo
-- `IMPLEMENTATION_STATUS.md` - Status detallado
-- `../QUICK_START_GUIDE.md` - Guía de inicio
+Ver archivos principales de estado:
+- `FINAL_PORTFOLIO_STATUS.md` - Estado detallado del portfolio TOP-3
+- `PORTFOLIO_TIER1_FINAL.md` - Resumen ejecutivo Tier-1
 
 ---
 
@@ -245,7 +244,7 @@ Antes de considerar la auditoría completa:
 - [ ] Trivy sin vulnerabilidades CRITICAL
 - [ ] DVC configurado y funcional
 - [ ] Git LFS configurado
-- [ ] initial-scan.md actualizado con datos reales
+- [ ] FINAL_PORTFOLIO_STATUS.md actualizado con datos reales
 - [ ] CI/CD validado en GitHub Actions
 
 ---
