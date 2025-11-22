@@ -60,17 +60,7 @@ Este repositorio se centra en **3 Proyectos Principales (Top-3)** que han sido l
 
 ---
 
-## 📚 Proyectos Fundamentales (Classic ML)
-*Estos proyectos sientan las bases del análisis estadístico y modelado predictivo.*
-
-- **🚕 [Chicago Mobility Analytics](Chicago-Mobility-Analytics/)**: Series temporales y predicción de demanda con LightGBM.
-- **⚙️ [GoldRecovery Process Optimizer](GoldRecovery-Process-Optimizer/)**: Regresión multi-target para optimización industrial.
-- **🎮 [Gaming Market Intelligence](Gaming-Market-Intelligence/)**: Análisis estadístico y testing de hipótesis en la industria de videojuegos.
-- **🛢️ [OilWell Location Optimizer](OilWell-Location-Optimizer/)**: Bootstraping y análisis de riesgo financiero para inversiones de capital.
-
----
-
-## 🛠️ Stack Tecnológico & MLOps
+## ️ Stack Tecnológico & MLOps
 
 ### Infraestructura CI/CD Unificada
 Todo el portfolio es validado por un único workflow maestro (`ci-mlops.yml`) que orquesta:
@@ -113,8 +103,6 @@ Portafolio-ML-MLOps/
 │   ├── models/
 │   ├── tests/
 │   └── Dockerfile
-│
-├── [Otros Proyectos ML]           # 📂 Chicago, GoldRecovery, Gaming, OilWell...
 │
 ├── common_utils/                  # Utilidades compartidas
 ├── infra/                         # Docker Compose (MLflow, etc.)
