@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-red.svg)](https://streamlit.io)
 [![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.3+-orange.svg)](https://scikit-learn.org)
-[![Coverage](https://img.shields.io/badge/Coverage-75%25-brightgreen.svg)](tests/)
+[![Coverage](https://img.shields.io/badge/Coverage-72%25-brightgreen.svg)](tests/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 > **Plataforma de análisis de mercado automotriz con predicción de precios, dashboard interactivo Streamlit y modelo de regresión con R² > 0.90.**
