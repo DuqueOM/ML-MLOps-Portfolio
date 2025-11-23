@@ -67,22 +67,46 @@ Este repositorio se centra en **3 Proyectos Principales (Top-3)** que han sido l
 
 ## ️ Stack Tecnológico & MLOps
 
-### Infraestructura CI/CD Unificada
-Todo el portfolio es validado por un único workflow maestro (`ci-mlops.yml`) que orquesta:
+### Infraestructura CI/CD Unificada (Staff-Level)
+Todo el portfolio es validado por un único workflow maestro (`ci-portfolio-top3.yml`) que orquesta:
 
-1. **Build & Environment**: Setup de Python 3.12 y dependencias cacheadas.
-2. **Code Quality**: 
+1. **Build & Environment**:
+   - Setup de Python 3.12 con **caché inteligente de pip** (GitHub Actions built-in).
+   - Restauración automática de dependencias por proyecto vía `cache-dependency-path`.
+   - **Optimización**: Reduce tiempo de instalación de 5min → 30s.
+
+2. **Data Quality Gates**: 
+   - Validación automática de calidad de datos **antes de tests**.
+   - Scripts personalizados por proyecto (`data/validate_data.py`).
+   - Fail-fast en datasets corruptos/incompletos.
+
+3. **Code Quality**: 
    - `flake8` & `black` para estilo.
    - `mypy` para tipado estático.
    - `bandit` para seguridad en código Python.
-3. **Testing**: Ejecución paralela de `pytest` con reportes de cobertura.
-4. **Container Security**: Escaneo de imágenes Docker con **Trivy** (CVE detection).
+
+4. **Testing**: Ejecución paralela de `pytest` con reportes de cobertura.
+
+5. **Continuous Deployment**:
+   - Build automático de imágenes Docker tras pasar tests.
+   - Push a **GitHub Container Registry (GHCR)** con tags inmutables (SHA + semver).
+   - Cache de layers Docker vía GitHub Actions cache.
+   - **Artefactos listos para producción en cada commit**.
+
+6. **Container Security**: Escaneo de imágenes Docker con **Trivy** (CVE detection).
+
+### Infraestructura como Código (IaC)
+- **Terraform**: Módulos AWS y GCP en `infra/terraform/`
+  - Full stack: EKS, S3, RDS, ECR (ver `main.tf`)
+  - **S3 Artifact Store simplificado**: Versionado, encriptación, lifecycle (ver `s3-artifacts-simple.tf`)
+- **Uso**: Almacenamiento reproducible y seguro de modelos versionados.
 
 ### Tecnologías Clave
 - **Core**: Python 3.10+, Pandas, NumPy, Scikit-learn.
 - **Web**: FastAPI, Streamlit, Uvicorn.
-- **Ops**: Docker, GitHub Actions, Makefiles.
+- **Ops**: Docker, GitHub Actions (CI/CD optimizado), Makefiles, Terraform.
 - **Tracking & Data**: MLflow, DVC.
+- **Registry**: GitHub Container Registry (GHCR) para imágenes inmutables.
 
 ---
 

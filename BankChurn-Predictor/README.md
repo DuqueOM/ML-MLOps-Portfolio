@@ -74,7 +74,28 @@ Sistema de machine learning que:
 - **API:** FastAPI + Uvicorn
 - **MLOps:** MLflow, DVC, Evidently
 - **Testing:** pytest (85% coverage)
-- **Deployment:** Docker, GitHub Actions CI/CD
+- **Deployment:** Docker, GitHub Actions CI/CD optimizado
+- **IaC:** Terraform (S3 artifact storage con versionado y encriptación)
+
+### Data Quality & CI/CD (Staff-Level)
+
+Este proyecto implementa prácticas avanzadas de MLOps:
+
+**Data Quality Gate:**
+- Script `data/validate_data.py` valida automáticamente el dataset antes del entrenamiento
+- Verifica integridad de columnas, valores nulos en target, rangos de features, balance de clases
+- Integrado en CI: falla el pipeline si datos están corruptos (fail-fast)
+
+**CI/CD Optimizado:**
+- Caché inteligente de dependencias pip (5min → 30s)
+- Build y push automático a GHCR tras pasar tests
+- Imágenes Docker con tags inmutables (SHA + semver)
+- Artifact storage en S3 con Terraform (versionado, encriptación, lifecycle)
+
+**Infraestructura como Código:**
+- `infra/terraform/aws/s3-artifacts-simple.tf`: Módulo para almacenamiento de modelos en S3
+- Versioning automático, encriptación AES256, lifecycle policies
+- Listo para despliegue con `terraform apply`
 
 ### Dataset
 
