@@ -24,12 +24,11 @@ split:
   stratify: true
 
 model:
-  name: logreg
+  name: gradient_boosting
   params:
-    C: 1.0
-    penalty: l2
-    solver: liblinear
-    class_weight: balanced
+    n_estimators: 200
+    max_depth: 2
+    learning_rate: 0.05
 
 threshold: 0.5
 

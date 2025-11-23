@@ -18,7 +18,13 @@
 | `minutes` | float | Minutos totales usados |
 | `messages` | int | Mensajes SMS |
 | `mb_used` | float | Datos móviles en MB |
-| `is_ultra` | int | Target binario |
+| `is_ultra` | int | Target binario (1 = recomendar plan Ultra, 0 = plan Smart) |
+
+Adicionalmente, en el pipeline de preprocesamiento se generan features derivadas en memoria (no guardadas en el CSV original):
+
+- `minutes_per_call` = `minutes` / `calls` (con protección ante divisiones por cero).
+- `messages_per_call` = `messages` / `calls`.
+- `mb_per_minute` = `mb_used` / `minutes`.
 
 ## Splits & Versioning
 - Split estándar 80/20 estratificado (configurable en `configs/config.yaml`, seed=42).
