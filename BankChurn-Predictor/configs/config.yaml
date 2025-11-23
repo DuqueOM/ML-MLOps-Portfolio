@@ -45,7 +45,7 @@ training:
 # Configuración del modelo
 model:
   type: "ensemble"  # ensemble, single
-  resampling_strategy: "oversample"  # oversample, undersample, none
+  resampling_strategy: "none"  # oversample, undersample, none
   
   # Configuración de ensemble
   ensemble:

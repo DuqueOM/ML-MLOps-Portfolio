@@ -170,48 +170,6 @@ profile: ## Perfilar rendimiento del entrenamiento
 	$(PYTHON) -m cProfile -o profile_stats.prof main.py --mode train
 	$(PYTHON) -c "import pstats; p = pstats.Stats('profile_stats.prof'); p.sort_stats('cumulative').print_stats(20)"
 
-benchmark: ## Benchmark de predicciones
-	@echo "$(GREEN)Ejecutando benchmark...$(NC)"
-	$(PYTHON) -c "
-import time
-import pandas as pd
-from main import BankChurnPredictor
-import numpy as np
-
-# Cargar modelo
-predictor = BankChurnPredictor()
-predictor.load_model('models/best_model.pkl', 'models/preprocessor.pkl')
-
-# Crear datos de prueba
-n_samples = 1000
-test_data = pd.DataFrame({
-    'CreditScore': np.random.randint(300, 851, n_samples),
-    'Geography': np.random.choice(['France', 'Spain', 'Germany'], n_samples),
-    'Gender': np.random.choice(['Male', 'Female'], n_samples),
-    'Age': np.random.randint(18, 93, n_samples),
-    'Tenure': np.random.randint(0, 11, n_samples),
-    'Balance': np.random.uniform(0, 250000, n_samples),
-    'NumOfProducts': np.random.randint(1, 5, n_samples),
-    'HasCrCard': np.random.choice([0, 1], n_samples),
-    'IsActiveMember': np.random.choice([0, 1], n_samples),
-    'EstimatedSalary': np.random.uniform(11, 200000, n_samples)
-})
-
-# Benchmark
-start_time = time.time()
-predictions, probabilities = predictor.predict(test_data)
-end_time = time.time()
-
-total_time = end_time - start_time
-avg_time_per_prediction = total_time / n_samples * 1000
-
-print(f'Benchmark Results:')
-print(f'Total samples: {n_samples}')
-print(f'Total time: {total_time:.4f} seconds')
-print(f'Average time per prediction: {avg_time_per_prediction:.4f} ms')
-print(f'Predictions per second: {n_samples / total_time:.2f}')
-"
-
 docs: ## Generar documentación
 	@echo "$(GREEN)Generando documentación...$(NC)"
 	@echo "Documentación disponible en:"
@@ -221,26 +179,7 @@ docs: ## Generar documentación
 	@echo "- EXECUTIVE_SUMMARY.md: Resumen ejecutivo"
 
 check-deps: ## Verificar dependencias
-	@echo "$(GREEN)Verificando dependencias...$(NC)"
-	$(PYTHON) -c "
-import sys
-required_packages = ['pandas', 'numpy', 'scikit-learn', 'fastapi', 'uvicorn', 'pydantic', 'joblib', 'optuna']
-missing = []
-for package in required_packages:
-    try:
-        __import__(package)
-        print(f'✓ {package}')
-    except ImportError:
-        missing.append(package)
-        print(f'✗ {package}')
-
-if missing:
-    print(f'\nPaquetes faltantes: {missing}')
-    print('Ejecutar: make install')
-    sys.exit(1)
-else:
-    print('\n$(GREEN)Todas las dependencias están instaladas$(NC)')
-"
+	@echo "$(GREEN)check-deps deshabilitado temporalmente; use 'make install' para instalar dependencias$(NC)"
 
 # Target por defecto
 .DEFAULT_GOAL := help

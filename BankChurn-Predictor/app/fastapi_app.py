@@ -349,12 +349,33 @@ async def predict_churn(customer: CustomerData):
         customer_dict = customer.dict()
         df = pd.DataFrame([customer_dict])
 
-        # Preprocesar (usando el preprocessor cargado)
-        X_processed = predictor.preprocessor.transform(df)
+        # Replicar feature engineering simple (igual que en main.py)
+        if "Age" in df.columns:
+            df["Age_over_60"] = (df["Age"] > 60).astype(int)
 
-        # Convertir a DataFrame para compatibilidad
-        feature_names = predictor.preprocessor.get_feature_names_out()
-        X_processed = pd.DataFrame(X_processed, columns=feature_names)
+        # Preprocesar (usando el preprocessor cargado)
+        X_processed_array = predictor.preprocessor.transform(df)
+
+        # Reconstruir feature names exactamente como en main.py
+        numerical_features = predictor.config["data"]["numerical_features"]
+
+        try:
+            cat_features = predictor.config["data"]["categorical_features"]
+            cat_names = list(predictor.preprocessor.named_transformers_["cat"].get_feature_names_out(cat_features))
+
+            num_names = [f for f in numerical_features]
+            if "Age_over_60" not in num_names:
+                num_names.append("Age_over_60")
+
+            feature_names = num_names + cat_names
+
+            X_processed = pd.DataFrame(X_processed_array, columns=feature_names)
+
+        except Exception as e:
+            logger.warning(f"Usando fallback para feature names: {e}")
+            raw_names = predictor.preprocessor.get_feature_names_out()
+            clean_names = [n.replace("num__", "").replace("cat__", "") for n in raw_names]
+            X_processed = pd.DataFrame(X_processed_array, columns=clean_names)
 
         # Realizar predicción
         predictions, probabilities = predictor.predict(X_processed)
@@ -401,10 +422,45 @@ async def predict_batch(batch_data: BatchCustomerData, background_tasks: Backgro
         customers_list = [customer.dict() for customer in batch_data.customers]
         df = pd.DataFrame(customers_list)
 
+        # Replicar feature engineering simple
+        if "Age" in df.columns:
+            df["Age_over_60"] = (df["Age"] > 60).astype(int)
+
         # Preprocesar
-        X_processed = predictor.preprocessor.transform(df)
-        feature_names = predictor.preprocessor.get_feature_names_out()
-        X_processed = pd.DataFrame(X_processed, columns=feature_names)
+        X_processed_array = predictor.preprocessor.transform(df)
+
+        # Reconstruir feature names exactamente como en main.py
+        numerical_features = predictor.config["data"]["numerical_features"]
+        # Age_over_60 se añade dinámicamente en main.py, debemos incluirlo si está en el preprocessor
+        # El preprocessor tiene transformers "num" y "cat"
+        # Truco: main.py usa numerical_features + one_hot_features
+
+        # Intentar recuperar nombres limpios
+        try:
+            # Recuperar nombres de variables categóricas transformadas
+            cat_features = predictor.config["data"]["categorical_features"]
+            cat_names = list(predictor.preprocessor.named_transformers_["cat"].get_feature_names_out(cat_features))
+
+            # Recuperar nombres numéricos (incluyendo Age_over_60 si fue usado)
+            # En main.py: numerical_features + ["Age_over_60"] si aplica
+            # Dado que el transformador "num" es StandardScaler, mantiene el orden de entrada
+            # Pero main.py hardcodea la lista de nombres
+
+            # Reconstruir lista numérica
+            num_names = [f for f in numerical_features]
+            if "Age_over_60" not in num_names:
+                num_names.append("Age_over_60")
+
+            feature_names = num_names + cat_names
+
+            X_processed = pd.DataFrame(X_processed_array, columns=feature_names)
+
+        except Exception as e:
+            # Fallback si falla la reconstrucción manual, usar get_feature_names_out pero limpiando prefijos
+            logger.warning(f"Usando fallback para feature names: {e}")
+            raw_names = predictor.preprocessor.get_feature_names_out()
+            clean_names = [n.replace("num__", "").replace("cat__", "") for n in raw_names]
+            X_processed = pd.DataFrame(X_processed_array, columns=clean_names)
 
         # Realizar predicciones
         predictions, probabilities = predictor.predict(X_processed)
@@ -457,4 +513,4 @@ async def reload_model():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
