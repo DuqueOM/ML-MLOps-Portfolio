@@ -13,6 +13,7 @@ import pandas as pd
 import yaml
 from data.preprocess import build_preprocessor, get_features_target, load_dataset
 from evaluate import compute_classification_metrics, plot_confusion_matrix, plot_roc_curve, save_metrics
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
@@ -65,11 +66,24 @@ def ensure_dirs(paths: Dict[str, str]) -> None:
         Path(model_export_path).parent.mkdir(parents=True, exist_ok=True)
 
 
-def build_model(model_cfg: Dict[str, Any]) -> LogisticRegression:
-    if model_cfg["name"].lower() == "logreg":
-        params = model_cfg.get("params", {})
+def build_model(model_cfg: Dict[str, Any]) -> Any:
+    """Build a sklearn classifier from a simple config dict.
+
+    Expected schema:
+        {"name": "logreg"|"random_forest"|"gradient_boosting", "params": {...}}
+    """
+
+    name = model_cfg.get("name", "logreg").lower()
+    params: Dict[str, Any] = model_cfg.get("params", {})
+
+    if name == "logreg":
         return LogisticRegression(**params, random_state=None)
-    raise ValueError(f"Unsupported model: {model_cfg['name']}")
+    if name == "random_forest":
+        return RandomForestClassifier(**params, random_state=None)
+    if name == "gradient_boosting":
+        return GradientBoostingClassifier(**params, random_state=None)
+
+    raise ValueError(f"Unsupported model: {model_cfg.get('name')}")
 
 
 def train(cfg: Config) -> Dict[str, float]:
