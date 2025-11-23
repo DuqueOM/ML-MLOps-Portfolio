@@ -144,11 +144,12 @@ ignore_missing_imports = true
 [tool.coverage.run]
 source = ["."]
 omit = [
-    "*/tests/*",
-    "*/test_*.py",
-    "*/.venv/*",
-    "*/venv/*",
+    "tests/*",
+    "test_*.py",
+    ".venv/*",
+    "venv/*",
     "setup.py",
+    "data/validate_data.py",
 ]
 
 [tool.coverage.report]
