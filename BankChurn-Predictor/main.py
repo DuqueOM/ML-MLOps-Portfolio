@@ -53,7 +53,15 @@ import yaml
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix, f1_score, roc_auc_score
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -431,8 +439,6 @@ class BankChurnPredictor:
             y_pred_proba = model_fold.predict_proba(X_val_fold)[:, 1]
 
             # Calcular métricas
-            from sklearn.metrics import precision_score, recall_score
-
             cv_scores["f1"].append(f1_score(y_val_fold, y_pred))
             cv_scores["roc_auc"].append(roc_auc_score(y_val_fold, y_pred_proba))
             cv_scores["precision"].append(precision_score(y_val_fold, y_pred))
@@ -455,8 +461,7 @@ class BankChurnPredictor:
         return cv_stats
 
     def evaluate(self, X_test: pd.DataFrame, y_test: pd.Series) -> Dict[str, Any]:
-        """
-        Evalúa el modelo en el conjunto de test.
+        """Evalúa el modelo en el conjunto de test.
 
         Args:
             X_test: Features de test
@@ -474,27 +479,54 @@ class BankChurnPredictor:
         y_pred = self.model.predict(X_test)
         y_pred_proba = self.model.predict_proba(X_test)[:, 1]
 
-        # Métricas
-        from sklearn.metrics import accuracy_score, precision_score, recall_score
-
+        # Métricas básicas
         metrics = {
             "f1_score": f1_score(y_test, y_pred),
             "roc_auc": roc_auc_score(y_test, y_pred_proba),
             "accuracy": accuracy_score(y_test, y_pred),
-            "precision": precision_score(y_test, y_pred),
-            "recall": recall_score(y_test, y_pred),
+            "precision": precision_score(y_test, y_pred, zero_division=0),
+            "recall": recall_score(y_test, y_pred, zero_division=0),
         }
 
-        # Matriz de confusión
+        # Matriz de confusión (como lista de listas para JSON/MLflow)
         cm = confusion_matrix(y_test, y_pred)
 
         # Reporte de clasificación
         class_report = classification_report(y_test, y_pred, output_dict=True)
 
+        # Análisis de error por segmento de riesgo (según probabilidad predicha)
+        df_eval = pd.DataFrame(
+            {
+                "y_true": y_test.values,
+                "y_pred": y_pred,
+                "proba": y_pred_proba,
+            }
+        )
+        df_eval["risk_segment"] = pd.cut(
+            df_eval["proba"],
+            bins=[0.0, 0.3, 0.7, 1.0],
+            labels=["LOW", "MEDIUM", "HIGH"],
+            include_lowest=True,
+        )
+
+        segment_metrics: Dict[str, Dict[str, float]] = {}
+        for seg, g in df_eval.groupby("risk_segment"):
+            if g.empty:
+                continue
+            seg_name = str(seg)
+            segment_metrics[seg_name] = {
+                "count": float(len(g)),
+                "accuracy": float(accuracy_score(g["y_true"], g["y_pred"])),
+                "precision": float(precision_score(g["y_true"], g["y_pred"], zero_division=0)),
+                "recall": float(recall_score(g["y_true"], g["y_pred"], zero_division=0)),
+                "f1_score": float(f1_score(g["y_true"], g["y_pred"], zero_division=0)),
+            }
+
         results = {
             "metrics": metrics,
-            "confusion_matrix": cm,
+            "confusion_matrix": cm.tolist(),
             "classification_report": class_report,
+            "error_by_segment": {"risk_segment": segment_metrics},
             "predictions": y_pred,
             "probabilities": y_pred_proba,
         }

@@ -27,6 +27,11 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import yaml
+from evaluate import evaluate_model as eval_model
+from plotly.subplots import make_subplots
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.pipeline import Pipeline
 
 # ML utilities from project
 from data.preprocess import build_preprocessor
@@ -34,11 +39,6 @@ from data.preprocess import clean_data as ds_clean_data
 from data.preprocess import infer_feature_types
 from data.preprocess import load_data as ds_load_data
 from data.preprocess import save_split_indices, split_data
-from evaluate import evaluate_model as eval_model
-from plotly.subplots import make_subplots
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.pipeline import Pipeline
 
 try:
     from common_utils.seed import set_seed
@@ -881,6 +881,11 @@ def main():
 
             payload = json.loads(Path(args.input_json).read_text())
             df_in = pd.DataFrame([payload])
+            current_year = pd.Timestamp.now().year
+            if "model_year" in df_in.columns:
+                df_in["vehicle_age"] = current_year - df_in["model_year"]
+            if "model" in df_in.columns and "brand" in feature_columns:
+                df_in["brand"] = df_in["model"].astype(str).str.split().str[0]
             # align columns
             for col in feature_columns:
                 if col not in df_in.columns:
