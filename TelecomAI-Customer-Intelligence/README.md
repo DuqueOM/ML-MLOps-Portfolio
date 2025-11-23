@@ -1,6 +1,6 @@
 # 📱 TelecomAI Customer Intelligence
 
-**Sistema de Predicción de Abandono de Clientes para Telecomunicaciones**
+**Sistema de Inteligencia de Clientes para recomendar el mejor plan (Smart vs Ultra) en telecomunicaciones**
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
 [![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.3+-orange.svg)](https://scikit-learn.org)
@@ -8,7 +8,7 @@
 [![Coverage](https://img.shields.io/badge/Coverage-72%25-green.svg)](tests/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-> **Sistema ML para predecir abandono de clientes en telecomunicaciones con modelo de clasificación, API REST y monitoreo de drift.**
+> **Sistema ML para recomendar el plan óptimo (Smart vs Ultra) en telecomunicaciones con modelo de clasificación, API REST y experimentación MLOps.**
 
 ---
 
@@ -18,12 +18,12 @@
 # 1. Instalar dependencias
 pip install -r requirements.txt
 
-# 2. Entrenar modelo
-python main.py --mode train --input data/raw/users_behavior.csv
+# 2. Entrenar el mejor modelo (Gradient Boosting + feature engineering)
+python main.py --mode train --config configs/config.yaml
 
-# 3. Iniciar API
-python app/fastapi_app.py
-# Acceder a http://localhost:8000/docs
+# 3. Iniciar la API de inferencia
+uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000
+# Abrir http://localhost:8000/docs para probar /predict
 ```
 
 ---
@@ -54,26 +54,27 @@ python app/fastapi_app.py
 
 ### Solución Implementada
 
-- ✅ **Modelo de clasificación** con métricas balanceadas (AUC-ROC > 0.85)
-- ✅ **API REST** para integración con CRM
-- ✅ **Análisis de features** para identificar drivers de churn
-- ✅ **Pipeline automatizado** de entrenamiento y evaluación
-- ✅ **Monitoreo de drift** para detectar degradación del modelo
+- ✅ **Modelo de clasificación tabular** para recomendar plan **Ultra** vs **Smart**
+- ✅ **API REST** de inferencia con FastAPI para integrar en productos o dashboards
+- ✅ **Preprocesamiento con ingeniería de features** (ratios de uso por llamada y por minuto)
+- ✅ **Pipeline reproducible** de entrenamiento, evaluación y predicción vía CLI
+- ✅ **Experimentación sistemática** multi-modelo con MLflow (`scripts/run_experiments.py`)
+- ✅ **Monitoreo de drift sencillo** con test estadísticos (KS, PSI) (`monitoring/check_drift.py`)
 
 ### Tecnologías
 
 - **ML**: Scikit-learn (Logistic Regression, Random Forest, Gradient Boosting)
 - **API**: FastAPI + Uvicorn
-- **MLOps**: MLflow, DVC
-- **Testing**: pytest (72% coverage)
+- **MLOps**: MLflow para tracking de experimentos + script propio de drift (KS/PSI)
+- **Testing**: pytest (≈72% coverage)
 
 ### Dataset
 
-- **Fuente**: Interconnect (datos de comportamiento de usuarios)
-- **Registros**: 7,043 clientes
-- **Features**: 19 atributos (demográficos, uso de servicios, contrato)
-- **Target**: `Churn` (1 = abandonó, 0 = activo)
-- **Desbalance**: ~27% churn vs 73% activos
+- **Fuente**: `users_behavior.csv` (dataset educativo de TripleTen)
+- **Registros**: ~3,214 clientes
+- **Features de entrada**: `calls`, `minutes`, `messages`, `mb_used`
+- **Target**: `is_ultra` (1 = recomendar plan Ultra, 0 = plan Smart)
+- **Tipo**: datos tabulares numéricos de comportamiento mensual (uso de voz, SMS y datos)
 
 ---
 
@@ -118,85 +119,108 @@ docker run -p 8000:8000 telecomai:latest
 
 ## 🚀 Uso
 
-### CLI Principal
+### CLI principal
 
 #### 1. Entrenamiento
 
 ```bash
-python main.py --mode train \
-  --input data/raw/users_behavior.csv \
-  --output models/churn_model.pkl \
-  --config configs/config.yaml
+python main.py --mode train --config configs/config.yaml
 ```
 
-**Salidas:**
-- `models/churn_model.pkl`: Modelo entrenado
-- `artifacts/metrics.json`: Métricas (AUC-ROC, F1, Precision, Recall)
-- `artifacts/confusion_matrix.png`: Matriz de confusión
-- `artifacts/roc_curve.png`: Curva ROC
+**Salidas principales:**
+- `artifacts/model.joblib`: modelo entrenado (scikit-learn estimator)
+- `artifacts/preprocessor.joblib`: pipeline de preprocesamiento (incluye `FeatureEngineer` + escalado)
+- `artifacts/metrics.json`: métricas (accuracy, precision, recall, f1, roc_auc)
+- `artifacts/confusion_matrix.png`: matriz de confusión del split holdout
+- `artifacts/roc_curve.png`: curva ROC del split holdout
+- `models/model_v1.0.0.pkl`: pipeline completo (`preprocess` + `clf`) listo para carga directa
 
-#### 2. Evaluación
+#### 2. Evaluación rápida
 
 ```bash
-python main.py --mode evaluate \
-  --model models/churn_model.pkl \
-  --input data/raw/users_behavior.csv
+python main.py --mode eval --config configs/config.yaml
 ```
 
-#### 3. Predicción
+Reutiliza los artefactos guardados y vuelve a generar métricas y plots.
+
+#### 3. Predicción batch
 
 ```bash
 python main.py --mode predict \
-  --model models/churn_model.pkl \
-  --input data/new_customers.csv \
-  --output predictions.csv
+  --config configs/config.yaml \
+  --input_csv users_behavior.csv \
+  --output_path artifacts/predictions.csv
 ```
+
+Genera `artifacts/predictions.csv` con columnas `pred_is_ultra` y `proba_is_ultra`.
 
 ### Makefile
 
 ```bash
-make install    # Instalar deps
-make train      # Entrenar modelo
-make test       # Tests
-make api        # Iniciar API
+make install   # Instalar dependencias
+make train     # Entrenar modelo con la config por defecto
+make eval      # Evaluar modelo entrenado
+make predict   # Predicción batch de ejemplo
+make serve     # Lanzar API FastAPI en http://localhost:8000
+```
+
+### Experimentos con MLflow
+
+```bash
+# Búsqueda aleatoria de hiperparámetros y modelos (logreg, random_forest, gradient_boosting)
+python scripts/run_experiments.py \
+  --config configs/config.yaml \
+  --n_iter 3 \
+  --seed 42
+
+# Run de logging de ejemplo usando artifacts/metrics.json
+python scripts/run_mlflow.py
+
+# UI de MLflow para explorar runs
+mlflow ui --port 5000
+# Abrir http://localhost:5000
 ```
 
 ---
 
 ## 🎓 Modelo
 
-### Algoritmo: Ensemble de Clasificadores
+### Problema de ML
 
-**Estrategia**: Voting Classifier con 3 modelos base
+- **Tarea**: clasificación binaria `is_ultra` (1 = recomendar plan Ultra, 0 = plan Smart).
+- **Entrada**: comportamiento de uso mensual (`calls`, `minutes`, `messages`, `mb_used`).
+- **Salida**: probabilidad de que el cliente deba migrar al plan Ultra.
 
-1. **Logistic Regression**: Modelo baseline rápido
-2. **Random Forest**: Captura interacciones no-lineales
-3. **Gradient Boosting**: Alta precisión
+### Arquitectura del pipeline
 
-### Features Principales
+- **Preprocesamiento** (`data/preprocess.py`):
+  - Imputación mediana y estandarización de variables numéricas.
+  - `FeatureEngineer` añade features derivadas:
+    - `minutes_per_call`: minutos promedio por llamada.
+    - `messages_per_call`: mensajes promedio por llamada.
+    - `mb_per_minute`: MB usados por minuto de llamada.
+- **Modelos soportados** (`main.build_model`):
+  - `logreg`: `LogisticRegression` como baseline lineal interpretable.
+  - `random_forest`: `RandomForestClassifier` para capturar relaciones no lineales.
+  - `gradient_boosting`: `GradientBoostingClassifier` como modelo de alto rendimiento.
 
-| Feature | Tipo | Descripción | Importancia |
-|---------|------|-------------|-------------|
-| `tenure` | int | Meses como cliente | 0.24 |
-| `MonthlyCharges` | float | Cargo mensual | 0.18 |
-| `Contract` | cat | Tipo de contrato | 0.16 |
-| `InternetService` | cat | Tipo de internet | 0.12 |
-| `TotalCharges` | float | Cargos totales | 0.10 |
+El modelo por defecto configurado en `configs/config.yaml` es:
 
-### Manejo de Desbalance
+- `GradientBoostingClassifier(n_estimators=200, max_depth=2, learning_rate=0.05)`.
 
-- **SMOTE**: Oversampling de clase minoritaria
-- **Class weights**: Penalización balanceada
-- **Threshold tuning**: Optimización del umbral de decisión
+### Métricas clave (holdout 20 %, seed=42)
 
-### Métricas
+Los experimentos ejecutados con `scripts/run_experiments.py` muestran que el mejor modelo (`gradient_boosting`) alcanza aproximadamente:
 
-| Métrica | Valor | Benchmark |
-|---------|-------|-----------|
-| **AUC-ROC** | 0.857 | > 0.80 ✅ |
-| **F1-Score** | 0.68 | > 0.60 ✅ |
-| **Recall** | 0.72 | > 0.65 ✅ |
-| **Precision** | 0.65 | > 0.60 ✅ |
+| Métrica   | Valor aproximado |
+|-----------|------------------|
+| Accuracy  | ~0.82            |
+| Precision | ~0.83            |
+| Recall    | ~0.53            |
+| F1-Score  | ~0.65            |
+| ROC AUC   | ~0.85            |
+
+Los valores exactos para cada entrenamiento se registran en `artifacts/metrics.json` y en MLflow.
 
 ---
 
@@ -205,50 +229,49 @@ make api        # Iniciar API
 ### Endpoints
 
 #### Health Check
+
 ```bash
 GET /health
 ```
 
 Response:
+
 ```json
 {
-  "status": "healthy",
-  "model_version": "1.0.0"
+  "status": "ok"
 }
 ```
 
-#### Predicción Individual
+#### Predicción individual
+
 ```bash
 POST /predict
 ```
 
-Request:
+Request body (JSON):
+
 ```json
 {
-  "tenure": 24,
-  "MonthlyCharges": 75.5,
-  "Contract": "One year",
-  "InternetService": "Fiber optic",
-  "TotalCharges": 1810.0
+  "calls": 100,
+  "minutes": 500,
+  "messages": 50,
+  "mb_used": 20000
 }
 ```
 
-Response:
+Response de ejemplo:
+
 ```json
 {
-  "churn_prediction": 1,
-  "churn_probability": 0.78,
-  "risk_level": "high",
-  "recommendation": "Immediate retention campaign"
+  "prediction": 1,
+  "probability_is_ultra": 0.71
 }
 ```
 
-#### Batch Predictions
-```bash
-POST /predict_batch
-```
+- `prediction`: 1 = recomendar plan Ultra, 0 = plan Smart.
+- `probability_is_ultra`: probabilidad estimada de que el cliente sea perfil Ultra.
 
-### Documentación Interactiva
+### Documentación interactiva
 
 `http://localhost:8000/docs` (Swagger UI)
 
@@ -256,33 +279,25 @@ POST /predict_batch
 
 ## 📁 Estructura del Proyecto
 
-```
+```text
 TelecomAI-Customer-Intelligence/
 ├── app/
-│   ├── fastapi_app.py          # API REST
-│   └── example_load.py         # Carga de modelo
-│
+│   └── fastapi_app.py          # API de inferencia (FastAPI)
+├── configs/
+│   └── config.yaml             # Configuración de datos, modelo y MLflow
 ├── data/
-│   ├── raw/
-│   │   └── users_behavior.csv  # Dataset original
-│   ├── preprocess.py           # Limpieza y features
+│   ├── preprocess.py           # Preprocesamiento + FeatureEngineer
 │   └── __init__.py
-│
-├── models/
-│   └── churn_model.pkl         # Modelo entrenado
-│
-├── artifacts/
-│   ├── metrics.json            # Métricas
-│   ├── confusion_matrix.png
-│   └── roc_curve.png
-│
-├── tests/
-│   ├── test_model.py
-│   ├── test_preprocessing.py
-│   └── test_api.py
-│
-├── main.py                     # CLI principal
-├── evaluate.py                 # Evaluación
+├── monitoring/
+│   └── check_drift.py          # Script simple de data drift (KS, PSI, Evidently opcional)
+├── scripts/
+│   ├── run_experiments.py      # Búsqueda aleatoria de modelos + logging en MLflow
+│   └── run_mlflow.py           # Ejemplo de logging de métricas de negocio
+├── artifacts/                  # Artefactos generados (modelo, métricas, plots)
+├── models/                     # Modelos exportados (pipeline completo)
+├── tests/                      # Tests unitarios
+├── main.py                     # CLI de entrenamiento/evaluación/predicción
+├── evaluate.py                 # Utilidades de métricas y visualizaciones
 ├── model_card.md               # Ficha del modelo
 └── data_card.md                # Ficha del dataset
 ```
@@ -318,42 +333,34 @@ TOTAL                     495    139    72%
 
 ## 📈 Resultados
 
-### Métricas Finales
+### Rendimiento del modelo actual
 
-| Dataset | AUC-ROC | F1 | Precision | Recall |
-|---------|---------|-----|-----------|--------|
-| Train | 0.885 | 0.72 | 0.70 | 0.74 |
-| Validation | 0.857 | 0.68 | 0.65 | 0.72 |
-| Test | 0.850 | 0.66 | 0.64 | 0.70 |
+Para el mejor modelo configurado actualmente (`gradient_boosting` con feature engineering) en un split holdout del 20 % se obtienen típicamente métricas en el rango:
 
-### Confusion Matrix (Test)
+| Métrica   | Valor aproximado |
+|-----------|------------------|
+| Accuracy  | ~0.82            |
+| Precision | ~0.83            |
+| Recall    | ~0.53            |
+| F1-Score  | ~0.65            |
+| ROC AUC   | ~0.85            |
 
-```
-                Predicted
-                No    Yes
-Actual  No    1120    95
-        Yes    142   350
-```
+Las métricas exactas por experimento se pueden consultar en:
 
-- **True Negatives**: 1,120
-- **False Positives**: 95
-- **False Negatives**: 142 (costoso)
-- **True Positives**: 350
+- `artifacts/metrics.json`
+- UI de MLflow (`mlruns/` o servidor remoto configurado)
 
-### Feature Importance Top 5
+### Artefactos generados
 
-1. **tenure** (0.24): Tiempo como cliente
-2. **MonthlyCharges** (0.18): Cargo mensual
-3. **Contract** (0.16): Tipo de contrato
-4. **InternetService** (0.12): Servicio de internet
-5. **TotalCharges** (0.10): Total pagado
+- `artifacts/confusion_matrix.png`: vista rápida de errores tipo FP/FN.
+- `artifacts/roc_curve.png`: trade-off sensibilidad/especificidad.
+- `artifacts/predictions.csv`: ejemplo de predicciones batch.
 
-### Insights de Negocio
+### Insights de negocio (ilustrativos)
 
-- Clientes con **contratos mes-a-mes** tienen 3x más probabilidad de churn
-- **Fiber optic** internet tiene mayor churn que DSL
-- Clientes con **menos de 6 meses** son de alto riesgo
-- **MonthlyCharges > $70** correlacionan con mayor churn
+- Usuarios con **alto uso combinado de minutos y datos** suelen ser buenos candidatos para el plan **Ultra**.
+- Clientes con **bajo uso en todas las dimensiones** se mantienen mejor en el plan **Smart**.
+- Los ratios derivados (`minutes_per_call`, `mb_per_minute`) ayudan a distinguir perfiles de heavy users vs uso ocasional.
 
 ---
 

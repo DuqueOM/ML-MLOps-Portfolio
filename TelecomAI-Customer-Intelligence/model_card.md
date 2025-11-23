@@ -1,15 +1,18 @@
 # Model Card — TelecomAI Plan Classification (Smart vs Ultra)
 
-- **Model**: Logistic Regression (binary classification)
+- **Primary model**: Gradient Boosting Classifier (binary classification)
+- **Baseline model**: Logistic Regression
 - **Version**: v1.0
 - **Task**: Predict if a customer should be on Ultra plan (`is_ultra` = 1) based on usage (`calls`, `minutes`, `messages`, `mb_used`).
 - **Dataset**: `users_behavior.csv` (tabular, synthetic/educational). Size ~3.2K rows.
 - **Target**: `is_ultra` (0/1)
-- **Features**: numeric — `calls`, `minutes`, `messages`, `mb_used`
+- **Features (raw)**: numeric — `calls`, `minutes`, `messages`, `mb_used`
+- **Features (engineered)**: `minutes_per_call`, `messages_per_call`, `mb_per_minute`
 
 ## Performance
 - Metrics (holdout, split 80/20, seed=42):
   - Reported during training in `artifacts/metrics.json` (accuracy, precision, recall, f1, roc_auc)
+  - Typical values for the current best model (Gradient Boosting) are around: accuracy ~0.82, precision ~0.83, recall ~0.53, F1 ~0.65, ROC AUC ~0.85 (see README for details).
 
 **Ejemplo de impacto (ilustrativo)**
 - Si, sobre una base de ~3,200 clientes con ~40% potencialmente Ultra, el modelo obtiene recall≈0.80 y precision≈0.75 en `is_ultra=1`:
