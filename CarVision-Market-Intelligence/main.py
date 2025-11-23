@@ -27,11 +27,6 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import yaml
-from evaluate import evaluate_model as eval_model
-from plotly.subplots import make_subplots
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.pipeline import Pipeline
 
 # ML utilities from project
 from data.preprocess import build_preprocessor
@@ -39,6 +34,11 @@ from data.preprocess import clean_data as ds_clean_data
 from data.preprocess import infer_feature_types
 from data.preprocess import load_data as ds_load_data
 from data.preprocess import save_split_indices, split_data
+from evaluate import evaluate_model as eval_model
+from plotly.subplots import make_subplots
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.pipeline import Pipeline
 
 try:
     from common_utils.seed import set_seed
@@ -276,6 +276,15 @@ class MarketAnalyzer:
         total_opportunities = sum([opp["count"] for opp in self.analysis_results["opportunities"]])
         potential_value = sum([opp["potential_value"] * opp["count"] for opp in self.analysis_results["opportunities"]])
 
+        # Manejar casos sin suficientes datos de marca para evitar IndexError
+        market_by_brand = self.analysis_results.get("market_by_brand", {})
+        volume_dict = market_by_brand.get("volume", {}) or {}
+        pricing_mean_dict = (market_by_brand.get("pricing") or {}).get("mean", {}) or {}
+
+        # Tomar la primera marca disponible o "N/A" si no hay datos
+        most_popular_brand = next(iter(volume_dict.keys()), "N/A")
+        highest_value_brand = next(iter(pricing_mean_dict.keys()), "N/A")
+
         summary = {
             "kpis": {
                 "total_vehicles": total_vehicles,
@@ -285,16 +294,13 @@ class MarketAnalyzer:
                 "potential_arbitrage_value": potential_value,
             },
             "insights": {
-                "most_popular_brand": list(self.analysis_results["market_by_brand"]["volume"].keys())[0],
-                "highest_value_brand": list(self.analysis_results["market_by_brand"]["pricing"]["mean"].keys())[0],
+                "most_popular_brand": most_popular_brand,
+                "highest_value_brand": highest_value_brand,
                 "avg_depreciation_rate": np.mean(list(self.analysis_results["depreciation"]["annual_rate"].values())),
             },
             "recommendations": [
                 f"Focus on {total_opportunities} undervalued vehicles for potential ${potential_value:,.0f} profit",
-                (
-                    f"Target {list(self.analysis_results['market_by_brand']['volume'].keys())[0]} brand "
-                    "for volume opportunities"
-                ),
+                (f"Target {most_popular_brand} brand for volume opportunities"),
                 "Implement dynamic pricing based on vehicle age and market conditions",
             ],
         }

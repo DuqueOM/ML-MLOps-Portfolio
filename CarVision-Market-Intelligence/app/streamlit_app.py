@@ -571,65 +571,64 @@ with tab4:
 
         st.markdown("Ingresa las características del vehículo para obtener una estimación de precio basada en IA.")
 
-        # Formulario
-        with st.form("predict_form"):
-            col_f1, col_f2, col_f3 = st.columns(3)
-            with col_f1:
-                year_input = st.number_input("Año del Modelo", 1990, 2025, 2018)
-                odometer_input = st.number_input("Millaje (Odometer)", 0, 500000, 50000)
-                cylinders_input = st.selectbox("Cilindros", [4, 6, 8, 10, 12], index=1)
+        # Controles de entrada (sin formulario explícito para evitar cambios de pestaña al enviar)
+        col_f1, col_f2, col_f3 = st.columns(3)
+        with col_f1:
+            year_input = st.number_input("Año del Modelo", 1990, 2025, 2018)
+            odometer_input = st.number_input("Millaje (Odometer)", 0, 500000, 50000)
+            cylinders_input = st.selectbox("Cilindros", [4, 6, 8, 10, 12], index=1)
 
-            with col_f2:
-                condition_input = st.selectbox(
-                    "Condición",
-                    ["excellent", "good", "fair", "like new", "salvage", "new"],
-                    index=0,
-                )
-                fuel_input = st.selectbox(
-                    "Combustible",
-                    ["gas", "diesel", "hybrid", "electric", "other"],
-                    index=0,
-                )
-                trans_input = st.selectbox("Transmisión", ["automatic", "manual", "other"], index=0)
+        with col_f2:
+            condition_input = st.selectbox(
+                "Condición",
+                ["excellent", "good", "fair", "like new", "salvage", "new"],
+                index=0,
+            )
+            fuel_input = st.selectbox(
+                "Combustible",
+                ["gas", "diesel", "hybrid", "electric", "other"],
+                index=0,
+            )
+            trans_input = st.selectbox("Transmisión", ["automatic", "manual", "other"], index=0)
 
-            with col_f3:
-                type_input = st.selectbox(
-                    "Tipo",
-                    [
-                        "sedan",
-                        "SUV",
-                        "truck",
-                        "pickup",
-                        "coupe",
-                        "wagon",
-                        "hatchback",
-                        "van",
-                        "convertible",
-                        "other",
-                    ],
-                    index=1,
-                )
-                paint_input = st.selectbox(
-                    "Color",
-                    [
-                        "white",
-                        "black",
-                        "silver",
-                        "grey",
-                        "blue",
-                        "red",
-                        "green",
-                        "brown",
-                        "custom",
-                        "yellow",
-                        "orange",
-                        "purple",
-                    ],
-                    index=0,
-                )
-                drive_input = st.selectbox("Tracción", ["4wd", "fwd", "rwd"], index=0)
+        with col_f3:
+            type_input = st.selectbox(
+                "Tipo",
+                [
+                    "sedan",
+                    "SUV",
+                    "truck",
+                    "pickup",
+                    "coupe",
+                    "wagon",
+                    "hatchback",
+                    "van",
+                    "convertible",
+                    "other",
+                ],
+                index=1,
+            )
+            paint_input = st.selectbox(
+                "Color",
+                [
+                    "white",
+                    "black",
+                    "silver",
+                    "grey",
+                    "blue",
+                    "red",
+                    "green",
+                    "brown",
+                    "custom",
+                    "yellow",
+                    "orange",
+                    "purple",
+                ],
+                index=0,
+            )
+            drive_input = st.selectbox("Tracción", ["4wd", "fwd", "rwd"], index=0)
 
-            submit_btn = st.form_submit_button("💰 Calcular Precio Estimado")
+        submit_btn = st.button("💰 Calcular Precio Estimado", key="calculate_price_btn")
 
         if submit_btn:
             # Construir DataFrame de entrada con las columnas crudas principales

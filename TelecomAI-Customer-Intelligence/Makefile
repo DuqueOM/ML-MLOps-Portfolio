@@ -22,7 +22,7 @@ serve:
 start-demo:
 	$(PYTHON) -m pip install -r requirements.txt
 	$(PYTHON) main.py --mode train --config $(CONFIG)
-	docker compose up --build -d
+	$(MAKE) serve
 
 mlflow-demo:
 	$(PYTHON) scripts/run_mlflow.py
