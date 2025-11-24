@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Critical CI/CD Integration Test Failures** (2025-11-24):
+  - Fixed BankChurn Dockerfile Python version mismatch between builder (3.13) and runtime (3.12) stages, causing `ModuleNotFoundError` for uvicorn and pip.
+  - Corrected model artifact paths from `models/` to `artifacts/` for CarVision and TelecomAI to match API expectations.
+  - Updated `docker-compose.demo.yml` volume mounts to use `artifacts/` instead of `models/` for CarVision and TelecomAI services.
+  - Removed explicit `image:` names from docker-compose services to allow auto-generation, fixing CI build errors ("No such image" failures).
+  - Fixed CarVision prediction test payload to use correct schema (`model_year`, `model`) instead of incorrect fields.
+  - Fixed TelecomAI prediction test payload to match API schema (`calls`, `minutes`, `messages`, `mb_used`).
+  - Improved CarVision model training to handle missing values correctly by data type (strings → 'unknown', numbers → 0).
+  - Updated TelecomAI training script to use correct dataset schema from `users_behavior.csv` (`is_ultra` target instead of `Churn`).
+  - Added required CSV datasets for demo model training (`Churn_Modelling.csv`, `vehicles_us.csv`, `WA_Fn-UseC_-Telco-Customer-Churn.csv`).
+  - **Result**: All integration tests now pass successfully (BankChurn ✅, CarVision ✅, TelecomAI ✅).
+
 ### Added
 - **Comprehensive Documentation Suite** (2500+ lines):
   - `docs/ARCHITECTURE_PORTFOLIO.md`: System architecture with Mermaid diagrams, Docker multi-stage strategy, CI/CD pipeline, and tech stack.
