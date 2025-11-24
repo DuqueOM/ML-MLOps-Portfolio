@@ -8,6 +8,7 @@ scipy>=1.7.0
 # Machine Learning Frameworks
 scikit-learn>=1.0.0
 xgboost>=1.5.0
+imbalanced-learn>=0.10.0
 
 # Hyperparameter Optimization
 optuna>=3.0.0
