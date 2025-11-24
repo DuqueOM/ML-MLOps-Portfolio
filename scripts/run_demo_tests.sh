@@ -57,7 +57,7 @@ check_health "$CARVISION_URL" "CarVision API"
 check_endpoint "$CARVISION_URL/docs" "CarVision Docs"
 # Verify Streamlit is up (simple check)
 echo -n "Checking CarVision Dashboard (http://localhost:8501)... "
-code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8501/_stcore/health")
+code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8501/_stcore/health" || echo "000")
 if [ "$code" == "200" ]; then
     echo -e "${GREEN}OK${NC}"
 else
@@ -101,19 +101,19 @@ echo -n "Testing CarVision Prediction... "
 RESPONSE=$(curl -s -X POST "$CARVISION_URL/predict" \
      -H "Content-Type: application/json" \
      -d '{
-       "year": 2015,
-       "km_driven": 50000,
-       "fuel": "Diesel",
-       "seller_type": "Individual",
-       "transmission": "Manual",
-       "owner": "First Owner",
-       "mileage": 20.0,
-       "engine": 1248,
-       "max_power": 74.0,
-       "seats": 5.0
+       "model_year": 2015,
+       "model": "civic",
+       "condition": "good",
+       "cylinders": 4,
+       "fuel": "gas",
+       "odometer": 50000,
+       "transmission": "automatic",
+       "drive": "fwd",
+       "type": "sedan",
+       "paint_color": "white"
      }')
 
-if echo "$RESPONSE" | grep -q "predicted_price"; then
+if echo "$RESPONSE" | grep -q "prediction"; then
     echo -e "${GREEN}SUCCESS${NC}"
 else
     echo -e "${RED}FAILED${NC}"
@@ -126,28 +126,13 @@ echo -n "Testing TelecomAI Prediction... "
 RESPONSE=$(curl -s -X POST "$TELECOM_URL/predict" \
      -H "Content-Type: application/json" \
      -d '{
-        "gender": "Male",
-        "SeniorCitizen": 0,
-        "Partner": "Yes",
-        "Dependents": "No",
-        "tenure": 1,
-        "PhoneService": "No",
-        "MultipleLines": "No phone service",
-        "InternetService": "DSL",
-        "OnlineSecurity": "No",
-        "OnlineBackup": "Yes",
-        "DeviceProtection": "No",
-        "TechSupport": "No",
-        "StreamingTV": "No",
-        "StreamingMovies": "No",
-        "Contract": "Month-to-month",
-        "PaperlessBilling": "Yes",
-        "PaymentMethod": "Electronic check",
-        "MonthlyCharges": 29.85,
-        "TotalCharges": "29.85"
+        "calls": 40.0,
+        "minutes": 311.9,
+        "messages": 83.0,
+        "mb_used": 19915.42
      }')
 
-if echo "$RESPONSE" | grep -q "churn_prediction"; then
+if echo "$RESPONSE" | grep -q "prediction"; then
     echo -e "${GREEN}SUCCESS${NC}"
 else
     echo -e "${RED}FAILED${NC}"

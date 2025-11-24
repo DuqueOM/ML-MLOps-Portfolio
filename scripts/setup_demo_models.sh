@@ -95,12 +95,18 @@ if 'price' not in df.columns or len(available_cols) == 0:
     print('⚠️  Required columns not found')
     sys.exit(0)
 
-X = df[available_cols].fillna('unknown')
-y = df['price']
-
-# Separate by dtype
+# Separate by dtype before filling
 cat_cols = [c for c in available_cols if df[c].dtype == 'object']
 num_cols = [c for c in available_cols if df[c].dtype != 'object']
+
+# Fill missing values appropriately by type
+X = df[available_cols].copy()
+for col in cat_cols:
+    X[col] = X[col].fillna('unknown')
+for col in num_cols:
+    X[col] = X[col].fillna(0)
+
+y = df['price']
 
 transformers = []
 if cat_cols:
@@ -117,8 +123,8 @@ model = Pipeline([
 
 model.fit(X, y)
 
-Path('models').mkdir(exist_ok=True)
-joblib.dump(model, 'models/model_v1.0.0.pkl')
+Path('artifacts').mkdir(exist_ok=True)
+joblib.dump(model, 'artifacts/model.joblib')
 print('✅ CarVision model saved')
 "
 fi
@@ -148,23 +154,22 @@ if not data_path.exists():
 
 df = pd.read_csv(data_path).head(1000)
 
-# Encode target
-if 'Churn' in df.columns:
-    df['Churn'] = (df['Churn'] == 'Yes').astype(int)
-else:
-    print('⚠️  Churn column not found')
+# Use actual columns from users_behavior.csv dataset
+feature_cols = ['calls', 'minutes', 'messages', 'mb_used']
+target_col = 'is_ultra'
+
+# Check if columns exist
+if target_col not in df.columns:
+    print('⚠️  Target column not found')
     sys.exit(0)
 
-# Simple numeric features
-num_features = ['tenure', 'MonthlyCharges']
-num_features = [f for f in num_features if f in df.columns]
-
-if not num_features:
-    print('⚠️  No numeric features found')
+available_features = [f for f in feature_cols if f in df.columns]
+if not available_features:
+    print('⚠️  No features found')
     sys.exit(0)
 
-X = df[num_features].fillna(0)
-y = df['Churn']
+X = df[available_features].fillna(0)
+y = df[target_col]
 
 model = Pipeline([
     ('scaler', StandardScaler()),
@@ -173,8 +178,8 @@ model = Pipeline([
 
 model.fit(X, y)
 
-Path('models').mkdir(exist_ok=True)
-joblib.dump(model, 'models/model_v1.0.0.pkl')
+Path('artifacts').mkdir(exist_ok=True)
+joblib.dump(model, 'artifacts/model.joblib')
 print('✅ TelecomAI model saved')
 "
 fi
