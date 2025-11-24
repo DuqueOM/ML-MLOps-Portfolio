@@ -2,111 +2,140 @@
 
 **Project:** BankChurn-Predictor  
 **Version:** 1.0.0  
-**Status:** Production-Ready
+**Status:** Production-Ready  
+**Maintainer:** Daniel Duque
 
 ---
 
 ## 1. System Overview
 
-The BankChurn-Predictor is a machine learning system designed to predict customer attrition in the banking sector. It employs a Voting Classifier ensemble (Logistic Regression + Random Forest) to balance interpretability and performance. The system is deployed as a RESTful API using FastAPI, containerized with Docker, and monitored via MLflow and Evidently.
+The **BankChurn-Predictor** is a production-grade machine learning system capable of identifying bank customers at risk of attrition (churn). It utilizes an ensemble of linear and non-linear models (Logistic Regression and Random Forest) to predict the probability of a customer exiting the service.
 
-### 1.1 Business Goal
-Predict `Exited` status (binary classification) for customers to enable proactive retention strategies.
+The system is designed with **MLOps best practices** in mind, featuring reproducible training pipelines, automated testing, containerized deployment, and rigorous monitoring capabilities. It serves as a critical component for the Retention Marketing team to target high-risk customers proactively.
 
-### 1.2 Success Metrics
-- **Model Performance**: F1-Score > 0.60 (on minority class), ROC-AUC > 0.85.
-- **Latency**: p95 prediction time < 100ms.
-- **Availability**: 99.9% uptime for API.
+### 1.1 Business Goals & KPIs
+-   **Goal**: Minimize customer churn by identifying at-risk users early.
+-   **KPI**: **F1-Score (Weighted)** > 0.80 to ensure a balance between Precision (avoiding spamming happy customers) and Recall (catching actual churners).
+-   **Operational KPI**: API Latency < 100ms (P95) to support real-time integration with the CRM.
 
----
-
-## 2. Architectural Design
-
-### 2.1 High-Level Component Diagram
+### 1.2 High-Level Component Diagram
 
 ```mermaid
 graph TD
-    User[Client / User] -->|REST API| API[FastAPI Service]
+    User[CRM / Internal User] -->|HTTPS Request| LoadBalancer[Ingress / Load Balancer]
+    LoadBalancer --> API[FastAPI Service]
     
-    subgraph "Model Serving Layer"
-    API -->|Load| Model[Ensemble Model]
-    API -->|Transform| Preprocessor[Sklearn Pipeline]
+    subgraph "Inference Service"
+        API -->|Validate| Schema[Pydantic Models]
+        Schema -->|Transform| Preprocessor[Sklearn Pipeline]
+        Preprocessor -->|Predict| Model[Voting Classifier]
     end
     
-    subgraph "Training Pipeline (Offline)"
-    Raw[Raw Data] -->|Split| TrainTest[Train/Test Split]
-    TrainTest -->|Fit| Preprocessor
-    TrainTest -->|Train| Model
-    Model -->|Log| MLflow[MLflow Tracking]
-    end
-    
-    subgraph "Monitoring"
-    API -->|Metrics| Prometheus[Prometheus / Logs]
-    Raw -->|Drift| Evidently[Evidently AI]
+    subgraph "Observability"
+        API -->|Metrics| Prometheus
+        API -->|Logs| CloudWatch/ELK
     end
 ```
 
-### 2.2 Data Flow
-1.  **Ingestion**: Data is ingested as CSV files into `data/raw/`.
-2.  **Preprocessing**: 
-    -   Missing values imputed (Median for numerical, "missing" for categorical).
-    -   Categorical features One-Hot Encoded.
-    -   Numerical features Standard Scaled.
-    -   **CRITICAL**: Split happens *before* fitting to prevent leakage.
-3.  **Training**: 
-    -   VotingClassifier (Soft Voting).
-    -   Hyperparameter tuning via Optuna (planned).
-4.  **Serving**: 
-    -   FastAPI receives JSON payload.
-    -   Input validation via Pydantic.
-    -   Model inference (Preprocessing -> Prediction).
-    -   Response includes probability and risk level.
+---
+
+## 2. Detailed Component Architecture
+
+### 2.1 Data Pipeline (ETL & Preprocessing)
+The data pipeline is managed via **DVC (Data Version Control)** to ensure lineage and reproducibility.
+
+-   **Source**: Raw CSV exports from the core banking data warehouse.
+-   **Preprocessing (`data/preprocess.py`)**:
+    -   **Cleaning**: Drops PII (Personally Identifiable Information) like `Surname` and low-variance IDs (`RowNumber`, `CustomerId`).
+    -   **Validation**: Checks schema constraints (e.g., `CreditScore` range 300-850).
+    -   **Transformation**: 
+        -   **Categorical**: One-Hot Encoding for `Geography` and `Gender`.
+        -   **Numerical**: Standard Scaling for `Balance`, `EstimatedSalary`, etc.
+        -   **Imputation**: Median strategy for numerical, constant for categorical.
+
+**Key Decision**: We perform splitting *before* any learnable transformation (scaling/imputation) to strictly prevent **Data Leakage**.
+
+### 2.2 Model Architecture
+We employ a **Voting Ensemble** approach to maximize robustness:
+
+1.  **Logistic Regression**: Provides linear decision boundaries and interpretability (coefficients).
+2.  **Random Forest**: Captures non-linear relationships and interactions between features.
+3.  **Resampling**: Wrapped in a custom `ResampleClassifier` that applies **SMOTE** (Synthetic Minority Over-sampling Technique) inside the cross-validation loop. This is crucial as the dataset is imbalanced (~20% churn).
+
+**Trade-off**: Using SMOTE increases training time but significantly improves Recall on the minority class, which is the primary business objective.
+
+### 2.3 Inference API
+The serving layer is built with **FastAPI**.
+
+-   **Serialization**: Models are serialized using `joblib` for efficiency.
+-   **Validation**: Input payloads are validated against strict types defined in `app/fastapi_app.py` (e.g., `Geography` must be one of 'France', 'Spain', 'Germany').
+-   **Concurrency**: The application runs on an ASGI server (`uvicorn`), allowing it to handle multiple concurrent requests efficiently.
 
 ---
 
-## 3. Technology Stack & Decisions
+## 3. Data Flow & Lineage
 
-| Component | Technology | Rationale |
-|-----------|------------|-----------|
-| **Language** | Python 3.13 | Modern, type-safe, performance improvements. |
-| **Framework** | FastAPI | High performance (Starlette), automatic docs (Swagger), type safety. |
-| **Model** | Sklearn Ensemble | Robust baseline, handles non-linearities (RF) and provides calibration (LR). |
-| **Imbalance** | SMOTE / Class Weight | Essential for churn data (typically 80/20 imbalance). |
-| **Tracking** | MLflow | Industry standard for experiment tracking and model registry. |
-| **Container** | Docker | Reproducibility across environments. |
-| **Orchestration** | Make / DVC | Simple, effective local pipeline management. |
+```mermaid
+sequenceDiagram
+    participant Raw as Raw Data
+    participant DVC as DVC Pipeline
+    participant Train as Trainer
+    participant MLflow as MLflow Registry
+    participant API as Serving API
 
-### 3.1 Trade-offs
--   **Ensemble vs Deep Learning**: Chosen ensemble for interpretability and training speed on tabular data over DL, which requires more data and is black-box.
--   **FastAPI vs Flask**: FastAPI chosen for async capabilities and built-in validation, though Flask has a larger legacy ecosystem.
--   **CSV vs Feature Store**: CSV used for simplicity in this portfolio scope. A Feature Store (Feast) would be added for larger scale.
+    Raw->>DVC: Ingest CSV
+    DVC->>Train: Preprocess & Split
+    Train->>Train: Cross-Validation (5-Fold)
+    Train->>MLflow: Log Metrics & Params
+    Train->>MLflow: Register Model Artifacts
+    MLflow->>API: Load Best Model (Startup)
+    Note over API: Ready for Inference
+```
 
----
-
-## 4. DevOps & CI/CD
-
-### 4.1 CI Pipeline (`.github/workflows/ci-mlops.yml`)
-Triggered on Push/PR to `main`.
-1.  **Linting**: Black, Flake8, MyPy.
-2.  **Testing**: Pytest (Unit & Integration).
-3.  **Security**: Gitleaks (if configured) or basic dependency checks.
-4.  **Build**: Docker image build verification.
-
-### 4.2 Deployment Strategy
--   **Containerization**: Application packaged as a Docker container.
--   **Registry**: GitHub Container Registry (GHCR) or Docker Hub.
--   **Runtime**: Kubernetes (Manifests in `k8s/`) or Docker Compose for lightweight deploy.
+### 3.1 Versioning Strategy
+-   **Code**: Git (GitHub).
+-   **Data**: DVC (referencing S3/Local storage).
+-   **Models**: MLflow (Model Registry) + DVC tracking of `.pkl` files.
+-   **Containers**: Docker (GHCR) tagged with Git SHA.
 
 ---
 
-## 5. Security & Compliance
--   **Input Validation**: Strict Pydantic models prevent injection and bad data.
--   **Dependencies**: Pinned versions in `requirements.txt` to prevent supply chain attacks.
--   **Secrets**: Managed via `.env` (not committed) and GitHub Secrets.
+## 4. Scalability & Reliability
+
+### 4.1 Horizontal Scaling
+The API is stateless. It can be scaled horizontally behind a load balancer (e.g., Kubernetes Service or AWS ALB). The Docker image is optimized (~200MB) for fast startup times.
+
+### 4.2 Fault Tolerance
+-   **Input Handling**: Invalid inputs return `422 Unprocessable Entity` with detailed error messages, preventing model crashes.
+-   **Model Loading**: The API performs a "health check" on startup to ensure the model artifact is loaded. If failed, the service fails to start (Fail Fast pattern).
 
 ---
 
-## 6. Future Improvements
-1.  Implement `dvc` for data versioning (remote storage configuration).
-2.  Add `Prometheus` endpoint for real-time metric scraping.
-3.  Deploy to AWS SageMaker or GCP Vertex AI for scalable serving.
+## 5. Security
+
+-   **Container Security**:
+    -   Runs as non-root user (`appuser`).
+    -   Minimal base image (`python:3.12-slim`).
+    -   Scanned for CVEs via Trivy in CI/CD.
+-   **API Security**:
+    -   No sensitive data returned in error messages.
+    -   CORS configured to allow restricted origins.
+
+---
+
+## 6. Technological Decisions
+
+| Component | Choice | Rationale | Alternatives Considered |
+|-----------|--------|-----------|-------------------------|
+| **Framework** | FastAPI | High performance, async support, auto-docs. | Flask (slower, less robust validation) |
+| **Model** | Sklearn Ensemble | Balance of performance and interpretability. | XGBoost (higher complexity), Deep Learning (overkill for tabular data size) |
+| **Packaging** | Docker | Standard unit of deployment. | VirtualEnv (harder to replicate env) |
+| **Orchestration** | Make + DVC | Simplicity for single-repo MLOps. | Airflow (too complex for this scope) |
+
+---
+
+## 7. Future Roadmap
+
+1.  **A/B Testing**: Implement shadow deployment capability to test new models against the champion.
+2.  **Feature Store**: Integrate a Feature Store (e.g., Feast) for serving consistent features in real-time.
+3.  **Explainability**: Expose SHAP values via the API for individual prediction explanation.

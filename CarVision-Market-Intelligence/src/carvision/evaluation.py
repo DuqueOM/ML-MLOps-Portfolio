@@ -36,7 +36,7 @@ def evaluate_model(cfg: Dict[str, Any]) -> Dict[str, Any]:
     seed = cfg.get("seed", 42)
 
     # Load and clean
-    df = clean_data(load_data(paths["data_path"]))
+    df = clean_data(load_data(paths["data_path"]), filters=prep.get("filters"))
 
     # Infer features to ensure consistent splitting/types
     num_cols, cat_cols = infer_feature_types(

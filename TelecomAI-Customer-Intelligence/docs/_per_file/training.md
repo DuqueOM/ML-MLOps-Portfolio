@@ -1,15 +1,16 @@
-# Training Module (`src/telecom/training.py`)
+# src/telecom/training.py
 
 ## Purpose
-Handles the creation and training of the machine learning model.
-It uses a `sklearn.pipeline.Pipeline` to chain the preprocessor (imputation + scaling) with the classifier. This unified object is what gets saved, ensuring consistency.
+Orchestrates the model training pipeline. It handles data loading, splitting, preprocessing (feature scaling/imputation), model fitting, and artifact serialization.
+
+## Key Features
+- **Unified Pipeline:** Wraps the `ColumnTransformer` (preprocessor) and the Classifier into a single Scikit-Learn `Pipeline` object. This ensures that raw data sent to the model during inference is processed exactly the same way as training data.
+- **Config Driven:** All hyperparameters (split ratio, model params, seeds) are injected via the `Config` object.
+- **Reproducibility:** Sets random seeds for both splitting and model initialization.
 
 ## Validation
-Execute:
+Run a full training cycle using the CLI:
 ```bash
-python main.py --mode train
+python main.py --mode train --config configs/config.yaml
+# Verify artifacts/model.joblib is created
 ```
-**Success Criteria:**
-- Logs show "Starting training...".
-- `artifacts/model.joblib` file is updated.
-- Logs output final accuracy score.

@@ -1,141 +1,184 @@
-# 🏗 Global Portfolio Architecture
+# Architecture Portfolio - ML/MLOps Multi-Project
 
-This document describes the high-level architecture of the `ML-MLOps-Portfolio`, which implements a **Microservices Architecture** pattern for Machine Learning systems. Each project acts as an independent service, sharing common infrastructure and MLOps practices.
+## System Overview
 
-## 1. System Overview
-
-The portfolio consists of three primary ML microservices, each responsible for a specific business domain, orchestrating their own data pipelines, training jobs, and inference APIs.
+This portfolio demonstrates a production-grade ML/MLOps architecture integrating three independent machine learning projects under a unified infrastructure and CI/CD pipeline.
 
 ```mermaid
-graph TD
-    subgraph "Client Layer"
-        User[End User]
-        ExtApp[External Application]
+graph TB
+    subgraph "Data Layer"
+        D1[BankChurn Data]
+        D2[CarVision Data]
+        D3[TelecomAI Data]
     end
-
-    subgraph "Gateway / Ingress (Optional)"
-        Nginx[Nginx / Ingress Controller]
-    end
-
-    subgraph "Service Layer (Microservices)"
-        subgraph "BankChurn Predictor"
-            BC_API[FastAPI Service]
-            BC_Model[XGBoost Model]
-        end
-        
-        subgraph "CarVision Intelligence"
-            CV_Dash[Streamlit Dashboard]
-            CV_API[FastAPI Service]
-            CV_Model[RandomForest Model]
-        end
-        
-        subgraph "TelecomAI Intelligence"
-            TA_API[FastAPI Service]
-            TA_Model[Voting Classifier]
-        end
-    end
-
-    subgraph "MLOps Infrastructure"
-        MLflow[MLflow Tracking Server]
-        Reg[Docker Registry (GHCR)]
-        S3[Artifact Store (Local/Cloud)]
-    end
-
-    User --> CV_Dash
-    ExtApp --> BC_API
-    ExtApp --> CV_API
-    ExtApp --> TA_API
     
-    BC_API --> BC_Model
-    CV_API --> CV_Model
-    TA_API --> TA_Model
+    subgraph "Training Pipeline"
+        T1[BankChurn Training<br/>XGBoost + Optuna]
+        T2[CarVision Training<br/>RandomForest]
+        T3[TelecomAI Training<br/>Scikit-Learn]
+    end
     
-    BC_API -.-> MLflow
-    CV_API -.-> MLflow
-    TA_API -.-> MLflow
+    subgraph "MLflow Tracking"
+        MLF[MLflow Server<br/>:5000]
+    end
+    
+    subgraph "Model Registry"
+        M1[BankChurn Model]
+        M2[CarVision Model]
+        M3[TelecomAI Model]
+    end
+    
+    subgraph "Inference Services"
+        API1[BankChurn API<br/>:8001]
+        API2[CarVision API<br/>:8002]
+        API3[TelecomAI API<br/>:8003]
+        DASH[CarVision Dashboard<br/>:8501]
+    end
+    
+    subgraph "Monitoring"
+        PROM[Prometheus<br/>:9090]
+        GRAF[Grafana<br/>:3000]
+    end
+    
+    subgraph "CI/CD"
+        GHA[GitHub Actions]
+        TRIVY[Trivy Scanner]
+        BANDIT[Bandit Security]
+    end
+    
+    D1 --> T1
+    D2 --> T2
+    D3 --> T3
+    
+    T1 --> MLF
+    T2 --> MLF
+    T3 --> MLF
+    
+    T1 --> M1
+    T2 --> M2
+    T3 --> M3
+    
+    M1 --> API1
+    M2 --> API2
+    M2 --> DASH
+    M3 --> API3
+    
+    API1 --> PROM
+    API2 --> PROM
+    API3 --> PROM
+    
+    PROM --> GRAF
+    
+    GHA --> TRIVY
+    GHA --> BANDIT
 ```
 
-## 2. Shared Infrastructure & Principles
+## Project Architecture Details
 
-All services adhere to the **12-Factor App** methodology and share the following architectural pillars:
+### BankChurn-Predictor
+**Domain**: Customer Churn Prediction (Banking)  
+**ML Framework**: XGBoost with Optuna hyperparameter optimization  
+**Pipeline Architecture**:
+```
+Raw Data → Feature Engineering → Preprocessing (Pipeline) → XGBoost Model → Predictions
+```
 
-### 2.1 Containerization
-- **Base Image**: `python:3.11-slim` or `3.12-slim` for minimal footprint.
-- **Multi-stage Builds**: Used to separate build dependencies from runtime artifacts, reducing image size by ~60%.
-- **Non-root User**: Security best practice enforced in all Dockerfiles (`appuser`).
+**Key Components**:
+- `src/bankchurn/data.py`: Data loading and validation
+- `src/bankchurn/features.py`: Feature engineering
+- `src/bankchurn/preprocessing.py`: Unified sklearn Pipeline
+- `src/bankchurn/training.py`: Training loop with MLflow
+- `app/fastapi_app.py`: REST API
 
-### 2.2 CI/CD Pipeline (`ci-mlops.yml`)
-A unified GitHub Actions workflow orchestrates the lifecycle of all projects:
-1. **Validation**: Data quality checks and linting (flake8, black, mypy).
-2. **Testing**: Unit and integration tests with pytest.
-3. **Security**: Vulnerability scanning (Trivy, Bandit).
-4. **Delivery**: Automated Docker builds and pushes to GitHub Container Registry.
+**Model Pipeline**:
+```python
+Pipeline([
+    ('preprocessor', ColumnTransformer([
+        ('num', StandardScaler(), numeric_features),
+        ('cat', OneHotEncoder(), categorical_features)
+    ])),
+    ('model', XGBClassifier(...))
+])
+```
 
-### 2.3 Experiment Tracking
-- **MLflow** is used centrally to track experiments, parameters, and metrics.
-- Models are registered with versioning to ensure traceability.
-- During local development, MLflow runs with a local SQLite backend.
+### CarVision-Market-Intelligence
+**Domain**: Vehicle Price Prediction  
+**ML Framework**: RandomForest Regressor  
+**Pipeline Architecture**:
+```
+Raw Data → Data Cleaning → Feature Engineering → Preprocessing → RF Model → Price Predictions
+```
 
-## 3. Project Specifics
+**Key Components**:
+- `src/carvision/data.py`: Data loading with filtering
+- `src/carvision/features.py`: Centralized `FeatureEngineer` class
+- `src/carvision/training.py`: Model training
+- `src/carvision/analysis.py`: Market analysis
+- `app/streamlit_app.py`: Interactive dashboard
 
-### 🏦 BankChurn Predictor
-- **Type**: Classification Service.
-- **Key Components**:
-  - `ChurnTrainer`: Encapsulates training logic.
-  - `ChurnPredictor`: Handles inference with unified pipeline artifacts.
-- **Latency**: Optimized for sub-100ms response time.
+**Model Pipeline**:
+```python
+Pipeline([
+    ('features', FeatureEngineer()),
+    ('pre', ColumnTransformer([...])),
+    ('model', RandomForestRegressor(...))
+])
+```
 
-### 🚗 CarVision Market Intelligence
-- **Type**: Hybrid (Dashboard + API).
-- **Key Components**:
-  - `Streamlit`: Provides interactive data visualization.
-  - `FastAPI`: Serves price predictions via REST.
-- **Data Flow**:
-  - Raw Data -> Cleaning -> Feature Eng -> Training -> Visualization.
+### TelecomAI-Customer-Intelligence
+**Domain**: Telecom Plan Recommendation  
+**ML Framework**: Scikit-Learn  
+**Pipeline Architecture**:
+```
+Raw Data → Feature Engineering → Preprocessing → Classifier → Plan Predictions
+```
 
-### 📱 TelecomAI Customer Intelligence
-- **Type**: Advanced Analytics Service.
-- **Key Components**:
-  - `VotingClassifier`: Ensemble method for robust predictions.
-  - `ResampleClassifier`: Handles class imbalance inside the pipeline.
-- **Focus**: High recall for identifying at-risk customers.
+## Infrastructure Architecture
 
-## 4. Data Architecture
+### Docker Multi-Stage Builds
+All projects use optimized multi-stage Dockerfiles.
 
-We use **DVC (Data Version Control)** (conceptual) to manage large datasets and pipeline stages.
+**Benefits**:
+- ~50% smaller final image size
+- Improved security (no build tools in production)
+- Non-root execution
+- Layer caching optimization
 
-- **Raw Data**: Immutable, stored in `data/raw`.
-- **Processed Data**: Generated by preprocessing scripts, not versioned in git.
-- **Artifacts**: Trained models (`.joblib`, `.pkl`) are treated as build artifacts.
-
-## 5. Future Scalability (Kubernetes)
-
-The architecture is designed to be "Kubernetes-Ready":
-- **Stateless**: Services store no session state.
-- **Configurable**: All configuration via Environment Variables.
-- **Health Checks**: Implemented `/health` endpoints for liveness/readiness probes.
-- **Resiliency**: Retry logic in clients and database connections.
-
+### Docker Compose Stack
 ```yaml
-# Conceptual K8s Deployment
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: bankchurn-api
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: bankchurn
-  template:
-    metadata:
-      labels:
-        app: bankchurn
-    spec:
-      containers:
-      - name: api
-        image: ghcr.io/duqueom/bankchurn:latest
-        env:
-        - name: MLFLOW_URI
-          value: "http://mlflow-service:5000"
+services:
+  mlflow:       # Port 5000
+  bankchurn:    # Port 8001
+  carvision:    # Ports 8002, 8501
+  telecom:      # Port 8003
+  prometheus:   # Port 9090
+  grafana:      # Port 3000
 ```
+
+## CI/CD Pipeline Architecture
+
+### GitHub Actions Workflows
+
+**`.github/workflows/ci-mlops.yml`** (Main Pipeline):
+```yaml
+jobs:
+  tests:              # Matrix: 3 projects × 2 Python versions
+  security:           # Gitleaks + Bandit
+  docker:             # Build + Trivy scan
+  integration-test:   # docker-compose up + pytest
+```
+
+## Technology Stack
+
+| Layer | Technologies |
+|-------|-------------|
+| **ML Frameworks** | scikit-learn, XGBoost |
+| **Optimization** | Optuna |
+| **API** | FastAPI, uvicorn |
+| **Dashboard** | Streamlit |
+| **Tracking** | MLflow |
+| **Monitoring** | Prometheus, Grafana |
+| **Container** | Docker, Docker Compose |
+| **CI/CD** | GitHub Actions |
+| **Security** | Trivy, Bandit, Gitleaks |
+| **Testing** | pytest, pytest-cov |

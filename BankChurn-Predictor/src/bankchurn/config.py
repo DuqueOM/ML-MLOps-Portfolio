@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, List
 
 import yaml
 from pydantic import BaseModel, Field
@@ -15,22 +15,60 @@ from pydantic import BaseModel, Field
 logger = logging.getLogger(__name__)
 
 
+class LogisticRegressionConfig(BaseModel):
+    """Logistic Regression hyperparameters."""
+
+    C: float = 0.1
+    class_weight: str = "balanced"
+    solver: str = "liblinear"
+    max_iter: int = 1000
+
+
+class RandomForestConfig(BaseModel):
+    """Random Forest hyperparameters."""
+
+    n_estimators: int = 100
+    max_depth: int = 10
+    min_samples_split: int = 10
+    min_samples_leaf: int = 5
+    class_weight: str = "balanced_subsample"
+    n_jobs: int = -1
+
+
+class EnsembleConfig(BaseModel):
+    """Ensemble model configuration."""
+
+    voting: str = Field("soft", pattern="^(hard|soft)$")
+    weights: List[float] = [0.4, 0.6]
+
+
 class ModelConfig(BaseModel):
     """Model training configuration."""
 
+    type: str = "ensemble"
     test_size: float = Field(0.2, ge=0.0, le=1.0)
     random_state: int = 42
     cv_folds: int = Field(5, ge=2)
-    ensemble_voting: str = Field("soft", pattern="^(hard|soft)$")
+    resampling_strategy: str = "none"
+
+    # Model specific configs
+    ensemble: EnsembleConfig = EnsembleConfig()
+    logistic_regression: LogisticRegressionConfig = LogisticRegressionConfig()
+    random_forest: RandomForestConfig = RandomForestConfig()
+
+    @property
+    def ensemble_voting(self) -> str:
+        """Alias for backward compatibility."""
+        return self.ensemble.voting
 
 
 class DataConfig(BaseModel):
     """Data preprocessing configuration."""
 
     target_column: str = "Exited"
-    categorical_features: list[str] = []
-    numerical_features: list[str] = []
-    drop_columns: list[str] = []
+    categorical_features: List[str] = []
+    numerical_features: List[str] = []
+    drop_columns: List[str] = []
 
 
 class MLflowConfig(BaseModel):

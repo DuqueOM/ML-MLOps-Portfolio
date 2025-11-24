@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from main import Config, load_config
+from src.telecom.config import Config
 from src.telecom.evaluation import evaluate_model
 from src.telecom.prediction import predict_batch
 from src.telecom.training import train_model
@@ -13,7 +13,7 @@ from src.telecom.training import train_model
 
 def make_isolated_config(tmp_path: Path) -> Config:
     project_root = Path(__file__).resolve().parents[1]
-    cfg = load_config(str(project_root / "configs" / "config.yaml"))
+    cfg = Config.from_yaml(str(project_root / "configs" / "config.yaml"))
 
     data_csv_abs = project_root / cfg.paths["data_csv"]
     artifacts_dir = tmp_path / "artifacts"
@@ -42,16 +42,10 @@ def test_train_and_evaluate_end_to_end(tmp_path: Path) -> None:
     paths = cfg.paths
     assert Path(paths["model_path"]).exists()
     # preprocessor is now inside the model pipeline
-    assert Path(paths["metrics_path"]).exists()
-    # Note: train_model logic for plotting might have been moved or removed in refactor.
-    # Actually, in src/telecom/training.py I did NOT include plotting logic to keep it clean.
-    # So we should remove assertions for pngs if they aren't generated.
-    # Let's check src/telecom/training.py content again.
-    # It does: pipeline.fit -> score -> joblib.dump. It does NOT call plot_confusion_matrix etc.
-    # evaluate_model DOES save metrics.
 
     metrics_eval = evaluate_model(cfg)
     assert "accuracy" in metrics_eval
+    assert Path(paths["metrics_path"]).exists()
 
 
 def test_predict_creates_output_csv(tmp_path: Path) -> None:

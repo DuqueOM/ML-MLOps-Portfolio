@@ -11,7 +11,18 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-from src.bankchurn.config import BankChurnConfig, DataConfig, MLflowConfig, ModelConfig  # noqa: E402
+import joblib
+from sklearn.pipeline import Pipeline
+
+from src.bankchurn.config import (  # noqa: E402
+    BankChurnConfig,
+    DataConfig,
+    MLflowConfig,
+    ModelConfig,
+    RandomForestConfig,
+)
+from src.bankchurn.evaluation import ModelEvaluator
+from src.bankchurn.prediction import ChurnPredictor
 from src.bankchurn.training import ChurnTrainer  # noqa: E402
 
 
@@ -108,3 +119,120 @@ def test_fastapi_app_import():
     from app.fastapi_app import app
 
     assert app is not None
+
+
+@pytest.fixture
+def sample_data():
+    """Create synthetic data for testing."""
+    n_samples = 100
+    data = pd.DataFrame(
+        {
+            "CreditScore": np.random.randint(300, 850, n_samples),
+            "Geography": np.random.choice(["France", "Spain", "Germany"], n_samples),
+            "Gender": np.random.choice(["Male", "Female"], n_samples),
+            "Age": np.random.randint(18, 90, n_samples),
+            "Tenure": np.random.randint(0, 10, n_samples),
+            "Balance": np.random.uniform(0, 200000, n_samples),
+            "NumOfProducts": np.random.randint(1, 4, n_samples),
+            "HasCrCard": np.random.randint(0, 2, n_samples),
+            "IsActiveMember": np.random.randint(0, 2, n_samples),
+            "EstimatedSalary": np.random.uniform(0, 200000, n_samples),
+            "Exited": np.random.randint(0, 2, n_samples),
+        }
+    )
+    return data
+
+
+@pytest.fixture
+def sample_config():
+    """Create a sample config."""
+    config = BankChurnConfig(
+        model=ModelConfig(
+            type="ensemble",
+            test_size=0.2,
+            cv_folds=2,
+            resampling_strategy="none",
+            random_forest=RandomForestConfig(n_jobs=1),
+        ),
+        data=DataConfig(
+            target_column="Exited",
+            categorical_features=["Geography", "Gender"],
+            numerical_features=[
+                "CreditScore",
+                "Age",
+                "Tenure",
+                "Balance",
+                "NumOfProducts",
+                "HasCrCard",
+                "IsActiveMember",
+                "EstimatedSalary",
+            ],
+            drop_columns=[],
+        ),
+        mlflow=MLflowConfig(enabled=False),
+    )
+    return config
+
+
+def test_full_pipeline_flow(sample_data, sample_config, tmp_path):
+    """Test complete flow: Train -> Save -> Load (New Format) -> Predict."""
+
+    # 1. Train
+    trainer = ChurnTrainer(sample_config)
+    X, y = trainer.prepare_features(sample_data)
+
+    # Run training
+    model, metrics = trainer.train(X, y, use_cv=False)
+
+    assert model is not None
+    assert "train_f1" in metrics
+
+    # 2. Save
+    model_path = tmp_path / "model.pkl"
+    # We pass None for preprocessor_path to indicate we don't care about separate file
+    trainer.save_model(model_path, None)
+
+    assert model_path.exists()
+
+    # Verify it's a pipeline
+    loaded_obj = joblib.load(model_path)
+    assert isinstance(loaded_obj, Pipeline)
+    assert "preprocessor" in loaded_obj.named_steps
+    assert "classifier" in loaded_obj.named_steps
+
+    # 3. Load using Predictor
+    predictor = ChurnPredictor.from_files(model_path, None)
+
+    # 4. Predict
+    predictions = predictor.predict(X, include_proba=True)
+    assert len(predictions) == len(X)
+    assert "prediction" in predictions.columns
+    assert "probability" in predictions.columns
+
+    # 5. Load using Evaluator
+    evaluator = ModelEvaluator.from_files(model_path, None)
+    eval_metrics = evaluator.evaluate(X, y)
+    assert "accuracy" in eval_metrics
+
+
+def test_backward_compatibility(sample_data, sample_config, tmp_path):
+    """Test backward compatibility for loading split files."""
+
+    # 1. Create split files manually
+    trainer = ChurnTrainer(sample_config)
+    X, y = trainer.prepare_features(sample_data)
+    trainer.train(X, y, use_cv=False)
+
+    # Manually save split
+    model_path = tmp_path / "legacy_model.pkl"
+    prep_path = tmp_path / "legacy_prep.pkl"
+
+    joblib.dump(trainer.model_, model_path)
+    joblib.dump(trainer.preprocessor_, prep_path)
+
+    # 2. Load using Predictor with both paths
+    predictor = ChurnPredictor.from_files(model_path, prep_path)
+
+    # 3. Predict
+    predictions = predictor.predict(X)
+    assert len(predictions) == len(X)

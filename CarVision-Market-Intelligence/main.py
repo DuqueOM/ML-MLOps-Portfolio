@@ -28,6 +28,7 @@ import yaml
 from src.carvision.analysis import MarketAnalyzer
 from src.carvision.data import clean_data, load_data
 from src.carvision.evaluation import evaluate_model
+from src.carvision.features import FeatureEngineer
 from src.carvision.prediction import predict_price
 from src.carvision.reporting import ReportGenerator
 from src.carvision.training import train_model
@@ -143,6 +144,10 @@ def main():
         if args.mode == "analysis":
             logger.info("=== MODO ANÁLISIS ===")
             df = clean_data(load_data(args.input))
+            # Feature Engineering for Analysis
+            fe = FeatureEngineer()
+            df = fe.transform(df)
+
             analyzer = MarketAnalyzer(df)
             summary = analyzer.generate_executive_summary()
 
@@ -171,6 +176,10 @@ def main():
         elif args.mode == "report":
             logger.info("=== MODO REPORTE ===")
             df = clean_data(load_data(args.input))
+            # Feature Engineering for Report
+            fe = FeatureEngineer()
+            df = fe.transform(df)
+
             analyzer = MarketAnalyzer(df)
             report_gen = ReportGenerator(analyzer)
 
@@ -183,6 +192,10 @@ def main():
         elif args.mode == "export":
             logger.info("=== MODO EXPORT ===")
             df_clean = clean_data(load_data(args.input))
+            # Feature Engineering for Export
+            fe = FeatureEngineer()
+            df_clean = fe.transform(df_clean)
+
             if args.format == "excel":
                 output_file = f"{args.output}.xlsx" if not args.output.endswith(".xlsx") else args.output
                 df_clean.to_excel(output_file, index=False)

@@ -1,5 +1,6 @@
 import pandas as pd
-from data.preprocess import build_preprocessor, clean_data, infer_feature_types
+
+from src.carvision.data import build_preprocessor, clean_data, infer_feature_types
 
 
 def test_clean_data_basic():

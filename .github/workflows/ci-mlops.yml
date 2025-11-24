@@ -18,6 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        python-version: ['3.11', '3.12']
         project:
           - BankChurn-Predictor
           - CarVision-Market-Intelligence
@@ -54,11 +55,12 @@ jobs:
         working-directory: ${{ matrix.project }}
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.in ]; then
-            pip install -r requirements.in
-          elif [ -f requirements.txt ]; then
+          if [ -f requirements.txt ]; then
             pip install -r requirements.txt
+          elif [ -f requirements.in ]; then
+            pip install -r requirements.in
           fi
+          pip install pytest pytest-cov flake8 black isort mypy
       
       - name: Run linting
         working-directory: ${{ matrix.project }}
@@ -80,7 +82,7 @@ jobs:
         with:
           file: ${{ matrix.project }}/coverage.xml
           flags: ${{ matrix.project }}
-          name: ${{ matrix.project }}-coverage
+          name: ${{ matrix.project }}-coverage-${{ matrix.python-version }}
           fail_ci_if_error: false
   
   # Job 2: Security scans

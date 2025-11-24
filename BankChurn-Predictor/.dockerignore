@@ -1,0 +1,40 @@
+# Version Control
+.git
+.gitignore
+.dvc
+.dvcignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing & Quality
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.pytest_cache/
+.mypy_cache/
+.flake8
+tests/
+
+# Project Specific
+data/
+models/
+results/
+mlruns/
+notebooks/
+docs/
+*.md

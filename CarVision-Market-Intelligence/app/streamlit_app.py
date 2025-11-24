@@ -25,11 +25,13 @@ if str(ROOT_DIR) not in sys.path:
 try:
     from src.carvision.analysis import MarketAnalyzer
     from src.carvision.data import clean_data, load_data
+    from src.carvision.features import FeatureEngineer
     from src.carvision.visualization import VisualizationEngine
 except ImportError:
     # Fallback for local dev if package not installed
     from src.carvision.analysis import MarketAnalyzer
     from src.carvision.data import clean_data, load_data
+    from src.carvision.features import FeatureEngineer
     from src.carvision.visualization import VisualizationEngine
 
 
@@ -102,6 +104,11 @@ def load_and_clean_data():
 
     df = loader.load_data(str(data_file))
     df_clean = loader.clean_data(df)
+
+    # Feature Engineering
+    fe = FeatureEngineer()
+    df_clean = fe.transform(df_clean)
+
     return df, df_clean
 
 
@@ -664,13 +671,9 @@ with tab4:
             if "model" in input_df.columns:
                 input_df["brand"] = input_df["model"].astype(str).str.split().str[0]
 
-            # Ingeniería de features coherente con clean_data (main.py)
-            current_year = pd.Timestamp.now().year
-            if "model_year" in input_df.columns:
-                input_df["vehicle_age"] = current_year - input_df["model_year"]
-            # price_per_mile depende de price (target), no se usa en inferencia;
-            # ponemos un valor neutro si el modelo la espera
-            input_df["price_per_mile"] = 0
+            # Feature engineering is handled by the model pipeline (FeatureEngineer step)
+            # We rely on the pipeline to compute vehicle_age from model_year
+            # and handle missing price_per_mile (if expected by preprocessor) via imputation
 
             # El modelo es un Pipeline(pre=ColumnTransformer, model)
             # Extraemos columnas esperadas del preprocessor para alinear input_df

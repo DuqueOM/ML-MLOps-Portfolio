@@ -11,6 +11,7 @@ from typing import Any
 
 import joblib
 import pandas as pd
+from sklearn.pipeline import Pipeline
 
 logger = logging.getLogger(__name__)
 
@@ -21,9 +22,9 @@ class ChurnPredictor:
     Parameters
     ----------
     model : object
-        Trained model with predict and predict_proba methods.
-    preprocessor : object
-        Fitted preprocessor for feature transformation.
+        Trained model (Pipeline or estimator) with predict and predict_proba methods.
+    preprocessor : object, optional
+        Fitted preprocessor for feature transformation (required if model is not a Pipeline).
 
     Attributes
     ----------
@@ -33,20 +34,27 @@ class ChurnPredictor:
         Loaded preprocessor.
     """
 
-    def __init__(self, model: Any, preprocessor: Any) -> None:
+    def __init__(self, model: Any, preprocessor: Any = None) -> None:
         self.model = model
         self.preprocessor = preprocessor
 
+        # If model is a Pipeline and preprocessor is None, try to extract it
+        if self.preprocessor is None and isinstance(self.model, Pipeline):
+            try:
+                self.preprocessor = self.model.named_steps["preprocessor"]
+            except (KeyError, AttributeError):
+                logger.warning("Could not extract preprocessor from Pipeline.")
+
     @classmethod
-    def from_files(cls, model_path: str | Path, preprocessor_path: str | Path) -> ChurnPredictor:
+    def from_files(cls, model_path: str | Path, preprocessor_path: str | Path | None = None) -> ChurnPredictor:
         """Load model and preprocessor from disk.
 
         Parameters
         ----------
         model_path : str or Path
             Path to saved model.
-        preprocessor_path : str or Path
-            Path to saved preprocessor.
+        preprocessor_path : str or Path, optional
+            Path to saved preprocessor (required for legacy models).
 
         Returns
         -------
@@ -54,9 +62,17 @@ class ChurnPredictor:
             Initialized predictor with loaded artifacts.
         """
         model = joblib.load(model_path)
-        preprocessor = joblib.load(preprocessor_path)
+        preprocessor = None
+
+        if preprocessor_path:
+            # Try loading it, but don't fail if it's just a placeholder
+            try:
+                preprocessor = joblib.load(preprocessor_path)
+                logger.info(f"Loaded preprocessor from {preprocessor_path}")
+            except Exception as e:
+                logger.warning(f"Could not load preprocessor from {preprocessor_path}: {e}")
+
         logger.info(f"Loaded model from {model_path}")
-        logger.info(f"Loaded preprocessor from {preprocessor_path}")
         return cls(model, preprocessor)
 
     def predict(
@@ -84,40 +100,54 @@ class ChurnPredictor:
             - probability: Probability of positive class (if include_proba=True)
             - risk_level: Risk category (low/medium/high)
         """
-        # Transform features
-        X_transformed = self.preprocessor.transform(X)
+        # Handle prediction based on model type
+        if isinstance(self.model, Pipeline):
+            y_pred = self.model.predict(X)
+            # Helper for probability
+            if include_proba:
+                try:
+                    y_proba = self.model.predict_proba(X)
+                except AttributeError:
+                    y_proba = None
+        else:
+            # Legacy mode
+            if self.preprocessor is None:
+                raise ValueError("Preprocessor required for non-Pipeline models")
 
-        # Predict
-        y_pred = self.model.predict(X_transformed)
+            X_transformed = self.preprocessor.transform(X)
+            y_pred = self.model.predict(X_transformed)
+
+            if include_proba:
+                try:
+                    y_proba = self.model.predict_proba(X_transformed)
+                except AttributeError:
+                    y_proba = None
 
         # Build results dataframe
         results = pd.DataFrame({"prediction": y_pred})
 
         # Add probabilities if requested and available
-        if include_proba:
-            try:
-                y_proba = self.model.predict_proba(X_transformed)
+        if include_proba and y_proba is not None:
+            # Assuming binary classification, take positive class
+            if y_proba.shape[1] == 2:
+                results["probability"] = y_proba[:, 1]
 
-                # Assuming binary classification, take positive class
-                if y_proba.shape[1] == 2:
-                    results["probability"] = y_proba[:, 1]
+                # Apply custom threshold
+                results["prediction"] = (results["probability"] >= threshold).astype(int)
 
-                    # Apply custom threshold
-                    results["prediction"] = (results["probability"] >= threshold).astype(int)
+                # Risk levels
+                results["risk_level"] = pd.cut(
+                    results["probability"],
+                    bins=[0, 0.3, 0.7, 1.0],
+                    labels=["low", "medium", "high"],
+                )
+            else:
+                # Multi-class: include all class probabilities
+                for i in range(y_proba.shape[1]):
+                    results[f"probability_class_{i}"] = y_proba[:, i]
 
-                    # Risk levels
-                    results["risk_level"] = pd.cut(
-                        results["probability"],
-                        bins=[0, 0.3, 0.7, 1.0],
-                        labels=["low", "medium", "high"],
-                    )
-                else:
-                    # Multi-class: include all class probabilities
-                    for i in range(y_proba.shape[1]):
-                        results[f"probability_class_{i}"] = y_proba[:, i]
-
-            except AttributeError:
-                logger.warning("Model does not support predict_proba, skipping probabilities")
+        elif include_proba:
+            logger.warning("Model does not support predict_proba, skipping probabilities")
 
         logger.info(f"Generated predictions for {len(results)} samples")
 
@@ -199,15 +229,23 @@ class ChurnPredictor:
         -----
         For more advanced explanations, consider integrating SHAP or LIME.
         """
-        X_transformed = self.preprocessor.transform(X)
-        sample = X_transformed[sample_idx : sample_idx + 1]
+        # Prepare sample
+        sample = X.iloc[sample_idx : sample_idx + 1]
 
-        prediction = self.model.predict(sample)[0]
-
-        try:
-            probability = self.model.predict_proba(sample)[0, 1]
-        except (AttributeError, IndexError):
-            probability = None
+        if isinstance(self.model, Pipeline):
+            prediction = self.model.predict(sample)[0]
+            try:
+                probability = self.model.predict_proba(sample)[0, 1]
+            except (AttributeError, IndexError):
+                probability = None
+        else:
+            X_transformed = self.preprocessor.transform(X)
+            sample_transformed = X_transformed[sample_idx : sample_idx + 1]
+            prediction = self.model.predict(sample_transformed)[0]
+            try:
+                probability = self.model.predict_proba(sample_transformed)[0, 1]
+            except (AttributeError, IndexError):
+                probability = None
 
         explanation = {
             "sample_idx": sample_idx,

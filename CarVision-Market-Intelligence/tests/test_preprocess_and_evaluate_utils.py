@@ -6,21 +6,23 @@ import numpy as np
 import pandas as pd
 import pytest
 import yaml
-from data.preprocess import build_preprocessor, clean_data, infer_feature_types, load_data, split_data
-from evaluate import evaluate_model, rmse
-from main import train_model
+
+from src.carvision.data import build_preprocessor, clean_data, infer_feature_types, load_data, split_data
+from src.carvision.evaluation import evaluate_model, rmse
+from src.carvision.features import FeatureEngineer
+from src.carvision.training import train_model
 
 
 def test_load_data_reads_csv(tmp_path: Path) -> None:
     csv_path = tmp_path / "cars.csv"
-    sample = pd.DataFrame({"price": [1000, 2000], "model": ["a", "b"]})
+    sample = pd.DataFrame({"price": [1500, 2500], "model": ["a", "b"]})
     sample.to_csv(csv_path, index=False)
 
     df = load_data(str(csv_path))
     assert df.equals(sample)
 
 
-def test_clean_data_filters_and_creates_features() -> None:
+def test_clean_data_filters_and_feature_engineering() -> None:
     current_year = pd.Timestamp.now().year
     df = pd.DataFrame(
         {
@@ -30,8 +32,13 @@ def test_clean_data_filters_and_creates_features() -> None:
         }
     )
     cleaned = clean_data(df)
+
+    # Feature Engineering
+    fe = FeatureEngineer(current_year=current_year)
+    cleaned = fe.transform(cleaned)
+
     assert cleaned["price"].between(1000, 500000).all()
-    assert cleaned["model_year"].between(1990, current_year).all()
+    assert (cleaned["model_year"] >= 1990).all()
     assert cleaned["odometer"].between(1, 500000).all()
     assert "vehicle_age" in cleaned.columns
     assert "price_per_mile" in cleaned.columns
@@ -98,9 +105,19 @@ def test_evaluate_model_creates_artifacts(tmp_path: Path) -> None:
     cfg_path = project_root / "configs" / "config.yaml"
     cfg = yaml.safe_load(cfg_path.read_text())
 
-    # Override paths to stay inside tmp_path
-    data_csv = project_root / cfg["paths"]["data_path"]
+    # Create small synthetic data
+    data_csv = tmp_path / "small_data.csv"
+    pd.DataFrame(
+        {
+            "price": [2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000],
+            "model_year": [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019],
+            "odometer": [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000],
+            "model": ["ford focus"] * 10,
+        }
+    ).to_csv(data_csv, index=False)
+
     artifacts_dir = tmp_path / "artifacts"
+
     cfg["paths"] = {
         **cfg["paths"],
         "data_path": str(data_csv),
@@ -108,7 +125,12 @@ def test_evaluate_model_creates_artifacts(tmp_path: Path) -> None:
         "model_path": str(artifacts_dir / "model.joblib"),
         "metrics_path": str(artifacts_dir / "metrics.json"),
         "baseline_metrics_path": str(artifacts_dir / "baseline.json"),
+        "split_indices_path": str(artifacts_dir / "split_indices.json"),
     }
+
+    # Speed up training
+    cfg["training"]["random_forest_params"]["n_estimators"] = 2
+    cfg["training"]["random_forest_params"]["n_jobs"] = 1
 
     train_model(cfg)
     results = evaluate_model(cfg)

@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
-from data.preprocess import build_preprocessor, infer_feature_types
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
+
+from src.carvision.data import build_preprocessor, infer_feature_types
 
 
 def test_group_predictions_finite_by_fuel():

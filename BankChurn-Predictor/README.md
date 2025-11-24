@@ -1,10 +1,11 @@
 # BankChurn-Predictor
 
 ![CI Status](https://img.shields.io/github/actions/workflow/status/DuqueOM/ML-MLOps-Portfolio/ci-mlops.yml?branch=main)
-![Coverage](https://img.shields.io/badge/Coverage-43%25-yellow)
-![Python](https://img.shields.io/badge/Python-3.13-blue)
+![Coverage](https://img.shields.io/badge/Coverage-77%25-brightgreen)
+![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue)
 ![MLflow](https://img.shields.io/badge/MLflow-Tracking-blue)
+![DVC](https://img.shields.io/badge/DVC-Enabled-945DD6)
 
 > **TL;DR**: An enterprise-grade MLOps pipeline for predicting bank customer churn. It uses an ensemble of Logistic Regression and Random Forest, served via high-performance FastAPI, with full reproducibility via DVC and Make.
 
@@ -12,37 +13,23 @@
 
 ## 📋 Overview
 
-BankChurn-Predictor is designed to identify customers at risk of leaving the bank (churn). By predicting churn probability, the bank can proactively engage high-risk customers with retention offers.
-
-The system implements a complete MLOps lifecycle:
-1.  **Data Validation**: Schema checks and drift detection.
-2.  **Training Pipeline**: Reproducible training with `scikit-learn`, `imbalanced-learn` (SMOTE), and `optuna` for hyperparameter tuning.
-3.  **Serving**: Asynchronous FastAPI application.
-4.  **Observability**: MLflow for experiment tracking and logs.
+BankChurn-Predictor is a production-grade Machine Learning service designed to identify customers at risk of leaving the bank (churn). By predicting churn probability, the bank can proactively engage high-risk customers with retention offers.
 
 ### Key Features
-- **Ensemble Model**: VotingClassifier combining linear and non-linear baselines.
-- **Resampling Strategy**: Custom `ResampleClassifier` handling class imbalance (approx 20% churn rate).
-- **Production-Ready API**: Typed Pydantic schemas, health checks, and batch prediction endpoints.
-- **Reproducibility**: `dvc.yaml` pipelines and `Makefile` automation.
+- **Robust Modeling**: VotingClassifier ensemble combining linear and non-linear baselines with custom resampling for class imbalance.
+- **Production API**: Fast, typed, and documented REST API using FastAPI.
+- **Reproducibility**: Full data and pipeline versioning with DVC and Git.
+- **Observability**: Integrated MLflow tracking and drift monitoring.
 
-### Architecture High-Level
+### Architecture
+
 ```mermaid
 graph LR
     A[Raw Data (CSV)] --> B[Preprocessing (StandardScaler/OneHot)]
-    B --> C[Training (VotingClassifier)]
+    B --> C[Training Pipeline (Ensemble)]
     C --> D[Model Registry (MLflow/Local)]
-    D --> E[FastAPI Service]
-    E --> F[Prometheus/Logs]
-    
-    subgraph Training Pipeline
-    B
-    C
-    end
-    
-    subgraph Serving
-    E
-    end
+    D --> E[Inference API (FastAPI)]
+    E --> F[Monitoring (Prometheus/Logs)]
 ```
 
 ---
@@ -50,28 +37,28 @@ graph LR
 ## 🚀 Quickstart
 
 ### Prerequisites
-- Python 3.10+ (Tested on 3.13)
+- Python 3.10+
 - Docker & Docker Compose
 - Make
 
-### Run in 5 Minutes
+### Run in 5 Minutes (Demo)
+
 ```bash
 # 1. Install dependencies
 make install
 
-# 2. Train the model (uses default configs/config.yaml)
-make train
+# 2. Start the full stack (API + Monitoring)
+make docker-demo
 
-# 3. Start the API
-make api-start
+# 3. Check health
+curl localhost:8000/health
 ```
 
-### Verify
-```bash
-# Health check
-curl localhost:8000/health
+### Request Examples
 
-# Prediction
+**Single Prediction:**
+
+```bash
 curl -X POST "http://localhost:8000/predict" \
      -H "Content-Type: application/json" \
      -d '{
@@ -88,11 +75,18 @@ curl -X POST "http://localhost:8000/predict" \
          }'
 ```
 
+**Batch Prediction:**
+
+```bash
+# Assuming you have a json file with a list of customers
+curl -X POST "http://localhost:8000/predict_batch" \
+     -H "Content-Type: application/json" \
+     -d @data/batch_request.json
+```
+
 ---
 
 ## 💾 Data
-
-Input data is expected in CSV format. Key columns:
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -102,51 +96,58 @@ Input data is expected in CSV format. Key columns:
 | Age | int | Customer age |
 | Exited | int | **Target**: 1 (Churn), 0 (Retained) |
 
+Data is versioned using DVC. To pull the latest data:
+```bash
+dvc pull
+```
+
 ---
 
 ## 🧠 Training
 
-The training pipeline is defined in `src/bankchurn/training.py` and orchestrated via `Makefile`.
+The training pipeline is reproducible and managed via `dvc.yaml` or `Makefile`.
 
 ```bash
-# Standard training
+# Run full training pipeline
 make train
 
-# With hyperparameter optimization (Coming Soon)
-# make train-hyperopt
+# Run with hyperparameter optimization
+make train-hyperopt
 ```
 
-Configuration is managed in `configs/config.yaml`. You can adjust:
-- `model.ensemble_voting`: 'soft' or 'hard'
-- `data.target_column`: 'Exited'
-- `model.test_size`: 0.2
+**Expected Artifacts:**
+- `models/best_model.pkl`: The full serialized scikit-learn pipeline (Preprocessor + Classifier).
+- `models/metrics.json`: JSON file containing F1 score, AUC, and other evaluation metrics.
+- `models/model_card.md`: Automated model card describing the model's provenance and performance.
 
 ---
 
 ## 📡 Serving
 
-The API is built with FastAPI (`app/fastapi_app.py`).
+The API documentation (Swagger UI) is available at `http://localhost:8000/docs` when the service is running.
 
-- **POST /predict**: Real-time single prediction. Returns probability and risk level.
-- **POST /predict_batch**: Batch processing (max 1000 records).
-- **GET /metrics**: Operational metrics (latency, request count).
+**Endpoints:**
+- `GET /health`: Liveness probe checking model status.
+- `POST /predict`: Real-time inference returning churn probability and risk level.
+- `POST /predict_batch`: Bulk inference for up to 1000 records.
+- `GET /metrics`: Prometheus-compatible metrics (latency, request count).
 
 ---
 
 ## 📊 Monitoring
 
-- **Experiment Tracking**: MLflow logs params, metrics (F1, AUC), and artifacts.
-- **Drift Detection**: `make check-drift` runs Evidently reports comparing reference vs current data.
+- **Experiments**: View runs in MLflow (`http://localhost:5000`).
+- **Drift**: Periodic checks compare live traffic against training reference using `evidently`.
 
 ---
 
 ## 🛠 Troubleshooting
 
-| Symptom | Possible Cause | Resolution |
-|---------|----------------|------------|
-| `ModuleNotFoundError: src` | Python path issue | Run via `python -m` or use `make` commands which handle paths. |
+| Issue | Possible Cause | Fix |
+|-------|----------------|-----|
+| `ModuleNotFoundError` | PYTHONPATH not set | Run via `python -m` or use `make` commands which handle paths. |
+| `Connection Refused` | Docker container down | Check `docker ps` and logs `docker logs bankchurn-demo`. |
 | `Scaler mean equals global mean` | Data Leakage | Ensure `training.py` splits data *before* fitting preprocessor (Fixed in v1.0.0). |
-| `Docker connection refused` | Port conflict | Check if port 8000 is used: `lsof -i :8000`. |
 
 ---
 
@@ -157,7 +158,8 @@ The API is built with FastAPI (`app/fastapi_app.py`).
 ---
 
 ## ✅ Acceptance Checklist
+
 - [x] Tests pass (`make test`)
-- [x] API starts (`make api-start`)
-- [x] Docker builds (`make docker-build`)
-- [x] Linting clean (`make lint`)
+- [x] API starts and responds (`make api-start`)
+- [x] Docker image builds (`make docker-build`)
+- [x] Security scan passes (`make security-scan`)
