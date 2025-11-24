@@ -1,6 +1,6 @@
 # Multi-stage Dockerfile para BankChurn Predictor
 # Stage 1: Builder - Compila dependencias
-FROM python:3.13-slim AS builder
+FROM python:3.12-slim AS builder
 
 # Metadatos
 LABEL maintainer="Daniel Duque <daniel.duque@example.com>"
@@ -60,6 +60,8 @@ WORKDIR /app
 
 # Copiar virtualenv desde builder
 COPY --from=builder --chown=appuser:appuser /opt/venv /opt/venv
+
+RUN . /opt/venv/bin/activate && pip install --no-cache-dir "uvicorn>=0.18.0"
 
 # Copiar código fuente
 COPY --chown=appuser:appuser . .

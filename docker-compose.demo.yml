@@ -73,7 +73,7 @@ services:
       - "8501:8501"  # Streamlit dashboard
     volumes:
       - ./CarVision-Market-Intelligence/data:/app/data:ro
-      - ./CarVision-Market-Intelligence/models:/app/models:ro
+      - ./CarVision-Market-Intelligence/artifacts:/app/artifacts:ro
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow:5000
       - PYTHONUNBUFFERED=1
@@ -102,7 +102,7 @@ services:
       - "8003:8000"
     volumes:
       - ./TelecomAI-Customer-Intelligence/data:/app/data:ro
-      - ./TelecomAI-Customer-Intelligence/models:/app/models:ro
+      - ./TelecomAI-Customer-Intelligence/artifacts:/app/artifacts:ro
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow:5000
       - PYTHONUNBUFFERED=1
