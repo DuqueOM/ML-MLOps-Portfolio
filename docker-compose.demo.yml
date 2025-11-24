@@ -34,7 +34,6 @@ services:
 
   # BankChurn Predictor API
   bankchurn:
-    image: bankchurn-api:latest
     build:
       context: ./BankChurn-Predictor
       dockerfile: Dockerfile
@@ -63,7 +62,6 @@ services:
 
   # CarVision Market Intelligence API
   carvision:
-    image: carvision-api:latest
     build:
       context: ./CarVision-Market-Intelligence
       dockerfile: Dockerfile
@@ -93,7 +91,6 @@ services:
 
   # TelecomAI Customer Intelligence API
   telecom:
-    image: telecom-api:latest
     build:
       context: ./TelecomAI-Customer-Intelligence
       dockerfile: Dockerfile
