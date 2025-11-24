@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
-from data.preprocess import build_preprocessor, infer_feature_types
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
+
+from src.carvision.data import build_preprocessor, infer_feature_types
+from src.carvision.features import FeatureEngineer
 
 
 def test_model_fit_predict():
@@ -42,13 +44,29 @@ def test_model_fit_predict():
             ],
         }
     )
-    num_cols, cat_cols = infer_feature_types(df, target="price")
+
+    # 1. Feature Engineering
+    fe = FeatureEngineer(current_year=2024)
+    df_transformed = fe.transform(df)
+
+    # 2. Infer types on transformed data
+    num_cols, cat_cols = infer_feature_types(
+        df_transformed, target="price", drop_columns=["price_per_mile", "price_category"]
+    )
+
+    # 3. Build Preprocessor
     pre = build_preprocessor(num_cols, cat_cols)
+
     model = RandomForestRegressor(n_estimators=10, random_state=42)
-    pipe = Pipeline(steps=[("pre", pre), ("model", model)])
+
+    # 4. Build Full Pipeline
+    pipe = Pipeline(steps=[("features", fe), ("pre", pre), ("model", model)])
+
     X = df.drop(columns=["price"])
     y = df["price"]
+
     pipe.fit(X, y)
     preds = pipe.predict(X)
+
     assert preds.shape[0] == X.shape[0]
     assert np.isfinite(preds).all()

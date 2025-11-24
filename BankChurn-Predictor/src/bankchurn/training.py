@@ -206,29 +206,36 @@ class ChurnTrainer:
             Complete model pipeline with preprocessing.
         """
         # Build ensemble
+        lr_config = self.config.model.logistic_regression
         lr = LogisticRegression(
-            max_iter=1000,
-            class_weight="balanced",
+            C=lr_config.C,
+            max_iter=lr_config.max_iter,
+            class_weight=lr_config.class_weight,
+            solver=lr_config.solver,
             random_state=self.random_state,
         )
 
+        rf_config = self.config.model.random_forest
         rf = RandomForestClassifier(
-            n_estimators=100,
-            max_depth=10,
-            class_weight="balanced",
+            n_estimators=rf_config.n_estimators,
+            max_depth=rf_config.max_depth,
+            min_samples_split=rf_config.min_samples_split,
+            min_samples_leaf=rf_config.min_samples_leaf,
+            class_weight=rf_config.class_weight,
             random_state=self.random_state,
-            n_jobs=-1,
+            n_jobs=rf_config.n_jobs,
         )
 
         ensemble = VotingClassifier(
             estimators=[("lr", lr), ("rf", rf)],
-            voting=self.config.model.ensemble_voting,
+            voting=self.config.model.ensemble.voting,
+            weights=self.config.model.ensemble.weights,
         )
 
         # Wrap in resample classifier if needed
         model = ResampleClassifier(
             estimator=ensemble,
-            strategy="none",  # Using class_weight instead
+            strategy=self.config.model.resampling_strategy,
             random_state=self.random_state,
         )
 
@@ -345,29 +352,34 @@ class ChurnTrainer:
 
         return self.model_, metrics
 
-    def save_model(self, model_path: str | Path, preprocessor_path: str | Path) -> None:
+    def save_model(self, model_path: str | Path, preprocessor_path: str | Path | None = None) -> None:
         """Save trained model and preprocessor to disk.
 
         Parameters
         ----------
         model_path : str or Path
-            Path to save model.
-        preprocessor_path : str or Path
-            Path to save preprocessor.
+            Path to save model (full pipeline).
+        preprocessor_path : str or Path, optional
+            Path to save preprocessor (kept for compatibility, but model_path contains full pipeline).
         """
         if self.model_ is None or self.preprocessor_ is None:
             raise ValueError("Model and preprocessor must be trained before saving")
 
         model_path = Path(model_path)
-        preprocessor_path = Path(preprocessor_path)
+
+        # Create full pipeline
+        full_pipeline = Pipeline([("preprocessor", self.preprocessor_), ("classifier", self.model_)])
 
         # Create directories
         model_path.parent.mkdir(parents=True, exist_ok=True)
-        preprocessor_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Save
-        joblib.dump(self.model_, model_path)
-        joblib.dump(self.preprocessor_, preprocessor_path)
+        # Save full pipeline
+        joblib.dump(full_pipeline, model_path)
+        logger.info(f"Full pipeline saved to {model_path}")
 
-        logger.info(f"Model saved to {model_path}")
-        logger.info(f"Preprocessor saved to {preprocessor_path}")
+        # Optionally save preprocessor separately if requested (for backward compat or debugging)
+        if preprocessor_path:
+            preprocessor_path = Path(preprocessor_path)
+            preprocessor_path.parent.mkdir(parents=True, exist_ok=True)
+            joblib.dump(self.preprocessor_, preprocessor_path)
+            logger.info(f"Preprocessor saved to {preprocessor_path}")

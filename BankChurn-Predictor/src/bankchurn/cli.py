@@ -207,7 +207,7 @@ def create_parser() -> argparse.ArgumentParser:
     train_parser.add_argument("--config", required=True, help="Path to config YAML")
     train_parser.add_argument("--input", required=True, help="Path to input CSV")
     train_parser.add_argument("--model", default="models/best_model.pkl", help="Path to save model")
-    train_parser.add_argument("--preprocessor", default="models/preprocessor.pkl", help="Path to save preprocessor")
+    train_parser.add_argument("--preprocessor", default=None, help="Path to save preprocessor (optional)")
     train_parser.add_argument("--metrics-output", help="Path to save metrics JSON")
     train_parser.add_argument("--no-cv", action="store_true", help="Disable cross-validation")
 
@@ -216,7 +216,7 @@ def create_parser() -> argparse.ArgumentParser:
     eval_parser.add_argument("--config", required=True, help="Path to config YAML")
     eval_parser.add_argument("--input", required=True, help="Path to input CSV with labels")
     eval_parser.add_argument("--model", required=True, help="Path to trained model")
-    eval_parser.add_argument("--preprocessor", required=True, help="Path to preprocessor")
+    eval_parser.add_argument("--preprocessor", default=None, help="Path to preprocessor (optional)")
     eval_parser.add_argument("--output", help="Path to save evaluation results")
     eval_parser.add_argument("--fairness-features", help="Comma-separated list of sensitive features for fairness")
 
@@ -225,7 +225,7 @@ def create_parser() -> argparse.ArgumentParser:
     predict_parser.add_argument("--input", required=True, help="Path to input CSV")
     predict_parser.add_argument("--output", required=True, help="Path to save predictions")
     predict_parser.add_argument("--model", required=True, help="Path to trained model")
-    predict_parser.add_argument("--preprocessor", required=True, help="Path to preprocessor")
+    predict_parser.add_argument("--preprocessor", default=None, help="Path to preprocessor (optional)")
     predict_parser.add_argument("--threshold", type=float, default=0.5, help="Classification threshold")
     predict_parser.add_argument("--no-proba", action="store_true", help="Exclude probability scores")
 

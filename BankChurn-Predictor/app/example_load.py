@@ -45,8 +45,25 @@ def _load_combined(models_dir: Path) -> Tuple[Any, Any] | None:
 def _load_separate(models_dir: Path) -> Tuple[Any, Any] | None:
     model_path = models_dir / "best_model.pkl"
     prep_path = models_dir / "preprocessor.pkl"
-    if model_path.exists() and prep_path.exists():
-        return joblib.load(prep_path), joblib.load(model_path)
+
+    # Check if model_path exists and contains a pipeline
+    if model_path.exists():
+        model_obj = joblib.load(model_path)
+        from sklearn.pipeline import Pipeline
+
+        if isinstance(model_obj, Pipeline):
+            # If it's a pipeline, extract preprocessor and classifier
+            if "preprocessor" in model_obj.named_steps:
+                return model_obj.named_steps["preprocessor"], model_obj.named_steps["classifier"]
+            else:
+                # Fallback or assumption that model_obj is just classifier if preprocessor is separate?
+                # But new design says best_model.pkl is the full pipeline.
+                return model_obj.named_steps.get("preprocessor"), model_obj.named_steps.get("classifier", model_obj)
+
+        # Legacy fallback: if separate files exist
+        if prep_path.exists():
+            return joblib.load(prep_path), model_obj
+
     return None
 
 

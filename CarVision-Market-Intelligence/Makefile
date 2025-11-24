@@ -34,5 +34,8 @@ start-demo:
 	python main.py --mode train --config configs/config.yaml
 	streamlit run app/streamlit_app.py --server.port 8501
 
+docker-up:
+	docker-compose -f docker-compose.demo.yml up --build
+
 mlflow-demo:
 	python scripts/run_mlflow.py

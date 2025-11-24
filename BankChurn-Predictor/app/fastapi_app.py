@@ -45,11 +45,11 @@ def load_model_logic() -> bool:
             logger.error(f"Model not found: {model_path}")
             return False
 
-        if not preprocessor_path.exists():
-            logger.error(f"Preprocessor not found: {preprocessor_path}")
-            return False
+        # Pass preprocessor path only if it exists, otherwise None
+        # The ChurnPredictor handles Pipeline models without separate preprocessor
+        prep_arg = preprocessor_path if preprocessor_path.exists() else None
 
-        predictor = ChurnPredictor.from_files(model_path, preprocessor_path)
+        predictor = ChurnPredictor.from_files(model_path, prep_arg)
 
         # Try to load metadata
         metadata_path = BASE_DIR / "models" / "best_model_metadata.json"
@@ -265,10 +265,6 @@ async def predict_churn(customer: CustomerData):
         customer_dict = customer.dict()
         df = pd.DataFrame([customer_dict])
 
-        # Handle simple feature engineering if expected by model
-        if "Age" in df.columns:
-            df["Age_over_60"] = (df["Age"] > 60).astype(int)
-
         # Use robust prediction from src
         results = predictor.predict(df, include_proba=True)
 
@@ -304,9 +300,6 @@ async def predict_batch(batch_data: BatchCustomerData, background_tasks: Backgro
     try:
         customers_list = [c.dict() for c in batch_data.customers]
         df = pd.DataFrame(customers_list)
-
-        if "Age" in df.columns:
-            df["Age_over_60"] = (df["Age"] > 60).astype(int)
 
         results = predictor.predict(df, include_proba=True)
 

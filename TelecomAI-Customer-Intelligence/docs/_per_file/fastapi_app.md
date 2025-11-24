@@ -1,16 +1,16 @@
-# Inference API (`app/fastapi_app.py`)
+# app/fastapi_app.py
 
 ## Purpose
-Exposes the model via REST API.
-It defines the input schema using Pydantic (`TelecomFeatures`), loads the model pipeline on startup, and delegates prediction to the pipeline.
+Defines the REST API interface for the model using FastAPI. It handles request validation (via Pydantic), model lifecycle management (loading once at startup), and prediction logic.
+
+## Key Features
+- **Lifespan Context Manager:** Ensures the model is loaded securely into memory only once when the app starts.
+- **Pydantic Validation:** Enforces strict types on inputs (`calls`, `minutes`, etc.) to prevent garbage data from reaching the model.
+- **Health Check:** `/health` endpoint for container orchestration probes.
 
 ## Validation
-1. Start server: `make serve`
-2. Test prediction:
-   ```bash
-   curl -X POST "http://localhost:8000/predict" \
-        -H "Content-Type: application/json" \
-        -d '{"calls": 10, "minutes": 100, "messages": 5, "mb_used": 500}'
-   ```
-**Success Criteria:**
-- Response contains `"prediction": 0` (or 1) and `"probability_is_ultra"`.
+Run the server locally and check the health endpoint:
+```bash
+uvicorn app.fastapi_app:app --port 8000
+curl http://localhost:8000/health
+```

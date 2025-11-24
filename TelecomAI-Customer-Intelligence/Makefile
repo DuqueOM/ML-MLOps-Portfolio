@@ -27,6 +27,9 @@ start-demo:
 mlflow-demo:
 	$(PYTHON) scripts/run_mlflow.py
 
+docker-demo:
+	docker-compose -f docker-compose.demo.yml up --build
+
 test:
 	pytest -q
 

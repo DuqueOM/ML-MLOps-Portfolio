@@ -1,5 +1,6 @@
 project_name: CarVision-Market-Intelligence
 seed: 42
+dataset_year: 2024
 
 paths:
   data_path: "vehicles_us.csv"
@@ -23,11 +24,16 @@ training:
   baseline: dummy_median
 
 preprocessing:
+  filters:
+    min_price: 1000
+    max_price: 500000
+    min_year: 1990
+    max_odometer: 500000
   numeric_imputer: median
   scale_numeric: true
   categorical_imputer: most_frequent
   handle_unknown_category: ignore
-  drop_columns: ["price_per_mile"]
+  drop_columns: ["price_per_mile", "price_category"]
   # If empty lists, will be inferred dynamically from data
   numeric_features: []
   categorical_features: []

@@ -1,0 +1,5 @@
+[run]
+omit = 
+    main.py
+    tests/*
+    .venv/*

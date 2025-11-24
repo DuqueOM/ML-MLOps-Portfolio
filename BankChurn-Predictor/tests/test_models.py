@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from unittest.mock import MagicMock, patch
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -163,3 +165,74 @@ class TestResampleClassifier:
 
         y_pred = clf.predict(X)
         assert len(y_pred) == len(y)
+
+
+def test_resample_classifier_strategies():
+    """Test different strategies logic."""
+    # Data
+    X = np.random.rand(100, 5)
+    y = np.random.randint(0, 2, 100)
+
+    # Test 'none'
+    clf = ResampleClassifier(strategy="none")
+    clf.fit(X, y)
+    assert hasattr(clf, "estimator_")
+
+    # Test 'class_weight'
+    clf = ResampleClassifier(strategy="class_weight")
+    clf.fit(X, y)
+    assert hasattr(clf, "estimator_")
+
+    # Test unknown strategy
+    clf = ResampleClassifier(strategy="invalid")
+    with pytest.raises(ValueError):
+        clf.fit(X, y)
+
+
+def test_resample_classifier_methods():
+    """Test delegate methods."""
+    X = np.random.rand(10, 5)
+    y = np.random.randint(0, 2, 10)
+
+    base_est = MagicMock()
+    base_est.predict.return_value = y
+    base_est.predict_proba.return_value = np.zeros((10, 2))
+
+    clf = ResampleClassifier(estimator=base_est, strategy="none")
+    clf.fit(X, y)
+
+    clf.predict(X)
+    base_est.predict.assert_called_once()
+
+    clf.predict_proba(X)
+    base_est.predict_proba.assert_called_once()
+
+
+@patch("imblearn.over_sampling.SMOTE")
+def test_resample_oversample_mock(mock_smote):
+    """Test oversampling with mock."""
+    X = np.random.rand(10, 2)
+    y = np.array([0] * 8 + [1] * 2)  # Mixed classes
+
+    mock_smote_inst = mock_smote.return_value
+    mock_smote_inst.fit_resample.return_value = (X, y)
+
+    clf = ResampleClassifier(strategy="oversample")
+    clf.fit(X, y)
+
+    mock_smote_inst.fit_resample.assert_called_once()
+
+
+@patch("imblearn.under_sampling.RandomUnderSampler")
+def test_resample_undersample_mock(mock_rus):
+    """Test undersampling with mock."""
+    X = np.random.rand(10, 2)
+    y = np.array([0] * 8 + [1] * 2)  # Mixed classes
+
+    mock_rus_inst = mock_rus.return_value
+    mock_rus_inst.fit_resample.return_value = (X, y)
+
+    clf = ResampleClassifier(strategy="undersample")
+    clf.fit(X, y)
+
+    mock_rus_inst.fit_resample.assert_called_once()

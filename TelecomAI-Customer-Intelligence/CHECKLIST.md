@@ -1,16 +1,24 @@
 # Acceptance Checklist
 
+Before merging any changes to `main`, verify the following:
+
 ## 1. Code Quality
-- [ ] **Linting:** `make lint` passes without errors.
-- [ ] **Tests:** `pytest` passes (all green).
-- [ ] **Coverage:** Code coverage > 80%.
+- [ ] **Linting:** No errors from `ruff` or `flake8`.
+- [ ] **Types:** `mypy` passes without errors (strict mode where possible).
+- [ ] **Format:** Code is formatted with `black` and imports sorted with `isort`.
 
-## 2. Functionality
-- [ ] **Training:** `python main.py --mode train` produces a valid `model.joblib`.
-- [ ] **Evaluation:** `python main.py --mode eval` produces reasonable metrics (Acc > 0.75).
-- [ ] **Prediction:** `python main.py --mode predict ...` generates a CSV with predictions.
-- [ ] **API:** `/predict` endpoint returns valid JSON for sample inputs.
+## 2. Testing
+- [ ] **Unit Tests:** All tests in `tests/` pass (`pytest`).
+- [ ] **Coverage:** Test coverage is at least 75%.
+- [ ] **Integration:** `test_api_e2e.py` passes (verifying Docker/API logic).
+- [ ] **Logic:** `test_model_logic.py` confirms model determinism on synthetic data.
 
-## 3. Infrastructure
-- [ ] **Docker:** Image builds successfully.
-- [ ] **Demo:** `make start-demo` brings up the service and passes health checks.
+## 3. Reproducibility
+- [ ] **Dependencies:** `requirements.txt` is up-to-date and pinned.
+- [ ] **Docker:** The image builds successfully (`docker build .`).
+- [ ] **One-Click Demo:** `make docker-demo` brings up a working API.
+
+## 4. Documentation
+- [ ] **README:** Updated with any new features or commands.
+- [ ] **Docs:** New files in `src/` have corresponding entries in `docs/_per_file/` if critical.
+- [ ] **Architecture:** `ARCHITECTURE.md` reflects current system design.

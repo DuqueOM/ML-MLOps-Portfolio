@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def compute_classification_metrics(
-    y_true: np.ndarray, y_pred: np.ndarray, y_proba: Optional[np.ndarray]
+    y_true: np.ndarray, y_pred: np.ndarray, y_proba: Optional[np.ndarray] = None
 ) -> Dict[str, float]:
     metrics = {
         "accuracy": float(accuracy_score(y_true, y_pred)),

@@ -30,39 +30,33 @@ def load_data(csv_path: str) -> pd.DataFrame:
     return df
 
 
-def clean_data(df: pd.DataFrame) -> pd.DataFrame:
-    """Basic cleaning consistent with analysis module.
-    - Filter unreasonable prices
-    - Filter model year range
-    - Filter odometer range
-    - Derive basic features
+def clean_data(df: pd.DataFrame, filters: Dict[str, float] = None) -> pd.DataFrame:
+    """Basic cleaning strictly for filtering invalid rows.
+
+    Feature engineering has been moved to src.carvision.features.FeatureEngineer
+    to ensure pipeline consistency.
+
+    Args:
+        df: Input DataFrame
+        filters: Dictionary with filter thresholds (min_price, max_price, min_year, etc.)
     """
+    filters = filters or {}
+    min_price = filters.get("min_price", 1000)
+    max_price = filters.get("max_price", 500000)
+    min_year = filters.get("min_year", 1990)
+    max_odometer = filters.get("max_odometer", 500000)
+
     dfc = df.copy()
     # Ensure columns exist before filtering to be robust
     if "price" in dfc.columns:
-        dfc = dfc[(dfc["price"] > 1000) & (dfc["price"] < 500000)]
+        dfc = dfc[(dfc["price"] > min_price) & (dfc["price"] < max_price)]
+
     if "model_year" in dfc.columns:
-        current_year = pd.Timestamp.now().year
-        dfc = dfc[(dfc["model_year"] >= 1990) & (dfc["model_year"] <= current_year)]
+        # Filter by minimum year
+        dfc = dfc[(dfc["model_year"] >= min_year)]
+
     if "odometer" in dfc.columns:
-        dfc = dfc[(dfc["odometer"] > 0) & (dfc["odometer"] < 500000)]
-
-    # Derived features
-    if "model_year" in dfc.columns:
-        current_year = pd.Timestamp.now().year
-        dfc["vehicle_age"] = current_year - dfc["model_year"]
-    if "odometer" in dfc.columns and "price" in dfc.columns:
-        dfc["price_per_mile"] = dfc["price"] / (dfc["odometer"] + 1)
-    if "model" in dfc.columns:
-        dfc["brand"] = dfc["model"].astype(str).str.split().str[0]
-
-    # Categorize prices for analysis (used in main.py originally)
-    if "price" in dfc.columns:
-        dfc["price_category"] = pd.cut(
-            dfc["price"],
-            bins=[0, 10000, 25000, 50000, float("inf")],
-            labels=["Budget", "Mid-Range", "Premium", "Luxury"],
-        )
+        dfc = dfc[(dfc["odometer"] > 0) & (dfc["odometer"] < max_odometer)]
 
     return dfc
 

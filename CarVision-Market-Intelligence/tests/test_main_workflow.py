@@ -45,7 +45,7 @@ def test_cli_train_eval_predict_modes(
         return {"rmse": 123.0}
 
     monkeypatch.setattr(carvision_module, "train_model", fake_train_model)
-    monkeypatch.setattr(carvision_module, "eval_model", fake_eval_model)
+    monkeypatch.setattr(carvision_module, "evaluate_model", fake_eval_model)
     monkeypatch.chdir(tmp_path)
 
     _run_cli(monkeypatch, "--mode", "train", "--config", config_path)
@@ -54,7 +54,7 @@ def test_cli_train_eval_predict_modes(
 
     _run_cli(monkeypatch, "--mode", "eval", "--config", config_path)
     capsys.readouterr()
-    assert eval_calls, "eval_model no fue invocado desde el CLI"
+    assert eval_calls, "evaluate_model no fue invocado desde el CLI"
 
     _run_cli(
         monkeypatch,

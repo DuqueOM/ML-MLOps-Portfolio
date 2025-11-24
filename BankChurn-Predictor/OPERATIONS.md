@@ -1,104 +1,137 @@
 # Operations Runbook
 
 **Service:** BankChurn-Predictor  
-**Severity:** Tier 2 (Internal Critical)
+**Severity:** Tier 2 (Internal Critical)  
+**Maintainer:** MLOps Team  
 
 ---
 
-## 1. Deployment Guide
+## 1. Prerequisites & Environment
 
-### 1.1 Local Deployment (Docker Compose)
-To deploy the full stack (API + MLflow + Postgres if configured):
+### 1.1 Environment Variables
+The service relies on the following environment variables. Ensure they are set in your deployment manifest or `.env` file.
+
+| Variable | Description | Default | Required |
+|----------|-------------|---------|----------|
+| `LOG_LEVEL` | Logging verbosity (DEBUG, INFO, WARN) | `INFO` | No |
+| `MLFLOW_TRACKING_URI` | URI for MLflow server | `http://localhost:5000` | No (if disabled in config) |
+| `WORKERS` | Number of Uvicorn workers | `1` | No |
+
+---
+
+## 2. Deployment Guide
+
+### 2.1 Local Deployment (Docker Compose)
+To deploy the full stack (API + MLflow):
 
 ```bash
-make docker-compose-up
+make docker-demo
 ```
 
-Verify health:
+**Verification**:
 ```bash
 curl localhost:8000/health
+# Expected: {"status": "healthy", "model_loaded": true}
 ```
 
-### 1.2 Kubernetes Deployment
+### 2.2 Kubernetes Deployment (Manual)
 Apply manifests located in `k8s/`:
+
 ```bash
-kubectl apply -f k8s/
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
 ```
 
 ---
 
-## 2. Maintenance Tasks
+## 3. Maintenance Tasks
 
-### 2.1 Model Retraining
-When performance drops (drift detected) or new data arrives:
+### 3.1 Model Retraining (Drift Response)
+When performance metrics (F1/AUC) drop or data drift is detected:
 
-1.  Place new data in `data/raw/Churn.csv`.
-2.  Run training pipeline:
+1.  **Ingest New Data**: Place the new dataset in `data/raw/Churn.csv` (or update DVC pointer).
+2.  **Run Pipeline**:
     ```bash
     make train
     ```
-3.  Verify metrics in MLflow (locally `mlruns` or remote server).
-4.  Commit updated artifacts (`models/best_model.pkl`) or push to registry.
-5.  Rebuild and deploy container.
+3.  **Validate**: Check the output in `models/metrics.json`. Ensure F1 > 0.80.
+4.  **Release**:
+    -   Commit the new `dvc.lock` and `models/metrics.json`.
+    -   Push to git to trigger CI/CD.
+    -   The pipeline will build a new Docker image with the updated model.
 
-### 2.2 Rollback
-If the new model behaves unexpectedly:
-1.  Revert to previous docker image tag:
-    ```bash
-    # Docker
-    docker run -d bankchurn-predictor:v1.0.0
-    
-    # K8s
-    kubectl rollout undo deployment/bankchurn-predictor
-    ```
+### 3.2 Manual Rollback
+If the new model behaves unexpectedly in production:
 
----
-
-## 3. Monitoring & Alerting
-
-### 3.1 Key Metrics
-| Metric | Threshold | Action |
-|--------|-----------|--------|
-| **Latency (p95)** | > 200ms | Scale replicas / Check resource limits |
-| **Error Rate** | > 1% | Check logs for 500 errors / Data validation failures |
-| **Drift (PSI)** | > 0.2 | Trigger retraining |
-
-### 3.2 Checking Logs
+**Docker:**
 ```bash
-# Docker
-docker logs -f bankchurn-container
+# Stop current
+docker stop bankchurn-demo
+# Run previous tag (e.g., v1.0.0)
+docker run -d --name bankchurn-demo -p 8000:8000 ghcr.io/duqueom/bankchurn:v1.0.0
+```
 
-# System logs (local)
-cat bankchurn.log
+**Kubernetes:**
+```bash
+kubectl rollout undo deployment/bankchurn-api
 ```
 
 ---
 
-## 4. Troubleshooting
+## 4. Monitoring & Alerting
 
-### 4.1 Common Issues
+### 4.1 Key Metrics (Prometheus)
+The API exposes metrics at `/metrics`. Key indicators to watch:
 
-**Scenario: API returns 503 Model not available**
--   **Cause**: Model file missing or failed to load.
--   **Fix**: Check if `models/best_model.pkl` exists. Run `make train` to regenerate.
+| Metric | Threshold | Action |
+|--------|-----------|--------|
+| `http_request_duration_seconds_bucket` (P95) | > 200ms | Scale replicas / Check CPU usage |
+| `http_requests_total` (status=5xx) | > 1% rate | Check logs for application errors |
+| `model_prediction_drift` (Evidently) | > 0.2 PSI | Trigger retraining |
 
-**Scenario: Training fails with OOM**
--   **Cause**: Large dataset with SMOTE.
--   **Fix**: Increase RAM or switch to `undersample` strategy in `configs/config.yaml`.
+### 4.2 Logs
+Logs are structured in JSON (if configured) or standard text.
 
-**Scenario: MLflow connection error**
--   **Cause**: MLflow server down or bad URI.
--   **Fix**: Check `MLFLOW_TRACKING_URI` env var. For local run, set `mlflow.enabled: false` in config.
+```bash
+# Docker
+docker logs -f bankchurn-demo
+
+# Search for errors
+docker logs bankchurn-demo 2>&1 | grep "ERROR"
+```
 
 ---
 
-## 5. Disaster Recovery
--   **Data Backup**: Raw data backed up in S3/GCS (via DVC remote).
--   **Model Artifacts**: Stored in MLflow Artifact Store.
--   **Code**: Git repository.
+## 5. Troubleshooting
 
-To restore from scratch:
-1.  Clone repo.
-2.  `dvc pull` (to get data).
-3.  `make train` (to rebuild model).
-4.  `make api-start`.
+### 5.1 Common Scenarios
+
+**Scenario: API returns 503 "Model not available"**
+-   **Cause**: The `best_model.pkl` artifact was not found during startup.
+-   **Fix**:
+    1.  Verify `models/best_model.pkl` exists in the container.
+    2.  If using volumes, check the mount path.
+    3.  Run `make train` locally and rebuild image.
+
+**Scenario: "ModuleNotFoundError: src"**
+-   **Cause**: Python path misconfiguration.
+-   **Fix**: Always execute via `python -m src.bankchurn.cli ...` or use the provided `Makefile` targets which set `PYTHONPATH`.
+
+**Scenario: OOM (Out of Memory) during Training**
+-   **Cause**: SMOTE oversampling creating too many synthetic samples.
+-   **Fix**: Update `configs/config.yaml` to use `undersample` strategy or increase container memory limit.
+
+---
+
+## 6. Disaster Recovery
+
+-   **Code**: Recover from GitHub `main` branch.
+-   **Data**: Pull from DVC remote storage (S3/GCS).
+-   **Model**: Pull previous known good model from MLflow or Git history (if committed).
+
+**Recovery Sequence:**
+1.  `git clone [repo]`
+2.  `dvc pull`
+3.  `make install`
+4.  `make train`
+5.  `make api-start`

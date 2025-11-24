@@ -26,6 +26,7 @@ from sklearn.metrics import (
     roc_auc_score,
     roc_curve,
 )
+from sklearn.pipeline import Pipeline
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +37,9 @@ class ModelEvaluator:
     Parameters
     ----------
     model : object
-        Trained model with predict and predict_proba methods.
-    preprocessor : object
-        Fitted preprocessor for feature transformation.
+        Trained model (Pipeline or estimator) with predict and predict_proba methods.
+    preprocessor : object, optional
+        Fitted preprocessor for feature transformation (required if model is not a Pipeline).
 
     Attributes
     ----------
@@ -46,21 +47,28 @@ class ModelEvaluator:
         Computed evaluation metrics.
     """
 
-    def __init__(self, model: Any, preprocessor: Any) -> None:
+    def __init__(self, model: Any, preprocessor: Any = None) -> None:
         self.model = model
         self.preprocessor = preprocessor
         self.metrics_: dict[str, float] = {}
 
+        # Extract preprocessor from pipeline if needed
+        if self.preprocessor is None and isinstance(self.model, Pipeline):
+            try:
+                self.preprocessor = self.model.named_steps["preprocessor"]
+            except (KeyError, AttributeError):
+                pass
+
     @classmethod
-    def from_files(cls, model_path: str | Path, preprocessor_path: str | Path) -> ModelEvaluator:
+    def from_files(cls, model_path: str | Path, preprocessor_path: str | Path | None = None) -> ModelEvaluator:
         """Load model and preprocessor from disk.
 
         Parameters
         ----------
         model_path : str or Path
             Path to saved model.
-        preprocessor_path : str or Path
-            Path to saved preprocessor.
+        preprocessor_path : str or Path, optional
+            Path to saved preprocessor (required for legacy models).
 
         Returns
         -------
@@ -68,9 +76,16 @@ class ModelEvaluator:
             Initialized evaluator with loaded artifacts.
         """
         model = joblib.load(model_path)
-        preprocessor = joblib.load(preprocessor_path)
+        preprocessor = None
+
+        if preprocessor_path:
+            try:
+                preprocessor = joblib.load(preprocessor_path)
+                logger.info(f"Loaded preprocessor from {preprocessor_path}")
+            except Exception as e:
+                logger.warning(f"Could not load preprocessor from {preprocessor_path}: {e}")
+
         logger.info(f"Loaded model from {model_path}")
-        logger.info(f"Loaded preprocessor from {preprocessor_path}")
         return cls(model, preprocessor)
 
     def evaluate(
@@ -99,19 +114,26 @@ class ModelEvaluator:
             - confusion_matrix
             - classification_report
         """
-        # Transform features
-        X_transformed = self.preprocessor.transform(X)
-
-        # Predictions
-        y_pred = self.model.predict(X_transformed)
-
-        # Probabilities (if available)
-        try:
-            y_proba = self.model.predict_proba(X_transformed)
-            has_proba = True
-        except AttributeError:
-            y_proba = None
-            has_proba = False
+        if isinstance(self.model, Pipeline):
+            y_pred = self.model.predict(X)
+            try:
+                y_proba = self.model.predict_proba(X)
+                has_proba = True
+            except AttributeError:
+                y_proba = None
+                has_proba = False
+        else:
+            # Legacy
+            if self.preprocessor is None:
+                raise ValueError("Preprocessor required for non-Pipeline models")
+            X_transformed = self.preprocessor.transform(X)
+            y_pred = self.model.predict(X_transformed)
+            try:
+                y_proba = self.model.predict_proba(X_transformed)
+                has_proba = True
+            except AttributeError:
+                y_proba = None
+                has_proba = False
 
         # Compute metrics
         metrics = {
@@ -194,9 +216,12 @@ class ModelEvaluator:
             - performance by group
             - disparate impact ratios
         """
-        # Transform for prediction
-        X_transformed = self.preprocessor.transform(X)
-        y_pred = self.model.predict(X_transformed)
+        # Predict
+        if isinstance(self.model, Pipeline):
+            y_pred = self.model.predict(X)
+        else:
+            X_transformed = self.preprocessor.transform(X)
+            y_pred = self.model.predict(X_transformed)
 
         fairness_metrics = {}
 

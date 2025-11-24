@@ -45,16 +45,7 @@ class ModelWrapper:
 
         df = pd.DataFrame([data])
 
-        # Feature engineering (consistent with training)
-        # We can use clean_data but it filters out rows, which we don't want in inference necessarily.
-        # Instead we replicate the feature creation logic or extract it.
-        # For now, we replicate the critical transformations:
-        if "model_year" in df.columns:
-            current_year = pd.Timestamp.now().year
-            df["vehicle_age"] = current_year - df["model_year"]
-
-        if "model" in df.columns:
-            df["brand"] = df["model"].astype(str).str.split().str[0]
+        # Feature engineering is handled by the model pipeline.
 
         # Align columns
         if self.feature_columns:

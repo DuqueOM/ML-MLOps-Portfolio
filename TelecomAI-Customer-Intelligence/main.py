@@ -5,13 +5,10 @@ TelecomAI Customer Intelligence - Main CLI
 import argparse
 import logging
 import sys
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict
-
-import yaml
 
 # Core imports
+from src.telecom.config import Config
 from src.telecom.evaluation import evaluate_model
 from src.telecom.prediction import predict_batch
 from src.telecom.training import train_model
@@ -31,25 +28,6 @@ logging.basicConfig(
 logger = logging.getLogger("telecomai")
 
 
-@dataclass
-class Config:
-    project_name: str
-    random_seed: int
-    paths: Dict[str, str]
-    features: list
-    target: str
-    split: Dict[str, Any]
-    model: Dict[str, Any]
-    threshold: float = 0.5
-    mlflow: Any = None
-
-
-def load_config(path: str) -> Config:
-    with open(path, "r") as f:
-        cfg = yaml.safe_load(f)
-    return Config(**cfg)
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="TelecomAI CLI")
     parser.add_argument("--mode", choices=["train", "eval", "predict"], required=True)
@@ -59,7 +37,7 @@ def main() -> None:
     parser.add_argument("--seed", type=int, help="Random seed override")
 
     args = parser.parse_args()
-    cfg = load_config(args.config)
+    cfg = Config.from_yaml(args.config)
 
     seed_used = set_seed(args.seed)
     logger.info("Using seed: %s", seed_used)

@@ -21,20 +21,17 @@ class TestModelConfig:
         assert config.test_size == 0.2
         assert config.random_state == 42
         assert config.cv_folds == 5
-        assert config.ensemble_voting == "soft"
+        assert config.ensemble.voting == "soft"  # Access nested
 
     def test_custom_values(self):
         """Test custom configuration values."""
-        config = ModelConfig(
-            test_size=0.3,
-            random_state=123,
-            cv_folds=10,
-            ensemble_voting="hard",
-        )
+        from src.bankchurn.config import EnsembleConfig
+
+        config = ModelConfig(test_size=0.3, random_state=123, cv_folds=10, ensemble=EnsembleConfig(voting="hard"))
         assert config.test_size == 0.3
         assert config.random_state == 123
         assert config.cv_folds == 10
-        assert config.ensemble_voting == "hard"
+        assert config.ensemble.voting == "hard"
 
     def test_test_size_validation(self):
         """Test test_size bounds validation."""
@@ -51,8 +48,10 @@ class TestModelConfig:
 
     def test_ensemble_voting_validation(self):
         """Test ensemble_voting pattern validation."""
+        from src.bankchurn.config import EnsembleConfig
+
         with pytest.raises(ValidationError):
-            ModelConfig(ensemble_voting="invalid")
+            EnsembleConfig(voting="invalid")
 
 
 class TestDataConfig:
@@ -107,12 +106,7 @@ class TestBankChurnConfig:
     def sample_config_dict(self):
         """Sample configuration dictionary."""
         return {
-            "model": {
-                "test_size": 0.25,
-                "random_state": 42,
-                "cv_folds": 5,
-                "ensemble_voting": "soft",
-            },
+            "model": {"test_size": 0.25, "random_state": 42, "cv_folds": 5, "ensemble": {"voting": "soft"}},
             "data": {
                 "target_column": "Exited",
                 "categorical_features": ["Gender", "Geography"],

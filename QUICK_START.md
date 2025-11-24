@@ -55,7 +55,23 @@ Refer to the **[Operations Runbook](docs/OPERATIONS_PORTFOLIO.md)** for detailed
 ---
 
 ## 📊 Validation
-To manually run the integration tests:
+
+### Integration Tests
+To run the Python-based integration tests:
+```bash
+# Ensure demo stack is running
+docker-compose -f docker-compose.demo.yml up -d
+
+# Run integration tests
+pytest tests/integration/test_demo.py -v
+
+# Tear down
+docker-compose -f docker-compose.demo.yml down
+```
+
+### Legacy Shell Script (Alternative)
 ```bash
 bash scripts/run_demo_tests.sh
 ```
+
+**Note**: The Python tests (`test_demo.py`) are more comprehensive and include proper health checks, prediction validation, and response schema verification.

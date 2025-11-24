@@ -12,9 +12,17 @@ Thank you for your interest in contributing to this portfolio! This project demo
 ## Getting Started
 
 ### Prerequisites
-- **Python 3.11+**
+- **Python 3.11+** (3.12 also supported)
 - **Docker** & **Docker Compose**
 - **Make** utility
+- **pytest** for running tests
+
+### Recommended Reading
+Before contributing, please review:
+- **[Architecture Documentation](docs/ARCHITECTURE_PORTFOLIO.md)**: Understand the system design
+- **[Operations Runbook](docs/OPERATIONS_PORTFOLIO.md)**: Learn deployment and monitoring procedures
+- **[Dependency Management](docs/DEPENDENCY_CONFLICTS.md)**: Understand dependency strategy
+- **[PR Plan](docs/PR_PLAN.md)**: See planned improvements and priorities
 
 ### Setup
 1. **Clone the repository**
@@ -75,7 +83,21 @@ make lint
 ### Testing
 - **Unit Tests**: Required for all new logic (`tests/test_*.py`).
 - **Integration Tests**: Required for API endpoints.
-- **Coverage**: Must remain above 70%.
+  - Use `tests/integration/test_demo.py` for cross-project validation.
+  - Ensure all services pass health checks and prediction tests.
+- **Coverage**: Must remain above 70% (target: 75%+).
+
+**Run integration tests**:
+```bash
+# Start demo stack
+docker-compose -f docker-compose.demo.yml up -d
+
+# Run tests
+pytest tests/integration/test_demo.py -v
+
+# Tear down
+docker-compose -f docker-compose.demo.yml down
+```
 
 ## Commit Messages
 We follow [Conventional Commits](https://www.conventionalcommits.org/):

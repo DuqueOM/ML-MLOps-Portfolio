@@ -31,15 +31,17 @@ def predict_price(payload: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, 
 
     df_in = pd.DataFrame([payload])
 
-    # Basic feature engineering required for inference
-    if "model_year" in df_in.columns:
-        current_year = pd.Timestamp.now().year
-        df_in["vehicle_age"] = current_year - df_in["model_year"]
-
-    if "model" in df_in.columns and "brand" in feature_columns:
-        df_in["brand"] = df_in["model"].astype(str).str.split().str[0]
+    # Feature engineering is now handled by the pipeline (FeatureEngineer step)
+    # We just ensure raw columns are present if possible, or let alignment handle it.
 
     # Align columns
+    # Note: feature_columns contains the columns expected by the Preprocessor (step 2).
+    # Since the pipeline starts with FeatureEngineer (step 1), we should ideally
+    # ensure RAW columns are present.
+    # However, the current logic aligns to 'feature_columns' which includes derived features.
+    # We fill them with NaN, and FeatureEngineer will populate them correctly
+    # (assuming raw columns like 'model_year' and 'model' are in feature_columns or payload).
+
     for col in feature_columns:
         if col not in df_in.columns:
             df_in[col] = np.nan

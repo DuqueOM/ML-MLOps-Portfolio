@@ -2,7 +2,7 @@
 
 **Portfolio Profesional de Machine Learning y MLOps centrado en 3 Proyectos "Production-Ready"**
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://python.org)
 [![MLOps](https://img.shields.io/badge/MLOps-Production--Ready-green.svg)](https://mlops.org)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-blue.svg)](https://github.com/features/actions)
 [![Coverage](https://img.shields.io/badge/Coverage-%3E70%25-brightgreen.svg)](tests/)
@@ -68,10 +68,10 @@ Este repositorio se centra en **3 Proyectos Principales (Top-3)** que han sido l
 ## ️ Stack Tecnológico & MLOps
 
 ### Infraestructura CI/CD Unificada (Staff-Level)
-Todo el portfolio es validado por un único workflow maestro (`ci-portfolio-top3.yml`) que orquesta:
+Todo el portfolio es validado por un único workflow maestro (`ci-mlops.yml`) que orquesta:
 
 1. **Build & Environment**:
-   - Setup de Python 3.12 con **caché inteligente de pip** (GitHub Actions built-in).
+   - Setup de Python 3.11 y 3.12 (matrix testing) con **caché inteligente de pip**.
    - Restauración automática de dependencias por proyecto vía `cache-dependency-path`.
    - **Optimización**: Reduce tiempo de instalación de 5min → 30s.
 
@@ -102,20 +102,24 @@ Todo el portfolio es validado por un único workflow maestro (`ci-portfolio-top3
 - **Uso**: Almacenamiento reproducible y seguro de modelos versionados.
 
 ### Tecnologías Clave
-- **Core**: Python 3.10+, Pandas, NumPy, Scikit-learn.
+- **Core**: Python 3.11+, Pandas, NumPy, Scikit-learn, XGBoost, Optuna.
 - **Web**: FastAPI, Streamlit, Uvicorn.
-- **Ops**: Docker, GitHub Actions (CI/CD optimizado), Makefiles, Terraform.
+- **Ops**: Docker (Multi-Stage), GitHub Actions, Kubernetes, Makefiles, Terraform.
 - **Tracking & Data**: MLflow, DVC.
+- **Monitoring**: Prometheus, Grafana.
+- **Security**: Trivy, Bandit, Gitleaks.
 - **Registry**: GitHub Container Registry (GHCR) para imágenes inmutables.
 
 ---
 
 ## 📚 Documentación Global
 
-- **[Arquitectura del Portfolio](docs/ARCHITECTURE_PORTFOLIO.md)**: Visión general del sistema, microservicios y diagrama de flujo de datos.
-- **[Runbook de Operaciones](docs/OPERATIONS_PORTFOLIO.md)**: Guía para despliegue, monitoreo, troubleshooting y mantenimiento.
-- **[Gestión de Dependencias](docs/DEPENDENCY_CONFLICTS.md)**: Estrategia de versionado, resolución de conflictos y matriz de compatibilidad.
-- **[Proceso de Release](docs/RELEASE.md)**: Estándares para versionado y publicación de artefactos.
+- **[Arquitectura del Portfolio](docs/ARCHITECTURE_PORTFOLIO.md)**: Sistema completo con diagramas Mermaid, Docker multi-stage, CI/CD pipeline y stack tecnológico.
+- **[Runbook de Operaciones](docs/OPERATIONS_PORTFOLIO.md)**: Guía completa para despliegue (Docker/K8s), monitoreo con Prometheus/Grafana, troubleshooting y mantenimiento.
+- **[Gestión de Dependencias](docs/DEPENDENCY_CONFLICTS.md)**: Análisis de conflictos (PyArrow, Pydantic), plan de remediación y estrategia de versionado.
+- **[Proceso de Release](docs/RELEASE.md)**: Workflow completo de releases, publicación a GHCR, rollback procedures y model versioning.
+- **[Plan de PRs](docs/PR_PLAN.md)**: 10 Pull Requests priorizados con especificaciones completas, diffs y timeline de 4 semanas.
+- **[Quick Start](QUICK_START.md)**: Demo en un comando para evaluación rápida.
 
 ---
 
@@ -142,9 +146,14 @@ Portafolio-ML-MLOps/
 │   ├── tests/
 │   └── Dockerfile
 │
-├── common_utils/                  # Utilidades compartidas
-├── infra/                         # Docker Compose (MLflow, etc.)
+├── common_utils/                  # Utilidades compartidas (seed, logger)
+├── tests/integration/             # Tests de integración cross-project
+├── infra/                         # Docker Compose, Terraform (AWS/GCP), Prometheus/Grafana
+├── k8s/                           # Manifests Kubernetes (deployments, HPA, ingress)
+├── docs/                          # Documentación global del portfolio
 ├── FINAL_PORTFOLIO_STATUS.md      # 📊 Estado detallado del portfolio
+├── CONTRIBUTING.md                # Guía de contribución
+├── CHANGELOG.md                   # Historial de versiones
 └── README.md                      # Este archivo
 ```
 
@@ -155,9 +164,10 @@ Portafolio-ML-MLOps/
 | Métrica | Estado | Target |
 |---------|--------|--------|
 | **CI Pipeline** | 🟢 **Passing** | 100% Green |
-| **Test Coverage** | 🟢 **> 70% (Avg)** | > 65% |
+| **Test Coverage** | 🟢 **> 75% (Avg)** | > 70% |
 | **Seguridad** | 🛡️ **Scanned** | 0 Critical CVEs |
-| **Docker Builds** | 🐳 **Optimized** | Builds Exitosos |
+| **Docker Builds** | 🐳 **Multi-Stage** | 50% Size Reduction |
+| **Python Support** | ✅ **3.11 & 3.12** | Matrix Testing |
 
 ---
 
@@ -171,10 +181,13 @@ make docker-demo
 ```
 
 **Demo includes:**
-- 🏦 BankChurn API: `http://localhost:8001`
-- 🚗 CarVision API: `http://localhost:8002`
-- 📱 Telecom API: `http://localhost:8003`
+- 🏦 BankChurn API: `http://localhost:8001/docs`
+- 🚗 CarVision API: `http://localhost:8002/docs`
+- 🚗 CarVision Dashboard: `http://localhost:8501`
+- 📱 TelecomAI API: `http://localhost:8003/docs`
 - 📊 MLflow UI: `http://localhost:5000`
+- 📈 Prometheus: `http://localhost:9090` (with --profile monitoring)
+- 📊 Grafana: `http://localhost:3000` (with --profile monitoring)
 
 ### Manual Setup (BankChurn)
 ```bash
@@ -215,11 +228,15 @@ make install
 # Run tests
 make test
 
-# Run CI pipeline locally
-make ci-local
+# Run integration tests
+pytest tests/integration/test_demo.py -v
 
 # Check service health
 make health-check
+
+# Security scans
+bandit -r . -f json -o bandit-report.json
+docker run --rm aquasec/trivy image <image-name>
 ```
 
 ---
