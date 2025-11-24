@@ -55,10 +55,16 @@ jobs:
         working-directory: ${{ matrix.project }}
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          elif [ -f requirements.in ]; then
+          if [ -f requirements.in ]; then
             pip install -r requirements.in
+          elif [ -f requirements.txt ]; then
+            # Strip hashes to avoid --require-hashes errors with transitive deps
+            grep -v '^[[:space:]]*--hash=' requirements.txt | \
+            grep -v '^[[:space:]]*--require-hashes' | \
+            sed 's/ \\$//' | \
+            grep -v '^[[:space:]]*#' | \
+            grep -v '^[[:space:]]*$' > requirements_no_hash.txt
+            pip install -r requirements_no_hash.txt
           fi
           pip install pytest pytest-cov flake8 black isort mypy
       
@@ -175,7 +181,17 @@ jobs:
         working-directory: BankChurn-Predictor
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.in
+          if [ -f requirements.in ]; then
+            pip install -r requirements.in
+          elif [ -f requirements.txt ]; then
+            # Strip hashes to avoid --require-hashes errors with transitive deps
+            grep -v '^[[:space:]]*--hash=' requirements.txt | \
+            grep -v '^[[:space:]]*--require-hashes' | \
+            sed 's/ \\$//' | \
+            grep -v '^[[:space:]]*#' | \
+            grep -v '^[[:space:]]*$' > requirements_no_hash.txt
+            pip install -r requirements_no_hash.txt
+          fi
       
       - name: Run E2E pipeline
         run: |

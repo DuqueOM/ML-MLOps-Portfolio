@@ -40,7 +40,13 @@ jobs:
           elif [ -f requirements-core.txt ]; then
             pip install -r requirements-core.txt
           elif [ -f requirements.txt ]; then
-            pip install -r requirements.txt
+            # Strip hashes to avoid --require-hashes errors with transitive deps
+            grep -v '^[[:space:]]*--hash=' requirements.txt | \
+            grep -v '^[[:space:]]*--require-hashes' | \
+            sed 's/ \\$//' | \
+            grep -v '^[[:space:]]*#' | \
+            grep -v '^[[:space:]]*$' > requirements_no_hash.txt
+            pip install -r requirements_no_hash.txt
           fi
           pip install pytest pytest-cov coverage
       
