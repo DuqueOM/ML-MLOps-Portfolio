@@ -99,7 +99,7 @@ def load_and_clean_data():
             break
 
     if not data_file:
-        st.error("No se encontró el dataset en ninguna ubicación estándar.")
+        st.error("Dataset not found in any standard location.")
         return None, None
 
     df = loader.load_data(str(data_file))
@@ -145,28 +145,29 @@ if df_clean is None:
 with st.sidebar:
     st.title("🚗 CarVision Filters")
 
-    # Filtro por precio (primero)
+    # Price filter (first)
     if "price" in df_clean.columns:
         max_price = int(df_clean["price"].quantile(0.99))
-        price_range = st.slider("Rango de Precio ($)", 0, max_price, (0, max_price))
+        price_range = st.slider("Price Range ($)", 0, max_price, (0, max_price), key="price_range_slider")
     else:
         price_range = (0, 0)
 
-    # Filtro por año de modelo (rango completo por defecto)
+    # Model year filter (full range by default)
     if "model_year" in df_clean.columns:
         min_year = int(df_clean["model_year"].min())
         max_year = int(df_clean["model_year"].max())
-        year_range = st.slider("Año del Modelo", min_year, max_year, (min_year, max_year))
+        year_range = st.slider("Model Year", min_year, max_year, (min_year, max_year), key="year_range_slider")
     else:
         year_range = (1990, 2024)
 
-    # Filtro por fabricantes (todos seleccionados por defecto)
+    # Manufacturer filter (all selected by default)
     if "model" in df_clean.columns:
         manufacturers = sorted(df_clean["model"].apply(lambda x: str(x).split()[0]).unique())
         selected_manufacturers = st.multiselect(
-            "Fabricantes",
+            "Manufacturers",
             manufacturers,
-            default=manufacturers,  # incluir todos por defecto
+            default=manufacturers,  # include all by default
+            key="manufacturers_multiselect",
         )
     else:
         selected_manufacturers = []
@@ -180,41 +181,41 @@ with st.sidebar:
 
     df_filtered = df_clean[mask]
 
-    st.markdown(f"**Registros filtrados:** {len(df_filtered):,}")
+    st.markdown(f"**Filtered Records:** {len(df_filtered):,}")
     st.markdown("---")
     st.caption("v2.0.0 Pro | Powered by Tripe Ten AI")
 
-# Título principal
+# Main title
 st.title("🚗 CarVision Market Intelligence Dashboard")
-st.markdown("Plataforma integral de análisis de precios y tendencias del mercado automotriz.")
+st.markdown("Comprehensive platform for automotive market pricing and trend analysis.")
 
-# Pestañas
+# Tabs
 tab1, tab2, tab3, tab4 = st.tabs(
     [
-        "📊 Vista General",
-        "📈 Análisis de Mercado",
-        "🧠 Métricas del Modelo",
-        "🔮 Predictor de Precios",
+        "📊 Overview",
+        "📈 Market Analysis",
+        "🧠 Model Metrics",
+        "🔮 Price Predictor",
     ]
 )
 
-# --- PESTAÑA 1: VISTA GENERAL ---
+# --- TAB 1: OVERVIEW ---
 with tab1:
-    st.header("Panorama General del Dataset")
+    st.header("Dataset Overview")
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        display_kpi_card("Vehículos Totales", f"{len(df_filtered):,}")
+        display_kpi_card("Total Vehicles", f"{len(df_filtered):,}")
     with col2:
-        display_kpi_card("Precio Promedio", f"{df_filtered['price'].mean():,.0f}", prefix="$")
+        display_kpi_card("Average Price", f"{df_filtered['price'].mean():,.0f}", prefix="$")
     with col3:
-        display_kpi_card("Precio Mediana", f"{df_filtered['price'].median():,.0f}", prefix="$")
+        display_kpi_card("Median Price", f"{df_filtered['price'].median():,.0f}", prefix="$")
     with col4:
         display_kpi_card(
-            "Edad Promedio", f"{(pd.Timestamp.now().year - df_filtered['model_year']).mean():.1f}", suffix=" años"
+            "Average Age", f"{(pd.Timestamp.now().year - df_filtered['model_year']).mean():.1f}", suffix=" years"
         )
 
-    st.subheader("Muestra de Datos Recientes")
+    st.subheader("Recent Data Sample")
     st.dataframe(
         df_filtered.sort_values("model_year", ascending=False).head(100),
         width="stretch",
@@ -222,32 +223,32 @@ with tab1:
 
     col_l, col_r = st.columns(2)
     with col_l:
-        st.subheader("Calidad de Datos - Valores Faltantes")
+        st.subheader("Data Quality - Missing Values")
         missing = raw_df.isnull().sum()
         missing = missing[missing > 0].sort_values(ascending=False)
         if not missing.empty:
             fig_missing = px.bar(
                 x=missing.index,
                 y=missing.values,
-                title="Filas con valores nulos por columna",
-                labels={"x": "Columna", "y": "Filas con valores nulos"},
+                title="Rows with null values by column",
+                labels={"x": "Column", "y": "Rows with null values"},
                 color_discrete_sequence=["#ff6b6b"],
             )
             st.plotly_chart(fig_missing, width="stretch")
         else:
-            st.success("¡Dataset limpio! No hay valores faltantes.")
+            st.success("Clean dataset! No missing values.")
 
     with col_r:
-        st.subheader("Integridad de Datos")
+        st.subheader("Data Integrity")
         duplicates = raw_df.duplicated().sum()
         if duplicates > 0:
-            st.warning(f"⚠️ Se detectaron {duplicates:,} filas duplicadas en el dataset original.")
+            st.warning(f"⚠️ Detected {duplicates:,} duplicate rows in the original dataset.")
         else:
-            st.success("✅ No hay duplicados.")
+            st.success("✅ No duplicates found.")
 
-    # Distribuciones clave del dataset filtrado
+    # Key distributions of the filtered dataset
     if len(df_filtered) > 0:
-        st.subheader("Distribuciones clave del dataset filtrado")
+        st.subheader("Key Distributions of Filtered Dataset")
         dist1, dist2 = st.columns(2)
 
         with dist1:
@@ -256,8 +257,8 @@ with tab1:
                     df_filtered,
                     x="price",
                     nbins=40,
-                    title="Distribución de precios",
-                    labels={"price": "Precio"},
+                    title="Price Distribution",
+                    labels={"price": "Price"},
                 )
                 st.plotly_chart(fig_price, width="stretch")
 
@@ -267,15 +268,15 @@ with tab1:
                     df_filtered,
                     x="model_year",
                     nbins=20,
-                    title="Distribución por año modelo",
-                    labels={"model_year": "Año modelo"},
+                    title="Distribution by Model Year",
+                    labels={"model_year": "Model Year"},
                 )
                 st.plotly_chart(fig_year, width="stretch")
 
-# --- PESTAÑA 2: ANÁLISIS DE MERCADO ---
+# --- TAB 2: MARKET ANALYSIS ---
 with tab2:
-    st.header("Reporte Ejecutivo de Mercado")
-    st.caption("Resumen financiero y mapa de oportunidades para tomadores de decisión e inversionistas.")
+    st.header("Executive Market Report")
+    st.caption("Financial summary and opportunity mapping for decision makers and investors.")
 
     if len(df_filtered) > 0:
         # Usar MarketAnalyzer y VisualizationEngine
@@ -283,34 +284,34 @@ with tab2:
         analyzer = MarketAnalyzer(df_filtered)
         summary = analyzer.generate_executive_summary()
 
-        # Resumen Ejecutivo
-        with st.expander("📋 Resumen Ejecutivo de Mercado (Expandir)", expanded=True):
+        # Executive Summary
+        with st.expander("📋 Executive Market Summary (Expand)", expanded=True):
             c1, c2, c3 = st.columns(3)
             with c1:
                 st.markdown("#### 💡 Insights")
                 st.info(
-                    f"**Marca Líder:** {summary['insights'].get('most_popular_brand', 'N/A')}\n\n"
-                    f"**Mayor Valor:** {summary['insights'].get('highest_value_brand', 'N/A')}"
+                    f"**Leading Brand:** {summary['insights'].get('most_popular_brand', 'N/A')}\n\n"
+                    f"**Highest Value:** {summary['insights'].get('highest_value_brand', 'N/A')}"
                 )
             with c2:
-                st.markdown("#### 💰 Oportunidades")
+                st.markdown("#### 💰 Opportunities")
                 st.success(
-                    f"**Vehículos Subvalorados:** {summary['kpis'].get('total_opportunities', 0)}\n\n"
-                    f"**Potencial Arbitraje:** ${summary['kpis'].get('potential_arbitrage_value', 0):,.0f}"
+                    f"**Undervalued Vehicles:** {summary['kpis'].get('total_opportunities', 0)}\n\n"
+                    f"**Arbitrage Potential:** ${summary['kpis'].get('potential_arbitrage_value', 0):,.0f}"
                 )
             with c3:
-                st.markdown("#### 📉 Depreciación")
+                st.markdown("#### 📉 Depreciation")
                 depr = summary["insights"].get("avg_depreciation_rate", 0)
-                st.warning(f"**Tasa Anual:** {depr:.1%}")
+                st.warning(f"**Annual Rate:** {depr:.1%}")
 
-        # Resumen financiero ejecutivo
-        st.subheader("Resumen financiero ejecutivo")
+        # Executive financial summary
+        st.subheader("Executive Financial Summary")
 
-        # KPIs financieros
+        # Financial KPIs
         fk1, fk2, fk3 = st.columns(3)
-        fk1.metric("Valor total de mercado", f"${summary['kpis']['total_market_value']:,.0f}")
-        fk2.metric("Precio promedio", f"${summary['kpis']['average_price']:,.0f}")
-        fk3.metric("Oportunidades detectadas", f"{summary['kpis']['total_opportunities']:,}")
+        fk1.metric("Total Market Value", f"${summary['kpis']['total_market_value']:,.0f}")
+        fk2.metric("Average Price", f"${summary['kpis']['average_price']:,.0f}")
+        fk3.metric("Opportunities Detected", f"{summary['kpis']['total_opportunities']:,}")
 
         # Narrativa ejecutiva sobre el portafolio
         total_vehicles = summary["kpis"].get("total_vehicles", len(df_filtered))
@@ -320,23 +321,23 @@ with tab2:
 
         st.markdown(
             f"""
-            **Visión del portafolio filtrado**
+            **Filtered Portfolio Overview**
 
-            - Valor total estimado del mercado: **${total_value:,.0f}**
-            - Ticket promedio por vehículo: **${avg_price:,.0f}**
-            - Volumen de unidades analizadas: **{total_vehicles:,}**
-            - Oportunidades identificadas (vehículos subvalorados): **{total_opps:,}**
+            - Estimated total market value: **${total_value:,.0f}**
+            - Average ticket per vehicle: **${avg_price:,.0f}**
+            - Volume of units analyzed: **{total_vehicles:,}**
+            - Identified opportunities (undervalued vehicles): **{total_opps:,}**
 
-            Estas cifras resumen el tamaño de mercado y el potencial de retorno
-            para un inversionista que opere en este segmento.
+            These figures summarize the market size and return potential
+            for an investor operating in this segment.
             """
         )
 
         fc1, fc2 = st.columns(2)
 
-        # Valor de mercado por segmento de precio
+        # Market value by price segment
         with fc1:
-            st.markdown("**Distribución del valor por segmento de precio**")
+            st.markdown("**Value Distribution by Price Segment**")
             if "price_category" in df_filtered.columns:
                 value_by_cat = df_filtered.groupby("price_category")["price"].sum().reset_index()
                 value_by_cat = value_by_cat.sort_values("price", ascending=False)
@@ -344,14 +345,14 @@ with tab2:
                     value_by_cat,
                     x="price_category",
                     y="price",
-                    labels={"price": "Valor total ($)", "price_category": "Segmento"},
+                    labels={"price": "Total Value ($)", "price_category": "Segment"},
                     color="price_category",
                 )
                 st.plotly_chart(fig_value_cat, width="stretch")
 
-        # Participación de valor por marca (Top 8)
+        # Value share by brand (Top 8)
         with fc2:
-            st.markdown("**Participación de valor por marca (Top 8)**")
+            st.markdown("**Value Share by Brand (Top 8)**")
             df_brands = df_filtered.copy()
             if "model" in df_brands.columns:
                 df_brands["brand"] = df_brands["model"].apply(lambda x: str(x).split()[0])
@@ -366,37 +367,37 @@ with tab2:
                     )
                     st.plotly_chart(fig_brand_share, width="stretch")
 
-        # Oportunidades de arbitraje por categoría (si existen)
+        # Arbitrage opportunities by category (if any)
         opps = analyzer.analysis_results.get("opportunities") or []
         if opps:
-            st.markdown("**Mapa de oportunidades de arbitraje por segmento**")
+            st.markdown("**Arbitrage Opportunity Map by Segment**")
             opp_df = pd.DataFrame(opps)
             fig_opp = px.bar(
                 opp_df,
                 x="category",
                 y="potential_value",
                 hover_data=["count", "avg_price"],
-                labels={"category": "Categoría", "potential_value": "Valor potencial medio ($)"},
+                labels={"category": "Category", "potential_value": "Average Potential Value ($)"},
             )
             st.plotly_chart(fig_opp, width="stretch")
 
-        # Recomendaciones estratégicas de alto nivel
+        # High-level strategic recommendations
         recs = summary.get("recommendations") or []
         if recs:
-            st.subheader("Recomendaciones estratégicas para inversionistas")
+            st.subheader("Strategic Recommendations for Investors")
             for rec in recs:
                 st.markdown(f"- {rec}")
 
-        # Dashboard Plotly Avanzado
-        st.subheader("Anexos analíticos (detalle visual)")
+        # Advanced Plotly Dashboard
+        st.subheader("Analytical Appendices (Visual Detail)")
         fig_dashboard = viz_engine.create_market_analysis_dashboard()
         st.plotly_chart(fig_dashboard, width="stretch")
     else:
-        st.warning("No hay datos para mostrar con los filtros seleccionados.")
+        st.warning("No data to display with the selected filters.")
 
-# --- PESTAÑA 3: MÉTRICAS DEL MODELO ---
+# --- TAB 3: MODEL METRICS ---
 with tab3:
-    st.header("Evaluación del Modelo Predictivo")
+    st.header("Predictive Model Evaluation")
 
     # Intentar cargar métricas del modelo
     metrics_model: dict = {}
@@ -466,12 +467,12 @@ with tab3:
             b3.metric("R² Baseline", f"{metrics_baseline.get('r2', 0):.3f}")
             b4.metric("MAPE Baseline", f"{metrics_baseline.get('mape', 0):.1f}%")
 
-            st.markdown("### Comparativa Modelo vs Baseline")
+            st.markdown("### Model vs Baseline Comparison")
             # Tabla de comparación para todas las métricas clave
             comp_df = pd.DataFrame(
                 {
-                    "Métrica": ["RMSE", "MAE", "MAPE", "R²"],
-                    "Modelo Actual": [
+                    "Metric": ["RMSE", "MAE", "MAPE", "R²"],
+                    "Current Model": [
                         metrics_model.get("rmse", 0),
                         metrics_model.get("mae", 0),
                         metrics_model.get("mape", 0),
@@ -486,98 +487,96 @@ with tab3:
                 }
             )
 
-            # Mejora (positivo = mejor que baseline)
+            # Improvement (positive = better than baseline)
             def compute_improvement(row: pd.Series) -> float:
                 base = row["Baseline"]
-                model_val = row["Modelo Actual"]
+                model_val = row["Current Model"]
                 if base == 0:
                     return 0.0
-                # Para R², mayor es mejor; para errores (RMSE, MAE, MAPE), menor es mejor
-                if row["Métrica"] == "R²":
+                # For R², higher is better; for errors (RMSE, MAE, MAPE), lower is better
+                if row["Metric"] == "R²":
                     return (model_val - base) / abs(base) * 100
                 return (base - model_val) / abs(base) * 100
 
-            comp_df["Mejora %"] = comp_df.apply(compute_improvement, axis=1)
+            comp_df["Improvement %"] = comp_df.apply(compute_improvement, axis=1)
 
             st.table(
                 comp_df.style.format(
                     {
-                        "Modelo Actual": "{:.4g}",
+                        "Current Model": "{:.4g}",
                         "Baseline": "{:.4g}",
-                        "Mejora %": "{:+.1f}%",
+                        "Improvement %": "{:+.1f}%",
                     }
                 )
             )
 
-            # Visualización comparativa modelo vs baseline
+            # Comparative visualization model vs baseline
             plot_df = comp_df.melt(
-                id_vars="Métrica",
-                value_vars=["Modelo Actual", "Baseline"],
-                var_name="Sistema",
-                value_name="Valor",
+                id_vars="Metric",
+                value_vars=["Current Model", "Baseline"],
+                var_name="System",
+                value_name="Value",
             )
             fig_comp = px.bar(
                 plot_df,
-                x="Métrica",
-                y="Valor",
-                color="Sistema",
+                x="Metric",
+                y="Value",
+                color="System",
                 barmode="group",
-                labels={"Valor": "Valor de la métrica"},
+                labels={"Value": "Metric Value"},
             )
             st.plotly_chart(fig_comp, width="stretch")
 
             st.caption(
-                "Valores más bajos son mejores para RMSE/MAE/MAPE; valores más altos son mejores para R². "
-                "La columna 'Mejora %' indica la ganancia relativa del modelo frente al baseline mediana."
+                "Lower values are better for RMSE/MAE/MAPE; higher values are better for R². "
+                "The 'Improvement %' column indicates the relative gain of the model vs. median baseline."
             )
 
-        # Bootstrap: significancia estadística
+        # Bootstrap: statistical significance
         if metrics_bootstrap:
-            st.markdown("### Significancia Estadística (Bootstrap RMSE)")
+            st.markdown("### Statistical Significance (Bootstrap RMSE)")
             d_mean = metrics_bootstrap.get("delta_rmse_mean")
             ci_low, ci_high = metrics_bootstrap.get("delta_rmse_ci95", [None, None])
             p_val = metrics_bootstrap.get("p_value_two_sided")
 
             c_boot1, c_boot2, c_boot3 = st.columns(3)
-            c_boot1.metric("Δ RMSE (modelo - baseline)", f"{d_mean:.2f}")
-            c_boot2.metric("IC 95%", f"[{ci_low:.2f}, {ci_high:.2f}]")
-            c_boot3.metric("p-valor (dos colas)", f"{p_val:.3f}")
+            c_boot1.metric("Δ RMSE (model - baseline)", f"{d_mean:.2f}")
+            c_boot2.metric("95% CI", f"[{ci_low:.2f}, {ci_high:.2f}]")
+            c_boot3.metric("p-value (two-tailed)", f"{p_val:.3f}")
 
             if ci_high is not None and ci_high < 0 and p_val is not None and p_val < 0.05:
-                st.success(
-                    "La reducción de RMSE es estadísticamente significativa (IC 95% completamente por debajo de 0)."
-                )
+                st.success("The RMSE reduction is statistically significant (95% CI entirely below 0).")
             else:
                 st.info(
-                    "La mejora del modelo sobre el baseline no es claramente significativa en todos los remuestreos, "
-                    "pero aún puede ser relevante desde el punto de vista de negocio."
+                    "The model improvement over baseline is not clearly significant across all resamples, "
+                    "but may still be relevant from a business perspective."
                 )
 
-        # Métricas temporales (backtest en últimos años)
+        # Temporal metrics (backtest on recent years)
         if metrics_temporal:
-            st.markdown("### Desempeño en los Últimos Años (Backtest Temporal)")
+            st.markdown("### Performance in Recent Years (Temporal Backtest)")
             t1, t2, t3, t4, t5 = st.columns(5)
             t1.metric("RMSE (Temporal)", f"${metrics_temporal.get('rmse', 0):,.0f}")
             t2.metric("MAE (Temporal)", f"${metrics_temporal.get('mae', 0):,.0f}")
             t3.metric("R² (Temporal)", f"{metrics_temporal.get('r2', 0):.3f}")
             t4.metric("MAPE (Temporal)", f"{metrics_temporal.get('mape', 0):.1f}%")
-            t5.metric("Muestras", f"{metrics_temporal.get('n_samples', 0):,}")
+            t5.metric("Samples", f"{metrics_temporal.get('n_samples', 0):,}")
 
             st.caption(
-                "Estas métricas se calculan sobre una ventana temporal reciente del dataset, "
-                "simulando desempeño en datos futuros/no vistos."
+                "These metrics are calculated on a recent temporal window of the dataset, "
+                "simulating performance on future/unseen data."
             )
 
     else:
         st.warning(
-            "No se encontraron métricas guardadas. Ejecuta "
-            "`python main.py --mode train` o "
-            "`python evaluate.py --config configs/config.yaml` para generarlas."
+            "No saved metrics found. Run "
+            "`python main.py --mode train` or "
+            "`python evaluate.py --config configs/config.yaml` to generate them."
         )
 
-# --- PESTAÑA 4: PREDICTOR DE PRECIOS ---
+# --- TAB 4: PRICE PREDICTOR ---
 with tab4:
-    st.header("🔮 Estimador de Valor de Vehículo")
+    st.header("🔮 Vehicle Value Estimator")
 
     model_file = None
     possible_models = [MODEL_PATH, Path("models/model_v1.0.0.pkl"), Path("artifacts/model.joblib")]
@@ -590,31 +589,29 @@ with tab4:
     if model_file:
         model = joblib.load(model_file)
 
-        st.markdown("Ingresa las características del vehículo para obtener una estimación de precio basada en IA.")
+        st.markdown("Enter vehicle characteristics to get an AI-based price estimate.")
 
-        # Controles de entrada (sin formulario explícito para evitar cambios de pestaña al enviar)
+        # Input controls (no explicit form to avoid tab changes on submit)
         col_f1, col_f2, col_f3 = st.columns(3)
         with col_f1:
-            year_input = st.number_input("Año del Modelo", 1990, 2025, 2018)
-            odometer_input = st.number_input("Millaje (Odometer)", 0, 500000, 50000)
-            cylinders_input = st.selectbox("Cilindros", [4, 6, 8, 10, 12], index=1)
+            year_input = st.number_input("Model Year", 1990, 2025, 2018, key="pred_year")
+            odometer_input = st.number_input("Mileage (Odometer)", 0, 500000, 50000, key="pred_odometer")
+            cylinders_input = st.selectbox("Cylinders", [4, 6, 8, 10, 12], index=1, key="pred_cylinders")
 
         with col_f2:
             condition_input = st.selectbox(
-                "Condición",
-                ["excellent", "good", "fair", "like new", "salvage", "new"],
-                index=0,
+                "Condition", ["excellent", "good", "fair", "like new", "salvage", "new"], index=0, key="pred_condition"
             )
             fuel_input = st.selectbox(
-                "Combustible",
-                ["gas", "diesel", "hybrid", "electric", "other"],
-                index=0,
+                "Fuel", ["gas", "diesel", "hybrid", "electric", "other"], index=0, key="pred_fuel"
             )
-            trans_input = st.selectbox("Transmisión", ["automatic", "manual", "other"], index=0)
+            trans_input = st.selectbox(
+                "Transmission", ["automatic", "manual", "other"], index=0, key="pred_transmission"
+            )
 
         with col_f3:
             type_input = st.selectbox(
-                "Tipo",
+                "Type",
                 [
                     "sedan",
                     "SUV",
@@ -628,6 +625,7 @@ with tab4:
                     "other",
                 ],
                 index=1,
+                key="pred_type",
             )
             paint_input = st.selectbox(
                 "Color",
@@ -646,10 +644,11 @@ with tab4:
                     "purple",
                 ],
                 index=0,
+                key="pred_paint",
             )
-            drive_input = st.selectbox("Tracción", ["4wd", "fwd", "rwd"], index=0)
+            drive_input = st.selectbox("Drive", ["4wd", "fwd", "rwd"], index=0, key="pred_drive")
 
-        submit_btn = st.button("💰 Calcular Precio Estimado", key="calculate_price_btn")
+        submit_btn = st.button("💰 Calculate Estimated Price", key="calculate_price_btn")
 
         if submit_btn:
             # Construir DataFrame de entrada con las columnas crudas principales
@@ -734,18 +733,18 @@ with tab4:
                 c_res1, c_res2 = st.columns([1, 2])
 
                 with c_res1:
-                    st.metric("Precio Estimado", f"${prediction:,.2f}")
+                    st.metric("Estimated Price", f"${prediction:,.2f}")
 
                     # Badge
                     badge_color = "#17a2b8"  # Blue
-                    badge_text = "Precio Mercado"
+                    badge_text = "Market Price"
 
                     if percentile > 75:
                         badge_color = "#FFD700"  # Gold
                         badge_text = "Premium"
                     elif percentile < 25:
                         badge_color = "#28a745"  # Green
-                        badge_text = "Económico"
+                        badge_text = "Economic"
 
                     st.markdown(
                         f"""
@@ -759,16 +758,15 @@ with tab4:
 
                 with c_res2:
                     st.info(
-                        f"Este precio es mayor al **{percentile:.0f}%** de los vehículos "
-                        "en nuestro inventario histórico."
+                        f"This price is higher than **{percentile:.0f}%** of vehicles " "in our historical inventory."
                     )
-                    # Gauge chart simple
+                    # Simple gauge chart
                     fig_gauge = go.Figure(
                         go.Indicator(
                             mode="gauge+number",
                             value=prediction,
                             domain={"x": [0, 1], "y": [0, 1]},
-                            title={"text": "Posición en Rango de Mercado"},
+                            title={"text": "Position in Market Range"},
                             gauge={
                                 "axis": {"range": [0, df_clean["price"].max() * 1.1]},  # Un poco más del max
                                 "bar": {"color": "darkblue"},
@@ -804,8 +802,8 @@ with tab4:
                     st.plotly_chart(fig_gauge, width="stretch")
 
             except Exception as e:
-                st.error(f"Error en la predicción: {str(e)}")
-                st.warning("Verifica si las columnas de entrada coinciden con las esperadas por el modelo.")
+                st.error(f"Prediction error: {str(e)}")
+                st.warning("Verify that input columns match those expected by the model.")
 
     else:
-        st.error("Modelo no encontrado. Entrena el modelo primero.")
+        st.error("Model not found. Train the model first.")
