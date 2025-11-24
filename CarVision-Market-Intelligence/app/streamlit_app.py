@@ -18,11 +18,6 @@ st.set_page_config(
 
 # Definir ROOT_DIR globalmente
 ROOT_DIR = Path(__file__).resolve().parents[1]
-# if str(ROOT_DIR) not in sys.path:
-#     sys.path.append(str(ROOT_DIR))
-
-# Importar clases y utilidades del proyecto
-# Ensure src is in path if running from app directory
 if str(ROOT_DIR) not in sys.path:
     sys.path.append(str(ROOT_DIR))
 
@@ -136,6 +131,7 @@ if "initialized" not in st.session_state:
     st.session_state.initialized = True
     st.session_state.last_filter_change = None
     st.session_state.prediction_result = None
+    st.session_state.active_tab = "📊 Overview"
 
 # Load data
 raw_df, df_clean = load_and_clean_data()
@@ -188,24 +184,31 @@ with st.sidebar:
 
     st.markdown(f"**Filtered Records:** {len(df_filtered):,}")
     st.markdown("---")
+
+    # Navigation
+    st.session_state.active_tab = st.radio(
+        "Navigation",
+        ["📊 Overview", "📈 Market Analysis", "🧠 Model Metrics", "🔮 Price Predictor"],
+        index=(
+            ["📊 Overview", "📈 Market Analysis", "🧠 Model Metrics", "🔮 Price Predictor"].index(
+                st.session_state.active_tab
+            )
+            if st.session_state.active_tab
+            in ["📊 Overview", "📈 Market Analysis", "🧠 Model Metrics", "🔮 Price Predictor"]
+            else 0
+        ),
+        key="nav_radio",
+    )
+
+    st.markdown("---")
     st.caption("v2.0.0 Pro | Powered by Tripe Ten AI")
 
 # Main title
 st.title("🚗 CarVision Market Intelligence Dashboard")
 st.markdown("Comprehensive platform for automotive market pricing and trend analysis.")
 
-# Tabs
-tab1, tab2, tab3, tab4 = st.tabs(
-    [
-        "📊 Overview",
-        "📈 Market Analysis",
-        "🧠 Model Metrics",
-        "🔮 Price Predictor",
-    ]
-)
-
 # --- TAB 1: EXECUTIVE OVERVIEW ---
-with tab1:
+if st.session_state.active_tab == "📊 Overview":
     st.header("📊 Executive Dashboard")
     st.markdown("**Key Performance Indicators and Market Intelligence Summary**")
     st.markdown("---")
@@ -377,7 +380,7 @@ with tab1:
             st.metric("Dataset Size", f"{len(raw_df):,}", delta=f"{df_filtered.shape[1]} attributes")
 
 # --- TAB 2: EXECUTIVE MARKET ANALYSIS ---
-with tab2:
+elif st.session_state.active_tab == "📈 Market Analysis":
     st.header("💼 Investment & Market Intelligence Report")
     st.markdown("**Strategic insights for C-level executives and institutional investors**")
     st.markdown("---")
@@ -594,7 +597,7 @@ with tab2:
         st.warning("No data to display with the selected filters.")
 
 # --- TAB 3: MODEL PERFORMANCE & ANALYTICS ---
-with tab3:
+elif st.session_state.active_tab == "🧠 Model Metrics":
     st.header("🧠 AI Model Performance Dashboard")
     st.markdown("**Technical evaluation metrics and model reliability analysis**")
     st.markdown("---")
@@ -812,7 +815,7 @@ with tab3:
         )
 
 # --- TAB 4: AI PRICE PREDICTOR ---
-with tab4:
+elif st.session_state.active_tab == "🔮 Price Predictor":
     st.header("🔮 AI-Powered Vehicle Value Estimator")
     st.markdown("**Get instant, data-driven price estimates powered by machine learning**")
     st.markdown("---")
