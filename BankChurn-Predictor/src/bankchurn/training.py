@@ -258,21 +258,23 @@ class ChurnTrainer:
         metrics : dict
             Training metrics.
         """
-        # Build preprocessor
-        self.preprocessor_ = self.build_preprocessor(X)
-
-        # Transform features
-        assert self.preprocessor_ is not None
-        X_transformed = self.preprocessor_.fit_transform(X)
-
         # Split data
+        # CRITICAL: Split BEFORE fitting preprocessor to avoid data leakage
+        # We split the raw data first
         X_train, X_test, y_train, y_test = train_test_split(
-            X_transformed,
+            X,
             y,
             test_size=self.config.model.test_size,
             random_state=self.random_state,
             stratify=y,
         )
+
+        # Build preprocessor based on training data only
+        self.preprocessor_ = self.build_preprocessor(X_train)
+
+        # Fit preprocessor on TRAIN, transform both
+        X_train = self.preprocessor_.fit_transform(X_train)
+        X_test = self.preprocessor_.transform(X_test)
 
         logger.info(f"Train: {X_train.shape[0]} samples, Test: {X_test.shape[0]} samples")
 

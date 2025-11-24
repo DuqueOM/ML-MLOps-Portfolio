@@ -1,0 +1,19 @@
+# Operations Runbook
+
+**Service:** [Service Name]
+**Severity:** [Tier]
+
+## 1. Deployment
+[Instructions]
+
+## 2. Maintenance
+[Retraining, Rollback]
+
+## 3. Monitoring
+[Metrics, Logs]
+
+## 4. Troubleshooting
+[Common Issues]
+
+## 5. Disaster Recovery
+[Restore procedure]

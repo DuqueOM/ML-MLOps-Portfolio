@@ -4,10 +4,11 @@ import json
 import sys
 from pathlib import Path
 
-import main as carvision_module
 import pandas as pd
 import pytest
 import yaml
+
+import main as carvision_module
 from tests.utils_carvision import build_test_config
 
 
@@ -85,14 +86,6 @@ def test_cli_analysis_report_export_dashboard(
     csv_path = tmp_path / "analysis_input.csv"
     dummy_df.to_csv(csv_path, index=False)
 
-    class DummyLoader:
-        def load_data(self, file_path: str):
-            assert Path(file_path) == csv_path
-            return dummy_df.copy()
-
-        def clean_data(self, df: pd.DataFrame):
-            return df
-
     class DummyAnalyzer:
         def __init__(self, df: pd.DataFrame):
             self.df = df
@@ -129,7 +122,9 @@ def test_cli_analysis_report_export_dashboard(
                 "recommendations": ["rec1", "rec2"],
             }
 
-    monkeypatch.setattr(carvision_module, "VehicleDataLoader", lambda: DummyLoader())
+    # Mock functions instead of class
+    monkeypatch.setattr(carvision_module, "load_data", lambda x: dummy_df.copy())
+    monkeypatch.setattr(carvision_module, "clean_data", lambda x: x)
     monkeypatch.setattr(carvision_module, "MarketAnalyzer", DummyAnalyzer)
 
     import subprocess

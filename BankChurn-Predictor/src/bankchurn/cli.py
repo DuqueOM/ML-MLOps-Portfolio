@@ -232,7 +232,7 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def cli_main(argv: Sequence[str] | None = None) -> int:
     """Main CLI entry point.
 
     Parameters
@@ -275,4 +275,4 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(cli_main())

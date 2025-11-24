@@ -1,0 +1,24 @@
+# TelecomAI Customer Intelligence - One-Click Demo
+
+version: '3.8'
+
+services:
+  api:
+    build: .
+    image: telecomai:latest
+    container_name: telecomai-api
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_PATH=artifacts/model.joblib
+      # Ensure source code is importable
+      - PYTHONPATH=/app
+    volumes:
+      # Mount artifacts to persist training/model state
+      - ./artifacts:/app/artifacts
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000 --reload

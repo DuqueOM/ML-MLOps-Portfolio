@@ -110,6 +110,15 @@ Todo el portfolio es validado por un único workflow maestro (`ci-portfolio-top3
 
 ---
 
+## 📚 Documentación Global
+
+- **[Arquitectura del Portfolio](docs/ARCHITECTURE_PORTFOLIO.md)**: Visión general del sistema, microservicios y diagrama de flujo de datos.
+- **[Runbook de Operaciones](docs/OPERATIONS_PORTFOLIO.md)**: Guía para despliegue, monitoreo, troubleshooting y mantenimiento.
+- **[Gestión de Dependencias](docs/DEPENDENCY_CONFLICTS.md)**: Estrategia de versionado, resolución de conflictos y matriz de compatibilidad.
+- **[Proceso de Release](docs/RELEASE.md)**: Estándares para versionado y publicación de artefactos.
+
+---
+
 ## 📁 Estructura del Portfolio
 
 ```
