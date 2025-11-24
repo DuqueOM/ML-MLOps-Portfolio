@@ -136,10 +136,21 @@ def display_kpi_card(title, value, delta=None, prefix="", suffix=""):
     )
 
 
+@st.cache_resource
+def load_model():
+    """Load the trained model with caching to prevent reloads."""
+    possible_models = [MODEL_PATH, Path("models/model_v1.0.0.pkl"), Path("artifacts/model.joblib")]
+    for p in possible_models:
+        if p.exists():
+            return joblib.load(p), str(p)
+    return None, None
+
+
 # Initialize session state
 if "initialized" not in st.session_state:
     st.session_state.initialized = True
     st.session_state.last_filter_change = None
+    st.session_state.prediction_result = None
 
 # Load data
 raw_df, df_clean = load_and_clean_data()
@@ -596,9 +607,11 @@ with tab2:
     else:
         st.warning("No data to display with the selected filters.")
 
-# --- TAB 3: MODEL METRICS ---
+# --- TAB 3: MODEL PERFORMANCE & ANALYTICS ---
 with tab3:
-    st.header("Predictive Model Evaluation")
+    st.header("🧠 AI Model Performance Dashboard")
+    st.markdown("**Technical evaluation metrics and model reliability analysis**")
+    st.markdown("---")
 
     # Intentar cargar métricas del modelo
     metrics_model: dict = {}
@@ -652,105 +665,142 @@ with tab3:
             metrics_temporal = None
 
     if metrics_model:
-        # KPIs del modelo
-        m1, m2, m3, m4 = st.columns(4)
-        m1.metric("RMSE", f"${metrics_model.get('rmse', 0):,.0f}")
-        m2.metric("MAE", f"${metrics_model.get('mae', 0):,.0f}")
-        m3.metric("R² Score", f"{metrics_model.get('r2', 0):.3f}")
-        m4.metric("MAPE", f"{metrics_model.get('mape', 0):.1f}%")
+        # Primary Performance KPIs
+        st.subheader("📊 Core Performance Metrics")
 
-        # Mostrar métricas baseline si existen
+        kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
+
+        rmse_val = metrics_model.get("rmse", 0)
+        mae_val = metrics_model.get("mae", 0)
+        r2_val = metrics_model.get("r2", 0)
+        mape_val = metrics_model.get("mape", 0)
+
+        with kpi1:
+            st.metric(label="🎯 RMSE", value=f"${rmse_val:,.0f}", delta="Root Mean Squared Error")
+        with kpi2:
+            st.metric(label="📏 MAE", value=f"${mae_val:,.0f}", delta="Mean Absolute Error")
+        with kpi3:
+            st.metric(label="💯 R² Score", value=f"{r2_val:.3f}", delta=f"{r2_val*100:.1f}% variance explained")
+        with kpi4:
+            st.metric(label="📉 MAPE", value=f"{mape_val:.2f}%", delta="Mean Absolute % Error")
+        with kpi5:
+            accuracy = max(0, 100 - mape_val)
+            st.metric(label="✅ Accuracy", value=f"{accuracy:.1f}%", delta="Prediction Accuracy")
+
+        st.markdown("---")
+
+        # Model vs Baseline Performance Comparison
         if metrics_baseline:
-            st.markdown("### Baseline (Dummy Median)")
-            b1, b2, b3, b4 = st.columns(4)
-            b1.metric("RMSE Baseline", f"${metrics_baseline.get('rmse', 0):,.0f}")
-            b2.metric("MAE Baseline", f"${metrics_baseline.get('mae', 0):,.0f}")
-            b3.metric("R² Baseline", f"{metrics_baseline.get('r2', 0):.3f}")
-            b4.metric("MAPE Baseline", f"{metrics_baseline.get('mape', 0):.1f}%")
+            st.subheader("🔬 Model vs Baseline Comparison")
 
-            st.markdown("### Model vs Baseline Comparison")
-            # Tabla de comparación para todas las métricas clave
-            comp_df = pd.DataFrame(
-                {
-                    "Metric": ["RMSE", "MAE", "MAPE", "R²"],
-                    "Current Model": [
-                        metrics_model.get("rmse", 0),
-                        metrics_model.get("mae", 0),
-                        metrics_model.get("mape", 0),
-                        metrics_model.get("r2", 0),
-                    ],
-                    "Baseline": [
-                        metrics_baseline.get("rmse", 0),
-                        metrics_baseline.get("mae", 0),
-                        metrics_baseline.get("mape", 0),
-                        metrics_baseline.get("r2", 0),
-                    ],
-                }
-            )
+            comp_col1, comp_col2 = st.columns([3, 2])
 
-            # Improvement (positive = better than baseline)
-            def compute_improvement(row: pd.Series) -> float:
-                base = row["Baseline"]
-                model_val = row["Current Model"]
-                if base == 0:
-                    return 0.0
-                # For R², higher is better; for errors (RMSE, MAE, MAPE), lower is better
-                if row["Metric"] == "R²":
-                    return (model_val - base) / abs(base) * 100
-                return (base - model_val) / abs(base) * 100
-
-            comp_df["Improvement %"] = comp_df.apply(compute_improvement, axis=1)
-
-            st.table(
-                comp_df.style.format(
+            with comp_col1:
+                # Create comparison dataframe
+                comp_df = pd.DataFrame(
                     {
-                        "Current Model": "{:.4g}",
-                        "Baseline": "{:.4g}",
-                        "Improvement %": "{:+.1f}%",
+                        "Metric": ["RMSE ($)", "MAE ($)", "MAPE (%)", "R² Score"],
+                        "AI Model": [
+                            metrics_model.get("rmse", 0),
+                            metrics_model.get("mae", 0),
+                            metrics_model.get("mape", 0),
+                            metrics_model.get("r2", 0),
+                        ],
+                        "Baseline": [
+                            metrics_baseline.get("rmse", 0),
+                            metrics_baseline.get("mae", 0),
+                            metrics_baseline.get("mape", 0),
+                            metrics_baseline.get("r2", 0),
+                        ],
                     }
                 )
-            )
 
-            # Comparative visualization model vs baseline
-            plot_df = comp_df.melt(
-                id_vars="Metric",
-                value_vars=["Current Model", "Baseline"],
-                var_name="System",
-                value_name="Value",
-            )
-            fig_comp = px.bar(
-                plot_df,
-                x="Metric",
-                y="Value",
-                color="System",
-                barmode="group",
-                labels={"Value": "Metric Value"},
-            )
-            st.plotly_chart(fig_comp, width="stretch")
+                # Create grouped bar chart
+                fig_comp = go.Figure()
 
-            st.caption(
-                "Lower values are better for RMSE/MAE/MAPE; higher values are better for R². "
-                "The 'Improvement %' column indicates the relative gain of the model vs. median baseline."
-            )
+                fig_comp.add_trace(
+                    go.Bar(
+                        name="AI Model",
+                        x=comp_df["Metric"],
+                        y=comp_df["AI Model"],
+                        marker_color="#007bff",
+                        text=comp_df["AI Model"].apply(lambda x: f"{x:.2f}"),
+                        textposition="outside",
+                    )
+                )
 
-        # Bootstrap: statistical significance
+                fig_comp.add_trace(
+                    go.Bar(
+                        name="Baseline",
+                        x=comp_df["Metric"],
+                        y=comp_df["Baseline"],
+                        marker_color="#6c757d",
+                        text=comp_df["Baseline"].apply(lambda x: f"{x:.2f}"),
+                        textposition="outside",
+                    )
+                )
+
+                fig_comp.update_layout(
+                    title="AI Model vs Simple Baseline Performance",
+                    xaxis_title="Metric",
+                    yaxis_title="Value",
+                    barmode="group",
+                    height=400,
+                    showlegend=True,
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+                )
+
+                st.plotly_chart(fig_comp, use_container_width=True)
+
+            with comp_col2:
+                st.markdown("#### � Performance Gains")
+
+                # Compute improvements
+                for _, row in comp_df.iterrows():
+                    metric_name = row["Metric"]
+                    model_val = row["AI Model"]
+                    base_val = row["Baseline"]
+
+                    if base_val == 0:
+                        continue
+
+                    if "R²" in metric_name:
+                        improvement = (model_val - base_val) / abs(base_val) * 100
+                    else:
+                        improvement = (base_val - model_val) / abs(base_val) * 100
+
+                    if improvement > 0:
+                        st.success(f"**{metric_name}**: {improvement:+.1f}% better")
+                    else:
+                        st.info(f"**{metric_name}**: {improvement:+.1f}%")
+
+                st.markdown("---")
+                st.markdown("**💡 Interpretation:**")
+                st.caption(
+                    "Positive values indicate the AI model outperforms the baseline. "
+                    "For error metrics (RMSE, MAE, MAPE), lower is better. For R², higher is better."
+                )
+
+        st.markdown("---")
+
+        # Statistical significance section
         if metrics_bootstrap:
-            st.markdown("### Statistical Significance (Bootstrap RMSE)")
+            st.subheader("� Statistical Validation (Bootstrap Analysis)")
             d_mean = metrics_bootstrap.get("delta_rmse_mean")
             ci_low, ci_high = metrics_bootstrap.get("delta_rmse_ci95", [None, None])
             p_val = metrics_bootstrap.get("p_value_two_sided")
 
             c_boot1, c_boot2, c_boot3 = st.columns(3)
-            c_boot1.metric("Δ RMSE (model - baseline)", f"{d_mean:.2f}")
-            c_boot2.metric("95% CI", f"[{ci_low:.2f}, {ci_high:.2f}]")
-            c_boot3.metric("p-value (two-tailed)", f"{p_val:.3f}")
+            c_boot1.metric("Δ RMSE (model - baseline)", f"{d_mean:.2f}" if d_mean else "N/A")
+            c_boot2.metric("95% CI", f"[{ci_low:.2f}, {ci_high:.2f}]" if ci_low and ci_high else "N/A")
+            c_boot3.metric("p-value (two-tailed)", f"{p_val:.3f}" if p_val else "N/A")
 
             if ci_high is not None and ci_high < 0 and p_val is not None and p_val < 0.05:
-                st.success("The RMSE reduction is statistically significant (95% CI entirely below 0).")
+                st.success("✅ The RMSE reduction is statistically significant (95% CI entirely below 0).")
             else:
                 st.info(
-                    "The model improvement over baseline is not clearly significant across all resamples, "
-                    "but may still be relevant from a business perspective."
+                    "ℹ️ The model improvement over baseline may not be statistically significant across all resamples, "
+                    "but can still provide business value."
                 )
 
         # Temporal metrics (backtest on recent years)
@@ -775,23 +825,23 @@ with tab3:
             "`python evaluate.py --config configs/config.yaml` to generate them."
         )
 
-# --- TAB 4: PRICE PREDICTOR ---
+# --- TAB 4: AI PRICE PREDICTOR ---
 with tab4:
-    st.header("🔮 Vehicle Value Estimator")
+    st.header("🔮 AI-Powered Vehicle Value Estimator")
+    st.markdown("**Get instant, data-driven price estimates powered by machine learning**")
+    st.markdown("---")
 
-    model_file = None
-    possible_models = [MODEL_PATH, Path("models/model_v1.0.0.pkl"), Path("artifacts/model.joblib")]
+    # Load model using cached function
+    model, model_path = load_model()
 
-    for p in possible_models:
-        if p.exists():
-            model_file = p
-            break
+    if model:
+        st.success(f"✅ AI Model loaded successfully from: `{Path(model_path).name}`")
 
-    if model_file:
-        model = joblib.load(model_file)
-
-        st.markdown("Enter vehicle characteristics to get an AI-based price estimate.")
-        st.info("💡 **Tip:** Fill in all fields and click 'Calculate Price' to get your estimate.")
+        st.markdown("### 📝 Vehicle Specification Input")
+        st.info(
+            "💡 **Pro Tip:** Fill in all fields accurately for the best price estimate. "
+            "Click 'Calculate Price' when ready."
+        )
 
         # Use form to prevent page reloads and tab changes
         with st.form(key="price_prediction_form", clear_on_submit=False):
@@ -931,45 +981,80 @@ with tab4:
             try:
                 prediction = model.predict(input_df)[0]
 
-                # Calcular percentil
+                # Calculate market positioning
                 percentile = (df_clean["price"] < prediction).mean() * 100
 
-                st.divider()
-                c_res1, c_res2 = st.columns([1, 2])
+                st.markdown("---")
+                st.markdown("### 🎯 Price Estimate Results")
 
-                with c_res1:
-                    st.metric("Estimated Price", f"${prediction:,.2f}")
+                # Display results in professional layout
+                result_col1, result_col2, result_col3 = st.columns([2, 2, 3])
 
-                    # Badge
-                    badge_color = "#17a2b8"  # Blue
-                    badge_text = "Market Price"
+                with result_col1:
+                    st.markdown("#### 💰 Estimated Value")
+                    st.markdown(f"## ${prediction:,.0f}")
 
+                    # Market segment badge
                     if percentile > 75:
-                        badge_color = "#FFD700"  # Gold
-                        badge_text = "Premium"
-                    elif percentile < 25:
-                        badge_color = "#28a745"  # Green
-                        badge_text = "Economic"
+                        badge_color = "#FFD700"
+                        badge_text = "🏆 Premium Segment"
+                        badge_emoji = "🌟"
+                    elif percentile > 50:
+                        badge_color = "#007bff"
+                        badge_text = "💼 Upper Market"
+                        badge_emoji = "📈"
+                    elif percentile > 25:
+                        badge_color = "#17a2b8"
+                        badge_text = "🎯 Mid Market"
+                        badge_emoji = "✓"
+                    else:
+                        badge_color = "#28a745"
+                        badge_text = "💚 Economy Segment"
+                        badge_emoji = "💰"
 
                     st.markdown(
                         f"""
-                    <div style="background-color: {badge_color}; color: white; padding: 10px;
-                                border-radius: 5px; text-align: center; font-weight: bold;">
-                        {badge_text}
-                    </div>
-                    """,
+                        <div style="background: linear-gradient(135deg, {badge_color} 0%, {badge_color}dd 100%);
+                                    color: white; padding: 15px; border-radius: 10px;
+                                    text-align: center; font-weight: bold; font-size: 16px;
+                                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            {badge_emoji} {badge_text}
+                        </div>
+                        """,
                         unsafe_allow_html=True,
                     )
 
-                with c_res2:
-                    st.info(
-                        f"This price is higher than **{percentile:.0f}%** of vehicles " "in our historical inventory."
+                with result_col2:
+                    st.markdown("#### 📊 Market Position")
+                    st.metric(
+                        label="Percentile Ranking",
+                        value=f"{percentile:.0f}th",
+                        delta=f"Higher than {percentile:.0f}% of inventory",
                     )
-                    # Simple gauge chart
+
+                    # Price range context
+                    q25 = df_clean["price"].quantile(0.25)
+                    q75 = df_clean["price"].quantile(0.75)
+                    median = df_clean["price"].median()
+
+                    if prediction < q25:
+                        context = "Below Market Average"
+                    elif prediction > q75:
+                        context = "Above Market Average"
+                    else:
+                        context = "Within Normal Range"
+
+                    st.info(f"**Market Context:** {context}")
+
+                with result_col3:
+                    st.markdown("#### 📈 Market Benchmark")
+
+                    # Create market comparison gauge
                     fig_gauge = go.Figure(
                         go.Indicator(
-                            mode="gauge+number",
+                            mode="gauge+number+delta",
                             value=prediction,
+                            delta={"reference": median, "increasing": {"color": "#007bff"}},
                             domain={"x": [0, 1], "y": [0, 1]},
                             title={"text": "Position in Market Range"},
                             gauge={
@@ -1003,8 +1088,15 @@ with tab4:
                             },
                         )
                     )
-                    fig_gauge.update_layout(height=250, margin=dict(l=20, r=20, t=30, b=20))
-                    st.plotly_chart(fig_gauge, width="stretch")
+                    fig_gauge.update_layout(height=300, margin=dict(l=10, r=10, t=50, b=10), font=dict(size=12))
+                    st.plotly_chart(fig_gauge, use_container_width=True)
+
+                    # Additional context
+                    st.caption(
+                        f"💡 **Reference:** Median market price is ${median:,.0f}. "
+                        f"Your estimate is {abs(prediction - median)/median*100:.1f}% "
+                        f"{'above' if prediction > median else 'below'} median."
+                    )
 
             except Exception as e:
                 st.error(f"Prediction error: {str(e)}")
