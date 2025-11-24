@@ -18,22 +18,18 @@ st.set_page_config(
 
 # Definir ROOT_DIR globalmente
 ROOT_DIR = Path(__file__).resolve().parents[1]
+# if str(ROOT_DIR) not in sys.path:
+#     sys.path.append(str(ROOT_DIR))
+
+# Importar clases y utilidades del proyecto
+# Ensure src is in path if running from app directory
 if str(ROOT_DIR) not in sys.path:
     sys.path.append(str(ROOT_DIR))
 
-# Importar clases y utilidades del proyecto
-try:
-    from src.carvision.analysis import MarketAnalyzer
-    from src.carvision.data import clean_data, load_data
-    from src.carvision.features import FeatureEngineer
-    from src.carvision.visualization import VisualizationEngine
-except ImportError:
-    # Fallback for local dev if package not installed
-    from src.carvision.analysis import MarketAnalyzer
-    from src.carvision.data import clean_data, load_data
-    from src.carvision.features import FeatureEngineer
-    from src.carvision.visualization import VisualizationEngine
-
+from src.carvision.analysis import MarketAnalyzer  # noqa: E402
+from src.carvision.data import clean_data, load_data  # noqa: E402
+from src.carvision.features import FeatureEngineer  # noqa: E402
+from src.carvision.visualization import VisualizationEngine  # noqa: E402
 
 # Constantes
 CONFIG_PATH = ROOT_DIR / "configs" / "config.yaml"
