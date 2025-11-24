@@ -29,7 +29,17 @@ jobs:
         working-directory: ${{ env.PROJECT_DIR }}
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          if [ -f requirements.in ]; then
+            pip install -r requirements.in
+          elif [ -f requirements.txt ]; then
+            # Strip hashes to avoid --require-hashes errors with transitive deps
+            grep -v '^[[:space:]]*--hash=' requirements.txt | \
+            grep -v '^[[:space:]]*--require-hashes' | \
+            sed 's/ \\$//' | \
+            grep -v '^[[:space:]]*#' | \
+            grep -v '^[[:space:]]*$' > requirements_no_hash.txt
+            pip install -r requirements_no_hash.txt
+          fi
           pip install mlflow dvc
 
       - name: Pull data with DVC
