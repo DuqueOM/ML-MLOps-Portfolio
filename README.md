@@ -175,9 +175,15 @@ Portafolio-ML-MLOps/
 
 ### One-Liner Demo (Recommended)
 ```bash
-# Start full demo stack with all 3 services + MLflow
+# 1. Generate demo models first (required for first run)
+bash scripts/setup_demo_models.sh
+
+# 2. Start full demo stack with all 3 services + MLflow
 make docker-demo
-# or: bash scripts/demo.sh
+# or: docker-compose -f docker-compose.demo.yml up -d --build
+
+# 3. Run integration tests to verify everything works
+bash scripts/run_demo_tests.sh
 ```
 
 **Demo includes:**
