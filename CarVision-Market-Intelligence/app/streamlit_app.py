@@ -35,16 +35,6 @@ except ImportError:
     from src.carvision.visualization import VisualizationEngine
 
 
-class VehicleDataLoader:
-    """Legacy adapter for streamlit app."""
-
-    def load_data(self, path):
-        return load_data(path)
-
-    def clean_data(self, df):
-        return clean_data(df)
-
-
 # Constantes
 CONFIG_PATH = ROOT_DIR / "configs" / "config.yaml"
 ARTIFACTS_DIR = ROOT_DIR / "artifacts"
@@ -88,7 +78,6 @@ st.markdown(
 
 @st.cache_data
 def load_and_clean_data():
-    loader = VehicleDataLoader()
     # Fallback de rutas
     possible_paths = [DATA_PATH, Path("vehicles_us.csv"), Path("../vehicles_us.csv"), Path("data/raw/vehicles_us.csv")]
 
@@ -102,8 +91,8 @@ def load_and_clean_data():
         st.error("Dataset not found in any standard location.")
         return None, None
 
-    df = loader.load_data(str(data_file))
-    df_clean = loader.clean_data(df)
+    df = load_data(str(data_file))
+    df_clean = clean_data(df)
 
     # Feature Engineering
     fe = FeatureEngineer()
@@ -191,10 +180,11 @@ with st.sidebar:
     # Dynamic filtering (optimized)
     mask = (df_clean["model_year"] >= year_range[0]) & (df_clean["model_year"] <= year_range[1])
     if selected_manufacturers:
-        # Pre-compute brands once
-        if "brands" not in st.session_state:
-            st.session_state.brands = df_clean["model"].astype(str).str.split().str[0]
-        mask &= st.session_state.brands.isin(selected_manufacturers)
+        # Use pre-computed brand column from FeatureEngineer
+        if "brand" not in df_clean.columns:
+            # Fallback if not present (should be added by FeatureEngineer)
+            df_clean["brand"] = df_clean["model"].astype(str).str.split().str[0]
+        mask &= df_clean["brand"].isin(selected_manufacturers)
     if "price" in df_clean.columns:
         mask &= (df_clean["price"] >= price_range[0]) & (df_clean["price"] <= price_range[1])
 
@@ -294,7 +284,7 @@ with tab1:
             )
             fig_segment.update_traces(textposition="inside", textinfo="percent+label")
             fig_segment.update_layout(height=350, showlegend=True)
-            st.plotly_chart(fig_segment, use_container_width=True)
+            st.plotly_chart(fig_segment, width="stretch")
 
     with col_exec2:
         st.subheader("📈 Price Distribution Analysis")
@@ -329,7 +319,7 @@ with tab1:
             height=350,
             showlegend=False,
         )
-        st.plotly_chart(fig_price_dist, use_container_width=True)
+        st.plotly_chart(fig_price_dist, width="stretch")
 
     st.markdown("---")
 
@@ -353,7 +343,7 @@ with tab1:
                 color_continuous_scale="Blues",
             )
             fig_brands.update_layout(height=400, showlegend=False)
-            st.plotly_chart(fig_brands, use_container_width=True)
+            st.plotly_chart(fig_brands, width="stretch")
 
     with col_int2:
         st.subheader("📅 Inventory Age Profile")
@@ -369,7 +359,7 @@ with tab1:
             )
             fig_years.update_layout(height=400)
             fig_years.update_traces(fill="tozeroy")
-            st.plotly_chart(fig_years, use_container_width=True)
+            st.plotly_chart(fig_years, width="stretch")
 
     # Data Quality Summary (compact)
     with st.expander("🔍 Data Quality Report", expanded=False):
@@ -475,7 +465,7 @@ with tab2:
                     height=400,
                     hovermode="x unified",
                 )
-                st.plotly_chart(fig_trend, use_container_width=True)
+                st.plotly_chart(fig_trend, width="stretch")
 
         with fin_right:
             st.markdown("#### 📊 Portfolio Metrics")
@@ -564,7 +554,7 @@ with tab2:
                     title="Market Share by Total Inventory Value (Top 8 Brands)",
                 )
                 fig_brand_value.update_layout(height=400)
-                st.plotly_chart(fig_brand_value, use_container_width=True)
+                st.plotly_chart(fig_brand_value, width="stretch")
 
         with comp_col2:
             # Brand performance matrix
@@ -580,7 +570,7 @@ with tab2:
                     labels={"Units": "Market Volume", "Avg Price": "Average Unit Price ($)"},
                 )
                 fig_scatter.update_layout(height=400, showlegend=True)
-                st.plotly_chart(fig_scatter, use_container_width=True)
+                st.plotly_chart(fig_scatter, width="stretch")
 
         # Additional analytics in expander
         with st.expander("📈 Advanced Analytics & Detailed Insights", expanded=False):
@@ -598,12 +588,12 @@ with tab2:
                     color="potential_value",
                     color_continuous_scale="Viridis",
                 )
-                st.plotly_chart(fig_opp, use_container_width=True)
+                st.plotly_chart(fig_opp, width="stretch")
 
             # Detailed analytics dashboard
             st.markdown("**📊 Comprehensive Market Dashboard**")
             fig_dashboard = viz_engine.create_market_analysis_dashboard()
-            st.plotly_chart(fig_dashboard, use_container_width=True)
+            st.plotly_chart(fig_dashboard, width="stretch")
     else:
         st.warning("No data to display with the selected filters.")
 
@@ -750,7 +740,7 @@ with tab3:
                     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                 )
 
-                st.plotly_chart(fig_comp, use_container_width=True)
+                st.plotly_chart(fig_comp, width="stretch")
 
             with comp_col2:
                 st.markdown("#### � Performance Gains")
@@ -903,7 +893,7 @@ with tab4:
                 drive_input = st.selectbox("Drive", ["4wd", "fwd", "rwd"], index=0)
 
             # Submit button inside form
-            submit_btn = st.form_submit_button("💰 Calculate Estimated Price", use_container_width=True)
+            submit_btn = st.form_submit_button("💰 Calculate Estimated Price", width="stretch")
 
         if submit_btn:
             # Construir DataFrame de entrada con las columnas crudas principales
@@ -1089,7 +1079,7 @@ with tab4:
                         )
                     )
                     fig_gauge.update_layout(height=300, margin=dict(l=10, r=10, t=50, b=10), font=dict(size=12))
-                    st.plotly_chart(fig_gauge, use_container_width=True)
+                    st.plotly_chart(fig_gauge, width="stretch")
 
                     # Additional context
                     st.caption(
