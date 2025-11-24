@@ -136,7 +136,12 @@ def display_kpi_card(title, value, delta=None, prefix="", suffix=""):
     )
 
 
-# Carga de datos
+# Initialize session state
+if "initialized" not in st.session_state:
+    st.session_state.initialized = True
+    st.session_state.last_filter_change = None
+
+# Load data
 raw_df, df_clean = load_and_clean_data()
 if df_clean is None:
     st.stop()
@@ -172,14 +177,17 @@ with st.sidebar:
     else:
         selected_manufacturers = []
 
-    # Filtrado dinámico
-    mask = df_clean["model_year"].between(year_range[0], year_range[1])
+    # Dynamic filtering (optimized)
+    mask = (df_clean["model_year"] >= year_range[0]) & (df_clean["model_year"] <= year_range[1])
     if selected_manufacturers:
-        mask &= df_clean["model"].apply(lambda x: str(x).split()[0]).isin(selected_manufacturers)
+        # Pre-compute brands once
+        if "brands" not in st.session_state:
+            st.session_state.brands = df_clean["model"].astype(str).str.split().str[0]
+        mask &= st.session_state.brands.isin(selected_manufacturers)
     if "price" in df_clean.columns:
-        mask &= df_clean["price"].between(price_range[0], price_range[1])
+        mask &= (df_clean["price"] >= price_range[0]) & (df_clean["price"] <= price_range[1])
 
-    df_filtered = df_clean[mask]
+    df_filtered = df_clean[mask].copy()
 
     st.markdown(f"**Filtered Records:** {len(df_filtered):,}")
     st.markdown("---")
@@ -199,84 +207,183 @@ tab1, tab2, tab3, tab4 = st.tabs(
     ]
 )
 
-# --- TAB 1: OVERVIEW ---
+# --- TAB 1: EXECUTIVE OVERVIEW ---
 with tab1:
-    st.header("Dataset Overview")
+    st.header("📊 Executive Dashboard")
+    st.markdown("**Key Performance Indicators and Market Intelligence Summary**")
+    st.markdown("---")
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        display_kpi_card("Total Vehicles", f"{len(df_filtered):,}")
-    with col2:
-        display_kpi_card("Average Price", f"{df_filtered['price'].mean():,.0f}", prefix="$")
-    with col3:
-        display_kpi_card("Median Price", f"{df_filtered['price'].median():,.0f}", prefix="$")
-    with col4:
-        display_kpi_card(
-            "Average Age", f"{(pd.Timestamp.now().year - df_filtered['model_year']).mean():.1f}", suffix=" years"
+    # Top-level KPIs with enhanced metrics
+    kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
+
+    total_value = df_filtered["price"].sum()
+    avg_price = df_filtered["price"].mean()
+    median_price = df_filtered["price"].median()
+    avg_age = (pd.Timestamp.now().year - df_filtered["model_year"]).mean()
+    total_vehicles = len(df_filtered)
+
+    with kpi1:
+        st.metric(label="📈 Total Inventory Value", value=f"${total_value/1e6:.1f}M", delta=f"{total_vehicles:,} units")
+    with kpi2:
+        st.metric(
+            label="💰 Average Price",
+            value=f"${avg_price:,.0f}",
+            delta=f"{((avg_price - median_price) / median_price * 100):.1f}% vs median",
+        )
+    with kpi3:
+        st.metric(label="📊 Median Price", value=f"${median_price:,.0f}", delta="Market Center")
+    with kpi4:
+        st.metric(
+            label="🚗 Fleet Age",
+            value=f"{avg_age:.1f} yrs",
+            delta=f"Avg {df_filtered['model_year'].mode()[0] if len(df_filtered) > 0 else 'N/A'} model",
+        )
+    with kpi5:
+        price_std = df_filtered["price"].std()
+        cv = (price_std / avg_price * 100) if avg_price > 0 else 0
+        st.metric(label="📉 Price Volatility", value=f"{cv:.1f}%", delta="Coefficient of Variation")
+
+    st.markdown("---")
+
+    # Executive Summary Cards
+    col_exec1, col_exec2 = st.columns(2)
+
+    with col_exec1:
+        st.subheader("🎯 Market Positioning")
+
+        # Price segmentation
+        if len(df_filtered) > 0:
+            price_q1 = df_filtered["price"].quantile(0.25)
+            price_q3 = df_filtered["price"].quantile(0.75)
+
+            economy = (df_filtered["price"] < price_q1).sum()
+            mid_market = ((df_filtered["price"] >= price_q1) & (df_filtered["price"] <= price_q3)).sum()
+            premium = (df_filtered["price"] > price_q3).sum()
+
+            segment_data = pd.DataFrame(
+                {
+                    "Segment": ["Economy", "Mid-Market", "Premium"],
+                    "Units": [economy, mid_market, premium],
+                    "Percentage": [
+                        economy / total_vehicles * 100,
+                        mid_market / total_vehicles * 100,
+                        premium / total_vehicles * 100,
+                    ],
+                }
+            )
+
+            fig_segment = px.pie(
+                segment_data,
+                values="Units",
+                names="Segment",
+                title="Inventory Distribution by Price Segment",
+                color="Segment",
+                color_discrete_map={"Economy": "#28a745", "Mid-Market": "#17a2b8", "Premium": "#ffc107"},
+                hole=0.4,
+            )
+            fig_segment.update_traces(textposition="inside", textinfo="percent+label")
+            fig_segment.update_layout(height=350, showlegend=True)
+            st.plotly_chart(fig_segment, use_container_width=True)
+
+    with col_exec2:
+        st.subheader("📈 Price Distribution Analysis")
+
+        # Enhanced histogram with statistical overlays
+        fig_price_dist = go.Figure()
+
+        fig_price_dist.add_trace(
+            go.Histogram(x=df_filtered["price"], nbinsx=50, name="Frequency", marker_color="#007bff", opacity=0.7)
         )
 
-    st.subheader("Recent Data Sample")
-    st.dataframe(
-        df_filtered.sort_values("model_year", ascending=False).head(100),
-        width="stretch",
-    )
+        # Add mean and median lines
+        fig_price_dist.add_vline(
+            x=avg_price,
+            line_dash="dash",
+            line_color="red",
+            annotation_text=f"Mean: ${avg_price:,.0f}",
+            annotation_position="top right",
+        )
+        fig_price_dist.add_vline(
+            x=median_price,
+            line_dash="dash",
+            line_color="green",
+            annotation_text=f"Median: ${median_price:,.0f}",
+            annotation_position="top left",
+        )
 
-    col_l, col_r = st.columns(2)
-    with col_l:
-        st.subheader("Data Quality - Missing Values")
-        missing = raw_df.isnull().sum()
-        missing = missing[missing > 0].sort_values(ascending=False)
-        if not missing.empty:
-            fig_missing = px.bar(
-                x=missing.index,
-                y=missing.values,
-                title="Rows with null values by column",
-                labels={"x": "Column", "y": "Rows with null values"},
-                color_discrete_sequence=["#ff6b6b"],
+        fig_price_dist.update_layout(
+            title="Price Distribution with Statistical Markers",
+            xaxis_title="Price ($)",
+            yaxis_title="Frequency",
+            height=350,
+            showlegend=False,
+        )
+        st.plotly_chart(fig_price_dist, use_container_width=True)
+
+    st.markdown("---")
+
+    # Market Intelligence Grid
+    col_int1, col_int2 = st.columns(2)
+
+    with col_int1:
+        st.subheader("🏆 Top Manufacturers by Volume")
+        if "model" in df_filtered.columns and len(df_filtered) > 0:
+            brand_data = df_filtered.copy()
+            brand_data["brand"] = brand_data["model"].astype(str).str.split().str[0]
+            top_brands = brand_data["brand"].value_counts().head(10)
+
+            fig_brands = px.bar(
+                x=top_brands.values,
+                y=top_brands.index,
+                orientation="h",
+                title="Top 10 Manufacturers",
+                labels={"x": "Units", "y": "Manufacturer"},
+                color=top_brands.values,
+                color_continuous_scale="Blues",
             )
-            st.plotly_chart(fig_missing, width="stretch")
-        else:
-            st.success("Clean dataset! No missing values.")
+            fig_brands.update_layout(height=400, showlegend=False)
+            st.plotly_chart(fig_brands, use_container_width=True)
 
-    with col_r:
-        st.subheader("Data Integrity")
-        duplicates = raw_df.duplicated().sum()
-        if duplicates > 0:
-            st.warning(f"⚠️ Detected {duplicates:,} duplicate rows in the original dataset.")
-        else:
-            st.success("✅ No duplicates found.")
+    with col_int2:
+        st.subheader("📅 Inventory Age Profile")
+        if "model_year" in df_filtered.columns and len(df_filtered) > 0:
+            year_dist = df_filtered["model_year"].value_counts().sort_index()
 
-    # Key distributions of the filtered dataset
-    if len(df_filtered) > 0:
-        st.subheader("Key Distributions of Filtered Dataset")
-        dist1, dist2 = st.columns(2)
+            fig_years = px.area(
+                x=year_dist.index,
+                y=year_dist.values,
+                title="Units by Model Year",
+                labels={"x": "Model Year", "y": "Units"},
+                color_discrete_sequence=["#17a2b8"],
+            )
+            fig_years.update_layout(height=400)
+            fig_years.update_traces(fill="tozeroy")
+            st.plotly_chart(fig_years, use_container_width=True)
 
-        with dist1:
-            if "price" in df_filtered.columns:
-                fig_price = px.histogram(
-                    df_filtered,
-                    x="price",
-                    nbins=40,
-                    title="Price Distribution",
-                    labels={"price": "Price"},
-                )
-                st.plotly_chart(fig_price, width="stretch")
+    # Data Quality Summary (compact)
+    with st.expander("🔍 Data Quality Report", expanded=False):
+        qc1, qc2, qc3 = st.columns(3)
 
-        with dist2:
-            if "model_year" in df_filtered.columns:
-                fig_year = px.histogram(
-                    df_filtered,
-                    x="model_year",
-                    nbins=20,
-                    title="Distribution by Model Year",
-                    labels={"model_year": "Model Year"},
-                )
-                st.plotly_chart(fig_year, width="stretch")
+        with qc1:
+            missing_pct = (raw_df.isnull().sum().sum() / (raw_df.shape[0] * raw_df.shape[1])) * 100
+            st.metric("Data Completeness", f"{100-missing_pct:.1f}%", delta="Quality Score")
 
-# --- TAB 2: MARKET ANALYSIS ---
+        with qc2:
+            duplicates = raw_df.duplicated().sum()
+            st.metric(
+                "Unique Records",
+                f"{100 - (duplicates/len(raw_df)*100):.1f}%",
+                delta=f"{len(raw_df)-duplicates:,} unique",
+            )
+
+        with qc3:
+            st.metric("Dataset Size", f"{len(raw_df):,}", delta=f"{df_filtered.shape[1]} attributes")
+
+# --- TAB 2: EXECUTIVE MARKET ANALYSIS ---
 with tab2:
-    st.header("Executive Market Report")
-    st.caption("Financial summary and opportunity mapping for decision makers and investors.")
+    st.header("💼 Investment & Market Intelligence Report")
+    st.markdown("**Strategic insights for C-level executives and institutional investors**")
+    st.markdown("---")
 
     if len(df_filtered) > 0:
         # Usar MarketAnalyzer y VisualizationEngine
@@ -284,114 +391,208 @@ with tab2:
         analyzer = MarketAnalyzer(df_filtered)
         summary = analyzer.generate_executive_summary()
 
-        # Executive Summary
-        with st.expander("📋 Executive Market Summary (Expand)", expanded=True):
-            c1, c2, c3 = st.columns(3)
-            with c1:
-                st.markdown("#### 💡 Insights")
-                st.info(
-                    f"**Leading Brand:** {summary['insights'].get('most_popular_brand', 'N/A')}\n\n"
-                    f"**Highest Value:** {summary['insights'].get('highest_value_brand', 'N/A')}"
+        # Strategic Investment KPIs
+        st.subheader("📊 Strategic Investment Metrics")
+
+        inv_col1, inv_col2, inv_col3, inv_col4 = st.columns(4)
+
+        with inv_col1:
+            st.metric(
+                label="🎯 Market Leader", value=summary["insights"].get("most_popular_brand", "N/A"), delta="By Volume"
+            )
+
+        with inv_col2:
+            st.metric(
+                label="💸 Premium Brand",
+                value=summary["insights"].get("highest_value_brand", "N/A"),
+                delta="By Avg Price",
+            )
+
+        with inv_col3:
+            opportunities = summary["kpis"].get("total_opportunities", 0)
+            st.metric(
+                label="🔎 Investment Opportunities",
+                value=f"{opportunities:,}",
+                delta=f"{(opportunities/len(df_filtered)*100):.1f}% of inventory",
+            )
+
+        with inv_col4:
+            depr = summary["insights"].get("avg_depreciation_rate", 0)
+            st.metric(label="📉 Annual Depreciation", value=f"{depr:.1%}", delta="Portfolio Average")
+
+        st.markdown("---")
+
+        # Financial Performance Dashboard
+        st.subheader("💹 Financial Performance Overview")
+
+        fin_left, fin_right = st.columns([2, 1])
+
+        with fin_left:
+            # Price trend analysis by year
+            if "model_year" in df_filtered.columns:
+                price_by_year = (
+                    df_filtered.groupby("model_year").agg({"price": ["mean", "median", "count"]}).reset_index()
                 )
-            with c2:
-                st.markdown("#### 💰 Opportunities")
-                st.success(
-                    f"**Undervalued Vehicles:** {summary['kpis'].get('total_opportunities', 0)}\n\n"
-                    f"**Arbitrage Potential:** ${summary['kpis'].get('potential_arbitrage_value', 0):,.0f}"
+                price_by_year.columns = ["Year", "Avg Price", "Median Price", "Count"]
+
+                fig_trend = go.Figure()
+                fig_trend.add_trace(
+                    go.Scatter(
+                        x=price_by_year["Year"],
+                        y=price_by_year["Avg Price"],
+                        mode="lines+markers",
+                        name="Average Price",
+                        line=dict(color="#007bff", width=3),
+                        marker=dict(size=8),
+                    )
                 )
-            with c3:
-                st.markdown("#### 📉 Depreciation")
-                depr = summary["insights"].get("avg_depreciation_rate", 0)
-                st.warning(f"**Annual Rate:** {depr:.1%}")
+                fig_trend.add_trace(
+                    go.Scatter(
+                        x=price_by_year["Year"],
+                        y=price_by_year["Median Price"],
+                        mode="lines+markers",
+                        name="Median Price",
+                        line=dict(color="#28a745", width=3, dash="dash"),
+                        marker=dict(size=6),
+                    )
+                )
 
-        # Executive financial summary
-        st.subheader("Executive Financial Summary")
+                fig_trend.update_layout(
+                    title="Price Trends by Model Year",
+                    xaxis_title="Model Year",
+                    yaxis_title="Price ($)",
+                    height=400,
+                    hovermode="x unified",
+                )
+                st.plotly_chart(fig_trend, use_container_width=True)
 
-        # Financial KPIs
-        fk1, fk2, fk3 = st.columns(3)
-        fk1.metric("Total Market Value", f"${summary['kpis']['total_market_value']:,.0f}")
-        fk2.metric("Average Price", f"${summary['kpis']['average_price']:,.0f}")
-        fk3.metric("Opportunities Detected", f"{summary['kpis']['total_opportunities']:,}")
+        with fin_right:
+            st.markdown("#### 📊 Portfolio Metrics")
+            st.metric("Total Market Value", f"${summary['kpis']['total_market_value']/1e6:.2f}M")
+            st.metric("Average Unit Price", f"${summary['kpis']['average_price']:,.0f}")
+            st.metric("Revenue Potential", f"${summary['kpis'].get('potential_arbitrage_value', 0)/1e3:.1f}K")
 
-        # Narrativa ejecutiva sobre el portafolio
+            # ROI Calculator
+            st.markdown("---")
+            st.markdown("**💰 Quick ROI Estimate**")
+            avg_margin = st.slider("Target Margin %", 5, 30, 15, key="roi_slider")
+            potential_roi = summary["kpis"]["total_market_value"] * avg_margin / 100
+            st.success(f"Projected ROI: **${potential_roi/1e6:.2f}M** at {avg_margin}% margin")
+
+        # Calculate key metrics for recommendations
         total_vehicles = summary["kpis"].get("total_vehicles", len(df_filtered))
         total_value = summary["kpis"].get("total_market_value", float(df_filtered["price"].sum()))
         avg_price = summary["kpis"].get("average_price", float(df_filtered["price"].mean()))
+        median_price = df_filtered["price"].median()
+        avg_age = (pd.Timestamp.now().year - df_filtered["model_year"]).mean()
         total_opps = summary["kpis"].get("total_opportunities", 0)
 
-        st.markdown(
-            f"""
-            **Filtered Portfolio Overview**
+        # Top brands for risk analysis
+        if "model" in df_filtered.columns and len(df_filtered) > 0:
+            brand_data_temp = df_filtered.copy()
+            brand_data_temp["brand"] = brand_data_temp["model"].astype(str).str.split().str[0]
+            top_brands = brand_data_temp["brand"].value_counts()
+        else:
+            top_brands = pd.Series([0], index=["Unknown"])
 
-            - Estimated total market value: **${total_value:,.0f}**
-            - Average ticket per vehicle: **${avg_price:,.0f}**
-            - Volume of units analyzed: **{total_vehicles:,}**
-            - Identified opportunities (undervalued vehicles): **{total_opps:,}**
+        st.markdown("---")
 
-            These figures summarize the market size and return potential
-            for an investor operating in this segment.
+        # Investment Strategy Recommendations
+        st.subheader("🎯 Strategic Recommendations")
+
+        rec_col1, rec_col2 = st.columns(2)
+
+        with rec_col1:
+            st.markdown("#### 🟢 Buy Signals")
+            discount_pct = (median_price - df_filtered["price"].quantile(0.25)) / median_price * 100
+            st.markdown(
+                f"""
+            - **Target Inventory:** {total_opps:,} undervalued units identified
+            - **Average Discount:** {discount_pct:.1f}% below market median
+            - **Volume Opportunity:** {(total_opps / total_vehicles * 100):.1f}% of analyzed inventory
+            - **Estimated Arbitrage Value:** ${summary['kpis'].get('potential_arbitrage_value', 0):,.0f}
             """
-        )
-
-        fc1, fc2 = st.columns(2)
-
-        # Market value by price segment
-        with fc1:
-            st.markdown("**Value Distribution by Price Segment**")
-            if "price_category" in df_filtered.columns:
-                value_by_cat = df_filtered.groupby("price_category")["price"].sum().reset_index()
-                value_by_cat = value_by_cat.sort_values("price", ascending=False)
-                fig_value_cat = px.bar(
-                    value_by_cat,
-                    x="price_category",
-                    y="price",
-                    labels={"price": "Total Value ($)", "price_category": "Segment"},
-                    color="price_category",
-                )
-                st.plotly_chart(fig_value_cat, width="stretch")
-
-        # Value share by brand (Top 8)
-        with fc2:
-            st.markdown("**Value Share by Brand (Top 8)**")
-            df_brands = df_filtered.copy()
-            if "model" in df_brands.columns:
-                df_brands["brand"] = df_brands["model"].apply(lambda x: str(x).split()[0])
-                brand_value = (
-                    df_brands.groupby("brand")["price"].sum().sort_values(ascending=False).head(8).reset_index()
-                )
-                if not brand_value.empty:
-                    fig_brand_share = px.pie(
-                        brand_value,
-                        values="price",
-                        names="brand",
-                    )
-                    st.plotly_chart(fig_brand_share, width="stretch")
-
-        # Arbitrage opportunities by category (if any)
-        opps = analyzer.analysis_results.get("opportunities") or []
-        if opps:
-            st.markdown("**Arbitrage Opportunity Map by Segment**")
-            opp_df = pd.DataFrame(opps)
-            fig_opp = px.bar(
-                opp_df,
-                x="category",
-                y="potential_value",
-                hover_data=["count", "avg_price"],
-                labels={"category": "Category", "potential_value": "Average Potential Value ($)"},
             )
-            st.plotly_chart(fig_opp, width="stretch")
 
-        # High-level strategic recommendations
-        recs = summary.get("recommendations") or []
-        if recs:
-            st.subheader("Strategic Recommendations for Investors")
-            for rec in recs:
-                st.markdown(f"- {rec}")
+        with rec_col2:
+            st.markdown("#### 🔴 Risk Factors")
+            volatility = df_filtered["price"].std() / df_filtered["price"].mean() * 100
+            market_concentration = top_brands.iloc[0] / total_vehicles * 100 if len(df_filtered) > 0 else 0
+            st.markdown(
+                f"""
+            - **Price Volatility:** {volatility:.1f}% coefficient of variation
+            - **Fleet Age Risk:** Average {avg_age:.1f} years (depreciation accelerates after 5 yrs)
+            - **Market Concentration:** Top brand holds {market_concentration:.1f}% market share
+            - **Liquidity Consideration:** Monitor inventory turnover by segment
+            """
+            )
 
-        # Advanced Plotly Dashboard
-        st.subheader("Analytical Appendices (Visual Detail)")
-        fig_dashboard = viz_engine.create_market_analysis_dashboard()
-        st.plotly_chart(fig_dashboard, width="stretch")
+        st.markdown("---")
+
+        # Competitive Landscape Analysis
+        st.subheader("🏆 Competitive Landscape & Market Share")
+
+        comp_col1, comp_col2 = st.columns(2)
+
+        with comp_col1:
+            # Market share by brand value
+            if "model" in df_filtered.columns and len(df_filtered) > 0:
+                df_brands = df_filtered.copy()
+                df_brands["brand"] = df_brands["model"].apply(lambda x: str(x).split()[0])
+                brand_value = df_brands.groupby("brand")["price"].agg(["sum", "count", "mean"]).reset_index()
+                brand_value.columns = ["Brand", "Total Value", "Units", "Avg Price"]
+                brand_value = brand_value.sort_values("Total Value", ascending=False).head(8)
+
+                fig_brand_value = px.treemap(
+                    brand_value,
+                    path=["Brand"],
+                    values="Total Value",
+                    color="Avg Price",
+                    hover_data=["Units"],
+                    color_continuous_scale="RdYlGn",
+                    title="Market Share by Total Inventory Value (Top 8 Brands)",
+                )
+                fig_brand_value.update_layout(height=400)
+                st.plotly_chart(fig_brand_value, use_container_width=True)
+
+        with comp_col2:
+            # Brand performance matrix
+            if len(brand_value) > 0:
+                fig_scatter = px.scatter(
+                    brand_value,
+                    x="Units",
+                    y="Avg Price",
+                    size="Total Value",
+                    color="Brand",
+                    hover_data=["Total Value"],
+                    title="Brand Performance Matrix: Volume vs. Price",
+                    labels={"Units": "Market Volume", "Avg Price": "Average Unit Price ($)"},
+                )
+                fig_scatter.update_layout(height=400, showlegend=True)
+                st.plotly_chart(fig_scatter, use_container_width=True)
+
+        # Additional analytics in expander
+        with st.expander("📈 Advanced Analytics & Detailed Insights", expanded=False):
+            # Arbitrage opportunities
+            opps = analyzer.analysis_results.get("opportunities") or []
+            if opps:
+                st.markdown("**🔍 Arbitrage Opportunity Heat Map**")
+                opp_df = pd.DataFrame(opps)
+                fig_opp = px.bar(
+                    opp_df,
+                    x="category",
+                    y="potential_value",
+                    hover_data=["count", "avg_price"],
+                    labels={"category": "Category", "potential_value": "Average Potential Value ($)"},
+                    color="potential_value",
+                    color_continuous_scale="Viridis",
+                )
+                st.plotly_chart(fig_opp, use_container_width=True)
+
+            # Detailed analytics dashboard
+            st.markdown("**📊 Comprehensive Market Dashboard**")
+            fig_dashboard = viz_engine.create_market_analysis_dashboard()
+            st.plotly_chart(fig_dashboard, use_container_width=True)
     else:
         st.warning("No data to display with the selected filters.")
 
@@ -590,65 +791,69 @@ with tab4:
         model = joblib.load(model_file)
 
         st.markdown("Enter vehicle characteristics to get an AI-based price estimate.")
+        st.info("💡 **Tip:** Fill in all fields and click 'Calculate Price' to get your estimate.")
 
-        # Input controls (no explicit form to avoid tab changes on submit)
-        col_f1, col_f2, col_f3 = st.columns(3)
-        with col_f1:
-            year_input = st.number_input("Model Year", 1990, 2025, 2018, key="pred_year")
-            odometer_input = st.number_input("Mileage (Odometer)", 0, 500000, 50000, key="pred_odometer")
-            cylinders_input = st.selectbox("Cylinders", [4, 6, 8, 10, 12], index=1, key="pred_cylinders")
+        # Use form to prevent page reloads and tab changes
+        with st.form(key="price_prediction_form", clear_on_submit=False):
+            col_f1, col_f2, col_f3 = st.columns(3)
 
-        with col_f2:
-            condition_input = st.selectbox(
-                "Condition", ["excellent", "good", "fair", "like new", "salvage", "new"], index=0, key="pred_condition"
-            )
-            fuel_input = st.selectbox(
-                "Fuel", ["gas", "diesel", "hybrid", "electric", "other"], index=0, key="pred_fuel"
-            )
-            trans_input = st.selectbox(
-                "Transmission", ["automatic", "manual", "other"], index=0, key="pred_transmission"
-            )
+            with col_f1:
+                year_input = st.number_input("Model Year", 1990, 2025, 2018)
+                odometer_input = st.number_input("Mileage (Odometer)", 0, 500000, 50000)
+                cylinders_input = st.selectbox("Cylinders", [4, 6, 8, 10, 12], index=1)
 
-        with col_f3:
-            type_input = st.selectbox(
-                "Type",
-                [
-                    "sedan",
-                    "SUV",
-                    "truck",
-                    "pickup",
-                    "coupe",
-                    "wagon",
-                    "hatchback",
-                    "van",
-                    "convertible",
-                    "other",
-                ],
-                index=1,
-                key="pred_type",
-            )
-            paint_input = st.selectbox(
-                "Color",
-                [
-                    "white",
-                    "black",
-                    "silver",
-                    "grey",
-                    "blue",
-                    "red",
-                    "green",
-                    "brown",
-                    "custom",
-                    "yellow",
-                    "orange",
-                    "purple",
-                ],
-                index=0,
-                key="pred_paint",
-            )
-            drive_input = st.selectbox("Drive", ["4wd", "fwd", "rwd"], index=0, key="pred_drive")
+            with col_f2:
+                condition_input = st.selectbox(
+                    "Condition",
+                    ["excellent", "good", "fair", "like new", "salvage", "new"],
+                    index=0,
+                )
+                fuel_input = st.selectbox(
+                    "Fuel",
+                    ["gas", "diesel", "hybrid", "electric", "other"],
+                    index=0,
+                )
+                trans_input = st.selectbox("Transmission", ["automatic", "manual", "other"], index=0)
 
-        submit_btn = st.button("💰 Calculate Estimated Price", key="calculate_price_btn")
+            with col_f3:
+                type_input = st.selectbox(
+                    "Type",
+                    [
+                        "sedan",
+                        "SUV",
+                        "truck",
+                        "pickup",
+                        "coupe",
+                        "wagon",
+                        "hatchback",
+                        "van",
+                        "convertible",
+                        "other",
+                    ],
+                    index=1,
+                )
+                paint_input = st.selectbox(
+                    "Color",
+                    [
+                        "white",
+                        "black",
+                        "silver",
+                        "grey",
+                        "blue",
+                        "red",
+                        "green",
+                        "brown",
+                        "custom",
+                        "yellow",
+                        "orange",
+                        "purple",
+                    ],
+                    index=0,
+                )
+                drive_input = st.selectbox("Drive", ["4wd", "fwd", "rwd"], index=0)
+
+            # Submit button inside form
+            submit_btn = st.form_submit_button("💰 Calculate Estimated Price", use_container_width=True)
 
         if submit_btn:
             # Construir DataFrame de entrada con las columnas crudas principales
