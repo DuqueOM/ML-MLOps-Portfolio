@@ -53,7 +53,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 15s
+      start_period: 45s
     depends_on:
       mlflow:
         condition: service_healthy
@@ -83,7 +83,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 15s
+      start_period: 45s
     depends_on:
       mlflow:
         condition: service_healthy
@@ -112,7 +112,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 15s
+      start_period: 45s
     depends_on:
       mlflow:
         condition: service_healthy
