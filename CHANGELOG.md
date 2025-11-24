@@ -5,29 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - 2025-11-23
 
 ### Added
-- Comprehensive audit reports in `audit-reports/` directory
-- Automated quality check scripts (`ci_checks.sh`, `security_scan.sh`)
-- `pyproject.toml` for modern Python packaging (BankChurn-Predictor)
-- `CONTRIBUTING.md` with detailed contribution guidelines
-- `CHANGELOG.md` for tracking changes
-- Enhanced `.gitignore` with comprehensive Python/ML patterns
+- **Unified Documentation Suite**:
+  - `docs/ARCHITECTURE_PORTFOLIO.md`: Global microservices architecture.
+  - `docs/OPERATIONS_PORTFOLIO.md`: Centralized runbook for deployment and maintenance.
+  - `docs/DEPENDENCY_CONFLICTS.md`: Matrix of dependencies and conflict resolutions.
+- **Cross-Project Integration Testing**:
+  - `scripts/run_demo_tests.sh`: Automated smoke tests for all containerized services.
+  - CI/CD Job `integration-test`: Runs the full Docker Compose stack in GitHub Actions.
 
 ### Changed
-- **SECURITY:** Removed hardcoded credentials from `infra/docker-compose-mlflow.yml`
-- Moved all audit reports and scripts to `audit-reports/` folder
-- Improved README with professional structure and badges
-- Updated `.gitignore` to exclude all temporary and generated files
-
-### Fixed
-- Security vulnerabilities: hardcoded passwords now use environment variables
-- `.gitignore` now properly excludes `__pycache__`, `.pytest_cache`, logs
+- **CI/CD Pipeline**: Refactored `ci-mlops.yml` to include E2E integration tests and summary reporting.
+- **Root Documentation**: Simplified root directory by moving specialized docs to `docs/` and creating a unified `README.md`.
+- **Docker Workflow**: Optimized `docker-compose.demo.yml` for robust health checks and networking.
 
 ### Removed
-- Duplicate `README_PORTFOLIO.md` (consolidated into main README)
-- Temporary files (`.pyc`, `.log`, cache directories)
+- Deprecated single-file runbooks (`ARCHITECTURE.md`, `OPERATIONS.md`) from root in favor of the `docs/` suite.
+- Redundant status files.
 
 ## [1.0.0] - 2024-11-16
 

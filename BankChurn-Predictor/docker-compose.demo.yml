@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  bankchurn-api:
+    build: .
+    container_name: bankchurn-demo
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+    environment:
+      - LOG_LEVEL=INFO
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

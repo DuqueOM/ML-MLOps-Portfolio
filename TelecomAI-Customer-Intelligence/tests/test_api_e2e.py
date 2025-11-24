@@ -4,21 +4,20 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from app.fastapi_app import app
 from fastapi.testclient import TestClient
-from main import load_config, train
+
+from app.fastapi_app import app
+from main import load_config
+from src.telecom.training import train_model
 
 
 def ensure_artifacts() -> None:
     # Train once to ensure artifacts exist for API
     project_root = Path(__file__).resolve().parents[1]
-    cfg = load_config(project_root / "configs" / "config.yaml")
+    cfg = load_config(str(project_root / "configs" / "config.yaml"))
     # Only train if artifacts are missing to keep CI fast
-    if (
-        not (project_root / cfg.paths["model_path"]).exists()
-        or not (project_root / cfg.paths["preprocessor_path"]).exists()
-    ):
-        train(cfg)
+    if not (project_root / cfg.paths["model_path"]).exists():
+        train_model(cfg)
 
 
 def test_health_endpoint():

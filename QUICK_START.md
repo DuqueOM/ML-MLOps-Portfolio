@@ -1,102 +1,61 @@
-# 🚀 Quick Start - Portfolio TOP-3
+# 🚀 Quick Start - ML/MLOps Portfolio
 
-**Portfolio ML/MLOps Tier-1** - Listo para presentar
+This guide provides the fastest way to run the portfolio projects locally using Docker.
+
+## ⚡ One-Line Demo (Recommended)
+
+To spin up the entire stack (3 APIs + Streamlit Dashboard + MLflow):
+
+```bash
+make docker-demo
+```
+
+This command will:
+1. Build optimized Docker images for all 3 projects.
+2. Start the MLflow Tracking Server.
+3. Launch all APIs and the Dashboard.
+4. Run automated smoke tests to verify everything is working.
+
+**Access Points:**
+- **BankChurn API**: [http://localhost:8001/docs](http://localhost:8001/docs)
+- **CarVision Dashboard**: [http://localhost:8501](http://localhost:8501)
+- **CarVision API**: [http://localhost:8002/docs](http://localhost:8002/docs)
+- **TelecomAI API**: [http://localhost:8003/docs](http://localhost:8003/docs)
+- **MLflow UI**: [http://localhost:5000](http://localhost:5000)
 
 ---
 
-## 📊 Portfolio Summary
+## 🛠️ Manual Setup
 
-### TOP-3 Projects
+If you prefer to run specific commands or develop locally:
 
-| # | Proyecto | Sector | Coverage | Tests |
-|---|----------|--------|----------|-------|
-| 1 | **TelecomAI-Customer-Intelligence** | Telecom | 87% | 54 |
-| 2 | **CarVision-Market-Intelligence** | Automotive | 81% | 13 |
-| 3 | **BankChurn-Predictor** | Banking | 68% | 107 |
+### 1. Prerequisites
+- Docker & Docker Compose
+- Python 3.11+
+- Make
 
-**Promedio: 78.7%** 🚀
+### 2. Installation
+```bash
+# Install dependencies for all projects
+make install
+```
+
+### 3. Running Tests
+```bash
+# Run unit and integration tests
+make test
+```
+
+### 4. Local Development
+Refer to the **[Operations Runbook](docs/OPERATIONS_PORTFOLIO.md)** for detailed instructions on:
+- Retraining models locally
+- Debugging services
+- Managing dependencies
 
 ---
 
-## ⚡ Quick Commands
-
-### Run All Tests
+## 📊 Validation
+To manually run the integration tests:
 ```bash
-bash scripts/run_tests_top3.sh
+bash scripts/run_demo_tests.sh
 ```
-
-### Start MLflow Stack
-```bash
-docker compose -f docker-compose.mlflow.yml up -d
-```
-
-### Security Scan
-```bash
-gitleaks detect --source . --report-path reports/gitleaks-report.json
-```
-
-### View Coverage
-```bash
-cat reports/coverage-summary-TOP3.csv
-```
-
----
-
-## 📁 Key Files
-
-### Reports
--- `reports/PORTFOLIO_TIER1_FINAL.md` - Reporte ejecutivo (Top-3)
--- `FINAL_PORTFOLIO_STATUS.md` - Estado detallado del portfolio Top-3
-
-### Configuration
-- `.github/workflows/ci-mlops.yml` - CI/CD Unificado
-- `docker-compose.mlflow.yml` - MLflow stack
-- `.gitattributes` - Git LFS config
-- `.gitleaksignore` - Security exceptions
-
----
-
-## 🎯 Next Steps
-
-### Development
-```bash
-# 1. Iniciar MLflow
-docker compose -f docker-compose.mlflow.yml up -d
-
-# 2. Trackear datasets con DVC
-cd BankChurn-Predictor
-dvc add data/*.csv
-git add data/*.dvc .gitignore
-git commit -m "chore(dvc): track datasets"
-dvc push
-
-# 3. Run training con MLflow tracking
-python -m src.bankchurn.cli train --config configs/config.yaml
-```
-
-### Production
-```bash
-# Build Docker images
-docker build -t bankchurn-api:latest BankChurn-Predictor/
-docker build -t carvision-api:latest CarVision-Market-Intelligence/
-docker build -t telecomai-api:latest TelecomAI-Customer-Intelligence/
-
-# Run security scans
-trivy image bankchurn-api:latest
-```
-
----
-
-## ✅ Status
-
-- ✅ Tests: 174 totales, todos pasando
-- ✅ Coverage: 78.7% promedio
-- ✅ Security: Gitleaks clean
-- ✅ DVC: Configurado
-- ✅ MLflow: Ready
-- ✅ Git LFS: 5 modelos tracked
-- ✅ CI/CD: GitHub Actions ready
-
----
-
-**Portfolio Status**: 🏆 **TIER-1 PRODUCTION-READY**

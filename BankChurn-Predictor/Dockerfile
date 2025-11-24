@@ -1,10 +1,10 @@
 # Multi-stage Dockerfile para BankChurn Predictor
 # Stage 1: Builder - Compila dependencias
-FROM python:3.12-slim AS builder
+FROM python:3.13-slim AS builder
 
 # Metadatos
 LABEL maintainer="Daniel Duque <daniel.duque@example.com>"
-LABEL version="2.0.0"
+LABEL version="1.0.0"
 LABEL description="BankChurn Predictor - Sistema de predicción de abandono de clientes bancarios"
 
 # Variables de entorno de build

@@ -6,12 +6,12 @@ from pathlib import Path
 import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 from sklearn.pipeline import Pipeline
 
 APP_TITLE = "TelecomAI Inference API"
 MODEL_PATH = os.getenv("MODEL_PATH", "artifacts/model.joblib")
-PREPROCESSOR_PATH = os.getenv("PREPROCESSOR_PATH", "artifacts/preprocessor.joblib")
 
 app = FastAPI(title=APP_TITLE)
 
@@ -24,11 +24,14 @@ class TelecomFeatures(BaseModel):
 
 
 def _load_pipeline() -> Pipeline:
-    if not Path(MODEL_PATH).exists() or not Path(PREPROCESSOR_PATH).exists():
-        raise FileNotFoundError("Model or preprocessor not found. Train the model first (main.py --mode train).")
-    clf = joblib.load(MODEL_PATH)
-    pre = joblib.load(PREPROCESSOR_PATH)
-    return Pipeline(steps=[("preprocess", pre), ("clf", clf)])
+    if not Path(MODEL_PATH).exists():
+        raise FileNotFoundError(f"Model not found at {MODEL_PATH}. Train the model first.")
+    return joblib.load(MODEL_PATH)
+
+
+@app.get("/", include_in_schema=False)
+async def root():
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health")

@@ -16,17 +16,31 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Hack para importar módulos desde el directorio raíz
+# Definir ROOT_DIR globalmente
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.append(str(ROOT_DIR))
 
 # Importar clases y utilidades del proyecto
 try:
-    from main import MarketAnalyzer, VehicleDataLoader, VisualizationEngine
-except ImportError as e:
-    st.error(f"Error importando módulos del proyecto: {e}")
-    st.stop()
+    from src.carvision.analysis import MarketAnalyzer
+    from src.carvision.data import clean_data, load_data
+    from src.carvision.visualization import VisualizationEngine
+except ImportError:
+    # Fallback for local dev if package not installed
+    from src.carvision.analysis import MarketAnalyzer
+    from src.carvision.data import clean_data, load_data
+    from src.carvision.visualization import VisualizationEngine
+
+
+class VehicleDataLoader:
+    """Legacy adapter for streamlit app."""
+
+    def load_data(self, path):
+        return load_data(path)
+
+    def clean_data(self, df):
+        return clean_data(df)
 
 
 # Constantes
@@ -196,7 +210,7 @@ with tab1:
     st.subheader("Muestra de Datos Recientes")
     st.dataframe(
         df_filtered.sort_values("model_year", ascending=False).head(100),
-        use_container_width=True,
+        width="stretch",
     )
 
     col_l, col_r = st.columns(2)
@@ -212,7 +226,7 @@ with tab1:
                 labels={"x": "Columna", "y": "Filas con valores nulos"},
                 color_discrete_sequence=["#ff6b6b"],
             )
-            st.plotly_chart(fig_missing, use_container_width=True)
+            st.plotly_chart(fig_missing, width="stretch")
         else:
             st.success("¡Dataset limpio! No hay valores faltantes.")
 
@@ -238,7 +252,7 @@ with tab1:
                     title="Distribución de precios",
                     labels={"price": "Precio"},
                 )
-                st.plotly_chart(fig_price, use_container_width=True)
+                st.plotly_chart(fig_price, width="stretch")
 
         with dist2:
             if "model_year" in df_filtered.columns:
@@ -249,7 +263,7 @@ with tab1:
                     title="Distribución por año modelo",
                     labels={"model_year": "Año modelo"},
                 )
-                st.plotly_chart(fig_year, use_container_width=True)
+                st.plotly_chart(fig_year, width="stretch")
 
 # --- PESTAÑA 2: ANÁLISIS DE MERCADO ---
 with tab2:
@@ -326,7 +340,7 @@ with tab2:
                     labels={"price": "Valor total ($)", "price_category": "Segmento"},
                     color="price_category",
                 )
-                st.plotly_chart(fig_value_cat, use_container_width=True)
+                st.plotly_chart(fig_value_cat, width="stretch")
 
         # Participación de valor por marca (Top 8)
         with fc2:
@@ -343,7 +357,7 @@ with tab2:
                         values="price",
                         names="brand",
                     )
-                    st.plotly_chart(fig_brand_share, use_container_width=True)
+                    st.plotly_chart(fig_brand_share, width="stretch")
 
         # Oportunidades de arbitraje por categoría (si existen)
         opps = analyzer.analysis_results.get("opportunities") or []
@@ -357,7 +371,7 @@ with tab2:
                 hover_data=["count", "avg_price"],
                 labels={"category": "Categoría", "potential_value": "Valor potencial medio ($)"},
             )
-            st.plotly_chart(fig_opp, use_container_width=True)
+            st.plotly_chart(fig_opp, width="stretch")
 
         # Recomendaciones estratégicas de alto nivel
         recs = summary.get("recommendations") or []
@@ -369,7 +383,7 @@ with tab2:
         # Dashboard Plotly Avanzado
         st.subheader("Anexos analíticos (detalle visual)")
         fig_dashboard = viz_engine.create_market_analysis_dashboard()
-        st.plotly_chart(fig_dashboard, use_container_width=True)
+        st.plotly_chart(fig_dashboard, width="stretch")
     else:
         st.warning("No hay datos para mostrar con los filtros seleccionados.")
 
@@ -503,7 +517,7 @@ with tab3:
                 barmode="group",
                 labels={"Valor": "Valor de la métrica"},
             )
-            st.plotly_chart(fig_comp, use_container_width=True)
+            st.plotly_chart(fig_comp, width="stretch")
 
             st.caption(
                 "Valores más bajos son mejores para RMSE/MAE/MAPE; valores más altos son mejores para R². "
@@ -784,7 +798,7 @@ with tab4:
                         )
                     )
                     fig_gauge.update_layout(height=250, margin=dict(l=20, r=20, t=30, b=20))
-                    st.plotly_chart(fig_gauge, use_container_width=True)
+                    st.plotly_chart(fig_gauge, width="stretch")
 
             except Exception as e:
                 st.error(f"Error en la predicción: {str(e)}")

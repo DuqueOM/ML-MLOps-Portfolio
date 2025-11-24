@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    image: carvision:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_PATH=artifacts/model.joblib
+      - PYTHONPATH=/app
+    volumes:
+      - ./artifacts:/app/artifacts
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  dashboard:
+    image: carvision:latest
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONPATH=/app
+      # Streamlit loads model directly from disk in this architecture
+      - ARTIFACTS_DIR=artifacts
+    volumes:
+      - ./artifacts:/app/artifacts
+      - ./app:/app/app
+      - ./src:/app/src
+    command: streamlit run app/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+    depends_on:
+      - api

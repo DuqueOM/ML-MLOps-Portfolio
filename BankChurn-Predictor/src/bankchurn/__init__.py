@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+from .evaluation import ModelEvaluator
+from .models import ResampleClassifier
+from .prediction import ChurnPredictor
+from .training import ChurnTrainer
+
 __all__ = [
     "ResampleClassifier",
-    "BankChurnPredictor",
-    "train_model",
-    "evaluate_model",
-    "predict_batch",
+    "ChurnPredictor",
+    "ChurnTrainer",
+    "ModelEvaluator",
 ]

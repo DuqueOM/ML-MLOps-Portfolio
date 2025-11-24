@@ -62,19 +62,20 @@ format: ## Formatear código
 
 train: ## Entrenar modelo
 	@echo "$(GREEN)Entrenando modelo...$(NC)"
-	$(PYTHON) main.py --mode train --config configs/config.yaml --seed 42 --input data/raw/Churn.csv
+	$(PYTHON) main.py --seed 42 train --config configs/config.yaml --input data/raw/Churn.csv
 
 train-hyperopt: ## Entrenar con optimización de hiperparámetros
 	@echo "$(GREEN)Entrenando con optimización de hiperparámetros...$(NC)"
-	$(PYTHON) main.py --mode hyperopt --n_trials 100 --timeout 3600
+	@echo "$(YELLOW)Note: Hyperopt not currently implemented in CLI. Please implement src/bankchurn/optimization.py$(NC)"
+	# $(PYTHON) main.py hyperopt --n_trials 100 --timeout 3600
 
 evaluate: ## Evaluar modelo
 	@echo "$(GREEN)Evaluando modelo...$(NC)"
-	$(PYTHON) main.py --mode evaluate --model models/best_model.pkl --config configs/config.yaml --input data/raw/Churn.csv
+	$(PYTHON) main.py evaluate --model models/best_model.pkl --preprocessor models/preprocessor.pkl --config configs/config.yaml --input data/raw/Churn.csv
 
 predict: ## Hacer predicciones
 	@echo "$(GREEN)Realizando predicciones...$(NC)"
-	$(PYTHON) main.py --mode predict --input data/raw/Churn.csv --output predictions.csv
+	$(PYTHON) main.py predict --model models/best_model.pkl --preprocessor models/preprocessor.pkl --input data/raw/Churn.csv --output predictions.csv
 
 # quick demo: install, train and serve
 start-demo: ## Demo rápida en 5 minutos
