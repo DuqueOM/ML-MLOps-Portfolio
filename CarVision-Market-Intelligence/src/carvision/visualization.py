@@ -1,12 +1,12 @@
 """
 Visualization components using Plotly.
 """
+
 from __future__ import annotations
 
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
 from src.carvision.analysis import MarketAnalyzer
 
 

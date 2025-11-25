@@ -64,13 +64,35 @@ docker-compose -f docker-compose.demo.yml up --build
 # Access: localhost:8001 (BankChurn), :8002 (CarVision), :8003 (TelecomAI)
 ```
 
+## 📝 Audit Reports (2025-11-25)
+
+Comprehensive code quality, security, and maintenance audit reports are available in:
+
+**`Reportes Portafolio/`** (Spanish pedagogical reports):
+- `00_Index-Reportes.md` — Index and reproduction steps
+- `BankChurn-Predictor-Reporte.md` — Project-specific audit
+- `CarVision-Market-Intelligence-Reporte.md` — Project-specific audit
+- `TelecomAI-Customer-Intelligence-Reporte.md` — Project-specific audit
+- `Global-Code-Quality-Report.md` — Aggregated linting, typing, complexity
+- `Security-Dependency-Report.md` — SAST and dependency vulnerabilities
+- `CI-Improvements-Proposal.md` — CI/CD enhancement YAML snippets
+
+**`reports/audit/`** (Raw tool outputs):
+- `bandit-*.json` — SAST results
+- `pip-audit.json` — Dependency vulnerabilities
+- `*-pytest.txt` — Test outputs
+
+**Automation**: `scripts/run_audit.sh` to reproduce the full audit.
+
 ## ⚠️ Next Actions
 
 1. Pin dependencies (pyarrow==21.0.0, pydantic<2.0.0)
 2. Test Docker builds
 3. Update root README
 4. Implement remaining PRs
+5. Apply quality gate CI improvements from `Reportes Portafolio/CI-Improvements-Proposal.md`
 
 ---
 
-**Complete**: 2025-11-24
+**Complete**: 2025-11-24  
+**Audit Reports Added**: 2025-11-25
