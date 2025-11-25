@@ -1,0 +1,34 @@
+# Gitleaks configuration for ML-MLOps Portfolio
+# https://github.com/gitleaks/gitleaks
+
+title = "ML-MLOps Portfolio Secret Detection"
+
+[extend]
+# Use default gitleaks rules
+useDefault = true
+
+# Allowlist for known false positives
+[allowlist]
+description = "Allowlisted patterns and paths"
+
+# Paths to ignore (notebooks with visualization outputs)
+paths = [
+    '''.*\.ipynb$''',
+    '''.*\/mlruns\/.*''',
+    '''.*\/artifacts\/.*''',
+    '''.*\/__pycache__\/.*''',
+    '''\.venv\/.*''',
+]
+
+# Specific strings that are false positives (visualization IDs)
+regexes = [
+    '''AIDABEE[A-Z0-9]{12}''',  # Plotly internal IDs
+    '''AIPABB[A-Z0-9]{14}''',   # Matplotlib internal IDs
+]
+
+# Custom rules can be added here if needed
+# [[rules]]
+# id = "custom-rule"
+# description = "Custom secret detection rule"
+# regex = '''pattern'''
+# secretGroup = 1

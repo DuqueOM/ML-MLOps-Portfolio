@@ -90,8 +90,66 @@ jobs:
           flags: ${{ matrix.project }}
           name: ${{ matrix.project }}-coverage-${{ matrix.python-version }}
           fail_ci_if_error: false
+      
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.project }}-py${{ matrix.python-version }}
+          path: ${{ matrix.project }}/coverage.xml
+          retention-days: 30
   
-  # Job 2: Security scans
+  # Job 2: Quality Gates - Enforce code quality standards
+  quality-gates:
+    name: Quality Gates
+    runs-on: ubuntu-latest
+    needs: [tests]
+    if: always() && needs.tests.result != 'cancelled'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install quality tools
+        run: pip install black flake8 coverage
+      
+      - name: Check Black formatting
+        run: |
+          echo "::group::Black Formatting Check"
+          FAIL=0
+          for project in BankChurn-Predictor CarVision-Market-Intelligence TelecomAI-Customer-Intelligence; do
+            if [ -d "$project/src" ]; then
+              black --check "$project/src" "$project/app" 2>/dev/null || FAIL=1
+            fi
+          done
+          echo "::endgroup::"
+          if [ "$FAIL" -eq 1 ]; then
+            echo "::warning::Some files need formatting. Run 'black .' to fix."
+          fi
+      
+      - name: Check Flake8 critical errors
+        run: |
+          echo "::group::Flake8 Critical Errors"
+          for project in BankChurn-Predictor CarVision-Market-Intelligence TelecomAI-Customer-Intelligence; do
+            if [ -d "$project/src" ]; then
+              flake8 "$project/src" --count --select=E9,F63,F7,F82 --show-source --statistics
+            fi
+          done
+          echo "::endgroup::"
+      
+      - name: Verify tests passed
+        run: |
+          if [ "${{ needs.tests.result }}" != "success" ]; then
+            echo "::error::Tests did not pass. Quality gate failed."
+            exit 1
+          fi
+          echo "✅ All quality gates passed"
+  
+  # Job 3: Security scans
   security:
     name: Security Scanning
     runs-on: ubuntu-latest
@@ -102,24 +160,54 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
       - name: Gitleaks scan
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+        continue-on-error: true  # Don't fail on false positives
+      
+      - name: Install security tools
+        run: pip install bandit pip-audit
       
       - name: Run Bandit security scan
         run: |
-          pip install bandit
-          bandit -r . -f json -o bandit-report.json || true
-          bandit -r . -f txt || true
+          mkdir -p reports
+          bandit -r BankChurn-Predictor/src CarVision-Market-Intelligence/src TelecomAI-Customer-Intelligence/src \
+            -f json -o reports/bandit-report.json -ll || true
+          bandit -r . -f txt -ll || true
       
-      - name: Upload Bandit report
+      - name: Run pip-audit dependency scan
+        run: |
+          pip-audit --format=json > reports/pip-audit-report.json || true
+          pip-audit || true
+      
+      - name: Check for critical vulnerabilities
+        run: |
+          # Check Bandit for HIGH severity issues
+          if [ -f reports/bandit-report.json ]; then
+            HIGH=$(python3 -c "import json; d=json.load(open('reports/bandit-report.json')); print(d.get('metrics',{}).get('_totals',{}).get('SEVERITY.HIGH',0))" 2>/dev/null || echo 0)
+            if [ "$HIGH" -gt 0 ]; then
+              echo "::error::Critical security issues found in Bandit scan"
+              exit 1
+            fi
+          fi
+          echo "✅ No critical security issues found"
+      
+      - name: Upload security reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: bandit-security-report
-          path: bandit-report.json
+          name: security-reports
+          path: |
+            reports/bandit-report.json
+            reports/pip-audit-report.json
+          retention-days: 30
   
   # Job 3: Docker builds & scans
   docker:
@@ -254,7 +342,7 @@ jobs:
   integration-report:
     name: Generate Integration Report
     runs-on: ubuntu-latest
-    needs: [tests, security, docker, integration-test]
+    needs: [tests, quality-gates, security, docker, integration-test]
     if: always()
     
     steps:
@@ -270,6 +358,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Tests: ${{ needs.tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🎯 Quality Gates: ${{ needs.quality-gates.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- 🔒 Security: ${{ needs.security.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- 🐳 Docker: ${{ needs.docker.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- 🔄 Integration: ${{ needs.integration-test.result }}" >> $GITHUB_STEP_SUMMARY

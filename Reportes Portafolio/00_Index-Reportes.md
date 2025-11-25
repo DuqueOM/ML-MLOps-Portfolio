@@ -40,6 +40,9 @@ Este documento sirve como índice principal para los reportes de auditoría del 
 |---------|-------------|
 | `Global-Code-Quality-Report.md` | Resultados agregados de linting, tipado y complejidad |
 | `Security-Dependency-Report.md` | Análisis de seguridad SAST y vulnerabilidades de dependencias |
+| `Security-Audit-Remediation.md` | Auditoría de seguridad completa y acciones de remediación |
+| `DVC-Cloud-Configuration.md` | Guía de configuración de DVC con almacenamiento cloud |
+| `CI-Improvements-Proposal.md` | Propuestas de mejora para CI/CD con snippets YAML |
 
 ### Outputs Crudos (English filenames)
 
@@ -54,7 +57,8 @@ reports/
 │   ├── pip-audit.json             # Dependency vulnerabilities
 │   ├── bankchurn-pytest.txt       # Test output BankChurn
 │   └── telecom-pytest.txt         # Test output TelecomAI
-└── gitleaks-report.json           # Secret scanning (historical)
+├── gitleaks-report.json           # Secret scanning (historical, raw)
+└── gitleaks-report-sanitized.json # Secret scanning (sanitized, safe to share)
 ```
 
 ---
