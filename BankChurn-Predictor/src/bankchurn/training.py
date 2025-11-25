@@ -133,6 +133,50 @@ class ChurnTrainer:
 
         return X, y
 
+    def _detect_feature_types(self, X: pd.DataFrame) -> tuple[list[str], list[str]]:
+        """Detect categorical and numerical features from DataFrame.
+
+        Returns tuple of (categorical_features, numerical_features).
+        """
+        cat_config = self.config.data.categorical_features
+        num_config = self.config.data.numerical_features
+
+        # Use config if provided, otherwise auto-detect
+        if cat_config:
+            cat_features = [c for c in cat_config if c in X.columns]
+        else:
+            cat_features = X.select_dtypes(include=["object", "category"]).columns.tolist()
+
+        if num_config:
+            num_features = [c for c in num_config if c in X.columns]
+        else:
+            num_features = X.select_dtypes(include=[np.number]).columns.tolist()
+
+        # Fallback to auto-detect if no features found
+        if not cat_features and not num_features:
+            cat_features = X.select_dtypes(include=["object", "category"]).columns.tolist()
+            num_features = X.select_dtypes(include=[np.number]).columns.tolist()
+
+        return cat_features, num_features
+
+    def _build_categorical_pipeline(self) -> Pipeline:
+        """Build pipeline for categorical features."""
+        return Pipeline(
+            [
+                ("imputer", SimpleImputer(strategy="constant", fill_value="missing")),
+                ("onehot", OneHotEncoder(drop="first", sparse_output=False, handle_unknown="ignore")),
+            ]
+        )
+
+    def _build_numerical_pipeline(self) -> Pipeline:
+        """Build pipeline for numerical features."""
+        return Pipeline(
+            [
+                ("imputer", SimpleImputer(strategy="median")),
+                ("scaler", StandardScaler()),
+            ]
+        )
+
     def build_preprocessor(self, X: pd.DataFrame) -> ColumnTransformer:
         """Build feature preprocessing pipeline.
 
@@ -146,56 +190,18 @@ class ChurnTrainer:
         preprocessor : ColumnTransformer
             Feature preprocessing pipeline.
         """
-        # Auto-detect feature types if not specified. When explicit
-        # feature lists are provided in the config, intersect them
-        # with the actual columns in X to avoid errors if a column
-        # is missing in a particular dataset or test DataFrame.
-        if not self.config.data.categorical_features:
-            categorical_features = X.select_dtypes(include=["object", "category"]).columns.tolist()
-        else:
-            categorical_features = [col for col in self.config.data.categorical_features if col in X.columns]
+        cat_features, num_features = self._detect_feature_types(X)
 
-        if not self.config.data.numerical_features:
-            numerical_features = X.select_dtypes(include=[np.number]).columns.tolist()
-        else:
-            numerical_features = [col for col in self.config.data.numerical_features if col in X.columns]
+        logger.info(f"Categorical features: {len(cat_features)}")
+        logger.info(f"Numerical features: {len(num_features)}")
 
-        # If after filtering no features remain, fall back to
-        # automatic type detection based on the actual DataFrame
-        # dtypes. This makes the preprocessor robust for synthetic
-        # test DataFrames that do not include the full set of
-        # configured feature names.
-        if not categorical_features and not numerical_features:
-            categorical_features = X.select_dtypes(include=["object", "category"]).columns.tolist()
-            numerical_features = X.select_dtypes(include=[np.number]).columns.tolist()
-
-        logger.info(f"Categorical features: {len(categorical_features)}")
-        logger.info(f"Numerical features: {len(numerical_features)}")
-
-        # Build transformer
         transformers = []
+        if cat_features:
+            transformers.append(("cat", self._build_categorical_pipeline(), cat_features))
+        if num_features:
+            transformers.append(("num", self._build_numerical_pipeline(), num_features))
 
-        if categorical_features:
-            cat_pipeline = Pipeline(
-                [
-                    ("imputer", SimpleImputer(strategy="constant", fill_value="missing")),
-                    ("onehot", OneHotEncoder(drop="first", sparse_output=False, handle_unknown="ignore")),
-                ]
-            )
-            transformers.append(("cat", cat_pipeline, categorical_features))
-
-        if numerical_features:
-            num_pipeline = Pipeline(
-                [
-                    ("imputer", SimpleImputer(strategy="median")),
-                    ("scaler", StandardScaler()),
-                ]
-            )
-            transformers.append(("num", num_pipeline, numerical_features))
-
-        preprocessor = ColumnTransformer(transformers=transformers, remainder="drop")
-
-        return preprocessor
+        return ColumnTransformer(transformers=transformers, remainder="drop")
 
     def build_model(self) -> Pipeline:
         """Build ensemble model pipeline.
