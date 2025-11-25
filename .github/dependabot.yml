@@ -1,0 +1,110 @@
+# Dependabot configuration for automated dependency updates
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  # Python dependencies - Root
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Mexico_City"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "python"
+    reviewers:
+      - "DuqueOM"
+    assignees:
+      - "DuqueOM"
+
+  # BankChurn-Predictor dependencies
+  - package-ecosystem: "pip"
+    directory: "/BankChurn-Predictor"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(bankchurn)"
+    labels:
+      - "dependencies"
+      - "bankchurn"
+    groups:
+      ml-core:
+        patterns:
+          - "scikit-learn*"
+          - "pandas*"
+          - "numpy*"
+      testing:
+        patterns:
+          - "pytest*"
+          - "coverage*"
+
+  # CarVision-Market-Intelligence dependencies
+  - package-ecosystem: "pip"
+    directory: "/CarVision-Market-Intelligence"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(carvision)"
+    labels:
+      - "dependencies"
+      - "carvision"
+
+  # TelecomAI-Customer-Intelligence dependencies
+  - package-ecosystem: "pip"
+    directory: "/TelecomAI-Customer-Intelligence"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(telecom)"
+    labels:
+      - "dependencies"
+      - "telecom"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "thursday"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Docker
+  - package-ecosystem: "docker"
+    directory: "/BankChurn-Predictor"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependencies"
+      - "docker"
+
+  - package-ecosystem: "docker"
+    directory: "/CarVision-Market-Intelligence"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependencies"
+      - "docker"
+
+  - package-ecosystem: "docker"
+    directory: "/TelecomAI-Customer-Intelligence"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependencies"
+      - "docker"
