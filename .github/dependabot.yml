@@ -85,6 +85,7 @@ updates:
       - "github-actions"
 
   # Docker
+  # Note: Ignore pre-release Python versions (3.14+) as they lack wheel support
   - package-ecosystem: "docker"
     directory: "/BankChurn-Predictor"
     schedule:
@@ -92,6 +93,10 @@ updates:
     labels:
       - "dependencies"
       - "docker"
+    ignore:
+      # Ignore Python 3.14+ (pre-release/development versions)
+      - dependency-name: "python"
+        versions: [">=3.14"]
 
   - package-ecosystem: "docker"
     directory: "/CarVision-Market-Intelligence"
@@ -100,6 +105,10 @@ updates:
     labels:
       - "dependencies"
       - "docker"
+    ignore:
+      # Ignore Python 3.14+ (pre-release/development versions)
+      - dependency-name: "python"
+        versions: [">=3.14"]
 
   - package-ecosystem: "docker"
     directory: "/TelecomAI-Customer-Intelligence"
@@ -108,3 +117,7 @@ updates:
     labels:
       - "dependencies"
       - "docker"
+    ignore:
+      # Ignore Python 3.14+ (pre-release/development versions)
+      - dependency-name: "python"
+        versions: [">=3.14"]
