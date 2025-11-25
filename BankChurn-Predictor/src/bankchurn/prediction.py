@@ -75,6 +75,60 @@ class ChurnPredictor:
         logger.info(f"Loaded model from {model_path}")
         return cls(model, preprocessor)
 
+    def _get_predictions_and_proba(self, X: pd.DataFrame, include_proba: bool) -> tuple[Any, Any]:
+        """Get predictions and probabilities from model.
+
+        Returns tuple of (y_pred, y_proba) where y_proba may be None.
+        """
+        if isinstance(self.model, Pipeline):
+            y_pred = self.model.predict(X)
+            y_proba = self._safe_predict_proba(self.model, X) if include_proba else None
+        else:
+            if self.preprocessor is None:
+                raise ValueError("Preprocessor required for non-Pipeline models")
+            X_transformed = self.preprocessor.transform(X)
+            y_pred = self.model.predict(X_transformed)
+            y_proba = self._safe_predict_proba(self.model, X_transformed) if include_proba else None
+        return y_pred, y_proba
+
+    def _safe_predict_proba(self, model: Any, X: Any) -> Any:
+        """Safely get prediction probabilities, returning None if not supported."""
+        try:
+            return model.predict_proba(X)
+        except AttributeError:
+            return None
+
+    def _build_results_dataframe(
+        self,
+        y_pred: Any,
+        y_proba: Any,
+        include_proba: bool,
+        threshold: float,
+    ) -> pd.DataFrame:
+        """Build results DataFrame with predictions and optional probabilities."""
+        results = pd.DataFrame({"prediction": y_pred})
+
+        if not include_proba or y_proba is None:
+            if include_proba:
+                logger.warning("Model does not support predict_proba, skipping probabilities")
+            return results
+
+        if y_proba.shape[1] == 2:
+            # Binary classification
+            results["probability"] = y_proba[:, 1]
+            results["prediction"] = (results["probability"] >= threshold).astype(int)
+            results["risk_level"] = pd.cut(
+                results["probability"],
+                bins=[0, 0.3, 0.7, 1.0],
+                labels=["low", "medium", "high"],
+            )
+        else:
+            # Multi-class: include all class probabilities
+            for i in range(y_proba.shape[1]):
+                results[f"probability_class_{i}"] = y_proba[:, i]
+
+        return results
+
     def predict(
         self,
         X: pd.DataFrame,
@@ -100,60 +154,12 @@ class ChurnPredictor:
             - probability: Probability of positive class (if include_proba=True)
             - risk_level: Risk category (low/medium/high)
         """
-        # Handle prediction based on model type
-        if isinstance(self.model, Pipeline):
-            y_pred = self.model.predict(X)
-            # Helper for probability
-            if include_proba:
-                try:
-                    y_proba = self.model.predict_proba(X)
-                except AttributeError:
-                    y_proba = None
-        else:
-            # Legacy mode
-            if self.preprocessor is None:
-                raise ValueError("Preprocessor required for non-Pipeline models")
-
-            X_transformed = self.preprocessor.transform(X)
-            y_pred = self.model.predict(X_transformed)
-
-            if include_proba:
-                try:
-                    y_proba = self.model.predict_proba(X_transformed)
-                except AttributeError:
-                    y_proba = None
-
-        # Build results dataframe
-        results = pd.DataFrame({"prediction": y_pred})
-
-        # Add probabilities if requested and available
-        if include_proba and y_proba is not None:
-            # Assuming binary classification, take positive class
-            if y_proba.shape[1] == 2:
-                results["probability"] = y_proba[:, 1]
-
-                # Apply custom threshold
-                results["prediction"] = (results["probability"] >= threshold).astype(int)
-
-                # Risk levels
-                results["risk_level"] = pd.cut(
-                    results["probability"],
-                    bins=[0, 0.3, 0.7, 1.0],
-                    labels=["low", "medium", "high"],
-                )
-            else:
-                # Multi-class: include all class probabilities
-                for i in range(y_proba.shape[1]):
-                    results[f"probability_class_{i}"] = y_proba[:, i]
-
-        elif include_proba:
-            logger.warning("Model does not support predict_proba, skipping probabilities")
+        y_pred, y_proba = self._get_predictions_and_proba(X, include_proba)
+        results = self._build_results_dataframe(y_pred, y_proba, include_proba, threshold)
 
         logger.info(f"Generated predictions for {len(results)} samples")
-
         if "risk_level" in results.columns:
-            risk_counts = results["risk_level"].value_counts()
-            logger.info(f"Risk distribution: {dict(risk_counts)}")
+            logger.info(f"Risk distribution: {dict(results['risk_level'].value_counts())}")
 
         return results
 
