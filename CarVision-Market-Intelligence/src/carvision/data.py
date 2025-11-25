@@ -61,6 +61,36 @@ def clean_data(df: pd.DataFrame, filters: Optional[Dict[str, float]] = None) -> 
     return dfc
 
 
+def _filter_columns(
+    candidates: List[str],
+    valid_columns: pd.Index,
+    excluded: set,
+) -> List[str]:
+    """Filter columns that exist in dataframe and are not excluded.
+
+    Args:
+        candidates: List of candidate column names.
+        valid_columns: Index of valid column names in dataframe.
+        excluded: Set of column names to exclude.
+
+    Returns:
+        Filtered list of column names.
+    """
+    return [c for c in candidates if c in valid_columns and c not in excluded]
+
+
+def _infer_numeric_columns(df: pd.DataFrame, excluded: set) -> List[str]:
+    """Infer numeric columns from dataframe dtypes."""
+    numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    return [c for c in numeric_cols if c not in excluded]
+
+
+def _infer_categorical_columns(df: pd.DataFrame, excluded: set) -> List[str]:
+    """Infer categorical columns from dataframe dtypes."""
+    cat_cols = df.select_dtypes(include=["object", "category", "bool"]).columns.tolist()
+    return [c for c in cat_cols if c not in excluded]
+
+
 def infer_feature_types(
     df: pd.DataFrame,
     target: str,
@@ -68,16 +98,31 @@ def infer_feature_types(
     categorical_features: Optional[List[str]] = None,
     drop_columns: Optional[List[str]] = None,
 ) -> Tuple[List[str], List[str]]:
-    """Infer numeric and categorical features from dataframe if not provided."""
-    drops = set((drop_columns or []) + [target])
+    """Infer numeric and categorical features from dataframe if not provided.
+
+    Args:
+        df: Input DataFrame.
+        target: Target column name (excluded from features).
+        numeric_features: Optional list of numeric feature names.
+        categorical_features: Optional list of categorical feature names.
+        drop_columns: Optional list of columns to exclude.
+
+    Returns:
+        Tuple of (numeric_columns, categorical_columns).
+    """
+    excluded = set(drop_columns or [])
+    excluded.add(target)
+
     if numeric_features:
-        num_cols = [c for c in numeric_features if c in df.columns and c not in drops]
+        num_cols = _filter_columns(numeric_features, df.columns, excluded)
     else:
-        num_cols = [c for c in df.select_dtypes(include=[np.number]).columns if c not in drops]
+        num_cols = _infer_numeric_columns(df, excluded)
+
     if categorical_features:
-        cat_cols = [c for c in categorical_features if c in df.columns and c not in drops]
+        cat_cols = _filter_columns(categorical_features, df.columns, excluded)
     else:
-        cat_cols = [c for c in df.select_dtypes(include=["object", "category", "bool"]).columns if c not in drops]
+        cat_cols = _infer_categorical_columns(df, excluded)
+
     return num_cols, cat_cols
 
 
