@@ -142,63 +142,73 @@ class MarketAnalyzer:
 
         return opportunities
 
-    def generate_executive_summary(self) -> Dict[str, Any]:
-        """Genera resumen ejecutivo del análisis."""
-        logger.info("Generando resumen ejecutivo")
+    def _ensure_all_analyses_run(self) -> None:
+        """Ensure all analysis methods have been executed."""
+        analysis_methods = {
+            "price_distribution": self.analyze_price_distribution,
+            "market_by_brand": self.analyze_market_by_brand,
+            "depreciation": self.analyze_depreciation_patterns,
+            "opportunities": self.find_market_opportunities,
+        }
+        for key, method in analysis_methods.items():
+            if key not in self.analysis_results:
+                method()
 
-        # Ejecutar todos los análisis si no se han ejecutado
-        if "price_distribution" not in self.analysis_results:
-            self.analyze_price_distribution()
-        if "market_by_brand" not in self.analysis_results:
-            self.analyze_market_by_brand()
-        if "depreciation" not in self.analysis_results:
-            self.analyze_depreciation_patterns()
-        if "opportunities" not in self.analysis_results:
-            self.find_market_opportunities()
-
-        # KPIs principales
+    def _compute_kpis(self) -> Dict[str, Any]:
+        """Compute key performance indicators."""
         total_vehicles = len(self.df)
-        avg_price = float(self.df["price"].mean()) if "price" in self.df.columns else 0.0
-        total_market_value = float(self.df["price"].sum()) if "price" in self.df.columns else 0.0
+        has_price = "price" in self.df.columns
 
-        # Oportunidades identificadas
-        total_opportunities = sum([opp["count"] for opp in self.analysis_results.get("opportunities", [])])
-        potential_value = sum(
-            [opp["potential_value"] * opp["count"] for opp in self.analysis_results.get("opportunities", [])]
-        )
+        opportunities = self.analysis_results.get("opportunities", [])
+        total_opportunities = sum(opp["count"] for opp in opportunities)
+        potential_value = sum(opp["potential_value"] * opp["count"] for opp in opportunities)
 
-        # Manejar casos sin suficientes datos de marca para evitar IndexError
+        return {
+            "total_vehicles": total_vehicles,
+            "average_price": float(self.df["price"].mean()) if has_price else 0.0,
+            "total_market_value": float(self.df["price"].sum()) if has_price else 0.0,
+            "total_opportunities": total_opportunities,
+            "potential_arbitrage_value": potential_value,
+        }
+
+    def _extract_insights(self) -> Dict[str, Any]:
+        """Extract market insights from analysis results."""
         market_by_brand = self.analysis_results.get("market_by_brand", {})
         volume_dict = market_by_brand.get("volume", {}) or {}
-        pricing_mean_dict = (market_by_brand.get("pricing") or {}).get("mean", {}) or {}
+        pricing_dict = (market_by_brand.get("pricing") or {}).get("mean", {}) or {}
 
-        # Tomar la primera marca disponible o "N/A" si no hay datos
-        most_popular_brand = next(iter(volume_dict.keys()), "N/A")
-        highest_value_brand = next(iter(pricing_mean_dict.keys()), "N/A")
+        depr_data = self.analysis_results.get("depreciation", {})
+        depr_rates = list(depr_data.get("annual_rate", {}).values())
 
-        depr_rates = list(self.analysis_results.get("depreciation", {}).get("annual_rate", {}).values())
-        avg_depr_rate = float(np.mean(depr_rates)) if depr_rates else 0.0
+        return {
+            "most_popular_brand": next(iter(volume_dict.keys()), "N/A"),
+            "highest_value_brand": next(iter(pricing_dict.keys()), "N/A"),
+            "avg_depreciation_rate": float(np.mean(depr_rates)) if depr_rates else 0.0,
+        }
+
+    def generate_executive_summary(self) -> Dict[str, Any]:
+        """Generate executive summary of the analysis.
+
+        Returns:
+            Dictionary containing KPIs, insights, and recommendations.
+        """
+        logger.info("Generando resumen ejecutivo")
+
+        self._ensure_all_analyses_run()
+
+        kpis = self._compute_kpis()
+        insights = self._extract_insights()
 
         summary = {
-            "kpis": {
-                "total_vehicles": total_vehicles,
-                "average_price": avg_price,
-                "total_market_value": total_market_value,
-                "total_opportunities": total_opportunities,
-                "potential_arbitrage_value": potential_value,
-            },
-            "insights": {
-                "most_popular_brand": most_popular_brand,
-                "highest_value_brand": highest_value_brand,
-                "avg_depreciation_rate": avg_depr_rate,
-            },
+            "kpis": kpis,
+            "insights": insights,
             "recommendations": [
-                f"Focus on {total_opportunities} undervalued vehicles for potential ${potential_value:,.0f} profit",
-                (f"Target {most_popular_brand} brand for volume opportunities"),
+                f"Focus on {kpis['total_opportunities']} undervalued vehicles "
+                f"for potential ${kpis['potential_arbitrage_value']:,.0f} profit",
+                f"Target {insights['most_popular_brand']} brand for volume opportunities",
                 "Implement dynamic pricing based on vehicle age and market conditions",
             ],
         }
 
         self.analysis_results["executive_summary"] = summary
-
         return summary
