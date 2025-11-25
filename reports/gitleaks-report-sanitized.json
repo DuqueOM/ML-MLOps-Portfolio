@@ -1,0 +1,36 @@
+{
+  "summary": {
+    "total_findings": 26,
+    "status": "FALSE_POSITIVES",
+    "analysis_date": "2025-11-25",
+    "note": "All findings are false positives - plotly/matplotlib internal IDs with low entropy (1.9-2.5), not real AWS credentials"
+  },
+  "findings": [
+    {
+      "file": "CarVision-Market-Intelligence/notebooks/EDA.ipynb",
+      "count": 13,
+      "rule": "aws-access-token",
+      "entropy_range": "1.98-2.56",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "Internal plotly/matplotlib visualization IDs in notebook outputs, not AWS credentials"
+    },
+    {
+      "file": "CarVision-Market-Intelligence/notebooks/legacy/EDA_original_backup.ipynb",
+      "count": 13,
+      "rule": "aws-access-token",
+      "entropy_range": "1.98-2.56",
+      "verdict": "FALSE_POSITIVE",
+      "reason": "Internal plotly/matplotlib visualization IDs in notebook outputs, not AWS credentials"
+    }
+  ],
+  "remediation": {
+    "status": "COMPLETE",
+    "actions_taken": [
+      "Verified low entropy values (< 2.6) indicate non-random patterns",
+      "Confirmed strings are plotly/matplotlib internal IDs, not AWS keys",
+      "Added patterns to .gitleaksignore for future scans",
+      "No AWS key rotation required (false positives)"
+    ]
+  },
+  "original_report": "reports/gitleaks-report.json (contains raw findings - DO NOT publish externally)"
+}
