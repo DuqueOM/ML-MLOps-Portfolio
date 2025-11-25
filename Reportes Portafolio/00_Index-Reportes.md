@@ -44,6 +44,18 @@ Este documento sirve como índice principal para los reportes de auditoría del 
 | `DVC-Cloud-Configuration.md` | Guía de configuración de DVC con almacenamiento cloud |
 | `CI-Improvements-Proposal.md` | Propuestas de mejora para CI/CD con snippets YAML |
 
+### Reportes de Prácticas de Mantenimiento (Español)
+
+| Archivo | Práctica Documentada |
+|---------|---------------------|
+| `refactor_auditoria.md` | Análisis de complejidad con Radon y plan de refactorización |
+| `code_review_auditoria.md` | Proceso formal de revisión de código y PR template |
+| `technical_debt_auditoria.md` | Sistema de tracking y gestión de deuda técnica |
+| `dependency_updates_auditoria.md` | Configuración de Dependabot y pip-audit |
+| `security_auditoria.md` | Hardening de seguridad: gitleaks, Bandit, pre-commit |
+| `codebase_cleanup_auditoria.md` | Limpieza de notebooks con nbstripout y formateo |
+| `documentation_refinement_auditoria.md` | Completitud de documentación y reportes pedagógicos |
+
 ### Outputs Crudos (English filenames)
 
 Los outputs de las herramientas de auditoría se encuentran en:
