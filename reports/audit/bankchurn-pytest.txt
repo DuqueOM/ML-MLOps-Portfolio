@@ -1,0 +1,55 @@
+============================= test session starts ==============================
+collected 88 items
+
+tests/test_api_coverage.py ......                                        [  6%]
+tests/test_cli.py .............                                          [ 21%]
+tests/test_config.py ...............                                     [ 38%]
+tests/test_data.py ..                                                    [ 40%]
+tests/test_evaluation.py .........                                       [ 51%]
+tests/test_integration.py ......                                         [ 57%]
+tests/test_models.py .........s.......                                   [ 77%]
+tests/test_prediction.py .......                                         [ 85%]
+tests/test_training.py .............                                     [100%]
+
+=============================== warnings summary ===============================
+tests/test_evaluation.py: 8 warnings
+tests/test_prediction.py: 11 warnings
+  /home/duque_om/projects/Projects Tripe Ten/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2742: UserWarning: X has feature names, but StandardScaler was fitted without feature names
+    warnings.warn(
+
+tests/test_models.py::TestResampleClassifier::test_fit_predict_no_resampling
+tests/test_models.py::TestResampleClassifier::test_fit_predict_with_oversample
+tests/test_models.py::TestResampleClassifier::test_fit_predict_with_undersample
+tests/test_models.py::TestResampleClassifier::test_predict_proba
+tests/test_models.py::TestResampleClassifier::test_reproducibility
+tests/test_models.py::TestResampleClassifier::test_reproducibility
+tests/test_models.py::TestResampleClassifier::test_all_strategies[none]
+tests/test_models.py::TestResampleClassifier::test_all_strategies[class_weight]
+  /home/duque_om/projects/Projects Tripe Ten/.venv/lib/python3.12/site-packages/sklearn/utils/validation.py:2742: UserWarning: X has feature names, but LogisticRegression was fitted without feature names
+    warnings.warn(
+
+tests/test_training.py::test_full_training_workflow
+  /home/duque_om/projects/Projects Tripe Ten/.venv/lib/python3.12/site-packages/mlflow/tracking/_tracking_service/utils.py:140: FutureWarning: Filesystem tracking backend (e.g., './mlruns') is deprecated. Please switch to a database backend (e.g., 'sqlite:///mlflow.db'). For feedback, see: https://github.com/mlflow/mlflow/issues/18534
+    return FileStore(store_uri, store_uri)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.3-final-0 ________________
+
+Name                          Stmts   Miss  Cover   Missing
+-----------------------------------------------------------
+app/fastapi_app.py              176     40    77%   21, 40-66, 72-75, 115, 122, 134, 136, 191, 193, 202, 211, 246-247, 287-289, 295, 334-336
+main.py                           9      9     0%   6-18
+src/__init__.py                   2      0   100%
+src/bankchurn/__init__.py         6      0   100%
+src/bankchurn/cli.py            115     28    76%   96-98, 148-150, 182-184, 248-274
+src/bankchurn/config.py          64      4    94%   62, 123, 125, 127
+src/bankchurn/evaluation.py     106     16    85%   59-60, 85-86, 122-124, 128, 134-136, 221, 230-231, 239, 266
+src/bankchurn/models.py          56      6    89%   173-175, 184-186
+src/bankchurn/prediction.py      92     41    55%   45-46, 72-73, 110-111, 115, 123-124, 146-147, 150, 190-211, 233-259
+src/bankchurn/training.py       136     27    80%   70-71, 96, 154, 159, 293-311, 329-330, 341-351, 366
+-----------------------------------------------------------
+TOTAL                           762    171    78%
+Coverage HTML written to dir htmlcov
+Required test coverage of 65% reached. Total coverage: 77.56%
+================= 87 passed, 1 skipped, 28 warnings in 34.99s ==================

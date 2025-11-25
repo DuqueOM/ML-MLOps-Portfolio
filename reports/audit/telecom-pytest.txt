@@ -1,0 +1,33 @@
+============================= test session starts ==============================
+collected 14 items / 1 deselected / 13 selected
+
+tests/test_api_e2e.py ...                                                [ 23%]
+tests/test_data.py .                                                     [ 30%]
+tests/test_main_workflow.py ...                                          [ 53%]
+tests/test_model_logic.py ..                                             [ 69%]
+tests/test_preprocess_and_evaluate_utils.py ....                         [100%]
+
+=============================== warnings summary ===============================
+tests/test_api_e2e.py:30
+  /home/duque_om/projects/Projects Tripe Ten/TelecomAI-Customer-Intelligence/tests/test_api_e2e.py:30: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.3-final-0 ________________
+
+Name                        Stmts   Miss  Cover   Missing
+---------------------------------------------------------
+app/__init__.py                 0      0   100%
+app/fastapi_app.py             43     12    72%   24, 43, 53-65
+data/__init__.py                0      0   100%
+src/telecom/__init__.py         2      0   100%
+src/telecom/config.py          19      0   100%
+src/telecom/data.py            28      0   100%
+src/telecom/evaluation.py      31      2    94%   33-34
+src/telecom/prediction.py      15      0   100%
+src/telecom/training.py        41      2    95%   36, 42
+---------------------------------------------------------
+TOTAL                         179     16    91%
+Required test coverage of 72% reached. Total coverage: 91.06%
+================= 13 passed, 1 deselected, 1 warning in 19.45s =================

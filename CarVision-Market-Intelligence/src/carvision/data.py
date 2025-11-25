@@ -30,7 +30,7 @@ def load_data(csv_path: str) -> pd.DataFrame:
     return df
 
 
-def clean_data(df: pd.DataFrame, filters: Dict[str, float] = None) -> pd.DataFrame:
+def clean_data(df: pd.DataFrame, filters: Optional[Dict[str, float]] = None) -> pd.DataFrame:
     """Basic cleaning strictly for filtering invalid rows.
 
     Feature engineering has been moved to src.carvision.features.FeatureEngineer
