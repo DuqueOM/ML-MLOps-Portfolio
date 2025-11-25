@@ -631,7 +631,7 @@ dynaconf==3.2.12 \
 evidently==0.7.16 \
     --hash=sha256:db2805da6c5bbb9b7e6cd2e24ea439ea9b4375f41462bf29b2640505fccc7b08 \
     --hash=sha256:edd37f0840b54a061c3fe9d99e9f6845c9adb15999f50f450f0be42c5d4a562d
-    # via -r requirements.in
+    # via -r TelecomAI-Customer-Intelligence/requirements.in
 executing==2.2.1 \
     --hash=sha256:3632cc370565f6648cc328b32435bd120a1e4ebb20c77e3fdde9a13cd1e533c4 \
     --hash=sha256:760643d3452b4d777d295bb167ccc74c64a81df23fb5e08eff250c425a4b2017
@@ -640,11 +640,11 @@ faker==38.0.0 \
     --hash=sha256:797aa03fa86982dfb6206918acc10ebf3655bdaa89ddfd3e668d7cc69537331a \
     --hash=sha256:ad4ea6fbfaac2a75d92943e6a79c81f38ecff92378f6541dea9a677ec789a5b2
     # via polyfactory
-fastapi==0.121.2 \
-    --hash=sha256:ca8e932b2b823ec1721c641e3669472c855ad9564a2854c9899d904c2848b8b9 \
-    --hash=sha256:f2d80b49a86a846b70cc3a03eb5ea6ad2939298bf6a7fe377aa9cd3dd079d358
+fastapi==0.122.0 \
+    --hash=sha256:a456e8915dfc6c8914a50d9651133bd47ec96d331c5b44600baa635538a30d67 \
+    --hash=sha256:cd9b5352031f93773228af8b4c443eedc2ac2aa74b27780387b853c3726fb94b
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   mlflow-skinny
 fastjsonschema==2.21.2 \
     --hash=sha256:1c797122d0a86c5cace2e54bf4e819c36223b552017172f32c5c024a6b77e463 \
@@ -964,7 +964,7 @@ joblib==1.5.2 \
     --hash=sha256:3faa5c39054b2f03ca547da9b2f52fde67c06240c31853f306aea97f13647b55 \
     --hash=sha256:4e1f0bdbb987e6d843c70cf43714cb276623def372df3c22fe5266b2670bc241
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   nltk
     #   scikit-learn
 json5==0.12.1 \
@@ -989,7 +989,7 @@ jsonschema-specifications==2025.9.1 \
 jupyter==1.1.1 \
     --hash=sha256:7a59533c22af65439b24bbe60373a4e95af8f16ac65a6c00820ad378e3f7cc83 \
     --hash=sha256:d55467bceabdea49d7e3624af7e33d59c37fff53ed3a350e1ac957bed731de7a
-    # via -r requirements.in
+    # via -r TelecomAI-Customer-Intelligence/requirements.in
 jupyter-client==8.6.3 \
     --hash=sha256:35b3a0947c4a6e9d589eb97d7d4cd5e90f910ee73101611f01283732bd6d9419 \
     --hash=sha256:e8a19cc986cc45905ac3362915f410f3af85424b4c0905e94fa5f2cb08e8f23f
@@ -1354,7 +1354,7 @@ matplotlib==3.10.7 \
     --hash=sha256:f79d5de970fc90cd5591f60053aecfce1fcd736e0303d9f0bf86be649fa68fb8 \
     --hash=sha256:fba2974df0bf8ce3c995fa84b79cde38326e0f7b5409e7a3a481c1141340bcf7
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   mlflow
     #   seaborn
 matplotlib-inline==0.2.1 \
@@ -1374,7 +1374,7 @@ mistune==3.1.4 \
 mlflow==3.6.0 \
     --hash=sha256:04d1691facd412be8e61b963fad859286cfeb2dbcafaea294e6aa0b83a15fc04 \
     --hash=sha256:d945d259b5c6b551a9f26846db8979fd84c78114a027b77ada3298f821a9b0e1
-    # via -r requirements.in
+    # via -r TelecomAI-Customer-Intelligence/requirements.in
 mlflow-skinny==3.6.0 \
     --hash=sha256:c83b34fce592acb2cc6bddcb507587a6d9ef3f590d9e7a8658c85e0980596d78 \
     --hash=sha256:cc04706b5b6faace9faf95302a6e04119485e1bfe98ddc9b85b81984e80944b6
@@ -1711,7 +1711,7 @@ numpy==2.3.5 \
     --hash=sha256:ffe22d2b05504f786c867c8395de703937f934272eb67586817b46188b4ded6d \
     --hash=sha256:fffe29a1ef00883599d1dc2c51aa2e5d80afe49523c261a74933df395c15c520
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   contourpy
     #   evidently
     #   matplotlib
@@ -1824,7 +1824,7 @@ pandas[parquet]==2.3.3 \
     --hash=sha256:f086f6fe114e19d92014a1966f43a3e62285109afe874f067f5abbdcbb10e59c \
     --hash=sha256:f8bfc0e12dc78f777f323f55c58649591b2cd0c43534e8355c51d3fede5f4dee
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   evidently
     #   mlflow
     #   seaborn
@@ -2086,7 +2086,7 @@ pydantic==2.12.4 \
     --hash=sha256:0f8cb9555000a4b5b617f66bfd2566264c4984b27589d3b845685983e8ea85ac \
     --hash=sha256:92d3d202a745d46f9be6df459ac5a064fdaa3c1c4cd8adcfa332ccf3c05f871e
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   evidently
     #   fastapi
     #   mlflow-skinny
@@ -2232,12 +2232,12 @@ pytest==9.0.1 \
     --hash=sha256:3e9c069ea73583e255c3b21cf46b8d3c56f6e3a1a8f6da94ccb0fcf57b9d73c8 \
     --hash=sha256:67be0030d194df2dfa7b556f2e56fb3c3315bd5c8822c6951162b92b32ce7dad
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   pytest-cov
 pytest-cov==7.0.0 \
     --hash=sha256:33c97eda2e049a0c5298e91f519302a1334c26ac65c1a483d6206fd458361af1 \
     --hash=sha256:3b8e9558b16cc1479da72058bdecf8073661c7f57f7d3c5f22a1c23507f2d861
-    # via -r requirements.in
+    # via -r TelecomAI-Customer-Intelligence/requirements.in
 python-dateutil==2.9.0.post0 \
     --hash=sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3 \
     --hash=sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427
@@ -2336,7 +2336,7 @@ pyyaml==6.0.3 \
     --hash=sha256:fa160448684b4e94d80416c0fa4aac48967a969efe22931448d853ada8baf926 \
     --hash=sha256:fc09d0aa354569bc501d4e787133afc08552722d3ab34836a80547331bb5d4a0
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   evidently
     #   jupyter-events
     #   litestar
@@ -2568,7 +2568,7 @@ requests==2.32.5 \
     --hash=sha256:2462f94637a34fd532264295e186976db0f5d453d1cdd31473c85a6a161affb6 \
     --hash=sha256:dbba0bac56e100853db0ea71b82b4dfd5fe2bf6d3754a8893c3af500cec7d7cf
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   databricks-sdk
     #   docker
     #   evidently
@@ -2759,7 +2759,7 @@ scikit-learn==1.7.2 \
     --hash=sha256:f95dc55b7902b91331fa4e5845dd5bde0580c9cd9612b1b2791b7e80c3d32615 \
     --hash=sha256:fa8f63940e29c82d1e67a45d5297bdebbcb585f5a5a50c4914cc2e852ab77f33
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   evidently
     #   mlflow
     #   shap
@@ -2826,7 +2826,7 @@ scipy==1.16.3 \
     --hash=sha256:fb4b29f4cf8cc5a8d628bc8d8e26d12d7278cd1f219f22698a378c3d67db5e4b \
     --hash=sha256:ffa6eea95283b2b8079b821dc11f50a17d0571c92b43e2b5b12764dc5f9b285d
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   evidently
     #   mlflow
     #   scikit-learn
@@ -2835,7 +2835,7 @@ scipy==1.16.3 \
 seaborn==0.13.2 \
     --hash=sha256:636f8336facf092165e27924f223d3c62ca560b1f2bb5dff7ab7fad265361987 \
     --hash=sha256:93e60a40988f4d65e9f4885df477e2fdaff6b73a9ded434c1ab356dd57eefff7
-    # via -r requirements.in
+    # via -r TelecomAI-Customer-Intelligence/requirements.in
 send2trash==1.8.3 \
     --hash=sha256:0c31227e0bd08961c7665474a3d1ef7193929fedda4233843689baa056be46c9 \
     --hash=sha256:b18e7a3966d99871aefeb00cfbcfdced55ce4871194810fc71f4aa484b953abf
@@ -2873,7 +2873,7 @@ shap==0.50.0 \
     --hash=sha256:e68f6129ddb59313da00d72843511352dc7e79512faec961644079504bbeb707 \
     --hash=sha256:e9908af8d22d2be05f303ca8fed70fd845bbbe33190abac24b6cb1a89e294e20 \
     --hash=sha256:f5d0e2df7142393791c10a201947ca06972eb3c599c48a33697ef6c405413267
-    # via -r requirements.in
+    # via -r TelecomAI-Customer-Intelligence/requirements.in
 shellingham==1.5.4 \
     --hash=sha256:7ecfff8f2fd72616f7481040475a65b2bf8af90a56c89140852d1120324e8686 \
     --hash=sha256:8dbca0739d487e5bd35ab3ca4b36e11c4078f3a234bfce294b0a0291363404de
@@ -3053,7 +3053,7 @@ tqdm==4.67.1 \
     --hash=sha256:26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2 \
     --hash=sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   nltk
     #   shap
 traitlets==5.14.3 \
@@ -3218,7 +3218,7 @@ uvicorn[standard]==0.38.0 \
     --hash=sha256:48c0afd214ceb59340075b4a052ea1ee91c16fbc2a9b1469cca0e54566977b02 \
     --hash=sha256:fd97093bdd120a2609fc0d3afe931d4d4ad688b6e75f0f929fde1bc36fe0e91d
     # via
-    #   -r requirements.in
+    #   -r TelecomAI-Customer-Intelligence/requirements.in
     #   evidently
     #   mlflow-skinny
 uvloop==0.22.1 \
