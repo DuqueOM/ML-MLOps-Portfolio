@@ -6,12 +6,12 @@ CarVision Market Intelligence is designed as a modular, containerized machine le
 ## 2. System Components
 
 ### 2.1 Data Pipeline (`src/carvision/data.py`)
-- **Responsibility:** Ingestion, cleaning, and splitting of raw CSV data.
+- **Responsibility:** Ingestion, basic row-level cleaning, and deterministic splitting of raw CSV data.
 - **Design Choice:** Using `pandas` for efficient in-memory processing. Data volume (<1GB) allows for this approach without distributed computing (Spark/Dask).
 - **Key Logic:** 
-  - Filters outliers (price, year).
-  - Derives features (`vehicle_age`, `brand`).
-  - Deterministic train/val/test splitting using `random_state`.
+  - Filters invalid records and outliers (price, year, odometer) using configurable thresholds.
+  - Delegates feature engineering (e.g. `vehicle_age`, `brand`, price-based features) to the centralized `FeatureEngineer` in `src/carvision/features.py`.
+  - Produces stable train/val/test splits and persists split indices for reproducibility.
 
 ### 2.2 Training Pipeline (`src/carvision/training.py`)
 - **Responsibility:** Model training and artifact generation.
@@ -29,12 +29,13 @@ CarVision Market Intelligence is designed as a modular, containerized machine le
 - **Input Handling:** Accepts raw user inputs (e.g., "2018") and transforms them on-the-fly (e.g., calculating `vehicle_age`) before passing to the model pipeline.
 
 ### 2.4 Dashboard (`app/streamlit_app.py`)
-- **Framework:** Streamlit.
-- **Purpose:** Business Intelligence and Model Demo.
-- **Features:**
-  - Interactive filtering of the dataset.
-  - Visualization of price distributions and correlations (Plotly).
-  - Direct "Predictor" interface calling the model artifact.
+- **Framework:** Streamlit + Plotly.
+- **Purpose:** Business Intelligence, model explainability and interactive demo for stakeholders.
+- **Main Sections:**
+  - **📊 Overview** – Top-level KPIs (total inventory value, average/median price, price volatility), price histogram and inventory composition (brands, model years).
+  - **📈 Market Analysis** – Executive summary built on `MarketAnalyzer` and `VisualizationEngine` (investment opportunities, risk factors, competitive landscape).
+  - **🧠 Model Metrics** – Visualization of core metrics (RMSE, MAE, R², MAPE), model vs baseline comparison, bootstrap confidence intervals and temporal backtest using artifacts from `artifacts/metrics*.json`.
+  - **🔮 Price Predictor** – Single-vehicle price estimation via the trained sklearn `Pipeline` (features → pre → model), including market percentile positioning and optional SHAP-based explanations.
 
 ## 3. Data Flow
 

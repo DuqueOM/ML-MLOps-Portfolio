@@ -44,12 +44,12 @@ Este repositorio se centra en **3 Proyectos Principales (Top-3)** que han sido l
 [Ver Proyecto →](BankChurn-Predictor/)
 
 ### 🚗 2. [CarVision Market Intelligence](CarVision-Market-Intelligence/) (Interactive AI)
-**Plataforma de valoración de vehículos con Dashboard**
+**Plataforma de valoración de vehículos con BI Dashboard y API**
 
-- **Experiencia de Usuario**: Dashboard interactivo construido con **Streamlit**.
-- **Backend**: API REST (FastAPI) para servir el modelo de regresión.
-- **Modelado**: Random Forest optimizado para alta precisión en precios de mercado.
-- **Calidad**: Alta cobertura de tests y validación de datos.
+- **User Experience**: Streamlit dashboard con 4 secciones clave: Overview, Market Analysis, Model Metrics y Price Predictor.
+- **Backend**: API REST (FastAPI) para servir el modelo de regresión y soportar integraciones externas.
+- **Modeling**: Random Forest optimizado con pipeline `[features → pre → model]` y métricas avanzadas (bootstrap, temporal backtest).
+- **Quality**: Alta cobertura de tests, validación de datos y métricas versionadas en `artifacts/`.
 
 [Ver Proyecto →](CarVision-Market-Intelligence/)
 

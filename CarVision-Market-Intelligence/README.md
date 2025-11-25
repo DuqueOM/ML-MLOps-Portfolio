@@ -100,10 +100,27 @@ curl -X POST "http://localhost:8000/predict" \
 ```
 
 ### Dashboard (Streamlit)
-Interactive UI for market analysis and "What-if" scenarios.
+Interactive UI for market analysis, model performance review and price prediction.
+
+Sections:
+- **Overview** – Portfolio KPIs, price distribution and inventory breakdown.
+- **Market Analysis** – Executive-level investment and risk insights powered by `MarketAnalyzer` and `VisualizationEngine`.
+- **Model Metrics** – RMSE/MAE/R²/MAPE, bootstrap confidence intervals and temporal backtest from `artifacts/metrics*.json`.
+- **Price Predictor** – Single-vehicle ML price estimator with market percentile positioning and gauge visualization.
+
+Run locally:
 ```bash
 streamlit run app/streamlit_app.py
 ```
+
+Requirements for the dashboard:
+- Trained model artifact at `artifacts/model.joblib`.
+- Metrics files at `artifacts/metrics.json` (and optionally `metrics_baseline.json`, `metrics_bootstrap.json`, `metrics_temporal.json`).
+- Dataset `vehicles_us.csv` available in the project root or under `data/raw/`.
+
+Optional enhancements:
+- `pip install pandera` to enable data schema validation on load.
+- `pip install shap` to enable SHAP-based prediction explanations in the Price Predictor tab.
 
 ## 📈 Monitoring & Operations
 - **Health Check**: `GET /health` returns 200 OK if model is loaded.
