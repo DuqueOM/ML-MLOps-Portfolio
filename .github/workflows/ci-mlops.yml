@@ -92,7 +92,7 @@ jobs:
           fail_ci_if_error: false
       
       - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-${{ matrix.project }}-py${{ matrix.python-version }}
           path: ${{ matrix.project }}/coverage.xml
@@ -200,7 +200,7 @@ jobs:
           echo "✅ No critical security issues found"
       
       - name: Upload security reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: security-reports
