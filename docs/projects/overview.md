@@ -9,8 +9,23 @@ The ML-MLOps Portfolio features three production-ready machine learning projects
 | **Problem Type** | Binary Classification | Regression | Binary Classification |
 | **Target** | Customer Churn | Vehicle Price | Plan Upgrade |
 | **Model** | VotingClassifier | RandomForest | VotingClassifier |
-| **Coverage** | 78% | 96% | 96% |
+| **Primary Metric** | AUC-ROC: 0.853 | R²: 0.766 | AUC-ROC: 0.840 |
+| **Test Coverage** | 78% | 96% | 96% |
 | **Interface** | REST API | REST API + Dashboard | REST API |
+
+## Performance Summary
+
+```mermaid
+graph LR
+    subgraph "Classification Models"
+        BC["BankChurn<br/>AUC: 0.853<br/>Acc: 85.7%"]
+        TC["TelecomAI<br/>AUC: 0.840<br/>Acc: 81.2%"]
+    end
+    
+    subgraph "Regression Model"
+        CV["CarVision<br/>R²: 0.766<br/>RMSE: $4,794"]
+    end
+```
 
 ## Architecture Patterns
 
