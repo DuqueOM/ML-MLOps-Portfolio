@@ -1,13 +1,42 @@
 # BankChurn-Predictor
 
-![CI Status](https://img.shields.io/github/actions/workflow/status/DuqueOM/ML-MLOps-Portfolio/ci-mlops.yml?branch=main)
-![Coverage](https://img.shields.io/badge/Coverage-77%25-brightgreen)
-![Python](https://img.shields.io/badge/Python-3.12-blue)
-![Docker](https://img.shields.io/badge/Docker-Ready-blue)
-![MLflow](https://img.shields.io/badge/MLflow-Tracking-blue)
-![DVC](https://img.shields.io/badge/DVC-Enabled-945DD6)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/DuqueOM/ML-MLOps-Portfolio/ci-mlops.yml?branch=main&label=CI)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
+[![Coverage](https://img.shields.io/badge/Coverage-77%25-brightgreen)](../reports/)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue)](https://python.org)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](Dockerfile)
+[![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2?logo=mlflow&logoColor=white)](https://mlflow.org)
+[![DVC](https://img.shields.io/badge/DVC-Enabled-945DD6)](https://dvc.org)
 
-> **TL;DR**: An enterprise-grade MLOps pipeline for predicting bank customer churn. It uses an ensemble of Logistic Regression and Random Forest, served via high-performance FastAPI, with full reproducibility via DVC and Make.
+---
+
+<!-- 
+=============================================================================
+🎬 DEMO GIF PLACEHOLDER
+=============================================================================
+TODO: Record a 6-8 second GIF showing:
+1. A curl command or Swagger UI request
+2. The JSON response with churn prediction
+
+Create GIF:
+1. Record screen: prediction request → response
+2. Convert: ffmpeg -i video.mp4 -vf "fps=15,scale=800:-1" bankchurn-demo.gif
+3. Place in: ../media/gifs/bankchurn-preview.gif
+4. Uncomment the line below
+=============================================================================
+-->
+
+<div align="center">
+
+<!-- ![BankChurn Demo](../media/gifs/bankchurn-preview.gif) -->
+**[🎬 DEMO GIF — PENDING]** <!-- Remove this line after adding GIF -->
+
+**[📺 Watch Full Demo Video](#)** <!-- TODO: Replace # with YouTube/Drive link -->
+
+</div>
+
+---
+
+> **TL;DR**: An enterprise-grade MLOps pipeline for predicting bank customer churn. Uses a VotingClassifier ensemble (Logistic Regression + Random Forest), served via high-performance FastAPI, with full reproducibility via DVC and Make.
 
 ---
 
@@ -157,9 +186,32 @@ The API documentation (Swagger UI) is available at `http://localhost:8000/docs` 
 
 ---
 
+## 📋 CI Notes
+
+| Component | Details |
+|-----------|---------|
+| **Workflow** | `.github/workflows/ci-mlops.yml` |
+| **Coverage** | 77% (threshold: 70%) |
+| **Python** | 3.11, 3.12 (matrix) |
+
+**If tests fail**: Check the `tests` job logs → expand coverage artifact.
+
+---
+
+## 📄 Model Card
+
+See [models/model_card.md](models/model_card.md) for:
+- Model architecture and training data
+- Performance metrics (AUC, F1, Precision, Recall)
+- Limitations and bias considerations
+- Reproduction instructions
+
+---
+
 ## ✅ Acceptance Checklist
 
 - [x] Tests pass (`make test`)
 - [x] API starts and responds (`make api-start`)
 - [x] Docker image builds (`make docker-build`)
 - [x] Security scan passes (`make security-scan`)
+- [x] Model card documented

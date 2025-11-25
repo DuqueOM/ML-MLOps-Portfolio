@@ -1,171 +1,258 @@
-# 🚀 Portfolio ML/MLOps - Tier-1
+# 🚀 ML/MLOps Portfolio — Production-Ready
 
-**Portfolio Profesional de Machine Learning y MLOps centrado en 3 Proyectos "Production-Ready"**
+**Professional Machine Learning & MLOps Portfolio featuring 3 Production-Ready Projects**
 
-[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://python.org)
-[![MLOps](https://img.shields.io/badge/MLOps-Production--Ready-green.svg)](https://mlops.org)
-[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-blue.svg)](https://github.com/features/actions)
-[![Coverage](https://img.shields.io/badge/Coverage-%3E70%25-brightgreen.svg)](tests/)
+<!-- CI/CD Badges -->
+[![CI Pipeline](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
+[![Coverage](https://img.shields.io/badge/Coverage->75%25-brightgreen.svg)](reports/)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://python.org)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.demo.yml)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Docker](https://img.shields.io/badge/Docker-Multi--Stage-2496ED.svg?logo=docker&logoColor=white)](Dockerfile)
-[![DVC](https://img.shields.io/badge/DVC-Data%20Versioning-945DD6.svg)](https://dvc.org)
-[![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC.svg?logo=terraform&logoColor=white)](infra/terraform/)
+
+<!-- Tech Stack Badges -->
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow&logoColor=white)](https://mlflow.org)
-[![Evidently](https://img.shields.io/badge/Evidently-Drift%20Detection-FF6600.svg)](https://evidentlyai.com)
-
-> **Portfolio profesional que demuestra el ciclo de vida completo de Machine Learning: desde el análisis exploratorio y el entrenamiento de modelos, hasta la implementación de pipelines de CI/CD, APIs REST y despliegue containerizado.**
-
----
-
-## 👨‍💻 Sobre el Portfolio
-
-Este repositorio se centra en **3 Proyectos Principales (Top-3)** que han sido llevados a un nivel de ingeniería de software profesional, demostrando capacidades Senior/Enterprise en:
-
-- ✅ **Machine Learning Avanzado**: Ensembles, Regresión, Clasificación con manejo de desbalance.
-- ✅ **MLOps & CI/CD**: Pipelines automatizados unificados (`ci-mlops.yml`), testing riguroso y escaneo de seguridad.
-- ✅ **Ingeniería de Software**: Arquitectura modular, Pydantic para validación, APIs con FastAPI.
-- ✅ **Despliegue**: Dockerización completa y dashboards interactivos (Streamlit).
+[![DVC](https://img.shields.io/badge/DVC-Data%20Versioning-945DD6.svg)](https://dvc.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B.svg?logo=streamlit&logoColor=white)](https://streamlit.io)
 
 ---
 
-## 🌟 TOP-3: Proyectos Production-Ready
+<!-- 
+=============================================================================
+🎬 DEMO VIDEO & GIF SECTION
+=============================================================================
+TODO: Replace the placeholder below with your actual GIF and video links.
 
-### 🏦 1. [BankChurn Predictor](BankChurn-Predictor/) (Tier-1 MLOps)
-**Sistema robusto de predicción de abandono de clientes**
+To create the GIF:
+1. Record a 6-8 second demo of a prediction
+2. Convert to GIF using: ffmpeg -i video.mp4 -vf "fps=15,scale=800:-1" demo.gif
+3. Place in media/gifs/portfolio-demo.gif
 
-- **Arquitectura**: Diseño modular (`src/bankchurn`) instalable como paquete.
-- **MLOps**: 
-  - Integración con **MLflow** para tracking de experimentos.
-  - Validación de configuración con **Pydantic**.
-  - Pipeline de CI/CD verde con tests unitarios y de integración.
-- **Tech Stack**: FastAPI, Scikit-learn, Docker, DVC.
-- **Coverage**: >68% (Cumple threshold de calidad).
+Video options:
+- Upload to YouTube (unlisted) and link here
+- Use GitHub Releases to host MP4 files
+- Use Google Drive with public link
+=============================================================================
+-->
 
-[Ver Proyecto →](BankChurn-Predictor/)
+<div align="center">
 
-### 🚗 2. [CarVision Market Intelligence](CarVision-Market-Intelligence/) (Interactive AI)
-**Plataforma de valoración de vehículos con BI Dashboard y API**
+<!-- 🎬 [PLACEHOLDER: INSERT DEMO GIF HERE] -->
+<!-- ![Portfolio Demo](media/gifs/portfolio-demo.gif) -->
 
-- **User Experience**: Streamlit dashboard con 4 secciones clave: Overview, Market Analysis, Model Metrics y Price Predictor.
-- **Backend**: API REST (FastAPI) para servir el modelo de regresión y soportar integraciones externas.
-- **Modeling**: Random Forest optimizado con pipeline `[features → pre → model]` y métricas avanzadas (bootstrap, temporal backtest).
-- **Quality**: Alta cobertura de tests, validación de datos y métricas versionadas en `artifacts/`.
+**[📺 WATCH FULL DEMO VIDEO — CLICK HERE](#)** 
+<!-- TODO: Replace # with actual video link (YouTube/Drive) -->
 
-[Ver Proyecto →](CarVision-Market-Intelligence/)
+*See all 3 projects in action: API predictions, dashboards, and CI/CD pipeline*
 
-### 📱 3. [TelecomAI Customer Intelligence](TelecomAI-Customer-Intelligence/) (Advanced Analytics)
-**Predicción estratégica de churn en telecomunicaciones**
-
-- **Modelado Complejo**: **Voting Classifier** combinando múltiples estrategias.
-- **Pipeline**: Preprocesamiento avanzado y feature engineering específico de dominio.
-- **Automatización**: Tests end-to-end integrados en el pipeline de CI.
-- **Métricas**: AUC-ROC > 0.85.
-
-[Ver Proyecto →](TelecomAI-Customer-Intelligence/)
+</div>
 
 ---
 
-## ️ Stack Tecnológico & MLOps
-
-### Infraestructura CI/CD Unificada (Staff-Level)
-Todo el portfolio es validado por un único workflow maestro (`ci-mlops.yml`) que orquesta:
-
-1. **Build & Environment**:
-   - Setup de Python 3.11 y 3.12 (matrix testing) con **caché inteligente de pip**.
-   - Restauración automática de dependencias por proyecto vía `cache-dependency-path`.
-   - **Optimización**: Reduce tiempo de instalación de 5min → 30s.
-
-2. **Data Quality Gates**: 
-   - Validación automática de calidad de datos **antes de tests**.
-   - Scripts personalizados por proyecto (`data/validate_data.py`).
-   - Fail-fast en datasets corruptos/incompletos.
-
-3. **Code Quality**: 
-   - `flake8` & `black` para estilo.
-   - `mypy` para tipado estático.
-   - `bandit` para seguridad en código Python.
-
-4. **Testing**: Ejecución paralela de `pytest` con reportes de cobertura.
-
-5. **Continuous Deployment**:
-   - Build automático de imágenes Docker tras pasar tests.
-   - Push a **GitHub Container Registry (GHCR)** con tags inmutables (SHA + semver).
-   - Cache de layers Docker vía GitHub Actions cache.
-   - **Artefactos listos para producción en cada commit**.
-
-6. **Container Security**: Escaneo de imágenes Docker con **Trivy** (CVE detection).
-
-### Infraestructura como Código (IaC)
-- **Terraform**: Módulos AWS y GCP en `infra/terraform/`
-  - Full stack: EKS, S3, RDS, ECR (ver `main.tf`)
-  - **S3 Artifact Store simplificado**: Versionado, encriptación, lifecycle (ver `s3-artifacts-simple.tf`)
-- **Uso**: Almacenamiento reproducible y seguro de modelos versionados.
-
-### Tecnologías Clave
-- **Core**: Python 3.11+, Pandas, NumPy, Scikit-learn, XGBoost, Optuna.
-- **Web**: FastAPI, Streamlit, Uvicorn.
-- **Ops**: Docker (Multi-Stage), GitHub Actions, Kubernetes, Makefiles, Terraform.
-- **Tracking & Data**: MLflow, DVC.
-- **Monitoring**: Prometheus, Grafana.
-- **Security**: Trivy, Bandit, Gitleaks.
-- **Registry**: GitHub Container Registry (GHCR) para imágenes inmutables.
+> **A professional portfolio demonstrating the complete Machine Learning lifecycle: from exploratory analysis and model training, to CI/CD pipelines, REST APIs, and containerized deployment.**
 
 ---
 
-## 📚 Documentación Global
+## 👨‍💻 About This Portfolio
 
-- **[Arquitectura del Portfolio](docs/ARCHITECTURE_PORTFOLIO.md)**: Sistema completo con diagramas Mermaid, Docker multi-stage, CI/CD pipeline y stack tecnológico.
-- **[Runbook de Operaciones](docs/OPERATIONS_PORTFOLIO.md)**: Guía completa para despliegue (Docker/K8s), monitoreo con Prometheus/Grafana, troubleshooting y mantenimiento.
-- **[Gestión de Dependencias](docs/DEPENDENCY_CONFLICTS.md)**: Análisis de conflictos (PyArrow, Pydantic), plan de remediación y estrategia de versionado.
-- **[Proceso de Release](docs/RELEASE.md)**: Workflow completo de releases, publicación a GHCR, rollback procedures y model versioning.
-- **[Plan de PRs](docs/PR_PLAN.md)**: 10 Pull Requests priorizados con especificaciones completas, diffs y timeline de 4 semanas.
-- **[Quick Start](QUICK_START.md)**: Demo en un comando para evaluación rápida.
+This repository focuses on **3 Main Projects (Top-3)** brought to professional software engineering standards, demonstrating Senior/Enterprise capabilities in:
+
+- ✅ **Advanced Machine Learning**: Ensembles, Regression, Classification with imbalance handling
+- ✅ **MLOps & CI/CD**: Unified automated pipelines (`ci-mlops.yml`), rigorous testing, and security scanning
+- ✅ **Software Engineering**: Modular architecture, Pydantic validation, FastAPI-based APIs
+- ✅ **Deployment**: Complete Dockerization and interactive dashboards (Streamlit)
 
 ---
 
-## 📁 Estructura del Portfolio
+## 🌟 TOP-3: Production-Ready Projects
+
+### 🏦 1. [BankChurn Predictor](BankChurn-Predictor/) — Customer Churn Prediction
+
+<!-- 
+🎬 [PLACEHOLDER: BANKCHURN GIF]
+![BankChurn Demo](media/gifs/bankchurn-preview.gif)
+-->
+
+**Robust customer churn prediction system for banking**
+
+| Metric | Value |
+|--------|-------|
+| **AUC-ROC** | **[INSERT]** |
+| **Coverage** | 77% |
+| **Latency** | <50ms |
+
+- **Architecture**: Modular design (`src/bankchurn`) installable as package
+- **MLOps**: MLflow experiment tracking, Pydantic config validation, green CI/CD pipeline
+- **Tech Stack**: FastAPI, Scikit-learn, Docker, DVC
+- **Model Card**: [View](BankChurn-Predictor/models/model_card.md)
+
+[📂 View Project →](BankChurn-Predictor/) | [📺 Video Demo](#) <!-- TODO: Add video link -->
+
+---
+
+### 🚗 2. [CarVision Market Intelligence](CarVision-Market-Intelligence/) — Vehicle Price Prediction
+
+<!-- 
+🎬 [PLACEHOLDER: CARVISION GIF]
+![CarVision Demo](media/gifs/carvision-preview.gif)
+-->
+
+**Vehicle valuation platform with BI Dashboard and API**
+
+| Metric | Value |
+|--------|-------|
+| **R²** | **[INSERT]** |
+| **Coverage** | 96% |
+| **MAPE** | **[INSERT]** |
+
+- **User Experience**: Streamlit dashboard with 4 key sections: Overview, Market Analysis, Model Metrics, Price Predictor
+- **Backend**: REST API (FastAPI) serving regression model with external integration support
+- **Modeling**: Optimized Random Forest with `[features → pre → model]` pipeline and advanced metrics (bootstrap, temporal backtest)
+- **Model Card**: [View](CarVision-Market-Intelligence/models/model_card.md)
+
+[📂 View Project →](CarVision-Market-Intelligence/) | [📺 Video Demo](#) <!-- TODO: Add video link -->
+
+---
+
+### 📱 3. [TelecomAI Customer Intelligence](TelecomAI-Customer-Intelligence/) — Plan Recommendation
+
+<!-- 
+🎬 [PLACEHOLDER: TELECOMAI GIF]
+![TelecomAI Demo](media/gifs/telecom-preview.gif)
+-->
+
+**Strategic customer intelligence for telecommunications**
+
+| Metric | Value |
+|--------|-------|
+| **AUC-ROC** | **[INSERT]** |
+| **Coverage** | 96% |
+| **Accuracy** | **[INSERT]** |
+
+- **Complex Modeling**: **Voting Classifier** combining multiple strategies
+- **Pipeline**: Advanced preprocessing and domain-specific feature engineering
+- **Automation**: End-to-end tests integrated in CI pipeline
+- **Model Card**: [View](TelecomAI-Customer-Intelligence/models/model_card.md)
+
+[📂 View Project →](TelecomAI-Customer-Intelligence/) | [📺 Video Demo](#) <!-- TODO: Add video link -->
+
+---
+
+## 🛠️ Tech Stack & MLOps
+
+### Unified CI/CD Infrastructure (Staff-Level)
+
+The entire portfolio is validated by a single master workflow (`ci-mlops.yml`) that orchestrates:
 
 ```
-Portafolio-ML-MLOps/
+┌─────────────────────────────────────────────────────────────────┐
+│  CI/CD Pipeline: .github/workflows/ci-mlops.yml                 │
+├─────────────────────────────────────────────────────────────────┤
+│  1. Build & Env    → Python 3.11/3.12 matrix, pip cache        │
+│  2. Data Quality   → Validate data before tests                 │
+│  3. Code Quality   → flake8, black, mypy, bandit               │
+│  4. Testing        → pytest with coverage reports               │
+│  5. Docker Build   → Multi-stage, push to GHCR                 │
+│  6. Security       → Trivy container scanning                   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### CI Notes
+
+| Component | Details |
+|-----------|---------|
+| **Workflow file** | `.github/workflows/ci-mlops.yml` |
+| **Jobs** | `tests` → `coverage` → `docker-build` → `e2e` |
+| **Python versions** | 3.11, 3.12 (matrix testing) |
+| **Coverage threshold** | ≥70% per project |
+| **Docker registry** | GitHub Container Registry (GHCR) |
+
+**If a run fails:**
+1. Check the `tests` job logs first
+2. Expand `coverage-report` artifact for detailed coverage
+3. For Docker failures, check base image availability
+
+### Infrastructure as Code (IaC)
+
+- **Terraform**: AWS and GCP modules in `infra/terraform/`
+  - Full stack: EKS, S3, RDS, ECR (see `main.tf`)
+  - **S3 Artifact Store**: Versioning, encryption, lifecycle policies
+- **Kubernetes**: Production-ready manifests in `k8s/`
+
+### Key Technologies
+
+| Category | Technologies |
+|----------|--------------|
+| **Core** | Python 3.11+, Pandas, NumPy, Scikit-learn, XGBoost |
+| **Web** | FastAPI, Streamlit, Uvicorn |
+| **Ops** | Docker (Multi-Stage), GitHub Actions, Kubernetes, Make |
+| **Tracking** | MLflow, DVC |
+| **Monitoring** | Prometheus, Grafana |
+| **Security** | Trivy, Bandit, Gitleaks |
+| **Registry** | GitHub Container Registry (GHCR) |
+
+---
+
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| **[Architecture](docs/ARCHITECTURE_PORTFOLIO.md)** | System design with Mermaid diagrams, Docker multi-stage, CI/CD pipeline |
+| **[Operations Runbook](docs/OPERATIONS_PORTFOLIO.md)** | Deployment guide (Docker/K8s), monitoring, troubleshooting |
+| **[Runbook (Quick Reference)](RUNBOOK.md)** | Copy-paste commands for common operations |
+| **[Release Process](docs/RELEASE.md)** | Release workflow, GHCR publishing, rollback procedures |
+| **[Dependencies](docs/DEPENDENCY_CONFLICTS.md)** | Conflict analysis (PyArrow, Pydantic), remediation plan |
+| **[Release Checklist](CHECKLIST_RELEASE.md)** | Pre-launch verification checklist |
+| **[Quick Start](QUICK_START.md)** | One-command demo for quick evaluation |
+
+---
+
+## 📁 Portfolio Structure
+
+```
+ML-MLOps-Portfolio/
 ├── .github/workflows/
-│   └── ci-mlops.yml               # ⚡ CI Pipeline Unificado (Build, Test, Scan)
+│   └── ci-mlops.yml               # ⚡ Unified CI Pipeline (Build, Test, Scan)
 │
-├── BankChurn-Predictor/           # 🏦 Proyecto Tier-1
-│   ├── src/bankchurn/             # Paquete Python modular
-│   ├── tests/                     # Tests unitarios e integración
-│   ├── Dockerfile                 # Definición de contenedor
-│   └── ...
+├── BankChurn-Predictor/           # 🏦 Tier-1 Project
+│   ├── src/bankchurn/             # Modular Python package
+│   ├── models/model_card.md       # Model documentation
+│   ├── tests/                     # Unit & integration tests
+│   └── Dockerfile
 │
-├── CarVision-Market-Intelligence/ # 🚗 App Interactiva
+├── CarVision-Market-Intelligence/ # 🚗 Interactive App
 │   ├── app/                       # Streamlit + FastAPI
+│   ├── models/model_card.md       # Model documentation
 │   ├── tests/
 │   └── Dockerfile
 │
-├── TelecomAI-Customer-Intelligence/# 📱 Análisis Avanzado
-│   ├── models/
+├── TelecomAI-Customer-Intelligence/# 📱 Advanced Analytics
+│   ├── models/model_card.md       # Model documentation
 │   ├── tests/
 │   └── Dockerfile
 │
-├── common_utils/                  # Utilidades compartidas (seed, logger)
-├── tests/integration/             # Tests de integración cross-project
-├── infra/                         # Docker Compose, Terraform (AWS/GCP), Prometheus/Grafana
-├── k8s/                           # Manifests Kubernetes (deployments, HPA, ingress)
-├── docs/                          # Documentación global del portfolio
-├── FINAL_PORTFOLIO_STATUS.md      # 📊 Estado detallado del portfolio
-├── CONTRIBUTING.md                # Guía de contribución
-├── CHANGELOG.md                   # Historial de versiones
-└── README.md                      # Este archivo
+├── common_utils/                  # Shared utilities (seed, logger)
+├── tests/integration/             # Cross-project integration tests
+├── infra/                         # Docker Compose, Terraform, Prometheus/Grafana
+├── k8s/                           # Kubernetes manifests (deployments, HPA, ingress)
+├── media/                         # Videos, GIFs, screenshots
+├── docs/                          # Global documentation
+├── RUNBOOK.md                     # Quick command reference
+├── CHECKLIST_RELEASE.md           # Pre-launch checklist
+├── CONTRIBUTING.md                # Contribution guidelines
+├── CHANGELOG.md                   # Version history
+└── README.md                      # This file
 ```
 
 ---
 
-## 📈 Métricas de Calidad
+## 📈 Quality Metrics
 
-| Métrica | Estado | Target |
-|---------|--------|--------|
+| Metric | Status | Target |
+|--------|--------|--------|
 | **CI Pipeline** | 🟢 **Passing** | 100% Green |
 | **Test Coverage** | 🟢 **> 75% (Avg)** | > 70% |
-| **Seguridad** | 🛡️ **Scanned** | 0 Critical CVEs |
+| **Security** | 🛡️ **Scanned** | 0 Critical CVEs |
 | **Docker Builds** | 🐳 **Multi-Stage** | 50% Size Reduction |
 | **Python Support** | ✅ **3.11 & 3.12** | Matrix Testing |
 
@@ -247,15 +334,28 @@ docker run --rm aquasec/trivy image <image-name>
 
 ---
 
-## 👤 Autor
+## 👤 Author
 
 **Duque Ortega Mutis (DuqueOM)**  
-*Ingeniero de Machine Learning & MLOps*
+*Machine Learning & MLOps Engineer*
 
-[LinkedIn](https://linkedin.com/in/duqueom) | [GitHub](https://github.com/DuqueOM)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://linkedin.com/in/duqueom) 
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-black?style=flat&logo=github)](https://github.com/DuqueOM)
+
+---
+
+## 📬 How to Reach Me
+
+- **Portfolio Review**: Open an issue with tag `[portfolio-review]`
+- **Collaboration**: Reach out via LinkedIn
+- **Bug Reports**: Use GitHub Issues
 
 ---
 
 <div align="center">
-**Status**: ✅ Production-Ready | **Última Actualización**: Noviembre 2025
+
+**Status**: ✅ Production-Ready | **Last Updated**: November 2025
+
+*Star ⭐ this repo if you find it useful!*
+
 </div>
