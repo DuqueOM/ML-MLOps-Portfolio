@@ -1,10 +1,40 @@
 # CarVision Market Intelligence
 
-![CI](https://img.shields.io/badge/CI-Passing-success?style=flat-square&logo=github-actions)
-![Coverage](https://img.shields.io/badge/Coverage-96%25-brightgreen?style=flat-square)
-![DVC](https://img.shields.io/badge/DVC-Enabled-blue?style=flat-square&logo=dvc)
-![MLflow](https://img.shields.io/badge/MLflow-Tracking-blue?style=flat-square&logo=mlflow)
-![Docker](https://img.shields.io/badge/Docker-Ready-blue?style=flat-square&logo=docker)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/DuqueOM/ML-MLOps-Portfolio/ci-mlops.yml?branch=main&label=CI)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
+[![Coverage](https://img.shields.io/badge/Coverage-96%25-brightgreen)](../reports/)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue)](https://python.org)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](Dockerfile)
+[![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2?logo=mlflow&logoColor=white)](https://mlflow.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io)
+
+---
+
+<!-- 
+=============================================================================
+🎬 DEMO GIF PLACEHOLDER
+=============================================================================
+TODO: Record a 6-8 second GIF showing:
+1. Streamlit dashboard interaction
+2. Price prediction with gauge visualization
+
+Create GIF:
+1. Record screen: enter vehicle details → see prediction
+2. Convert: ffmpeg -i video.mp4 -vf "fps=15,scale=800:-1" carvision-demo.gif
+3. Place in: ../media/gifs/carvision-preview.gif
+4. Uncomment the line below
+=============================================================================
+-->
+
+<div align="center">
+
+<!-- ![CarVision Demo](../media/gifs/carvision-preview.gif) -->
+**[🎬 DEMO GIF — PENDING]** <!-- Remove this line after adding GIF -->
+
+**[📺 Watch Full Demo Video](#)** <!-- TODO: Replace # with YouTube/Drive link -->
+
+</div>
+
+---
 
 **End-to-end ML system for vehicle price prediction and market analytics. Features centralized feature engineering, FastAPI serving, and Streamlit dashboards.**
 
@@ -133,9 +163,48 @@ See [OPERATIONS.md](docs/OPERATIONS.md) for detailed runbook.
 See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for system design, data flow, and component diagrams.
 
 ## 🐛 Troubleshooting
-- **Docker issues**: Run `docker-compose down -v` to clear volumes.
-- **Missing dependencies**: Ensure `requirements.txt` is synced.
-- **Tests failing**: Run `pytest` to identify regressions.
+
+| Issue | Solution |
+|-------|----------|
+| Docker issues | Run `docker-compose down -v` to clear volumes |
+| Missing dependencies | Ensure `requirements.txt` is synced |
+| Tests failing | Run `pytest -v` to identify regressions |
+| Model not found | Run training first: `python main.py --mode train` |
+
+---
+
+## 📋 CI Notes
+
+| Component | Details |
+|-----------|---------|
+| **Workflow** | `.github/workflows/ci-mlops.yml` |
+| **Coverage** | 96% (threshold: 70%) |
+| **Python** | 3.11, 3.12 (matrix) |
+
+**If tests fail**: Check the `tests` job logs → expand coverage artifact.
+
+---
+
+## 📄 Model Card
+
+See [models/model_card.md](models/model_card.md) for:
+- Model architecture (RandomForest with FeatureEngineer pipeline)
+- Performance metrics (RMSE, MAE, R², MAPE)
+- Validation methods (Cross-validation, Bootstrap, Temporal backtest)
+- Reproduction instructions
+
+---
+
+## ✅ Acceptance Checklist
+
+- [x] Tests pass (`pytest`)
+- [x] API starts and responds
+- [x] Dashboard loads without errors
+- [x] Docker image builds
+- [x] Model card documented
+
+---
 
 ## 👥 Maintainers
-- **MLOps Team**: [Daniel Duque]
+
+- **Daniel Duque** - Lead MLOps Engineer - [GitHub](https://github.com/DuqueOM)
