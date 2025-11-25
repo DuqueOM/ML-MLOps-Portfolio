@@ -33,3 +33,7 @@ models/**/*.h5 filter=lfs diff=lfs merge=lfs -text
 .venv/** -filter -diff -merge -text
 __pycache__/** -filter -diff -merge -text
 *.pyc -filter -diff -merge -text
+
+*.ipynb filter=nbstripout
+*.zpln filter=nbstripout
+*.ipynb diff=ipynb
