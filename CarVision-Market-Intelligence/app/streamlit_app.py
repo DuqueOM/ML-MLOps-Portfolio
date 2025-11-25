@@ -1,1095 +1,543 @@
+"""
+CarVision Market Intelligence Dashboard v2.0.0 Pro
+Ejecución: streamlit run app/streamlit_app.py
+Dependencias: streamlit, plotly, pandas, numpy, scikit-learn, joblib, pyyaml
+Opcionales: pandera (validación), shap (explicabilidad)
+"""
+
+from __future__ import annotations
+
 import json
+import logging
 import sys
+from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 import joblib
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+import yaml
 
-# Configuración de página - DEBE SER LO PRIMERO
-st.set_page_config(
-    page_title="CarVision Intelligence",
-    page_icon="🚗",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s|%(levelname)s|%(message)s")
+logger = logging.getLogger("CarVision")
 
-# Definir ROOT_DIR globalmente
+st.set_page_config(page_title="CarVision Intelligence", page_icon="🚗", layout="wide", initial_sidebar_state="expanded")
+
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
-    sys.path.append(str(ROOT_DIR))
+    sys.path.insert(0, str(ROOT_DIR))
 
-from src.carvision.analysis import MarketAnalyzer  # noqa: E402
-from src.carvision.data import clean_data, load_data  # noqa: E402
-from src.carvision.features import FeatureEngineer  # noqa: E402
-from src.carvision.visualization import VisualizationEngine  # noqa: E402
+try:
+    from src.carvision.analysis import MarketAnalyzer
+    from src.carvision.data import clean_data, load_data
+    from src.carvision.features import FeatureEngineer
+    from src.carvision.visualization import VisualizationEngine
+except ImportError as e:
+    st.error(f"Error importando módulos: {e}")
+    st.stop()
 
-# Constantes
-CONFIG_PATH = ROOT_DIR / "configs" / "config.yaml"
-ARTIFACTS_DIR = ROOT_DIR / "artifacts"
-MODEL_PATH = ARTIFACTS_DIR / "model.joblib"
-METRICS_PATH = ARTIFACTS_DIR / "metrics.json"
-DATA_PATH = ROOT_DIR / "data" / "raw" / "vehicles_us.csv"
+CONFIG_PATH, APP_VERSION = ROOT_DIR / "configs" / "config.yaml", "v2.0.0 Pro"
+CONFIG = yaml.safe_load(open(CONFIG_PATH)) if CONFIG_PATH.exists() else {}
+PATHS = CONFIG.get("paths", {})
+ARTIFACTS_DIR = ROOT_DIR / PATHS.get("artifacts_dir", "artifacts")
+MODEL_PATH = ROOT_DIR / PATHS.get("model_path", "artifacts/model.joblib")
+METRICS_PATH = ROOT_DIR / PATHS.get("metrics_path", "artifacts/metrics.json")
+PROCESSED_PARQUET = ARTIFACTS_DIR / "processed.parquet"
+REQUIRED_COLS = ["price", "model_year", "model", "odometer"]
 
-# Estilos CSS personalizados
 st.markdown(
     """
-    <style>
-    .kpi-card {
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-    }
-    .kpi-title {
-        font-size: 14px;
-        color: #6c757d;
-        text-transform: uppercase;
-        font-weight: 600;
-    }
-    .kpi-value {
-        font-size: 28px;
-        font-weight: bold;
-        color: #212529;
-    }
-    .insight-box {
-        border-left: 5px solid #007bff;
-        background-color: #e9ecef;
-        padding: 15px;
-        margin-bottom: 15px;
-    }
-    </style>
+<style>
+.kpi-card{
+    background: linear-gradient(135deg,#f8f9fa,#e9ecef);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-left: 4px solid #007bff;
+}
+.insight-box{
+    border-left: 5px solid #17a2b8;
+    background: #e3f2fd;
+    padding: 14px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+}
+</style>
 """,
     unsafe_allow_html=True,
 )
 
+try:
+    import pandera  # type: ignore[import]  # noqa: F401
 
-@st.cache_data
-def load_and_clean_data():
-    # Fallback de rutas
-    possible_paths = [DATA_PATH, Path("vehicles_us.csv"), Path("../vehicles_us.csv"), Path("data/raw/vehicles_us.csv")]
+    PANDERA = True
+except ImportError:
+    PANDERA = False
 
-    data_file = None
-    for p in possible_paths:
+
+def find_data() -> Optional[Path]:
+    for p in [
+        ROOT_DIR / PATHS.get("data_path", "vehicles_us.csv"),
+        ROOT_DIR / "vehicles_us.csv",
+        ROOT_DIR / "data" / "raw" / "vehicles_us.csv",
+    ]:
         if p.exists():
-            data_file = p
-            break
+            return p
+    return None
 
-    if not data_file:
-        st.error("Dataset not found in any standard location.")
+
+@st.cache_data(ttl=None)
+def load_clean_data(_inv: str = None) -> Tuple[Optional[pd.DataFrame], Optional[pd.DataFrame]]:
+    if PROCESSED_PARQUET.exists() and not _inv:
+        try:
+            dc = pd.read_parquet(PROCESSED_PARQUET)
+            f = find_data()
+            dr = load_data(str(f)) if f else dc.copy()
+            logger.info(f"Loaded from parquet: {len(dc)} records")
+            return dr, dc
+        except Exception:
+            # Fall back to CSV if parquet is corrupted or unreadable
+            pass
+    f = find_data()
+    if not f:
+        logger.error("Dataset not found")
         return None, None
-
-    df = load_data(str(data_file))
-    df_clean = clean_data(df)
-
-    # Feature Engineering
-    fe = FeatureEngineer()
-    df_clean = fe.transform(df_clean)
-
-    return df, df_clean
-
-
-@st.cache_data
-def get_market_analysis(df):
-    analyzer = MarketAnalyzer(df)
-    return analyzer.generate_executive_summary()
-
-
-def display_kpi_card(title, value, delta=None, prefix="", suffix=""):
-    delta_html = ""
-    if delta is not None:
-        color = "green" if delta > 0 else "red"
-        delta_html = f'<div style="color: {color}; font-size: 0.9em; margin-top: 5px;">{delta:+.1f}% vs mercado</div>'
-
-    st.markdown(
-        f"""
-        <div class="kpi-card">
-            <div class="kpi-title">{title}</div>
-            <div class="kpi-value">{prefix}{value}{suffix}</div>
-            {delta_html}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    try:
+        dr = load_data(str(f))
+        miss = [c for c in REQUIRED_COLS if c not in dr.columns]
+        if miss:
+            logger.error(f"Missing cols: {miss}")
+            return dr, None
+        dc = clean_data(dr, CONFIG.get("preprocessing", {}).get("filters", {}))
+        dc = FeatureEngineer().transform(dc.copy())
+        try:
+            ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
+            dc.to_parquet(PROCESSED_PARQUET, index=False)
+        except Exception:
+            # Do not fail dashboard if parquet cannot be written
+            pass
+        logger.info(f"Processed: {len(dc)} records")
+        return dr, dc
+    except Exception as e:
+        logger.error(f"Load error: {e}")
+        return None, None
 
 
 @st.cache_resource
-def load_model():
-    """Load the trained model with caching to prevent reloads."""
-    possible_models = [MODEL_PATH, Path("models/model_v1.0.0.pkl"), Path("artifacts/model.joblib")]
-    for p in possible_models:
+def load_model(_inv: str = None) -> Tuple[Any, Optional[str], Optional[datetime]]:
+    for p in [MODEL_PATH, ARTIFACTS_DIR / "model.joblib", ROOT_DIR / "models" / "model.joblib"]:
         if p.exists():
-            return joblib.load(p), str(p)
-    return None, None
+            try:
+                return joblib.load(p), str(p), datetime.now()
+            except Exception:
+                # Try next candidate path
+                continue
+    return None, None, None
 
 
-# Initialize session state
+def load_json(p: Path) -> Dict:
+    return json.load(open(p)) if p.exists() else {}
+
+
+def get_pre_cols(m) -> Tuple[List, List, List]:
+    num, cat, feat = [], [], []
+    try:
+        pre = getattr(m, "named_steps", {}).get("pre") or getattr(m, "named_steps", {}).get("preprocess")
+        if pre and hasattr(pre, "transformers_"):
+            for n, _, cols in pre.transformers_:
+                if isinstance(cols, (list, tuple)):
+                    (num if n == "num" else cat).extend(cols)
+                    feat.extend(cols)
+    except Exception:
+        # If we can't introspect the preprocessor, fall back to raw input
+        pass
+    return feat, num, cat
+
+
+def prep_input(data: Dict, feat: List, num: List) -> pd.DataFrame:
+    df = pd.DataFrame([data])
+    if "model" in df.columns and "brand" not in df.columns:
+        df["brand"] = df["model"].astype(str).str.split().str[0]
+    for c in feat:
+        if c not in df.columns:
+            df[c] = 0 if c in num else "unknown"
+    for c in num:
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce").fillna(0)
+    return df[[c for c in feat if c in df.columns]].copy() if feat else df
+
+
 if "initialized" not in st.session_state:
     st.session_state.initialized = True
-    st.session_state.last_filter_change = None
-    st.session_state.prediction_result = None
-    st.session_state.active_tab = "📊 Overview"
+    st.session_state.cache_inv = None
 
-# Load data
-raw_df, df_clean = load_and_clean_data()
+raw_df, df_clean = load_clean_data(st.session_state.get("cache_inv"))
+if raw_df is None:
+    st.error("❌ Dataset not found. Place vehicles_us.csv in root or data/raw/")
+    st.stop()
 if df_clean is None:
+    st.error(f"❌ Invalid schema. Required columns: {REQUIRED_COLS}")
     st.stop()
 
-# Sidebar
 with st.sidebar:
-    st.title("🚗 CarVision Filters")
-
-    # Price filter (first)
-    if "price" in df_clean.columns:
-        max_price = int(df_clean["price"].quantile(0.99))
-        price_range = st.slider("Price Range ($)", 0, max_price, (0, max_price), key="price_range_slider")
-    else:
-        price_range = (0, 0)
-
-    # Model year filter (full range by default)
-    if "model_year" in df_clean.columns:
-        min_year = int(df_clean["model_year"].min())
-        max_year = int(df_clean["model_year"].max())
-        year_range = st.slider("Model Year", min_year, max_year, (min_year, max_year), key="year_range_slider")
-    else:
-        year_range = (1990, 2024)
-
-    # Manufacturer filter (all selected by default)
-    if "model" in df_clean.columns:
-        manufacturers = sorted(df_clean["model"].apply(lambda x: str(x).split()[0]).unique())
-        selected_manufacturers = st.multiselect(
-            "Manufacturers",
-            manufacturers,
-            default=manufacturers,  # include all by default
-            key="manufacturers_multiselect",
-        )
-    else:
-        selected_manufacturers = []
-
-    # Dynamic filtering (optimized)
-    mask = (df_clean["model_year"] >= year_range[0]) & (df_clean["model_year"] <= year_range[1])
-    if selected_manufacturers:
-        # Use pre-computed brand column from FeatureEngineer
-        if "brand" not in df_clean.columns:
-            # Fallback if not present (should be added by FeatureEngineer)
-            df_clean["brand"] = df_clean["model"].astype(str).str.split().str[0]
-        mask &= df_clean["brand"].isin(selected_manufacturers)
-    if "price" in df_clean.columns:
-        mask &= (df_clean["price"] >= price_range[0]) & (df_clean["price"] <= price_range[1])
-
-    df_filtered = df_clean[mask].copy()
-
-    st.markdown(f"**Filtered Records:** {len(df_filtered):,}")
+    st.title("🚗 CarVision")
+    if st.button("🔄 Clear Cache", use_container_width=True, key="btn_clear_cache"):
+        st.session_state.cache_inv = datetime.now().isoformat()
+        st.cache_data.clear()
+        st.cache_resource.clear()
+        st.rerun()
     st.markdown("---")
-
-    # Navigation
-    st.session_state.active_tab = st.radio(
-        "Navigation",
-        ["📊 Overview", "📈 Market Analysis", "🧠 Model Metrics", "🔮 Price Predictor"],
-        index=(
-            ["📊 Overview", "📈 Market Analysis", "🧠 Model Metrics", "🔮 Price Predictor"].index(
-                st.session_state.active_tab
-            )
-            if st.session_state.active_tab
-            in ["📊 Overview", "📈 Market Analysis", "🧠 Model Metrics", "🔮 Price Predictor"]
-            else 0
-        ),
-        key="nav_radio",
+    pr = (
+        st.slider(
+            "Price ($)",
+            int(df_clean["price"].min()),
+            int(df_clean["price"].quantile(0.99)),
+            (int(df_clean["price"].min()), int(df_clean["price"].quantile(0.99))),
+            format="$%d",
+            key="slider_price",
+        )
+        if "price" in df_clean.columns
+        else (0, 1e6)
     )
+    yr = (
+        st.slider(
+            "Year",
+            int(df_clean["model_year"].min()),
+            int(df_clean["model_year"].max()),
+            (int(df_clean["model_year"].min()), int(df_clean["model_year"].max())),
+            key="slider_year",
+        )
+        if "model_year" in df_clean.columns
+        else (1990, 2025)
+    )
+    brands = sorted(df_clean["brand"].dropna().unique()) if "brand" in df_clean.columns else []
+    sel_br = st.multiselect("Manufacturers", brands, brands, key="multiselect_brands") if brands else []
 
+    mask = pd.Series(True, index=df_clean.index)
+    if "price" in df_clean.columns:
+        mask &= df_clean["price"].between(pr[0], pr[1])
+    if "model_year" in df_clean.columns:
+        mask &= df_clean["model_year"].between(yr[0], yr[1])
+    if sel_br and "brand" in df_clean.columns:
+        mask &= df_clean["brand"].isin(sel_br)
+    df_f = df_clean[mask].copy()
+
+    st.metric("Records", f"{len(df_f):,}", f"{len(df_f) / len(df_clean) * 100:.1f}%")
     st.markdown("---")
-    st.caption("v2.0.0 Pro | Powered by Tripe Ten AI")
+    m, mp, _ = load_model(st.session_state.get("cache_inv"))
+    st.caption(f"{APP_VERSION} | Modelo: {Path(mp).name if mp else 'N/A'}")
 
-# Main title
-st.title("🚗 CarVision Market Intelligence Dashboard")
-st.markdown("Comprehensive platform for automotive market pricing and trend analysis.")
+if len(df_f) == 0:
+    st.warning("No data. Adjust filters.")
+    st.stop()
+st.title("🚗 CarVision Market Intelligence")
+st.markdown("---")
 
-# --- TAB 1: EXECUTIVE OVERVIEW ---
-if st.session_state.active_tab == "📊 Overview":
+# Calculate common metrics
+avg_age = (pd.Timestamp.now().year - df_f["model_year"]).mean() if "model_year" in df_f.columns else 0
+
+# Navigation - using radio with horizontal layout (maintains state across reruns)
+TABS = ["📊 Overview", "📈 Market Analysis", "🧠 Model Metrics", "🔮 Price Predictor"]
+selected_tab = st.radio("Navigation", TABS, horizontal=True, key="main_nav", label_visibility="collapsed")
+st.markdown("---")
+
+if selected_tab == "📊 Overview":
     st.header("📊 Executive Dashboard")
-    st.markdown("**Key Performance Indicators and Market Intelligence Summary**")
+    tv, ap, mp_v = df_f["price"].sum(), df_f["price"].mean(), df_f["price"].median()
+    cv = df_f["price"].std() / ap * 100 if ap > 0 else 0
+    c1, c2, c3, c4, c5 = st.columns(5)
+    c1.metric("📈 Total Value", f"${tv / 1e6:.1f}M", f"{len(df_f):,} units")
+    c2.metric("💰 Avg Price", f"${ap:,.0f}", f"{(ap - mp_v) / mp_v * 100:+.1f}% vs median")
+    c3.metric("📊 Median", f"${mp_v:,.0f}")
+    c4.metric("🚗 Fleet Age", f"{avg_age:.1f} yrs")
+    c5.metric("📉 Volatility", f"{cv:.1f}%")
     st.markdown("---")
-
-    # Top-level KPIs with enhanced metrics
-    kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
-
-    total_value = df_filtered["price"].sum()
-    avg_price = df_filtered["price"].mean()
-    median_price = df_filtered["price"].median()
-    avg_age = (pd.Timestamp.now().year - df_filtered["model_year"]).mean()
-    total_vehicles = len(df_filtered)
-
-    with kpi1:
-        st.metric(label="📈 Total Inventory Value", value=f"${total_value/1e6:.1f}M", delta=f"{total_vehicles:,} units")
-    with kpi2:
-        st.metric(
-            label="💰 Average Price",
-            value=f"${avg_price:,.0f}",
-            delta=f"{((avg_price - median_price) / median_price * 100):.1f}% vs median",
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("🎯 Market Segmentation")
+        q1, q3 = df_f["price"].quantile(0.25), df_f["price"].quantile(0.75)
+        seg = pd.DataFrame(
+            {
+                "Seg": ["Economy", "Mid", "Premium"],
+                "U": [(df_f["price"] < q1).sum(), df_f["price"].between(q1, q3).sum(), (df_f["price"] > q3).sum()],
+            }
         )
-    with kpi3:
-        st.metric(label="📊 Median Price", value=f"${median_price:,.0f}", delta="Market Center")
-    with kpi4:
-        st.metric(
-            label="🚗 Fleet Age",
-            value=f"{avg_age:.1f} yrs",
-            delta=f"Avg {df_filtered['model_year'].mode()[0] if len(df_filtered) > 0 else 'N/A'} model",
+        fig = px.pie(
+            seg,
+            values="U",
+            names="Seg",
+            hole=0.4,
+            color="Seg",
+            color_discrete_map={"Economy": "#28a745", "Mid": "#17a2b8", "Premium": "#ffc107"},
         )
-    with kpi5:
-        price_std = df_filtered["price"].std()
-        cv = (price_std / avg_price * 100) if avg_price > 0 else 0
-        st.metric(label="📉 Price Volatility", value=f"{cv:.1f}%", delta="Coefficient of Variation")
-
-    st.markdown("---")
-
-    # Executive Summary Cards
-    col_exec1, col_exec2 = st.columns(2)
-
-    with col_exec1:
-        st.subheader("🎯 Market Positioning")
-
-        # Price segmentation
-        if len(df_filtered) > 0:
-            price_q1 = df_filtered["price"].quantile(0.25)
-            price_q3 = df_filtered["price"].quantile(0.75)
-
-            economy = (df_filtered["price"] < price_q1).sum()
-            mid_market = ((df_filtered["price"] >= price_q1) & (df_filtered["price"] <= price_q3)).sum()
-            premium = (df_filtered["price"] > price_q3).sum()
-
-            segment_data = pd.DataFrame(
-                {
-                    "Segment": ["Economy", "Mid-Market", "Premium"],
-                    "Units": [economy, mid_market, premium],
-                    "Percentage": [
-                        economy / total_vehicles * 100,
-                        mid_market / total_vehicles * 100,
-                        premium / total_vehicles * 100,
-                    ],
-                }
-            )
-
-            fig_segment = px.pie(
-                segment_data,
-                values="Units",
-                names="Segment",
-                title="Inventory Distribution by Price Segment",
-                color="Segment",
-                color_discrete_map={"Economy": "#28a745", "Mid-Market": "#17a2b8", "Premium": "#ffc107"},
-                hole=0.4,
-            )
-            fig_segment.update_traces(textposition="inside", textinfo="percent+label")
-            fig_segment.update_layout(height=350, showlegend=True)
-            st.plotly_chart(fig_segment, width="stretch")
-
-    with col_exec2:
-        st.subheader("📈 Price Distribution Analysis")
-
-        # Enhanced histogram with statistical overlays
-        fig_price_dist = go.Figure()
-
-        fig_price_dist.add_trace(
-            go.Histogram(x=df_filtered["price"], nbinsx=50, name="Frequency", marker_color="#007bff", opacity=0.7)
-        )
-
-        # Add mean and median lines
-        fig_price_dist.add_vline(
-            x=avg_price,
-            line_dash="dash",
-            line_color="red",
-            annotation_text=f"Mean: ${avg_price:,.0f}",
-            annotation_position="top right",
-        )
-        fig_price_dist.add_vline(
-            x=median_price,
-            line_dash="dash",
-            line_color="green",
-            annotation_text=f"Median: ${median_price:,.0f}",
-            annotation_position="top left",
-        )
-
-        fig_price_dist.update_layout(
-            title="Price Distribution with Statistical Markers",
-            xaxis_title="Price ($)",
-            yaxis_title="Frequency",
-            height=350,
-            showlegend=False,
-        )
-        st.plotly_chart(fig_price_dist, width="stretch")
-
-    st.markdown("---")
-
-    # Market Intelligence Grid
-    col_int1, col_int2 = st.columns(2)
-
-    with col_int1:
-        st.subheader("🏆 Top Manufacturers by Volume")
-        if "model" in df_filtered.columns and len(df_filtered) > 0:
-            brand_data = df_filtered.copy()
-            brand_data["brand"] = brand_data["model"].astype(str).str.split().str[0]
-            top_brands = brand_data["brand"].value_counts().head(10)
-
-            fig_brands = px.bar(
-                x=top_brands.values,
-                y=top_brands.index,
-                orientation="h",
-                title="Top 10 Manufacturers",
-                labels={"x": "Units", "y": "Manufacturer"},
-                color=top_brands.values,
-                color_continuous_scale="Blues",
-            )
-            fig_brands.update_layout(height=400, showlegend=False)
-            st.plotly_chart(fig_brands, width="stretch")
-
-    with col_int2:
+        fig.update_layout(height=350)
+        st.plotly_chart(fig, use_container_width=True)
+    with col2:
+        st.subheader("📈 Price Distribution")
+        fig2 = go.Figure()
+        fig2.add_trace(go.Histogram(x=df_f["price"], nbinsx=50, marker_color="#007bff", opacity=0.7))
+        fig2.add_vline(x=ap, line_dash="dash", line_color="red", annotation_text=f"Mean: ${ap:,.0f}")
+        fig2.add_vline(x=mp_v, line_dash="dash", line_color="green", annotation_text=f"Median: ${mp_v:,.0f}")
+        fig2.update_layout(height=350)
+        st.plotly_chart(fig2, use_container_width=True)
+    col3, col4 = st.columns(2)
+    with col3:
+        st.subheader("🏆 Top Manufacturers")
+        if "brand" in df_f.columns:
+            tb = df_f["brand"].value_counts().head(10)
+            fig3 = px.bar(x=tb.values, y=tb.index, orientation="h", color=tb.values, color_continuous_scale="Blues")
+            fig3.update_layout(height=400, showlegend=False)
+            st.plotly_chart(fig3, use_container_width=True)
+    with col4:
         st.subheader("📅 Inventory Age Profile")
-        if "model_year" in df_filtered.columns and len(df_filtered) > 0:
-            year_dist = df_filtered["model_year"].value_counts().sort_index()
+        if "model_year" in df_f.columns:
+            yd = df_f["model_year"].value_counts().sort_index()
+            fig4 = px.area(x=yd.index, y=yd.values, color_discrete_sequence=["#17a2b8"])
+            fig4.update_layout(height=400)
+            st.plotly_chart(fig4, use_container_width=True)
+    with st.expander("🔍 Data Quality"):
+        q1, q2, q3 = st.columns(3)
+        q1.metric(
+            "Completeness", f"{100 - raw_df.isnull().sum().sum() / (raw_df.shape[0] * raw_df.shape[1]) * 100:.1f}%"
+        )
+        q2.metric("Unique Records", f"{100 - raw_df.duplicated().sum() / len(raw_df) * 100:.1f}%")
+        q3.metric("Total Records", f"{len(raw_df):,}")
 
-            fig_years = px.area(
-                x=year_dist.index,
-                y=year_dist.values,
-                title="Units by Model Year",
-                labels={"x": "Model Year", "y": "Units"},
-                color_discrete_sequence=["#17a2b8"],
-            )
-            fig_years.update_layout(height=400)
-            fig_years.update_traces(fill="tozeroy")
-            st.plotly_chart(fig_years, width="stretch")
-
-    # Data Quality Summary (compact)
-    with st.expander("🔍 Data Quality Report", expanded=False):
-        qc1, qc2, qc3 = st.columns(3)
-
-        with qc1:
-            missing_pct = (raw_df.isnull().sum().sum() / (raw_df.shape[0] * raw_df.shape[1])) * 100
-            st.metric("Data Completeness", f"{100-missing_pct:.1f}%", delta="Quality Score")
-
-        with qc2:
-            duplicates = raw_df.duplicated().sum()
-            st.metric(
-                "Unique Records",
-                f"{100 - (duplicates/len(raw_df)*100):.1f}%",
-                delta=f"{len(raw_df)-duplicates:,} unique",
-            )
-
-        with qc3:
-            st.metric("Dataset Size", f"{len(raw_df):,}", delta=f"{df_filtered.shape[1]} attributes")
-
-# --- TAB 2: EXECUTIVE MARKET ANALYSIS ---
-elif st.session_state.active_tab == "📈 Market Analysis":
-    st.header("💼 Investment & Market Intelligence Report")
-    st.markdown("**Strategic insights for C-level executives and institutional investors**")
+elif selected_tab == "📈 Market Analysis":
+    st.header("💼 Market Analysis")
+    viz, ana = VisualizationEngine(df_f), MarketAnalyzer(df_f)
+    summary = ana.generate_executive_summary()
+    k1, k2, k3, k4 = st.columns(4)
+    k1.metric("🎯 Market Leader", summary["insights"].get("most_popular_brand", "N/A"))
+    k2.metric("💸 Premium Brand", summary["insights"].get("highest_value_brand", "N/A"))
+    k3.metric("🔎 Opportunities", f"{summary['kpis'].get('total_opportunities', 0):,}")
+    k4.metric("📉 Depreciation", f"{summary['insights'].get('avg_depreciation_rate', 0):.1%}")
     st.markdown("---")
-
-    if len(df_filtered) > 0:
-        # Usar MarketAnalyzer y VisualizationEngine
-        viz_engine = VisualizationEngine(df_filtered)
-        analyzer = MarketAnalyzer(df_filtered)
-        summary = analyzer.generate_executive_summary()
-
-        # Strategic Investment KPIs
-        st.subheader("📊 Strategic Investment Metrics")
-
-        inv_col1, inv_col2, inv_col3, inv_col4 = st.columns(4)
-
-        with inv_col1:
-            st.metric(
-                label="🎯 Market Leader", value=summary["insights"].get("most_popular_brand", "N/A"), delta="By Volume"
+    lc, rc = st.columns([2, 1])
+    with lc:
+        if "model_year" in df_f.columns:
+            pby = df_f.groupby("model_year").agg({"price": ["mean", "median"]}).reset_index()
+            pby.columns = ["Year", "Avg", "Med"]
+            fig = go.Figure()
+            fig.add_trace(
+                go.Scatter(
+                    x=pby["Year"],
+                    y=pby["Avg"],
+                    mode="lines+markers",
+                    name="Average",
+                    line=dict(color="#007bff", width=3),
+                )
             )
-
-        with inv_col2:
-            st.metric(
-                label="💸 Premium Brand",
-                value=summary["insights"].get("highest_value_brand", "N/A"),
-                delta="By Avg Price",
+            fig.add_trace(
+                go.Scatter(
+                    x=pby["Year"],
+                    y=pby["Med"],
+                    mode="lines+markers",
+                    name="Median",
+                    line=dict(color="#28a745", width=2, dash="dash"),
+                )
             )
-
-        with inv_col3:
-            opportunities = summary["kpis"].get("total_opportunities", 0)
-            st.metric(
-                label="🔎 Investment Opportunities",
-                value=f"{opportunities:,}",
-                delta=f"{(opportunities/len(df_filtered)*100):.1f}% of inventory",
-            )
-
-        with inv_col4:
-            depr = summary["insights"].get("avg_depreciation_rate", 0)
-            st.metric(label="📉 Annual Depreciation", value=f"{depr:.1%}", delta="Portfolio Average")
-
-        st.markdown("---")
-
-        # Financial Performance Dashboard
-        st.subheader("💹 Financial Performance Overview")
-
-        fin_left, fin_right = st.columns([2, 1])
-
-        with fin_left:
-            # Price trend analysis by year
-            if "model_year" in df_filtered.columns:
-                price_by_year = (
-                    df_filtered.groupby("model_year").agg({"price": ["mean", "median", "count"]}).reset_index()
-                )
-                price_by_year.columns = ["Year", "Avg Price", "Median Price", "Count"]
-
-                fig_trend = go.Figure()
-                fig_trend.add_trace(
-                    go.Scatter(
-                        x=price_by_year["Year"],
-                        y=price_by_year["Avg Price"],
-                        mode="lines+markers",
-                        name="Average Price",
-                        line=dict(color="#007bff", width=3),
-                        marker=dict(size=8),
-                    )
-                )
-                fig_trend.add_trace(
-                    go.Scatter(
-                        x=price_by_year["Year"],
-                        y=price_by_year["Median Price"],
-                        mode="lines+markers",
-                        name="Median Price",
-                        line=dict(color="#28a745", width=3, dash="dash"),
-                        marker=dict(size=6),
-                    )
-                )
-
-                fig_trend.update_layout(
-                    title="Price Trends by Model Year",
-                    xaxis_title="Model Year",
-                    yaxis_title="Price ($)",
-                    height=400,
-                    hovermode="x unified",
-                )
-                st.plotly_chart(fig_trend, width="stretch")
-
-        with fin_right:
-            st.markdown("#### 📊 Portfolio Metrics")
-            st.metric("Total Market Value", f"${summary['kpis']['total_market_value']/1e6:.2f}M")
-            st.metric("Average Unit Price", f"${summary['kpis']['average_price']:,.0f}")
-            st.metric("Revenue Potential", f"${summary['kpis'].get('potential_arbitrage_value', 0)/1e3:.1f}K")
-
-            # ROI Calculator
-            st.markdown("---")
-            st.markdown("**💰 Quick ROI Estimate**")
-            avg_margin = st.slider("Target Margin %", 5, 30, 15, key="roi_slider")
-            potential_roi = summary["kpis"]["total_market_value"] * avg_margin / 100
-            st.success(f"Projected ROI: **${potential_roi/1e6:.2f}M** at {avg_margin}% margin")
-
-        # Calculate key metrics for recommendations
-        total_vehicles = summary["kpis"].get("total_vehicles", len(df_filtered))
-        total_value = summary["kpis"].get("total_market_value", float(df_filtered["price"].sum()))
-        avg_price = summary["kpis"].get("average_price", float(df_filtered["price"].mean()))
-        median_price = df_filtered["price"].median()
-        avg_age = (pd.Timestamp.now().year - df_filtered["model_year"]).mean()
-        total_opps = summary["kpis"].get("total_opportunities", 0)
-
-        # Top brands for risk analysis
-        if "model" in df_filtered.columns and len(df_filtered) > 0:
-            brand_data_temp = df_filtered.copy()
-            brand_data_temp["brand"] = brand_data_temp["model"].astype(str).str.split().str[0]
-            top_brands = brand_data_temp["brand"].value_counts()
-        else:
-            top_brands = pd.Series([0], index=["Unknown"])
-
-        st.markdown("---")
-
-        # Investment Strategy Recommendations
-        st.subheader("🎯 Strategic Recommendations")
-
-        rec_col1, rec_col2 = st.columns(2)
-
-        with rec_col1:
-            st.markdown("#### 🟢 Buy Signals")
-            discount_pct = (median_price - df_filtered["price"].quantile(0.25)) / median_price * 100
-            st.markdown(
-                f"""
-            - **Target Inventory:** {total_opps:,} undervalued units identified
-            - **Average Discount:** {discount_pct:.1f}% below market median
-            - **Volume Opportunity:** {(total_opps / total_vehicles * 100):.1f}% of analyzed inventory
-            - **Estimated Arbitrage Value:** ${summary['kpis'].get('potential_arbitrage_value', 0):,.0f}
-            """
-            )
-
-        with rec_col2:
-            st.markdown("#### 🔴 Risk Factors")
-            volatility = df_filtered["price"].std() / df_filtered["price"].mean() * 100
-            market_concentration = top_brands.iloc[0] / total_vehicles * 100 if len(df_filtered) > 0 else 0
-            st.markdown(
-                f"""
-            - **Price Volatility:** {volatility:.1f}% coefficient of variation
-            - **Fleet Age Risk:** Average {avg_age:.1f} years (depreciation accelerates after 5 yrs)
-            - **Market Concentration:** Top brand holds {market_concentration:.1f}% market share
-            - **Liquidity Consideration:** Monitor inventory turnover by segment
-            """
-            )
-
-        st.markdown("---")
-
-        # Competitive Landscape Analysis
-        st.subheader("🏆 Competitive Landscape & Market Share")
-
-        comp_col1, comp_col2 = st.columns(2)
-
-        with comp_col1:
-            # Market share by brand value
-            if "model" in df_filtered.columns and len(df_filtered) > 0:
-                df_brands = df_filtered.copy()
-                df_brands["brand"] = df_brands["model"].apply(lambda x: str(x).split()[0])
-                brand_value = df_brands.groupby("brand")["price"].agg(["sum", "count", "mean"]).reset_index()
-                brand_value.columns = ["Brand", "Total Value", "Units", "Avg Price"]
-                brand_value = brand_value.sort_values("Total Value", ascending=False).head(8)
-
-                fig_brand_value = px.treemap(
-                    brand_value,
-                    path=["Brand"],
-                    values="Total Value",
-                    color="Avg Price",
-                    hover_data=["Units"],
-                    color_continuous_scale="RdYlGn",
-                    title="Market Share by Total Inventory Value (Top 8 Brands)",
-                )
-                fig_brand_value.update_layout(height=400)
-                st.plotly_chart(fig_brand_value, width="stretch")
-
-        with comp_col2:
-            # Brand performance matrix
-            if len(brand_value) > 0:
-                fig_scatter = px.scatter(
-                    brand_value,
-                    x="Units",
-                    y="Avg Price",
-                    size="Total Value",
-                    color="Brand",
-                    hover_data=["Total Value"],
-                    title="Brand Performance Matrix: Volume vs. Price",
-                    labels={"Units": "Market Volume", "Avg Price": "Average Unit Price ($)"},
-                )
-                fig_scatter.update_layout(height=400, showlegend=True)
-                st.plotly_chart(fig_scatter, width="stretch")
-
-        # Additional analytics in expander
-        with st.expander("📈 Advanced Analytics & Detailed Insights", expanded=False):
-            # Arbitrage opportunities
-            opps = analyzer.analysis_results.get("opportunities") or []
-            if opps:
-                st.markdown("**🔍 Arbitrage Opportunity Heat Map**")
-                opp_df = pd.DataFrame(opps)
-                fig_opp = px.bar(
-                    opp_df,
-                    x="category",
-                    y="potential_value",
-                    hover_data=["count", "avg_price"],
-                    labels={"category": "Category", "potential_value": "Average Potential Value ($)"},
-                    color="potential_value",
-                    color_continuous_scale="Viridis",
-                )
-                st.plotly_chart(fig_opp, width="stretch")
-
-            # Detailed analytics dashboard
-            st.markdown("**📊 Comprehensive Market Dashboard**")
-            fig_dashboard = viz_engine.create_market_analysis_dashboard()
-            st.plotly_chart(fig_dashboard, width="stretch")
-    else:
-        st.warning("No data to display with the selected filters.")
-
-# --- TAB 3: MODEL PERFORMANCE & ANALYTICS ---
-elif st.session_state.active_tab == "🧠 Model Metrics":
-    st.header("🧠 AI Model Performance Dashboard")
-    st.markdown("**Technical evaluation metrics and model reliability analysis**")
+            fig.update_layout(title="Price Trend by Year", height=400)
+            st.plotly_chart(fig, use_container_width=True)
+    with rc:
+        st.metric("Total Value", f"${summary['kpis']['total_market_value'] / 1e6:.2f}M")
+        st.metric("Avg Price", f"${summary['kpis']['average_price']:,.0f}")
+        st.metric("Potential", f"${summary['kpis'].get('potential_arbitrage_value', 0) / 1e3:.1f}K")
+        margin = st.slider("Target Margin %", 5, 30, 15, key="slider_margin")
+        st.success(f"ROI: **${summary['kpis']['total_market_value'] * margin / 100 / 1e6:.2f}M**")
     st.markdown("---")
+    r1, r2 = st.columns(2)
+    with r1:
+        buy_text = (
+            "#### 🟢 Buy Signals\n"
+            f"- **{summary['kpis'].get('total_opportunities', 0):,}** undervalued units\n"
+            f"- Potential: ${summary['kpis'].get('potential_arbitrage_value', 0):,.0f}"
+        )
+        st.markdown(buy_text)
+    with r2:
+        risk_text = (
+            "#### 🔴 Risk Factors\n"
+            f"- Volatility: {df_f['price'].std() / df_f['price'].mean() * 100:.1f}%\n"
+            f"- Fleet Age: {avg_age:.1f} yrs"
+        )
+        st.markdown(risk_text)
+    with st.expander("📈 Full Dashboard"):
+        st.plotly_chart(viz.create_market_analysis_dashboard(), use_container_width=True)
 
-    # Intentar cargar métricas del modelo
-    metrics_model: dict = {}
-    possible_metrics = [METRICS_PATH, ARTIFACTS_DIR / "metrics_val.json", Path("metrics.json")]
-
-    for p in possible_metrics:
-        if p.exists():
-            try:
-                with open(p) as f:
-                    metrics_model = json.load(f)
-                break
-            except Exception:
-                continue
-
-    # Cargar métricas baseline si existen
-    metrics_baseline: dict = {}
-    possible_baseline = [
-        ARTIFACTS_DIR / "metrics_baseline.json",  # ruta configurada en configs/config.yaml
-        ARTIFACTS_DIR / "baseline_metrics.json",
-        ARTIFACTS_DIR / "baseline.json",
-        Path("metrics_baseline.json"),
-        Path("baseline_metrics.json"),
-    ]
-    for p in possible_baseline:
-        if p.exists():
-            try:
-                with open(p) as f:
-                    metrics_baseline = json.load(f)
-                break
-            except Exception:
-                continue
-
-    # Cargar resultados de bootstrap si están disponibles
-    bootstrap_path = ARTIFACTS_DIR / "metrics_bootstrap.json"
-    metrics_bootstrap: dict | None = None
-    if bootstrap_path.exists():
-        try:
-            with open(bootstrap_path) as f:
-                metrics_bootstrap = json.load(f)
-        except Exception:
-            metrics_bootstrap = None
-
-    # Cargar métricas temporales (backtest)
-    temporal_path = ARTIFACTS_DIR / "metrics_temporal.json"
-    metrics_temporal: dict | None = None
-    if temporal_path.exists():
-        try:
-            with open(temporal_path) as f:
-                metrics_temporal = json.load(f)
-        except Exception:
-            metrics_temporal = None
-
-    if metrics_model:
-        # Primary Performance KPIs
-        st.subheader("📊 Core Performance Metrics")
-
-        kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
-
-        rmse_val = metrics_model.get("rmse", 0)
-        mae_val = metrics_model.get("mae", 0)
-        r2_val = metrics_model.get("r2", 0)
-        mape_val = metrics_model.get("mape", 0)
-
-        with kpi1:
-            st.metric(label="🎯 RMSE", value=f"${rmse_val:,.0f}", delta="Root Mean Squared Error")
-        with kpi2:
-            st.metric(label="📏 MAE", value=f"${mae_val:,.0f}", delta="Mean Absolute Error")
-        with kpi3:
-            st.metric(label="💯 R² Score", value=f"{r2_val:.3f}", delta=f"{r2_val*100:.1f}% variance explained")
-        with kpi4:
-            st.metric(label="📉 MAPE", value=f"{mape_val:.2f}%", delta="Mean Absolute % Error")
-        with kpi5:
-            accuracy = max(0, 100 - mape_val)
-            st.metric(label="✅ Accuracy", value=f"{accuracy:.1f}%", delta="Prediction Accuracy")
-
+elif selected_tab == "🧠 Model Metrics":
+    st.header("🧠 Model Metrics")
+    met, base = load_json(METRICS_PATH), load_json(ARTIFACTS_DIR / "metrics_baseline.json")
+    boot, temp = load_json(ARTIFACTS_DIR / "metrics_bootstrap.json"), load_json(ARTIFACTS_DIR / "metrics_temporal.json")
+    if met:
+        m1, m2, m3, m4, m5 = st.columns(5)
+        m1.metric("🎯 RMSE", f"${met.get('rmse', 0):,.0f}")
+        m2.metric("📏 MAE", f"${met.get('mae', 0):,.0f}")
+        m3.metric("💯 R²", f"{met.get('r2', 0):.3f}")
+        m4.metric("📉 MAPE", f"{met.get('mape', 0):.2f}%")
+        m5.metric("✅ Precision", f"{max(0, 100 - met.get('mape', 0)):.1f}%")
         st.markdown("---")
-
-        # Model vs Baseline Performance Comparison
-        if metrics_baseline:
-            st.subheader("🔬 Model vs Baseline Comparison")
-
-            comp_col1, comp_col2 = st.columns([3, 2])
-
-            with comp_col1:
-                # Create comparison dataframe
-                comp_df = pd.DataFrame(
+        if base:
+            st.subheader("🔬 Model vs Baseline")
+            c1, c2 = st.columns([3, 2])
+            with c1:
+                df_c = pd.DataFrame(
                     {
-                        "Metric": ["RMSE ($)", "MAE ($)", "MAPE (%)", "R² Score"],
-                        "AI Model": [
-                            metrics_model.get("rmse", 0),
-                            metrics_model.get("mae", 0),
-                            metrics_model.get("mape", 0),
-                            metrics_model.get("r2", 0),
-                        ],
-                        "Baseline": [
-                            metrics_baseline.get("rmse", 0),
-                            metrics_baseline.get("mae", 0),
-                            metrics_baseline.get("mape", 0),
-                            metrics_baseline.get("r2", 0),
-                        ],
+                        "M": ["RMSE", "MAE", "MAPE", "R²"],
+                        "Mod": [met.get(k, 0) for k in ["rmse", "mae", "mape", "r2"]],
+                        "Base": [base.get(k, 0) for k in ["rmse", "mae", "mape", "r2"]],
                     }
                 )
-
-                # Create grouped bar chart
-                fig_comp = go.Figure()
-
-                fig_comp.add_trace(
-                    go.Bar(
-                        name="AI Model",
-                        x=comp_df["Metric"],
-                        y=comp_df["AI Model"],
-                        marker_color="#007bff",
-                        text=comp_df["AI Model"].apply(lambda x: f"{x:.2f}"),
-                        textposition="outside",
-                    )
-                )
-
-                fig_comp.add_trace(
-                    go.Bar(
-                        name="Baseline",
-                        x=comp_df["Metric"],
-                        y=comp_df["Baseline"],
-                        marker_color="#6c757d",
-                        text=comp_df["Baseline"].apply(lambda x: f"{x:.2f}"),
-                        textposition="outside",
-                    )
-                )
-
-                fig_comp.update_layout(
-                    title="AI Model vs Simple Baseline Performance",
-                    xaxis_title="Metric",
-                    yaxis_title="Value",
-                    barmode="group",
-                    height=400,
-                    showlegend=True,
-                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                )
-
-                st.plotly_chart(fig_comp, width="stretch")
-
-            with comp_col2:
-                st.markdown("#### � Performance Gains")
-
-                # Compute improvements
-                for _, row in comp_df.iterrows():
-                    metric_name = row["Metric"]
-                    model_val = row["AI Model"]
-                    base_val = row["Baseline"]
-
-                    if base_val == 0:
+                fig = go.Figure()
+                fig.add_trace(go.Bar(name="Model", x=df_c["M"], y=df_c["Mod"], marker_color="#007bff"))
+                fig.add_trace(go.Bar(name="Baseline", x=df_c["M"], y=df_c["Base"], marker_color="#6c757d"))
+                fig.update_layout(barmode="group", height=400)
+                st.plotly_chart(fig, use_container_width=True)
+            with c2:
+                st.markdown("#### 📈 Improvements")
+                for _, r in df_c.iterrows():
+                    if r["Base"] == 0:
                         continue
-
-                    if "R²" in metric_name:
-                        improvement = (model_val - base_val) / abs(base_val) * 100
-                    else:
-                        improvement = (base_val - model_val) / abs(base_val) * 100
-
-                    if improvement > 0:
-                        st.success(f"**{metric_name}**: {improvement:+.1f}% better")
-                    else:
-                        st.info(f"**{metric_name}**: {improvement:+.1f}%")
-
-                st.markdown("---")
-                st.markdown("**💡 Interpretation:**")
-                st.caption(
-                    "Positive values indicate the AI model outperforms the baseline. "
-                    "For error metrics (RMSE, MAE, MAPE), lower is better. For R², higher is better."
-                )
-
-        st.markdown("---")
-
-        # Statistical significance section
-        if metrics_bootstrap:
-            st.subheader("� Statistical Validation (Bootstrap Analysis)")
-            d_mean = metrics_bootstrap.get("delta_rmse_mean")
-            ci_low, ci_high = metrics_bootstrap.get("delta_rmse_ci95", [None, None])
-            p_val = metrics_bootstrap.get("p_value_two_sided")
-
-            c_boot1, c_boot2, c_boot3 = st.columns(3)
-            c_boot1.metric("Δ RMSE (model - baseline)", f"{d_mean:.2f}" if d_mean else "N/A")
-            c_boot2.metric("95% CI", f"[{ci_low:.2f}, {ci_high:.2f}]" if ci_low and ci_high else "N/A")
-            c_boot3.metric("p-value (two-tailed)", f"{p_val:.3f}" if p_val else "N/A")
-
-            if ci_high is not None and ci_high < 0 and p_val is not None and p_val < 0.05:
-                st.success("✅ The RMSE reduction is statistically significant (95% CI entirely below 0).")
-            else:
-                st.info(
-                    "ℹ️ The model improvement over baseline may not be statistically significant across all resamples, "
-                    "but can still provide business value."
-                )
-
-        # Temporal metrics (backtest on recent years)
-        if metrics_temporal:
-            st.markdown("### Performance in Recent Years (Temporal Backtest)")
-            t1, t2, t3, t4, t5 = st.columns(5)
-            t1.metric("RMSE (Temporal)", f"${metrics_temporal.get('rmse', 0):,.0f}")
-            t2.metric("MAE (Temporal)", f"${metrics_temporal.get('mae', 0):,.0f}")
-            t3.metric("R² (Temporal)", f"{metrics_temporal.get('r2', 0):.3f}")
-            t4.metric("MAPE (Temporal)", f"{metrics_temporal.get('mape', 0):.1f}%")
-            t5.metric("Samples", f"{metrics_temporal.get('n_samples', 0):,}")
-
-            st.caption(
-                "These metrics are calculated on a recent temporal window of the dataset, "
-                "simulating performance on future/unseen data."
-            )
-
+                    imp = (
+                        (r["Base"] - r["Mod"]) / abs(r["Base"]) * 100
+                        if r["M"] != "R²"
+                        else (r["Mod"] - r["Base"]) / abs(r["Base"]) * 100
+                    )
+                    (st.success if imp > 0 else st.info)(f"**{r['M']}**: {imp:+.1f}%")
+        if boot:
+            st.markdown("---")
+            st.subheader("📊 Bootstrap Validation")
+            b1, b2, b3 = st.columns(3)
+            b1.metric("Δ RMSE", f"{boot.get('delta_rmse_mean', 0):.2f}")
+            ci = boot.get("delta_rmse_ci95", [None, None])
+            b2.metric("95% CI", f"[{ci[0]:.2f}, {ci[1]:.2f}]" if ci[0] else "N/A")
+            b3.metric("p-value", f"{boot.get('p_value_two_sided', 0):.3f}")
+            if ci[1] and ci[1] < 0:
+                st.success("✅ Statistically significant improvement")
+        if temp:
+            st.markdown("---")
+            st.subheader("📅 Temporal Backtest")
+            t1, t2, t3, t4 = st.columns(4)
+            t1.metric("RMSE", f"${temp.get('rmse', 0):,.0f}")
+            t2.metric("MAE", f"${temp.get('mae', 0):,.0f}")
+            t3.metric("R²", f"{temp.get('r2', 0):.3f}")
+            t4.metric("Samples", f"{temp.get('n_samples', 0):,}")
     else:
-        st.warning(
-            "No saved metrics found. Run "
-            "`python main.py --mode train` or "
-            "`python evaluate.py --config configs/config.yaml` to generate them."
-        )
+        st.warning("No metrics found. Run: `python main.py --mode train`")
 
-# --- TAB 4: AI PRICE PREDICTOR ---
-elif st.session_state.active_tab == "🔮 Price Predictor":
-    st.header("🔮 AI-Powered Vehicle Value Estimator")
-    st.markdown("**Get instant, data-driven price estimates powered by machine learning**")
-    st.markdown("---")
-
-    # Load model using cached function
-    model, model_path = load_model()
-
+elif selected_tab == "🔮 Price Predictor":
+    st.header("🔮 Price Estimator")
+    model, mpath, _ = load_model(st.session_state.get("cache_inv"))
     if model:
-        st.success(f"✅ AI Model loaded successfully from: `{Path(model_path).name}`")
-
-        st.markdown("### 📝 Vehicle Specification Input")
-        st.info(
-            "💡 **Pro Tip:** Fill in all fields accurately for the best price estimate. "
-            "Click 'Calculate Price' when ready."
-        )
-
-        # Use form to prevent page reloads and tab changes
-        with st.form(key="price_prediction_form", clear_on_submit=False):
-            col_f1, col_f2, col_f3 = st.columns(3)
-
-            with col_f1:
-                year_input = st.number_input("Model Year", 1990, 2025, 2018)
-                odometer_input = st.number_input("Mileage (Odometer)", 0, 500000, 50000)
-                cylinders_input = st.selectbox("Cylinders", [4, 6, 8, 10, 12], index=1)
-
-            with col_f2:
-                condition_input = st.selectbox(
-                    "Condition",
-                    ["excellent", "good", "fair", "like new", "salvage", "new"],
-                    index=0,
+        st.success(f"✅ Model loaded: `{Path(mpath).name}`")
+        with st.form("pred"):
+            c1, c2, c3 = st.columns(3)
+            with c1:
+                yr_in = st.number_input("Year", 1990, 2025, 2018)
+                odo_in = st.number_input("Mileage", 0, 500000, 50000)
+                cyl_in = st.selectbox("Cylinders", [4, 6, 8, 10, 12], 1)
+            with c2:
+                cond_in = st.selectbox("Condition", ["excellent", "good", "fair", "like new", "salvage", "new"])
+                fuel_in = st.selectbox("Fuel", ["gas", "diesel", "hybrid", "electric"])
+                trans_in = st.selectbox("Transmission", ["automatic", "manual", "other"])
+            with c3:
+                type_in = st.selectbox(
+                    "Type", ["sedan", "SUV", "truck", "pickup", "coupe", "wagon", "hatchback", "van"]
                 )
-                fuel_input = st.selectbox(
-                    "Fuel",
-                    ["gas", "diesel", "hybrid", "electric", "other"],
-                    index=0,
-                )
-                trans_input = st.selectbox("Transmission", ["automatic", "manual", "other"], index=0)
-
-            with col_f3:
-                type_input = st.selectbox(
-                    "Type",
-                    [
-                        "sedan",
-                        "SUV",
-                        "truck",
-                        "pickup",
-                        "coupe",
-                        "wagon",
-                        "hatchback",
-                        "van",
-                        "convertible",
-                        "other",
-                    ],
-                    index=1,
-                )
-                paint_input = st.selectbox(
-                    "Color",
-                    [
-                        "white",
-                        "black",
-                        "silver",
-                        "grey",
-                        "blue",
-                        "red",
-                        "green",
-                        "brown",
-                        "custom",
-                        "yellow",
-                        "orange",
-                        "purple",
-                    ],
-                    index=0,
-                )
-                drive_input = st.selectbox("Drive", ["4wd", "fwd", "rwd"], index=0)
-
-            # Submit button inside form
-            submit_btn = st.form_submit_button("💰 Calculate Estimated Price", width="stretch")
-
-        if submit_btn:
-            # Construir DataFrame de entrada con las columnas crudas principales
-            input_data = {
-                "model_year": year_input,
-                "odometer": odometer_input,
-                "condition": condition_input,
-                "cylinders": cylinders_input,
-                "fuel": fuel_input,
-                "transmission": trans_input,
-                "type": type_input,
-                "paint_color": paint_input,
-                "drive": drive_input,
-                "model": "ford f-150",  # Placeholder neutral
+                paint_in = st.selectbox("Color", ["white", "black", "silver", "grey", "blue", "red", "green"])
+                drive_in = st.selectbox("Drive", ["4wd", "fwd", "rwd"])
+            sub = st.form_submit_button("💰 Calculate Price", use_container_width=True)
+        if sub:
+            if odo_in < 0:
+                st.error("Invalid mileage")
+                st.stop()
+            data = {
+                "model_year": yr_in,
+                "odometer": odo_in,
+                "condition": cond_in,
+                "cylinders": cyl_in,
+                "fuel": fuel_in,
+                "transmission": trans_in,
+                "type": type_in,
+                "paint_color": paint_in,
+                "drive": drive_in,
+                "model": "ford f-150",
             }
-
-            # Crear DF base
-            input_df = pd.DataFrame([input_data])
-            if "model" in input_df.columns:
-                input_df["brand"] = input_df["model"].astype(str).str.split().str[0]
-
-            # Feature engineering is handled by the model pipeline (FeatureEngineer step)
-            # We rely on the pipeline to compute vehicle_age from model_year
-            # and handle missing price_per_mile (if expected by preprocessor) via imputation
-
-            # El modelo es un Pipeline(pre=ColumnTransformer, model)
-            # Extraemos columnas esperadas del preprocessor para alinear input_df
+            feat, num, _ = get_pre_cols(model)
+            inp = prep_input(data, feat, num)
             try:
-                pre = getattr(model, "named_steps", {}).get("pre") or getattr(model, "named_steps", {}).get(
-                    "preprocess"
-                )
-            except Exception:
-                pre = None
-
-            numeric_cols = []
-            categorical_cols = []
-            feature_cols = []
-
-            if pre is not None and hasattr(pre, "transformers_"):
-                # Identificar columnas numéricas y categóricas directamente del ColumnTransformer
-                for name, transformer, cols in pre.transformers_:
-                    # cols puede ser lista de columnas o slice; nos quedamos con nombres explícitos
-                    if isinstance(cols, (list, tuple)):
-                        if name == "num":
-                            numeric_cols.extend(list(cols))
-                        elif name == "cat":
-                            categorical_cols.extend(list(cols))
-                        feature_cols.extend(list(cols))
-
-                # Asegurar que todas las columnas esperadas existan en input_df
-                for col in feature_cols:
-                    if col not in input_df.columns:
-                        # Columnas numéricas: usar valores neutros numéricos
-                        if col in numeric_cols:
-                            if col in ["days_listed", "vehicle_age", "odometer"]:
-                                input_df[col] = 0
-                            else:
-                                # Valor neutro genérico para numéricos
-                                input_df[col] = 0
-                        else:
-                            # Columnas categóricas: usar 'unknown' o NaT si parecen fechas
-                            if "date" in col:
-                                input_df[col] = pd.NaT
-                            else:
-                                input_df[col] = "unknown"
-
-                # Forzar tipo numérico en columnas numéricas por seguridad
-                for col in numeric_cols:
-                    if col in input_df.columns:
-                        input_df[col] = pd.to_numeric(input_df[col], errors="coerce")
-
-                # Reordenar columnas según el orden esperado
-                input_df = input_df[feature_cols]
-
-            try:
-                prediction = model.predict(input_df)[0]
-
-                # Calculate market positioning
-                percentile = (df_clean["price"] < prediction).mean() * 100
-
+                pred = model.predict(inp)[0]
+                pctl = (df_clean["price"] < pred).mean() * 100
                 st.markdown("---")
-                st.markdown("### 🎯 Price Estimate Results")
-
-                # Display results in professional layout
-                result_col1, result_col2, result_col3 = st.columns([2, 2, 3])
-
-                with result_col1:
-                    st.markdown("#### 💰 Estimated Value")
-                    st.markdown(f"## ${prediction:,.0f}")
-
-                    # Market segment badge
-                    if percentile > 75:
-                        badge_color = "#FFD700"
-                        badge_text = "🏆 Premium Segment"
-                        badge_emoji = "🌟"
-                    elif percentile > 50:
-                        badge_color = "#007bff"
-                        badge_text = "💼 Upper Market"
-                        badge_emoji = "📈"
-                    elif percentile > 25:
-                        badge_color = "#17a2b8"
-                        badge_text = "🎯 Mid Market"
-                        badge_emoji = "✓"
+                st.subheader("🎯 Result")
+                r1, r2, r3 = st.columns([2, 2, 3])
+                with r1:
+                    st.markdown(f"### ${pred:,.0f}")
+                    if pctl > 75:
+                        col = "#FFD700"
+                    elif pctl > 50:
+                        col = "#007bff"
+                    elif pctl > 25:
+                        col = "#17a2b8"
                     else:
-                        badge_color = "#28a745"
-                        badge_text = "💚 Economy Segment"
-                        badge_emoji = "💰"
-
-                    st.markdown(
-                        f"""
-                        <div style="background: linear-gradient(135deg, {badge_color} 0%, {badge_color}dd 100%);
-                                    color: white; padding: 15px; border-radius: 10px;
-                                    text-align: center; font-weight: bold; font-size: 16px;
-                                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                            {badge_emoji} {badge_text}
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
+                        col = "#28a745"
+                    txt = (
+                        "🏆 Premium"
+                        if pctl > 75
+                        else "💼 Upper Market"
+                        if pctl > 50
+                        else "🎯 Mid Market"
+                        if pctl > 25
+                        else "💚 Economy"
                     )
-
-                with result_col2:
-                    st.markdown("#### 📊 Market Position")
-                    st.metric(
-                        label="Percentile Ranking",
-                        value=f"{percentile:.0f}th",
-                        delta=f"Higher than {percentile:.0f}% of inventory",
+                    badge_html = (
+                        f'<div style="background:{col};'
+                        "color:white;padding:12px;border-radius:8px;"
+                        'text-align:center;font-weight:bold">'
+                        f"{txt}</div>"
                     )
-
-                    # Price range context
-                    q25 = df_clean["price"].quantile(0.25)
-                    q75 = df_clean["price"].quantile(0.75)
-                    median = df_clean["price"].median()
-
-                    if prediction < q25:
-                        context = "Below Market Average"
-                    elif prediction > q75:
-                        context = "Above Market Average"
-                    else:
-                        context = "Within Normal Range"
-
-                    st.info(f"**Market Context:** {context}")
-
-                with result_col3:
-                    st.markdown("#### 📈 Market Benchmark")
-
-                    # Create market comparison gauge
-                    fig_gauge = go.Figure(
+                    st.markdown(badge_html, unsafe_allow_html=True)
+                with r2:
+                    st.metric("Percentile", f"{pctl:.0f}th", f"Higher than {pctl:.0f}%")
+                    med = df_clean["price"].median()
+                    st.info(f"**{'Above' if pred > med else 'Below'}** median")
+                with r3:
+                    fig = go.Figure(
                         go.Indicator(
                             mode="gauge+number+delta",
-                            value=prediction,
-                            delta={"reference": median, "increasing": {"color": "#007bff"}},
-                            domain={"x": [0, 1], "y": [0, 1]},
-                            title={"text": "Position in Market Range"},
+                            value=pred,
+                            delta={"reference": med},
                             gauge={
-                                "axis": {"range": [0, df_clean["price"].max() * 1.1]},  # Un poco más del max
+                                "axis": {"range": [0, df_clean["price"].max() * 1.1]},
                                 "bar": {"color": "darkblue"},
                                 "steps": [
+                                    {"range": [0, df_clean["price"].quantile(0.25)], "color": "lightgreen"},
                                     {
-                                        "range": [0, df_clean["price"].quantile(0.25)],
-                                        "color": "lightgreen",
-                                    },
-                                    {
-                                        "range": [
-                                            df_clean["price"].quantile(0.25),
-                                            df_clean["price"].quantile(0.75),
-                                        ],
+                                        "range": [df_clean["price"].quantile(0.25), df_clean["price"].quantile(0.75)],
                                         "color": "lightyellow",
                                     },
                                     {
-                                        "range": [
-                                            df_clean["price"].quantile(0.75),
-                                            df_clean["price"].max() * 1.1,
-                                        ],
+                                        "range": [df_clean["price"].quantile(0.75), df_clean["price"].max() * 1.1],
                                         "color": "salmon",
                                     },
                                 ],
-                                "threshold": {
-                                    "line": {"color": "red", "width": 4},
-                                    "thickness": 0.75,
-                                    "value": prediction,
-                                },
                             },
                         )
                     )
-                    fig_gauge.update_layout(height=300, margin=dict(l=10, r=10, t=50, b=10), font=dict(size=12))
-                    st.plotly_chart(fig_gauge, width="stretch")
+                    fig.update_layout(height=280, margin=dict(l=10, r=10, t=30, b=10))
+                    st.plotly_chart(fig, use_container_width=True)
+                try:
+                    import shap  # type: ignore[import]  # noqa: F401
 
-                    # Additional context
-                    st.caption(
-                        f"💡 **Reference:** Median market price is ${median:,.0f}. "
-                        f"Your estimate is {abs(prediction - median)/median*100:.1f}% "
-                        f"{'above' if prediction > median else 'below'} median."
-                    )
-
+                    with st.expander("🔬 SHAP Explanation"):
+                        st.info("SHAP available. Implement explainer based on your model.")
+                except ImportError:
+                    st.caption("💡 Install shap for model explanations")
             except Exception as e:
-                st.error(f"Prediction error: {str(e)}")
-                st.warning("Verify that input columns match those expected by the model.")
-
+                st.error(f"Prediction error: {e}")
     else:
-        st.error("Model not found. Train the model first.")
+        st.error("❌ Model not found. Place artifacts/model.joblib or run: python main.py --mode train")
+
+# POST-INSTALACIÓN: 1) Asegurar artifacts/model.joblib 2) Colocar vehicles_us.csv 3) Opcional: pip install pandera shap
