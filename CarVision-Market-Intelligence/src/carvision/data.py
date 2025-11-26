@@ -143,7 +143,10 @@ def build_preprocessor(
     categorical_pipeline = Pipeline(
         steps=[
             ("imputer", SimpleImputer(strategy=categorical_imputer)),
-            ("onehot", OneHotEncoder(handle_unknown=handle_unknown, sparse_output=False)),
+            (
+                "onehot",
+                OneHotEncoder(handle_unknown=handle_unknown, sparse_output=False),
+            ),
         ]
     )
 

@@ -245,10 +245,29 @@ class ModelEvaluator:
                     "count": int(mask.sum()),
                     "accuracy": float(accuracy_score(y_true_group, y_pred_group)),
                     "precision": float(
-                        precision_score(y_true_group, y_pred_group, average="weighted", zero_division=0)
+                        precision_score(
+                            y_true_group,
+                            y_pred_group,
+                            average="weighted",
+                            zero_division=0,
+                        )
                     ),
-                    "recall": float(recall_score(y_true_group, y_pred_group, average="weighted", zero_division=0)),
-                    "f1": float(f1_score(y_true_group, y_pred_group, average="weighted", zero_division=0)),
+                    "recall": float(
+                        recall_score(
+                            y_true_group,
+                            y_pred_group,
+                            average="weighted",
+                            zero_division=0,
+                        )
+                    ),
+                    "f1": float(
+                        f1_score(
+                            y_true_group,
+                            y_pred_group,
+                            average="weighted",
+                            zero_division=0,
+                        )
+                    ),
                 }
 
             # Compute disparate impact (ratio of positive rates)

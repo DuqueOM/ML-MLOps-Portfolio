@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
+# Global permissions for all jobs
+permissions:
+  actions: read
+  contents: read
+  security-events: write  # Required for CodeQL/SARIF upload
+
 env:
   PYTHON_VERSION: '3.12'
   MLFLOW_TRACKING_URI: http://localhost:5000
@@ -86,7 +92,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
-          file: ${{ matrix.project }}/coverage.xml
+          files: ${{ matrix.project }}/coverage.xml
           flags: ${{ matrix.project }}
           name: ${{ matrix.project }}-coverage-${{ matrix.python-version }}
           fail_ci_if_error: false

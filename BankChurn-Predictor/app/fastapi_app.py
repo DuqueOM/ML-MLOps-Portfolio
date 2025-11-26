@@ -183,7 +183,16 @@ def calculate_feature_contributions(customer_data: Dict[str, Any]) -> Dict[str, 
     base = {
         k: 0.0
         for k in customer_data.keys()
-        if k in ["Age", "NumOfProducts", "IsActiveMember", "Geography", "Balance", "CreditScore", "EstimatedSalary"]
+        if k
+        in [
+            "Age",
+            "NumOfProducts",
+            "IsActiveMember",
+            "Geography",
+            "Balance",
+            "CreditScore",
+            "EstimatedSalary",
+        ]
     }
 
     # Lógica simplificada (legacy)

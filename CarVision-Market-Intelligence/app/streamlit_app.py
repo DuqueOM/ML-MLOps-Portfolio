@@ -24,7 +24,12 @@ import yaml
 logging.basicConfig(level=logging.INFO, format="%(asctime)s|%(levelname)s|%(message)s")
 logger = logging.getLogger("CarVision")
 
-st.set_page_config(page_title="CarVision Intelligence", page_icon="🚗", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(
+    page_title="CarVision Intelligence",
+    page_icon="🚗",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
@@ -90,7 +95,9 @@ def find_data() -> Optional[Path]:
 
 
 @st.cache_data(ttl=None)
-def load_clean_data(_inv: str = None) -> Tuple[Optional[pd.DataFrame], Optional[pd.DataFrame]]:
+def load_clean_data(
+    _inv: str = None,
+) -> Tuple[Optional[pd.DataFrame], Optional[pd.DataFrame]]:
     if PROCESSED_PARQUET.exists() and not _inv:
         try:
             dc = pd.read_parquet(PROCESSED_PARQUET)
@@ -128,7 +135,11 @@ def load_clean_data(_inv: str = None) -> Tuple[Optional[pd.DataFrame], Optional[
 
 @st.cache_resource
 def load_model(_inv: str = None) -> Tuple[Any, Optional[str], Optional[datetime]]:
-    for p in [MODEL_PATH, ARTIFACTS_DIR / "model.joblib", ROOT_DIR / "models" / "model.joblib"]:
+    for p in [
+        MODEL_PATH,
+        ARTIFACTS_DIR / "model.joblib",
+        ROOT_DIR / "models" / "model.joblib",
+    ]:
         if p.exists():
             try:
                 return joblib.load(p), str(p), datetime.now()
@@ -262,7 +273,11 @@ if selected_tab == "📊 Overview":
         seg = pd.DataFrame(
             {
                 "Seg": ["Economy", "Mid", "Premium"],
-                "U": [(df_f["price"] < q1).sum(), df_f["price"].between(q1, q3).sum(), (df_f["price"] > q3).sum()],
+                "U": [
+                    (df_f["price"] < q1).sum(),
+                    df_f["price"].between(q1, q3).sum(),
+                    (df_f["price"] > q3).sum(),
+                ],
             }
         )
         fig = px.pie(
@@ -271,7 +286,11 @@ if selected_tab == "📊 Overview":
             names="Seg",
             hole=0.4,
             color="Seg",
-            color_discrete_map={"Economy": "#28a745", "Mid": "#17a2b8", "Premium": "#ffc107"},
+            color_discrete_map={
+                "Economy": "#28a745",
+                "Mid": "#17a2b8",
+                "Premium": "#ffc107",
+            },
         )
         fig.update_layout(height=350)
         st.plotly_chart(fig, use_container_width=True)
@@ -279,8 +298,18 @@ if selected_tab == "📊 Overview":
         st.subheader("📈 Price Distribution")
         fig2 = go.Figure()
         fig2.add_trace(go.Histogram(x=df_f["price"], nbinsx=50, marker_color="#007bff", opacity=0.7))
-        fig2.add_vline(x=ap, line_dash="dash", line_color="red", annotation_text=f"Mean: ${ap:,.0f}")
-        fig2.add_vline(x=mp_v, line_dash="dash", line_color="green", annotation_text=f"Median: ${mp_v:,.0f}")
+        fig2.add_vline(
+            x=ap,
+            line_dash="dash",
+            line_color="red",
+            annotation_text=f"Mean: ${ap:,.0f}",
+        )
+        fig2.add_vline(
+            x=mp_v,
+            line_dash="dash",
+            line_color="green",
+            annotation_text=f"Median: ${mp_v:,.0f}",
+        )
         fig2.update_layout(height=350)
         st.plotly_chart(fig2, use_container_width=True)
     col3, col4 = st.columns(2)
@@ -288,7 +317,13 @@ if selected_tab == "📊 Overview":
         st.subheader("🏆 Top Manufacturers")
         if "brand" in df_f.columns:
             tb = df_f["brand"].value_counts().head(10)
-            fig3 = px.bar(x=tb.values, y=tb.index, orientation="h", color=tb.values, color_continuous_scale="Blues")
+            fig3 = px.bar(
+                x=tb.values,
+                y=tb.index,
+                orientation="h",
+                color=tb.values,
+                color_continuous_scale="Blues",
+            )
             fig3.update_layout(height=400, showlegend=False)
             st.plotly_chart(fig3, use_container_width=True)
     with col4:
@@ -301,9 +336,13 @@ if selected_tab == "📊 Overview":
     with st.expander("🔍 Data Quality"):
         q1, q2, q3 = st.columns(3)
         q1.metric(
-            "Completeness", f"{100 - raw_df.isnull().sum().sum() / (raw_df.shape[0] * raw_df.shape[1]) * 100:.1f}%"
+            "Completeness",
+            f"{100 - raw_df.isnull().sum().sum() / (raw_df.shape[0] * raw_df.shape[1]) * 100:.1f}%",
         )
-        q2.metric("Unique Records", f"{100 - raw_df.duplicated().sum() / len(raw_df) * 100:.1f}%")
+        q2.metric(
+            "Unique Records",
+            f"{100 - raw_df.duplicated().sum() / len(raw_df) * 100:.1f}%",
+        )
         q3.metric("Total Records", f"{len(raw_df):,}")
 
 elif selected_tab == "📈 Market Analysis":
@@ -345,7 +384,10 @@ elif selected_tab == "📈 Market Analysis":
     with rc:
         st.metric("Total Value", f"${summary['kpis']['total_market_value'] / 1e6:.2f}M")
         st.metric("Avg Price", f"${summary['kpis']['average_price']:,.0f}")
-        st.metric("Potential", f"${summary['kpis'].get('potential_arbitrage_value', 0) / 1e3:.1f}K")
+        st.metric(
+            "Potential",
+            f"${summary['kpis'].get('potential_arbitrage_value', 0) / 1e3:.1f}K",
+        )
         margin = st.slider("Target Margin %", 5, 30, 15, key="slider_margin")
         st.success(f"ROI: **${summary['kpis']['total_market_value'] * margin / 100 / 1e6:.2f}M**")
     st.markdown("---")
@@ -392,7 +434,14 @@ elif selected_tab == "🧠 Model Metrics":
                 )
                 fig = go.Figure()
                 fig.add_trace(go.Bar(name="Model", x=df_c["M"], y=df_c["Mod"], marker_color="#007bff"))
-                fig.add_trace(go.Bar(name="Baseline", x=df_c["M"], y=df_c["Base"], marker_color="#6c757d"))
+                fig.add_trace(
+                    go.Bar(
+                        name="Baseline",
+                        x=df_c["M"],
+                        y=df_c["Base"],
+                        marker_color="#6c757d",
+                    )
+                )
                 fig.update_layout(barmode="group", height=400)
                 st.plotly_chart(fig, use_container_width=True)
             with c2:
@@ -439,14 +488,30 @@ elif selected_tab == "🔮 Price Predictor":
                 odo_in = st.number_input("Mileage", 0, 500000, 50000)
                 cyl_in = st.selectbox("Cylinders", [4, 6, 8, 10, 12], 1)
             with c2:
-                cond_in = st.selectbox("Condition", ["excellent", "good", "fair", "like new", "salvage", "new"])
+                cond_in = st.selectbox(
+                    "Condition",
+                    ["excellent", "good", "fair", "like new", "salvage", "new"],
+                )
                 fuel_in = st.selectbox("Fuel", ["gas", "diesel", "hybrid", "electric"])
                 trans_in = st.selectbox("Transmission", ["automatic", "manual", "other"])
             with c3:
                 type_in = st.selectbox(
-                    "Type", ["sedan", "SUV", "truck", "pickup", "coupe", "wagon", "hatchback", "van"]
+                    "Type",
+                    [
+                        "sedan",
+                        "SUV",
+                        "truck",
+                        "pickup",
+                        "coupe",
+                        "wagon",
+                        "hatchback",
+                        "van",
+                    ],
                 )
-                paint_in = st.selectbox("Color", ["white", "black", "silver", "grey", "blue", "red", "green"])
+                paint_in = st.selectbox(
+                    "Color",
+                    ["white", "black", "silver", "grey", "blue", "red", "green"],
+                )
                 drive_in = st.selectbox("Drive", ["4wd", "fwd", "rwd"])
             sub = st.form_submit_button("💰 Calculate Price", use_container_width=True)
         if sub:
@@ -486,11 +551,7 @@ elif selected_tab == "🔮 Price Predictor":
                     txt = (
                         "🏆 Premium"
                         if pctl > 75
-                        else "💼 Upper Market"
-                        if pctl > 50
-                        else "🎯 Mid Market"
-                        if pctl > 25
-                        else "💚 Economy"
+                        else ("💼 Upper Market" if pctl > 50 else "🎯 Mid Market" if pctl > 25 else "💚 Economy")
                     )
                     badge_html = (
                         f'<div style="background:{col};'
@@ -513,13 +574,22 @@ elif selected_tab == "🔮 Price Predictor":
                                 "axis": {"range": [0, df_clean["price"].max() * 1.1]},
                                 "bar": {"color": "darkblue"},
                                 "steps": [
-                                    {"range": [0, df_clean["price"].quantile(0.25)], "color": "lightgreen"},
                                     {
-                                        "range": [df_clean["price"].quantile(0.25), df_clean["price"].quantile(0.75)],
+                                        "range": [0, df_clean["price"].quantile(0.25)],
+                                        "color": "lightgreen",
+                                    },
+                                    {
+                                        "range": [
+                                            df_clean["price"].quantile(0.25),
+                                            df_clean["price"].quantile(0.75),
+                                        ],
                                         "color": "lightyellow",
                                     },
                                     {
-                                        "range": [df_clean["price"].quantile(0.75), df_clean["price"].max() * 1.1],
+                                        "range": [
+                                            df_clean["price"].quantile(0.75),
+                                            df_clean["price"].max() * 1.1,
+                                        ],
                                         "color": "salmon",
                                     },
                                 ],
