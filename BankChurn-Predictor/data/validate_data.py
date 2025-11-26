@@ -69,13 +69,17 @@ def validate_bankchurn_data(file_path: str | Path) -> None:
     # Rule 5: Target must be binary (0/1)
     unique_targets = df["Exited"].unique()
     if not set(unique_targets).issubset({0, 1}):
-        sys.exit(f"❌ Error: Target 'Exited' must be binary (0/1), found: {unique_targets}")
+        sys.exit(
+            f"❌ Error: Target 'Exited' must be binary (0/1), found: {unique_targets}"
+        )
 
     print("   ✅ Target column is binary (0/1)")
 
     # Rule 6: Dataset must have reasonable size (>= 100 rows for meaningful training)
     if len(df) < 100:
-        sys.exit(f"❌ Error: Dataset too small for training ({len(df)} rows). Minimum: 100")
+        sys.exit(
+            f"❌ Error: Dataset too small for training ({len(df)} rows). Minimum: 100"
+        )
 
     print(f"   ✅ Dataset size adequate: {len(df)} rows")
 
@@ -83,14 +87,18 @@ def validate_bankchurn_data(file_path: str | Path) -> None:
     class_dist = df["Exited"].value_counts(normalize=True)
     minority_pct = class_dist.min() * 100
     if minority_pct < 5:
-        print(f"   ⚠️  Warning: Severe class imbalance detected (minority class: {minority_pct:.1f}%)")
+        print(
+            f"   ⚠️  Warning: Severe class imbalance detected (minority class: {minority_pct:.1f}%)"
+        )
     else:
         print(f"   ✅ Class balance acceptable (minority class: {minority_pct:.1f}%)")
 
     # Rule 8: Check for duplicate rows
     n_duplicates = df.duplicated().sum()
     if n_duplicates > 0:
-        print(f"   ⚠️  Warning: Found {n_duplicates} duplicate rows ({n_duplicates/len(df)*100:.1f}%)")
+        print(
+            f"   ⚠️  Warning: Found {n_duplicates} duplicate rows ({n_duplicates/len(df)*100:.1f}%)"
+        )
     else:
         print("   ✅ No duplicate rows found")
 
@@ -103,11 +111,15 @@ def validate_bankchurn_data(file_path: str | Path) -> None:
 
     print("   ✅ Feature value ranges appear reasonable")
 
-    print("\n✅ All data quality checks passed! Dataset is ready for training pipeline.")
+    print(
+        "\n✅ All data quality checks passed! Dataset is ready for training pipeline."
+    )
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Validate BankChurn dataset quality before training")
+    parser = argparse.ArgumentParser(
+        description="Validate BankChurn dataset quality before training"
+    )
     parser.add_argument(
         "--data-path",
         type=str,

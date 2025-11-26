@@ -27,7 +27,12 @@ class TestModelConfig:
         """Test custom configuration values."""
         from src.bankchurn.config import EnsembleConfig
 
-        config = ModelConfig(test_size=0.3, random_state=123, cv_folds=10, ensemble=EnsembleConfig(voting="hard"))
+        config = ModelConfig(
+            test_size=0.3,
+            random_state=123,
+            cv_folds=10,
+            ensemble=EnsembleConfig(voting="hard"),
+        )
         assert config.test_size == 0.3
         assert config.random_state == 123
         assert config.cv_folds == 10
@@ -106,7 +111,12 @@ class TestBankChurnConfig:
     def sample_config_dict(self):
         """Sample configuration dictionary."""
         return {
-            "model": {"test_size": 0.25, "random_state": 42, "cv_folds": 5, "ensemble": {"voting": "soft"}},
+            "model": {
+                "test_size": 0.25,
+                "random_state": 42,
+                "cv_folds": 5,
+                "ensemble": {"voting": "soft"},
+            },
             "data": {
                 "target_column": "Exited",
                 "categorical_features": ["Gender", "Geography"],
@@ -168,7 +178,11 @@ class TestBankChurnConfig:
         invalid_config = {
             "model": {"test_size": 2.0},  # Invalid: > 1.0
             "data": {"target_column": "Exited"},
-            "mlflow": {"tracking_uri": "file:./mlruns", "experiment_name": "test", "enabled": True},
+            "mlflow": {
+                "tracking_uri": "file:./mlruns",
+                "experiment_name": "test",
+                "enabled": True,
+            },
         }
 
         with pytest.raises(ValidationError):

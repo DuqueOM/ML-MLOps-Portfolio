@@ -144,7 +144,10 @@ def test_train_command(mock_trainer_cls, mock_config_cls, mock_args, mock_data):
 
     mock_trainer = mock_trainer_cls.return_value
     mock_trainer.load_data.return_value = mock_data
-    mock_trainer.prepare_features.return_value = (mock_data.drop("Exited", axis=1), mock_data["Exited"])
+    mock_trainer.prepare_features.return_value = (
+        mock_data.drop("Exited", axis=1),
+        mock_data["Exited"],
+    )
     mock_trainer.train.return_value = (MagicMock(), {"f1": 0.8})
 
     # Run

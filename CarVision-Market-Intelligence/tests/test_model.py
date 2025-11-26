@@ -51,7 +51,9 @@ def test_model_fit_predict():
 
     # 2. Infer types on transformed data
     num_cols, cat_cols = infer_feature_types(
-        df_transformed, target="price", drop_columns=["price_per_mile", "price_category"]
+        df_transformed,
+        target="price",
+        drop_columns=["price_per_mile", "price_category"],
     )
 
     # 3. Build Preprocessor

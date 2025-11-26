@@ -18,7 +18,12 @@ def trained_model():
     X = np.random.randn(100, 5)
     y = np.random.choice([0, 1], 100)
 
-    model = Pipeline([("scaler", StandardScaler()), ("clf", RandomForestClassifier(n_estimators=10, random_state=42))])
+    model = Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            ("clf", RandomForestClassifier(n_estimators=10, random_state=42)),
+        ]
+    )
     model.fit(X, y)
 
     return model

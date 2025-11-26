@@ -80,4 +80,9 @@ def test_predict_raises_for_missing_columns(tmp_path: Path) -> None:
     reduced_df.to_csv(bad_input_csv, index=False)
 
     with pytest.raises(ValueError):
-        predict_batch(str(bad_input_csv), str(tmp_path / "out.csv"), cfg.paths["model_path"], cfg.features)
+        predict_batch(
+            str(bad_input_csv),
+            str(tmp_path / "out.csv"),
+            cfg.paths["model_path"],
+            cfg.features,
+        )
