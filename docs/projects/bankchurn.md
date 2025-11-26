@@ -2,20 +2,52 @@
 
 Customer churn prediction system for banking institutions.
 
-<!-- [PLACEHOLDER: Insert BankChurn demo GIF or screenshot here] -->
-<!-- ![BankChurn Demo](../media/bankchurn-demo.gif) -->
+<!-- MEDIA PLACEHOLDER: Demo GIF pending -->
+<!-- To add: Record 6-8 second GIF showing API request/response -->
+<!-- Path: media/gifs/bankchurn-demo.gif -->
+<!-- ![BankChurn API Demo](../media/gifs/bankchurn-demo.gif){ .off-glb } -->
 
 ## Overview
 
 **BankChurn Predictor** is a production-ready machine learning system that predicts customer churn probability for banking customers. It demonstrates enterprise-grade practices including MLflow experiment tracking, Pydantic configuration validation, and comprehensive testing.
 
-## Key Metrics
+## Model Performance
+
+### Production Metrics (Test Set)
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **AUC-ROC** | *[TO BE FILLED]* | Area under ROC curve |
+| **AUC-ROC** | 0.853 | Area under ROC curve |
+| **Accuracy** | 85.7% | Overall classification accuracy |
+| **Precision** | 69.2% | Positive predictive value |
+| **Recall** | 53.6% | True positive rate |
+| **F1 Score** | 0.604 | Harmonic mean of precision/recall |
+
+### Cross-Validation Results (5-Fold)
+
+| Metric | Mean | Std Dev |
+|--------|------|---------|
+| **AUC-ROC** | 0.844 | ±0.018 |
+| **F1 Score** | 0.596 | ±0.031 |
+| **Precision** | 0.672 | ±0.026 |
+| **Recall** | 0.537 | ±0.038 |
+
+### Confusion Matrix
+
+```
+              Predicted
+              Neg    Pos
+Actual Neg   1496    97
+       Pos    189   218
+```
+
+### Operational Metrics
+
+| Metric | Value | Description |
+|--------|-------|-------------|
 | **Test Coverage** | 78% | Unit + integration tests |
-| **Latency** | <50ms | P95 inference time |
+| **P95 Latency** | <50ms | Inference time |
+| **Model Size** | ~2 MB | Serialized pipeline |
 
 ## Quick Start
 

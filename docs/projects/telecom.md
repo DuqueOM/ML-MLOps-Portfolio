@@ -2,20 +2,54 @@
 
 Strategic customer intelligence for telecommunications.
 
-<!-- [PLACEHOLDER: Insert TelecomAI demo GIF or screenshot here] -->
-<!-- ![TelecomAI Demo](../media/telecom-demo.gif) -->
+<!-- MEDIA PLACEHOLDER: Demo GIF pending -->
+<!-- To add: Record 6-8 second GIF showing API request/response -->
+<!-- Path: media/gifs/telecom-demo.gif -->
+<!-- ![TelecomAI API Demo](../media/gifs/telecom-demo.gif){ .off-glb } -->
 
 ## Overview
 
 **TelecomAI Customer Intelligence** predicts whether customers should be recommended an upgraded plan based on their usage patterns. It demonstrates advanced ensemble methods with VotingClassifier and domain-specific feature engineering.
 
-## Key Metrics
+## Model Performance
+
+### Production Metrics
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **AUC-ROC** | *[TO BE FILLED]* | Area under ROC curve |
-| **Accuracy** | *[TO BE FILLED]* | Classification accuracy |
+| **AUC-ROC** | 0.840 | Area under ROC curve |
+| **Accuracy** | 81.2% | Overall classification accuracy |
+| **Precision** | 81.7% | Positive predictive value |
+| **Recall** | 49.7% | True positive rate |
+| **F1 Score** | 0.618 | Harmonic mean of precision/recall |
+
+### Model Interpretation
+
+```mermaid
+graph TD
+    subgraph "Prediction Distribution"
+        A["81.2% Accuracy"] --> B["High Precision<br/>81.7%"]
+        A --> C["Conservative Recall<br/>49.7%"]
+    end
+    
+    subgraph "Business Impact"
+        B --> D["Low false positive rate<br/>Fewer wrong upgrades"]
+        C --> E["May miss some<br/>upgrade candidates"]
+    end
+```
+
+!!! tip "Business Insight"
+    The model prioritizes precision over recall, meaning it's conservative about 
+    recommending upgrades—reducing the risk of recommending expensive plans to 
+    customers who won't benefit.
+
+### Operational Metrics
+
+| Metric | Value | Description |
+|--------|-------|-------------|
 | **Test Coverage** | 96% | Unit + integration tests |
+| **P95 Latency** | <30ms | Inference time |
+| **Model Size** | ~1.5 MB | Serialized pipeline |
 
 ## Quick Start
 
