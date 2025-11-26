@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
-"""
-Script to generate documentation from templates.
-Usage: python scripts/generate_docs_from_template.py --project-name "BankChurn-Predictor" --output-dir "BankChurn-Predictor"
+"""Script to generate documentation from templates.
+
+Usage::
+
+    python scripts/generate_docs_from_template.py \
+        --project-name "BankChurn-Predictor" \
+        --output-dir "BankChurn-Predictor"
 """
 import argparse
 import logging
@@ -15,7 +19,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--project-name", required=True, help="Name of the project")
     parser.add_argument("--output-dir", required=True, help="Directory to output generated docs")
-    parser.add_argument("--template-path", default="docs/templates/DOCS_TEMPLATE.md", help="Path to template")
+    parser.add_argument(
+        "--template-path",
+        default="docs/templates/DOCS_TEMPLATE.md",
+        help="Path to template",
+    )
     args = parser.parse_args()
 
     template_path = Path(args.template_path)

@@ -130,7 +130,13 @@ def test_preprocessor_with_numerical_only(config):
     """Test preprocessor with only numerical features."""
     trainer = ChurnTrainer(config)
 
-    X = pd.DataFrame({"num1": [1.0, 2.0, 3.0], "num2": [10.0, 20.0, 30.0], "num3": [100.0, 200.0, 300.0]})
+    X = pd.DataFrame(
+        {
+            "num1": [1.0, 2.0, 3.0],
+            "num2": [10.0, 20.0, 30.0],
+            "num3": [100.0, 200.0, 300.0],
+        }
+    )
 
     preprocessor = trainer.build_preprocessor(X)
     X_transformed = preprocessor.fit_transform(X)

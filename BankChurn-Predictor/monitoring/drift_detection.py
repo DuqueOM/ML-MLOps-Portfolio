@@ -141,8 +141,16 @@ def main():
     parser = argparse.ArgumentParser(description="Detect data drift using Evidently")
     parser.add_argument("--reference", required=True, help="Path to reference dataset (CSV)")
     parser.add_argument("--current", required=True, help="Path to current dataset (CSV)")
-    parser.add_argument("--output-html", default="reports/drift_report.html", help="Output HTML report path")
-    parser.add_argument("--output-json", default="reports/drift_metrics.json", help="Output JSON metrics path")
+    parser.add_argument(
+        "--output-html",
+        default="reports/drift_report.html",
+        help="Output HTML report path",
+    )
+    parser.add_argument(
+        "--output-json",
+        default="reports/drift_metrics.json",
+        help="Output JSON metrics path",
+    )
     parser.add_argument("--threshold", type=float, default=0.5, help="Drift threshold (0-1)")
     parser.add_argument("--target", default="Exited", help="Target column name")
 

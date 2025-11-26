@@ -11,8 +11,8 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-import joblib
-from sklearn.pipeline import Pipeline
+import joblib  # noqa: E402
+from sklearn.pipeline import Pipeline  # noqa: E402
 
 from src.bankchurn.config import (  # noqa: E402
     BankChurnConfig,
@@ -21,8 +21,8 @@ from src.bankchurn.config import (  # noqa: E402
     ModelConfig,
     RandomForestConfig,
 )
-from src.bankchurn.evaluation import ModelEvaluator
-from src.bankchurn.prediction import ChurnPredictor
+from src.bankchurn.evaluation import ModelEvaluator  # noqa: E402
+from src.bankchurn.prediction import ChurnPredictor  # noqa: E402
 from src.bankchurn.training import ChurnTrainer  # noqa: E402
 
 
@@ -31,7 +31,10 @@ def test_leakage_prevention():
     # Setup config
     config = BankChurnConfig(
         data=DataConfig(
-            target_column="target", numerical_features=["feat1"], categorical_features=["cat1"], drop_columns=[]
+            target_column="target",
+            numerical_features=["feat1"],
+            categorical_features=["cat1"],
+            drop_columns=[],
         ),
         model=ModelConfig(test_size=0.5, random_state=42),
         mlflow=MLflowConfig(enabled=False),
@@ -46,7 +49,18 @@ def test_leakage_prevention():
         {
             "feat1": [0.0] * 9 + [1000.0],
             "cat1": ["a"] * 10,
-            "target": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],  # Balanced target to allow stratify
+            "target": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                1,
+                1,
+                1,
+                1,
+            ],  # Balanced target to allow stratify
         }
     )
 
@@ -88,7 +102,12 @@ def test_leakage_prevention():
     print(f"Global mean: {global_mean}")
 
     # Assert scaler matches TRAIN mean
-    np.testing.assert_almost_equal(scaler_mean, expected_mean, decimal=5, err_msg="Scaler mean should match Train mean")
+    np.testing.assert_almost_equal(
+        scaler_mean,
+        expected_mean,
+        decimal=5,
+        err_msg="Scaler mean should match Train mean",
+    )
 
     # Assert scaler does NOT match Global mean (unless they accidentally coincide)
     if expected_mean != global_mean:
