@@ -55,8 +55,8 @@ Actual Neg   1496    97
 
 ```bash
 cd BankChurn-Predictor
-docker build -t bankchurn:latest .
-docker run -p 8000:8000 bankchurn:latest
+docker build -t ml-portfolio-bankchurn:latest .
+docker run -p 8001:8000 ml-portfolio-bankchurn:latest
 ```
 
 ### Using Python

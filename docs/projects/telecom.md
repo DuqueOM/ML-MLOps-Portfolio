@@ -57,8 +57,8 @@ graph TD
 
 ```bash
 cd TelecomAI-Customer-Intelligence
-docker build -t telecom:latest .
-docker run -p 8000:8000 telecom:latest
+docker build -t ml-portfolio-telecom:latest .
+docker run -p 8003:8000 ml-portfolio-telecom:latest
 ```
 
 ### API Access
