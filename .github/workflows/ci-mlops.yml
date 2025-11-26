@@ -323,11 +323,16 @@ jobs:
           pip install scikit-learn pandas joblib numpy
           chmod +x scripts/setup_demo_models.sh
           bash scripts/setup_demo_models.sh
+      - name: Build demo images for docker-compose
+        run: |
+          docker build -t ml-portfolio-bankchurn:latest -f BankChurn-Predictor/Dockerfile BankChurn-Predictor
+          docker build -t ml-portfolio-carvision:latest -f CarVision-Market-Intelligence/Dockerfile CarVision-Market-Intelligence
+          docker build -t ml-portfolio-telecom:latest -f TelecomAI-Customer-Intelligence/Dockerfile TelecomAI-Customer-Intelligence
       
       - name: Spin up Demo Stack
         run: |
-          # Build and start services
-          docker-compose -f docker-compose.demo.yml up -d --build
+          # Start services using pre-built images
+          docker-compose -f docker-compose.demo.yml up -d
           
           # Wait for services to be ready
           echo "Waiting for services..."
