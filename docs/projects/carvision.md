@@ -5,8 +5,7 @@ Vehicle price prediction platform with interactive dashboard.
 <!-- MEDIA PLACEHOLDER: Demo GIF pending -->
 <!-- To add: Record 6-8 second GIF showing Streamlit dashboard -->
 <!-- Path: media/gifs/carvision-demo.gif -->
-
-![CarVision Dashboard Demo](../media/gifs/carvision-demo.gif){ .off-glb style="display:none" }
+<!-- ![CarVision Dashboard Demo](../media/gifs/carvision-demo.gif){ .off-glb } -->
 
 ## Overview
 
