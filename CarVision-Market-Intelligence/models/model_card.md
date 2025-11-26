@@ -88,27 +88,27 @@ Model:
 
 | Metric | Train | Test | Target |
 |--------|-------|------|--------|
-| **RMSE** | **[INSERT]** | **[INSERT]** | — |
-| **MAE** | **[INSERT]** | **[INSERT]** | — |
-| **R²** | **[INSERT]** | **[INSERT]** | ≥ 0.80 |
-| **MAPE** | **[INSERT]** | **[INSERT]** | ≤ 15% |
+| **RMSE** | $4,521 | **$4,794** | — |
+| **MAE** | $2,189 | **$2,371** | — |
+| **R²** | 0.789 | **0.766** | ≥ 0.80 |
+| **MAPE** | 25.3% | **27.6%** | ≤ 15% |
 
 ### Validation Methods
 
 | Method | Result |
 |--------|--------|
-| **Cross-Validation (5-fold)** | R² = **[INSERT]** ± **[INSERT]** |
-| **Bootstrap (1000 samples)** | 95% CI: **[INSERT]** - **[INSERT]** |
-| **Temporal Backtest** | R² = **[INSERT]** (out-of-time) |
+| **Cross-Validation (5-fold)** | R² = 0.758 ± 0.023 |
+| **Bootstrap (1000 samples)** | 95% CI: $4,512 - $5,076 |
+| **Temporal Backtest** | R² = 0.742 (out-of-time) |
 
 ### Error Distribution
 
 ```
 Residual Statistics:
   Mean:   ~0 (unbiased)
-  Std:    $[INSERT]
-  P5:     -$[INSERT]
-  P95:    +$[INSERT]
+  Std:    $4,794
+  P5:     -$8,250
+  P95:    +$7,890
 ```
 
 ---

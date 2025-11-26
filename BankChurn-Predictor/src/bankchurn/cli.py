@@ -218,7 +218,10 @@ def create_parser() -> argparse.ArgumentParser:
     eval_parser.add_argument("--model", required=True, help="Path to trained model")
     eval_parser.add_argument("--preprocessor", default=None, help="Path to preprocessor (optional)")
     eval_parser.add_argument("--output", help="Path to save evaluation results")
-    eval_parser.add_argument("--fairness-features", help="Comma-separated list of sensitive features for fairness")
+    eval_parser.add_argument(
+        "--fairness-features",
+        help="Comma-separated list of sensitive features for fairness",
+    )
 
     # Predict command
     predict_parser = subparsers.add_parser("predict", help="Make predictions on new data")

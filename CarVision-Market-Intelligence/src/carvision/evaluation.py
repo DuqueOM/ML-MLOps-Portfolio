@@ -162,7 +162,12 @@ def _run_bootstrap(y_true, y_model, y_base, n_resamples: int, random_state: int)
 
 
 def _run_temporal_backtest(
-    df: pd.DataFrame, model: Any, target: str, feature_cols: List[str], test_size: float, artifacts_dir: Path
+    df: pd.DataFrame,
+    model: Any,
+    target: str,
+    feature_cols: List[str],
+    test_size: float,
+    artifacts_dir: Path,
 ) -> Dict[str, Any]:
     df_sorted = df.sort_values("model_year")
     n_test = max(1, int(len(df_sorted) * test_size))
@@ -196,7 +201,12 @@ def _run_temporal_backtest(
 
             y_g_pred = model.predict(group[feature_cols])
             rows.append(
-                {"segment_col": col, "segment_val": str(val), "n": len(group), "rmse": rmse(group[target], y_g_pred)}
+                {
+                    "segment_col": col,
+                    "segment_val": str(val),
+                    "n": len(group),
+                    "rmse": rmse(group[target], y_g_pred),
+                }
             )
 
     if rows:

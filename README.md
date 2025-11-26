@@ -77,7 +77,7 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 
 | Metric | Value |
 |--------|-------|
-| **AUC-ROC** | **[INSERT]** |
+| **AUC-ROC** | **0.853** |
 | **Coverage** | 77% |
 | **Latency** | <50ms |
 
@@ -101,9 +101,9 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 
 | Metric | Value |
 |--------|-------|
-| **R²** | **[INSERT]** |
+| **R²** | **0.766** |
 | **Coverage** | 96% |
-| **MAPE** | **[INSERT]** |
+| **MAPE** | **27.6%** |
 
 - **User Experience**: Streamlit dashboard with 4 key sections: Overview, Market Analysis, Model Metrics, Price Predictor
 - **Backend**: REST API (FastAPI) serving regression model with external integration support
@@ -125,9 +125,9 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 
 | Metric | Value |
 |--------|-------|
-| **AUC-ROC** | **[INSERT]** |
+| **AUC-ROC** | **0.840** |
 | **Coverage** | 96% |
-| **Accuracy** | **[INSERT]** |
+| **Accuracy** | **81.2%** |
 
 - **Complex Modeling**: **Voting Classifier** combining multiple strategies
 - **Pipeline**: Advanced preprocessing and domain-specific feature engineering

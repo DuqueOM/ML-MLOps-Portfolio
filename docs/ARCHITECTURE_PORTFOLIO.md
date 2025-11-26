@@ -73,6 +73,34 @@ graph TB
     GHA --> BANDIT
 ```
 
+## Request/Response Flow
+
+```mermaid
+graph TD
+    User([User / Client]) -->|HTTP Request| API[FastAPI Gateway]
+    
+    subgraph "Inference Layer"
+        API -->|Validate Data| Pydantic[Pydantic Schemas]
+        Pydantic -->|Transform| Pipeline[[sklearn Pipeline]]
+        Pipeline -->|Inference| Model[[Trained Model]]
+    end
+    
+    subgraph "Artifact Storage"
+        Model <..->|Load| MLflow[(MLflow Registry)]
+        MLflow <..->|Track| Storage[(Model Artifacts)]
+    end
+    
+    subgraph "Observability"
+        API -->|Log Metrics| Prometheus[(Prometheus)]
+        Prometheus --> Grafana[Grafana Dashboards]
+    end
+    
+    Model -->|Prediction| API
+    API -->|JSON Response| User
+```
+
+---
+
 ## Project Architecture Details
 
 ### BankChurn-Predictor

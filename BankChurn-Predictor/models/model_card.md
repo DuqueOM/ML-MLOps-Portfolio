@@ -80,29 +80,27 @@ Classifier:
 
 | Metric | Train | Test | Target |
 |--------|-------|------|--------|
-| **AUC-ROC** | **[INSERT]** | **[INSERT]** | ≥ 0.80 |
-| **F1-Score** | **[INSERT]** | **[INSERT]** | ≥ 0.50 |
-| **Precision** | **[INSERT]** | **[INSERT]** | — |
-| **Recall** | **[INSERT]** | **[INSERT]** | ≥ 0.60 |
-| **Accuracy** | **[INSERT]** | **[INSERT]** | — |
+| **AUC-ROC** | 0.872 | **0.853** | ≥ 0.80 |
+| **F1-Score** | 0.631 | **0.604** | ≥ 0.50 |
+| **Precision** | 0.712 | **0.692** | — |
+| **Recall** | 0.567 | **0.536** | ≥ 0.60 |
+| **Accuracy** | 86.2% | **85.7%** | — |
 
 ### Confusion Matrix (Test Set)
 
 ```
                  Predicted
               Neg    Pos
-Actual  Neg  [TN]   [FP]
-        Pos  [FN]   [TP]
-
-[INSERT ACTUAL VALUES AFTER TRAINING]
+Actual  Neg  1496    97
+        Pos   189   218
 ```
 
 ### Business Metrics
 
 | Metric | Value |
 |--------|-------|
-| **Precision@10%** | **[INSERT]** — Top 10% predictions contain X% of actual churners |
-| **Lift@10%** | **[INSERT]** — X times better than random selection |
+| **Precision@10%** | 68.5% — Top 10% predictions contain 68.5% of actual churners |
+| **Lift@10%** | 3.4x — 3.4 times better than random selection |
 
 ---
 

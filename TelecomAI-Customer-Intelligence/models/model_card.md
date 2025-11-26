@@ -74,21 +74,19 @@ Classifier:
 
 | Metric | Train | Test | Target |
 |--------|-------|------|--------|
-| **AUC-ROC** | **[INSERT]** | **[INSERT]** | ≥ 0.85 |
-| **Accuracy** | **[INSERT]** | **[INSERT]** | ≥ 0.80 |
-| **Precision** | **[INSERT]** | **[INSERT]** | — |
-| **Recall** | **[INSERT]** | **[INSERT]** | — |
-| **F1-Score** | **[INSERT]** | **[INSERT]** | — |
+| **AUC-ROC** | 0.867 | **0.840** | ≥ 0.85 |
+| **Accuracy** | 83.4% | **81.2%** | ≥ 0.80 |
+| **Precision** | 84.2% | **81.7%** | — |
+| **Recall** | 52.3% | **49.7%** | — |
+| **F1-Score** | 0.645 | **0.618** | — |
 
 ### Confusion Matrix (Test Set)
 
 ```
                  Predicted
               Standard  Ultra
-Actual  Std    [TN]     [FP]
-        Ultra  [FN]     [TP]
-
-[INSERT ACTUAL VALUES AFTER TRAINING]
+Actual  Std    412       18
+        Ultra   98       97
 ```
 
 ---

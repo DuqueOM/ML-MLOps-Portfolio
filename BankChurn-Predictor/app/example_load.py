@@ -54,7 +54,10 @@ def _load_separate(models_dir: Path) -> Tuple[Any, Any] | None:
         if isinstance(model_obj, Pipeline):
             # If it's a pipeline, extract preprocessor and classifier
             if "preprocessor" in model_obj.named_steps:
-                return model_obj.named_steps["preprocessor"], model_obj.named_steps["classifier"]
+                return (
+                    model_obj.named_steps["preprocessor"],
+                    model_obj.named_steps["classifier"],
+                )
             else:
                 # Fallback or assumption that model_obj is just classifier if preprocessor is separate?
                 # But new design says best_model.pkl is the full pipeline.

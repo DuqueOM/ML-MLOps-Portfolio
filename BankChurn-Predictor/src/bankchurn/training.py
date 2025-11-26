@@ -164,7 +164,10 @@ class ChurnTrainer:
         return Pipeline(
             [
                 ("imputer", SimpleImputer(strategy="constant", fill_value="missing")),
-                ("onehot", OneHotEncoder(drop="first", sparse_output=False, handle_unknown="ignore")),
+                (
+                    "onehot",
+                    OneHotEncoder(drop="first", sparse_output=False, handle_unknown="ignore"),
+                ),
             ]
         )
 
@@ -296,7 +299,11 @@ class ChurnTrainer:
 
         if use_cv:
             # Cross-validation
-            cv = StratifiedKFold(n_splits=self.config.model.cv_folds, shuffle=True, random_state=self.random_state)
+            cv = StratifiedKFold(
+                n_splits=self.config.model.cv_folds,
+                shuffle=True,
+                random_state=self.random_state,
+            )
 
             cv_scores = []
             for fold, (train_idx, val_idx) in enumerate(cv.split(X_train, y_train), 1):
