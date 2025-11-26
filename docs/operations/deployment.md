@@ -26,8 +26,13 @@ This guide covers deploying the ML-MLOps Portfolio services in various environme
 # Generate demo models (first time only)
 bash scripts/setup_demo_models.sh
 
+# Build images (first time or after changes)
+docker build -t ml-portfolio-bankchurn:latest -f BankChurn-Predictor/Dockerfile BankChurn-Predictor
+docker build -t ml-portfolio-carvision:latest -f CarVision-Market-Intelligence/Dockerfile CarVision-Market-Intelligence
+docker build -t ml-portfolio-telecom:latest -f TelecomAI-Customer-Intelligence/Dockerfile TelecomAI-Customer-Intelligence
+
 # Start the stack
-docker-compose -f docker-compose.demo.yml up -d --build
+docker-compose -f docker-compose.demo.yml up -d
 
 # Verify services
 docker-compose -f docker-compose.demo.yml ps

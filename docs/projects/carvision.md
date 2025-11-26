@@ -51,8 +51,8 @@ graph LR
 
 ```bash
 cd CarVision-Market-Intelligence
-docker build -t carvision:latest .
-docker run -p 8000:8000 -p 8501:8501 carvision:latest
+docker build -t ml-portfolio-carvision:latest .
+docker run -p 8002:8000 -p 8501:8501 ml-portfolio-carvision:latest
 ```
 
 ### Access Points

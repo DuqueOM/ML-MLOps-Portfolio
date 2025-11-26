@@ -141,7 +141,7 @@ CI=true pytest tests/ -v
 # docker-compose.demo.yml
 services:
   bankchurn:
-    image: bankchurn:latest  # Must match service name
+    image: ml-portfolio-bankchurn:latest  # Pre-built in CI
 ```
 
 ### Coverage below threshold

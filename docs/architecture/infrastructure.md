@@ -237,7 +237,7 @@ spec:
     spec:
       containers:
         - name: bankchurn-api
-          image: ghcr.io/duqueom/bankchurn:latest
+          image: ghcr.io/duqueom/ml-portfolio-bankchurn:latest
           ports:
             - containerPort: 8000
           resources:
