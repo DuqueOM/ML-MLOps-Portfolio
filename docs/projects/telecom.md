@@ -5,8 +5,7 @@ Strategic customer intelligence for telecommunications.
 <!-- MEDIA PLACEHOLDER: Demo GIF pending -->
 <!-- To add: Record 6-8 second GIF showing API request/response -->
 <!-- Path: media/gifs/telecom-demo.gif -->
-
-![TelecomAI API Demo](../media/gifs/telecom-demo.gif){ .off-glb style="display:none" }
+<!-- ![TelecomAI API Demo](../media/gifs/telecom-demo.gif){ .off-glb } -->
 
 ## Overview
 

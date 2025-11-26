@@ -5,8 +5,7 @@ Customer churn prediction system for banking institutions.
 <!-- MEDIA PLACEHOLDER: Demo GIF pending -->
 <!-- To add: Record 6-8 second GIF showing API request/response -->
 <!-- Path: media/gifs/bankchurn-demo.gif -->
-
-![BankChurn API Demo](../media/gifs/bankchurn-demo.gif){ .off-glb style="display:none" }
+<!-- ![BankChurn API Demo](../media/gifs/bankchurn-demo.gif){ .off-glb } -->
 
 ## Overview
 

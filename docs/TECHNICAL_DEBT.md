@@ -113,6 +113,7 @@ This document tracks technical debt items identified during code audits and ongo
 
 ## References
 
-- [Global Code Quality Report](../Reportes%20Portafolio/Global-Code-Quality-Report.md)
+<!-- Link to internal report (not in docs/) -->
+<!-- - [Global Code Quality Report](../Reportes%20Portafolio/Global-Code-Quality-Report.md) -->
 - [Radon Documentation](https://radon.readthedocs.io/)
 - [Clean Code Principles](https://clean-code-developer.com/)
