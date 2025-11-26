@@ -4,6 +4,7 @@ mkdocs-material>=9.5.0
 mkdocstrings>=0.24.0
 mkdocstrings-python>=1.8.0
 pymdown-extensions>=10.0
+mkdocs-mermaid2-plugin>=0.6.0
 
 # Quality checks
 codespell>=2.2.0

@@ -36,6 +36,7 @@ theme:
 
 plugins:
   - search
+  - mermaid2
   - mkdocstrings:
       handlers:
         python:
