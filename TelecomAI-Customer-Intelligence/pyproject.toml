@@ -46,17 +46,15 @@ target-version = ['py310']
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v --cov=. --cov-report=term-missing --cov-fail-under=72"
+addopts = "-v --cov=src/telecom --cov-report=term-missing --cov-fail-under=80"
 
 [tool.coverage.run]
-source = ["."]
+source = ["src/telecom"]
 omit = [
     "tests/*",
     "test_*.py",
     ".venv/*",
     "venv/*",
-    "data/validate_data.py",
-    "app/example_load.py",
 ]
 
 [tool.coverage.report]
