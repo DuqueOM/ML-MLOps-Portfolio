@@ -46,14 +46,23 @@ def main() -> None:
                     flat_metrics[k] = float(v)
             if flat_metrics:
                 mlflow.log_metrics(flat_metrics)
-        # Log artifacts if exist
+        # Log artifacts if exist. When using a remote tracking server with a
+        # file-based artifact store that is not shared with the local machine,
+        # logging artifacts can raise PermissionError (e.g. trying to write to
+        # "/mlflow" on the host). We treat artifact logging as best-effort so
+        # that the demo still records params and metrics without crashing.
         for art in [
             "artifacts/metrics_val.json",
             "artifacts/feature_columns.json",
         ]:
             p = Path(art)
             if p.exists():
-                mlflow.log_artifact(str(p))
+                try:
+                    mlflow.log_artifact(str(p))
+                except PermissionError:
+                    print(f"Skipping artifact {p}: permission denied while logging to MLflow.")
+                except Exception as exc:  # pragma: no cover
+                    print(f"Skipping artifact {p} due to unexpected error: {exc}")
         print(f"Logged CarVision run to {tracking_uri} in experiment '{experiment}'")
 
 

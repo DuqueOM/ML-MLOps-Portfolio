@@ -54,7 +54,33 @@ Refer to the **[Operations Runbook](docs/OPERATIONS_PORTFOLIO.md)** for detailed
 
 ---
 
-## 📊 Validation
+## 📊 MLflow Experiment Tracking
+
+All 3 projects are integrated with MLflow for unified experiment tracking. After starting the demo stack:
+
+### Log Experiments from Each Project
+
+```bash
+# Set the tracking URI to the central MLflow server
+export MLFLOW_TRACKING_URI=http://localhost:5000
+
+# Log experiments from each project
+cd BankChurn-Predictor && make mlflow-demo && cd ..
+cd CarVision-Market-Intelligence && make mlflow-demo && cd ..
+cd TelecomAI-Customer-Intelligence && make mlflow-demo && cd ..
+```
+
+### View in MLflow UI
+
+Open [http://localhost:5000](http://localhost:5000) to see:
+- **3 Experiments**: BankChurn, CarVision, TelecomAI
+- **Metrics**: Model performance (F1, AUC, Accuracy)
+- **Business Metrics**: Revenue impact, customer retention estimates
+- **Artifacts**: Config files, model checkpoints (when permissions allow)
+
+---
+
+## ✅ Validation
 
 ### Integration Tests
 To run the Python-based integration tests:
