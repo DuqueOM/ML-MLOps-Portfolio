@@ -1,5 +1,3 @@
-version: '3.8'
-
 # ML-MLOps Portfolio Demo Stack
 # Levanta los 3 proyectos principales + MLflow Tracking Server
 # Uso: docker-compose -f docker-compose.demo.yml up --build
@@ -70,7 +68,6 @@ services:
     container_name: carvision-api
     ports:
       - "8002:8000"
-      - "8501:8501"  # Streamlit dashboard
     volumes:
       - ./CarVision-Market-Intelligence/data:/app/data:ro
       - ./CarVision-Market-Intelligence/artifacts:/app/artifacts:ro
@@ -87,6 +84,25 @@ services:
     depends_on:
       mlflow:
         condition: service_healthy
+    networks:
+      - ml-network
+    restart: unless-stopped
+
+  # CarVision Streamlit Dashboard
+  carvision-dashboard:
+    image: ml-portfolio-carvision:latest
+    container_name: carvision-dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./CarVision-Market-Intelligence/data:/app/data:ro
+      - ./CarVision-Market-Intelligence/artifacts:/app/artifacts:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ARTIFACTS_DIR=artifacts
+    command: ["streamlit", "run", "app/streamlit_app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+    depends_on:
+      - carvision
     networks:
       - ml-network
     restart: unless-stopped

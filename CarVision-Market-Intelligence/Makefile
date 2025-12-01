@@ -29,10 +29,12 @@ serve:
 dashboard:
 	. .venv/bin/activate && streamlit run app/streamlit_app.py
 
-start-demo:
+start-demo: ## Demo: train + API (8000) + Dashboard (8501)
 	python -m pip install -r requirements.txt
 	python main.py --mode train --config configs/config.yaml
-	streamlit run app/streamlit_app.py --server.port 8501
+	@echo "Starting API on http://localhost:8000/docs and Dashboard on http://localhost:8501"
+	uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000 & \
+	streamlit run app/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
 
 docker-up:
 	docker-compose -f docker-compose.demo.yml up --build
