@@ -191,6 +191,30 @@ The entire portfolio is validated by a single master workflow (`ci-mlops.yml`) t
 | **Security** | Trivy, Bandit, Gitleaks |
 | **Registry** | GitHub Container Registry (GHCR) |
 
+### MLflow Experiment Tracking
+
+All 3 projects are integrated with a central MLflow server for unified experiment tracking.
+
+```bash
+# 1. Start the demo stack (includes MLflow server)
+docker compose -f docker-compose.demo.yml up -d
+
+# 2. Log experiments from each project
+export MLFLOW_TRACKING_URI=http://localhost:5000
+
+cd BankChurn-Predictor && make mlflow-demo && cd ..
+cd CarVision-Market-Intelligence && make mlflow-demo && cd ..
+cd TelecomAI-Customer-Intelligence && make mlflow-demo && cd ..
+```
+
+**View experiments at [http://localhost:5000](http://localhost:5000)**
+
+| Experiment | Metrics Logged |
+|------------|----------------|
+| **BankChurn** | F1, AUC, Precision, Recall + Business metrics (saved revenue) |
+| **CarVision** | RMSE, MAE, R² + Business metrics (market valuation) |
+| **TelecomAI** | Accuracy, F1, AUC + Business metrics (churn prevention ROI) |
+
 ---
 
 ## 📚 Documentation
