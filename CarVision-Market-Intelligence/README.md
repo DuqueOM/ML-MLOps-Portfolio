@@ -55,17 +55,26 @@ This project implements a robust Machine Learning solution designed for producti
 - Python 3.11+
 - Make (optional, but recommended)
 
-### One-Click Demo
-Run the entire stack (API + Dashboard + MLflow) with Docker Compose:
+### One-Click Demo (Local)
+Train the model and run both API + Dashboard locally:
 
 ```bash
 make start-demo
-# Or directly:
-docker-compose -f docker-compose.demo.yml up --build
 ```
 
-- **API**: [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Dashboard**: [http://localhost:8501](http://localhost:8501)
+- **API (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Dashboard (Streamlit)**: [http://localhost:8501](http://localhost:8501)
+
+### Full Portfolio Demo (Docker)
+Run all 3 projects together from the portfolio root:
+
+```bash
+cd ..  # Go to portfolio root
+docker compose -f docker-compose.demo.yml up --build
+```
+
+- **CarVision API**: [http://localhost:8002/docs](http://localhost:8002/docs)
+- **CarVision Dashboard**: [http://localhost:8501](http://localhost:8501)
 - **MLflow**: [http://localhost:5000](http://localhost:5000)
 
 ### Manual Setup
