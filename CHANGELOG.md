@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed (2025-12-01)
+- **CI/CD Optimization**:
+  - Consolidated `ci-portfolio-top3.yml` into `ci-mlops.yml` (single source of truth)
+  - Added GHCR publish job to main CI workflow
+  - Updated coverage thresholds: BankChurn 79%, CarVision 80%, TelecomAI 80%
+  - Fixed Python version consistency (3.12 across all workflows)
+  - Coverage now focuses on `src/` directories only
+
+- **Data Location Standardization**:
+  - Unified raw data to `data/raw/` across all projects
+  - BankChurn: already compliant (`data/raw/Churn.csv`)
+  - CarVision: moved from root to `data/raw/vehicles_us.csv`
+  - TelecomAI: moved from root to `data/raw/users_behavior.csv`
+  - Updated all configs, code, notebooks, tests, and docs
+
+- **Portfolio Root Cleanup**:
+  - Removed `fixes/` (historical patches, obsolete)
+  - Removed `reports/` (temporary dev logs, added to .gitignore)
+  - Removed `Portafolio/` (empty directory)
+  - Removed `infra/docker-compose-mlflow.yml` (redundant with root)
+  - Moved `Reportes Portafolio/` → `docs/historical-audits/`
+  - Moved status reports to `docs/`
+  - Removed `docs/guia_mlops/` from repo (personal use only)
+
+- **Test Coverage Improvements**:
+  - BankChurn: 79.5% coverage on src/ (87 tests)
+  - CarVision: 97% coverage on src/carvision (17 tests)
+  - TelecomAI: 97% coverage on src/telecom (14 tests)
+
 ### Fixed
 - **Critical CI/CD Integration Test Failures** (2025-11-24):
   - Fixed BankChurn Dockerfile Python version mismatch between builder (3.13) and runtime (3.12) stages, causing `ModuleNotFoundError` for uvicorn and pip.

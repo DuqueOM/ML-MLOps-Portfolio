@@ -46,16 +46,16 @@ target-version = ['py310']
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v --cov=. --cov-report=term-missing --cov-fail-under=70"
+addopts = "-v --cov=src/carvision --cov-report=term-missing --cov-fail-under=80"
 
 [tool.coverage.run]
-source = ["."]
+source = ["src/carvision"]
 omit = [
     "tests/*",
     "test_*.py",
     ".venv/*",
     "venv/*",
-    "data/validate_data.py",
+    "src/carvision/visualization.py",
 ]
 
 [tool.coverage.report]

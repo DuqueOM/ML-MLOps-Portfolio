@@ -107,3 +107,7 @@ audit-reports/
 *IMPROVEMENTS*.md
 reports/
 docs/guia_mlops/
+guia_mlops/
+docs/guia_mlops/
+fairness_metrics.json
+metrics.json
