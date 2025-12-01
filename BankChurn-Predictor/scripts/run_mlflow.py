@@ -19,7 +19,7 @@ def main() -> None:
     tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "file:./mlruns")
     experiment = os.getenv("MLFLOW_EXPERIMENT_NAME") or os.getenv("MLFLOW_EXPERIMENT") or "BankChurn"
 
-    results_path = Path("results/training_results.json")
+    results_path = Path("artifacts/training_results.json")
     metrics: dict[str, float] = {}
     business_metrics: dict[str, float] = {}
     if results_path.exists():
@@ -89,7 +89,7 @@ def main() -> None:
         # PermissionError. Treat artifacts as best-effort so the demo still
         # records params and metrics without crashing.
         for p in [
-            Path("results/training_results.json"),
+            Path("artifacts/training_results.json"),
             Path("configs/config.yaml"),
         ]:
             if p.exists():

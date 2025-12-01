@@ -147,11 +147,11 @@ paths:
     filename_template: "best_model_{timestamp}.pkl"
     preprocessor_template: "preprocessor_{timestamp}.pkl"
   
-  results:
-    directory: "results/"
-    metrics: "results/metrics/"
-    plots: "results/plots/"
-    reports: "results/reports/"
+  artifacts:
+    directory: "artifacts/"
+    metrics: "artifacts/metrics/"
+    plots: "artifacts/plots/"
+    training_results: "artifacts/training_results.json"
 
 # Configuración de API
 api:
