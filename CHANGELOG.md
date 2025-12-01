@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `docs/RELEASE.md`: Full release workflow with semantic versioning, GHCR publishing, rollback procedures, and model versioning.
   - `docs/DEPENDENCY_CONFLICTS.md`: Dependency conflict analysis (PyArrow, Pydantic, Python versions) with 4-phase remediation plan.
   - `docs/PR_PLAN.md`: 10 prioritized Pull Requests with complete specifications, diffs, risk assessment, and 4-week timeline.
-  - `PORTFOLIO_DELIVERABLES.md`: Executive summary of all deliverables.
+  - `docs/PORTFOLIO_DELIVERABLES.md`: Executive summary of all deliverables.
 
 - **Docker Standardization**:
   - Multi-stage Dockerfiles for CarVision and TelecomAI (50% image size reduction).
