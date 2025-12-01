@@ -4,7 +4,7 @@
 
 <!-- CI/CD Badges -->
 [![CI Pipeline](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
-[![Coverage](https://img.shields.io/badge/Coverage->75%25-brightgreen.svg)](reports/)
+[![Coverage](https://img.shields.io/badge/Coverage-79%25--97%25-brightgreen.svg)](reports/)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://python.org)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.demo.yml)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -77,8 +77,9 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 
 | Metric | Value |
 |--------|-------|
-| **AUC-ROC** | **0.853** |
-| **Coverage** | 77% |
+| **F1-Score** | **0.60** |
+| **AUC-ROC** | **0.85** |
+| **Coverage** | 79% |
 | **Latency** | <50ms |
 
 - **Architecture**: Modular design (`src/bankchurn`) installable as package
@@ -101,9 +102,9 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 
 | Metric | Value |
 |--------|-------|
-| **R²** | **0.766** |
-| **Coverage** | 96% |
-| **MAPE** | **27.6%** |
+| **R²** | **0.77** |
+| **RMSE** | **$4,794** |
+| **Coverage** | 97% |
 
 - **User Experience**: Streamlit dashboard with 4 key sections: Overview, Market Analysis, Model Metrics, Price Predictor
 - **Backend**: REST API (FastAPI) serving regression model with external integration support
@@ -125,9 +126,9 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 
 | Metric | Value |
 |--------|-------|
-| **AUC-ROC** | **0.840** |
-| **Coverage** | 96% |
-| **Accuracy** | **81.2%** |
+| **AUC-ROC** | **0.84** |
+| **F1-Score** | **0.62** |
+| **Coverage** | 97% |
 
 - **Complex Modeling**: **Voting Classifier** combining multiple strategies
 - **Pipeline**: Advanced preprocessing and domain-specific feature engineering
@@ -148,11 +149,11 @@ The entire portfolio is validated by a single master workflow (`ci-mlops.yml`) t
 ┌─────────────────────────────────────────────────────────────────┐
 │  CI/CD Pipeline: .github/workflows/ci-mlops.yml                 │
 ├─────────────────────────────────────────────────────────────────┤
-│  1. Build & Env    → Python 3.11/3.12 matrix, pip cache        │
+│  1. Build & Env    → Python 3.11/3.12 matrix, pip cache         │
 │  2. Data Quality   → Validate data before tests                 │
-│  3. Code Quality   → flake8, black, mypy, bandit               │
+│  3. Code Quality   → flake8, black, mypy, bandit                │
 │  4. Testing        → pytest with coverage reports               │
-│  5. Docker Build   → Multi-stage, push to GHCR                 │
+│  5. Docker Build   → Multi-stage, push to GHCR                  │
 │  6. Security       → Trivy container scanning                   │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -164,7 +165,7 @@ The entire portfolio is validated by a single master workflow (`ci-mlops.yml`) t
 | **Workflow file** | `.github/workflows/ci-mlops.yml` |
 | **Jobs** | `tests` → `coverage` → `docker-build` → `e2e` |
 | **Python versions** | 3.11, 3.12 (matrix testing) |
-| **Coverage threshold** | ≥70% per project |
+| **Coverage threshold** | BankChurn ≥79%, CarVision/TelecomAI ≥80% |
 | **Docker registry** | GitHub Container Registry (GHCR) |
 
 **If a run fails:**
@@ -275,7 +276,7 @@ ML-MLOps-Portfolio/
 | Metric | Status | Target |
 |--------|--------|--------|
 | **CI Pipeline** | 🟢 **Passing** | 100% Green |
-| **Test Coverage** | 🟢 **> 75% (Avg)** | > 70% |
+| **Test Coverage** | 🟢 **79%–97%** | ≥79% BankChurn, ≥80% others |
 | **Security** | 🛡️ **Scanned** | 0 Critical CVEs |
 | **Docker Builds** | 🐳 **Multi-Stage** | 50% Size Reduction |
 | **Python Support** | ✅ **3.11 & 3.12** | Matrix Testing |
@@ -378,7 +379,7 @@ docker run --rm aquasec/trivy image <image-name>
 
 <div align="center">
 
-**Status**: ✅ Production-Ready | **Last Updated**: November 2025
+**Status**: ✅ Production-Ready | **Last Updated**: December 2025
 
 *Star ⭐ this repo if you find it useful!*
 

@@ -1,7 +1,7 @@
 # BankChurn-Predictor
 
 [![CI Status](https://img.shields.io/github/actions/workflow/status/DuqueOM/ML-MLOps-Portfolio/ci-mlops.yml?branch=main&label=CI)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
-[![Coverage](https://img.shields.io/badge/Coverage-77%25-brightgreen)](../reports/)
+[![Coverage](https://img.shields.io/badge/Coverage-79%25-brightgreen)](../reports/)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue)](https://python.org)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](Dockerfile)
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2?logo=mlflow&logoColor=white)](https://mlflow.org)
@@ -36,7 +36,7 @@ Create GIF:
 
 ---
 
-> **TL;DR**: An enterprise-grade MLOps pipeline for predicting bank customer churn. Uses a VotingClassifier ensemble (Logistic Regression + Random Forest), served via high-performance FastAPI, with full reproducibility via DVC and Make.
+> **TL;DR**: An enterprise-grade MLOps pipeline for predicting bank customer churn. Uses a unified sklearn Pipeline with RandomForest classifier (configurable resampling for class imbalance), served via high-performance FastAPI, with full reproducibility via DVC and Make.
 
 ---
 
@@ -146,7 +146,7 @@ make train-hyperopt
 
 **Expected Artifacts:**
 - `models/best_model.pkl`: The full serialized scikit-learn pipeline (Preprocessor + Classifier).
-- `models/metrics.json`: JSON file containing F1 score, AUC, and other evaluation metrics.
+- `artifacts/training_results.json`: JSON file containing F1 score, AUC, and other evaluation metrics.
 - `models/model_card.md`: Automated model card describing the model's provenance and performance.
 
 ---
@@ -230,7 +230,7 @@ make check-drift
 | Component | Details |
 |-----------|---------|
 | **Workflow** | `.github/workflows/ci-mlops.yml` |
-| **Coverage** | 77% (threshold: 70%) |
+| **Coverage** | 79.5% (threshold: 79%) |
 | **Python** | 3.11, 3.12 (matrix) |
 
 **If tests fail**: Check the `tests` job logs → expand coverage artifact.

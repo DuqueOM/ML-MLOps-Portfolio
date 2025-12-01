@@ -1,7 +1,7 @@
 # CarVision Market Intelligence
 
 [![CI Status](https://img.shields.io/github/actions/workflow/status/DuqueOM/ML-MLOps-Portfolio/ci-mlops.yml?branch=main&label=CI)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
-[![Coverage](https://img.shields.io/badge/Coverage-96%25-brightgreen)](../reports/)
+[![Coverage](https://img.shields.io/badge/Coverage-97%25-brightgreen)](../reports/)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue)](https://python.org)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](Dockerfile)
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2?logo=mlflow&logoColor=white)](https://mlflow.org)
@@ -187,7 +187,7 @@ See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for system design, data flow, and co
 | Component | Details |
 |-----------|---------|
 | **Workflow** | `.github/workflows/ci-mlops.yml` |
-| **Coverage** | 96% (threshold: 70%) |
+| **Coverage** | 97% (threshold: 80%) |
 | **Python** | 3.11, 3.12 (matrix) |
 
 **If tests fail**: Check the `tests` job logs → expand coverage artifact.
