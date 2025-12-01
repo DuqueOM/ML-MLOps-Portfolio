@@ -82,18 +82,37 @@ def main() -> None:
             mlflow.log_metrics(metrics)
         if business_metrics:
             mlflow.log_metrics(business_metrics)
+
+        # Log artifacts if exist. When using a remote tracking server whose
+        # artifact store is not directly writable from the local machine
+        # (e.g. /mlflow inside a Docker container), artifact logging can raise
+        # PermissionError. Treat artifacts as best-effort so the demo still
+        # records params and metrics without crashing.
         for p in [
             Path("results/training_results.json"),
             Path("configs/config.yaml"),
         ]:
             if p.exists():
-                mlflow.log_artifact(str(p))
+                try:
+                    mlflow.log_artifact(str(p))
+                except PermissionError:
+                    print(f"Skipping artifact {p}: permission denied while logging to MLflow.")
+                except Exception:
+                    # Ignore unexpected errors during artifact logging in demo mode
+                    pass
 
         # Log combined model pack as artifact if present
         combined = Path("models/model_v1.0.0.pkl")
         model_registered = False
         if combined.exists():
-            mlflow.log_artifact(str(combined))
+            try:
+                mlflow.log_artifact(str(combined))
+            except PermissionError:
+                print(f"Skipping model artifact {combined}: permission denied while logging to MLflow.")
+            except Exception:
+                # Ignore unexpected errors in demo mode
+                pass
+
             # Try to register a sklearn Pipeline for the combined pack (optional)
             try:
                 obj = joblib.load(combined)
@@ -114,7 +133,7 @@ def main() -> None:
                     )
                     model_registered = True
             except Exception:
-                # registry may be unavailable (e.g., file store); ignore
+                # Registry or artifact store may be unavailable (e.g., file store); ignore
                 model_registered = False
 
         # Enforce minimum performance thresholds if provided

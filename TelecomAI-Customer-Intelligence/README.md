@@ -107,6 +107,44 @@ See [OPERATIONS.md](docs/OPERATIONS.md) for runbooks, monitoring, and deployment
 
 ---
 
+## 📊 MLflow Integration
+
+This project integrates with MLflow for experiment tracking and model registry.
+
+### Log Experiments to MLflow
+
+```bash
+# Point to the portfolio's central MLflow server
+export MLFLOW_TRACKING_URI=http://localhost:5000
+
+# Log a demo run with metrics and business impact
+make mlflow-demo
+```
+
+### What Gets Logged
+
+| Category | Items |
+|----------|-------|
+| **Parameters** | Model type, project name, run type |
+| **Metrics** | Accuracy, Precision, Recall, F1, ROC-AUC |
+| **Business Metrics** | Detected churners, saved revenue, net benefit |
+| **Artifacts** | metrics.json, config.yaml, plots (best-effort) |
+
+### Full Portfolio Demo (with MLflow UI)
+
+Run all 3 projects from the portfolio root:
+
+```bash
+cd ..  # Go to portfolio root
+docker compose -f docker-compose.demo.yml up --build -d
+
+# Access points:
+# - TelecomAI API: http://localhost:8003/docs
+# - MLflow UI: http://localhost:5000
+```
+
+---
+
 ## 📋 CI Notes
 
 | Component | Details |

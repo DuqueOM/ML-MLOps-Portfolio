@@ -163,10 +163,49 @@ The API documentation (Swagger UI) is available at `http://localhost:8000/docs` 
 
 ---
 
-## 📊 Monitoring
+## 📊 MLflow Integration
 
-- **Experiments**: View runs in MLflow (`http://localhost:5000`).
-- **Drift**: Periodic checks compare live traffic against training reference using `evidently`.
+This project integrates with MLflow for experiment tracking and model registry.
+
+### Log Experiments to MLflow
+
+```bash
+# Point to the portfolio's central MLflow server
+export MLFLOW_TRACKING_URI=http://localhost:5000
+
+# Log a demo run with metrics and business impact
+make mlflow-demo
+```
+
+### What Gets Logged
+
+| Category | Items |
+|----------|-------|
+| **Parameters** | Model config, data config, run type |
+| **Metrics** | CV metrics, test metrics (F1, AUC, Precision, Recall) |
+| **Business Metrics** | Detected at-risk customers, saved revenue proxy |
+| **Artifacts** | training_results.json, config.yaml, model (best-effort) |
+
+### Full Portfolio Demo (with MLflow UI)
+
+Run all 3 projects from the portfolio root:
+
+```bash
+cd ..  # Go to portfolio root
+docker compose -f docker-compose.demo.yml up --build -d
+
+# Access points:
+# - BankChurn API: http://localhost:8001/docs
+# - MLflow UI: http://localhost:5000
+```
+
+### Drift Monitoring
+
+Periodic drift checks compare live traffic against training reference using `evidently`:
+
+```bash
+make check-drift
+```
 
 ---
 
