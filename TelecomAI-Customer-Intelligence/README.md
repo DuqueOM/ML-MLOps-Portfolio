@@ -103,7 +103,7 @@ See [OPERATIONS.md](docs/OPERATIONS.md) for runbooks, monitoring, and deployment
 |----------|----------|-------------|
 | **Model** | `artifacts/model.joblib` | Trained pipeline (preprocessor + classifier) |
 | **Metrics** | `artifacts/metrics.json` | Evaluation metrics (AUC, Accuracy, F1) |
-| **Data** | `users_behavior.csv` | User behavior dataset (managed via DVC) |
+| **Data** | `data/raw/data/raw/users_behavior.csv` | User behavior dataset (managed via DVC) |
 
 ---
 

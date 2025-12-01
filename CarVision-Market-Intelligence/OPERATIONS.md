@@ -31,7 +31,7 @@ curl -f http://localhost:8000/health
 Retraining should be triggered when data drift is detected or new data becomes available.
 
 **Procedure:**
-1.  **Update Data:** Place the new `vehicles_us.csv` in `data/raw/`.
+1.  **Update Data:** Place the new `data/raw/vehicles_us.csv` in `data/raw/`.
 2.  **Run Pipeline:**
     ```bash
     make train

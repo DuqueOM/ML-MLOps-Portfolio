@@ -85,8 +85,7 @@ except ImportError:
 
 def find_data() -> Optional[Path]:
     for p in [
-        ROOT_DIR / PATHS.get("data_path", "vehicles_us.csv"),
-        ROOT_DIR / "vehicles_us.csv",
+        ROOT_DIR / PATHS.get("data_path", "data/raw/vehicles_us.csv"),
         ROOT_DIR / "data" / "raw" / "vehicles_us.csv",
     ]:
         if p.exists():
@@ -187,7 +186,7 @@ if "initialized" not in st.session_state:
 
 raw_df, df_clean = load_clean_data(st.session_state.get("cache_inv"))
 if raw_df is None:
-    st.error("❌ Dataset not found. Place vehicles_us.csv in root or data/raw/")
+    st.error("❌ Dataset not found. Place vehicles_us.csv in data/raw/")
     st.stop()
 if df_clean is None:
     st.error(f"❌ Invalid schema. Required columns: {REQUIRED_COLS}")
@@ -610,4 +609,7 @@ elif selected_tab == "🔮 Price Predictor":
     else:
         st.error("❌ Model not found. Place artifacts/model.joblib or run: python main.py --mode train")
 
-# POST-INSTALACIÓN: 1) Asegurar artifacts/model.joblib 2) Colocar vehicles_us.csv 3) Opcional: pip install pandera shap
+# POST-INSTALACIÓN:
+# 1) Asegurar artifacts/model.joblib
+# 2) Colocar data/raw/vehicles_us.csv
+# 3) Opcional: pip install pandera shap

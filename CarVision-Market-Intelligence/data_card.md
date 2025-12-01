@@ -7,7 +7,7 @@
 - **Target:** `price` (USD)
 
 ## Source & Licensing
-- **Origin:** Educational dataset distributed with the project (TripleTen). Resides at `vehicles_us.csv`.
+- **Origin:** Educational dataset distributed with the project (TripleTen). Resides at `data/raw/vehicles_us.csv`.
 - **License:** Educational/portfolio use (see `DATA_LICENSE`).
 - **PII:** None. Listing IDs and seller info were removed.
 

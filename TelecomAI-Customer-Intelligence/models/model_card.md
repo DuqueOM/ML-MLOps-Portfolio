@@ -50,7 +50,7 @@ Classifier:
 
 | Attribute | Value |
 |-----------|-------|
-| **Source** | User behavior dataset (`users_behavior.csv`) |
+| **Source** | User behavior dataset (`data/raw/data/raw/users_behavior.csv`) |
 | **Size** | ~3,000 records |
 | **Features** | 4 input features |
 | **Target** | `is_ultra` (1 = Ultra plan, 0 = Standard plan) |
@@ -121,7 +121,7 @@ cd TelecomAI-Customer-Intelligence
 pip install -r requirements.txt
 
 # 2. Ensure data is available
-# Place users_behavior.csv in data/raw/
+# Place data/raw/users_behavior.csv in data/raw/
 
 # 3. Train model
 python main.py --mode train

@@ -26,7 +26,7 @@
 ## 🔄 Retraining Pipeline
 
 To retrain the model with new data:
-1. Place new data in `users_behavior.csv` (or update DVC pointer).
+1. Place new data in `data/raw/data/raw/users_behavior.csv` (or update DVC pointer).
 2. Run training:
    ```bash
    python main.py --mode train --config configs/config.yaml

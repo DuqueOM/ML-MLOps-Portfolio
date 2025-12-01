@@ -7,7 +7,7 @@ import pandas as pd
 
 def test_dataset_schema():
     project_root = Path(__file__).resolve().parents[1]
-    csv_path = project_root / "users_behavior.csv"
+    csv_path = project_root / "data/raw/users_behavior.csv"
     assert csv_path.exists(), "users_behavior.csv no encontrado"
 
     df = pd.read_csv(csv_path)

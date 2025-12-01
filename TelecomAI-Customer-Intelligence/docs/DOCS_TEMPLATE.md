@@ -61,7 +61,7 @@ See [OPERATIONS.md](docs/OPERATIONS.md) for runbooks, monitoring, and deployment
 ## Artifacts & Data
 - **Model:** `artifacts/model.joblib`
 - **Metrics:** `artifacts/metrics.json`
-- **Data:** `users_behavior.csv` (Managed via DVC)
+- **Data:** `data/raw/data/raw/users_behavior.csv` (Managed via DVC)
 
 ## Maintainers
 - **Lead MLOps:** [Your Name/Contact]

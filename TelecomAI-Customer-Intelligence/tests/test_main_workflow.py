@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-
 from src.telecom.config import Config
 from src.telecom.evaluation import evaluate_model
 from src.telecom.prediction import predict_batch
@@ -54,7 +53,7 @@ def test_predict_creates_output_csv(tmp_path: Path) -> None:
     train_model(cfg)
 
     project_root = Path(__file__).resolve().parents[1]
-    df = pd.read_csv(project_root / "users_behavior.csv")
+    df = pd.read_csv(project_root / "data/raw/users_behavior.csv")
     input_cols = cfg.features
     input_df = df[input_cols].head(10)
     input_csv = tmp_path / "input.csv"
@@ -74,7 +73,7 @@ def test_predict_raises_for_missing_columns(tmp_path: Path) -> None:
     train_model(cfg)
 
     project_root = Path(__file__).resolve().parents[1]
-    df = pd.read_csv(project_root / "users_behavior.csv")
+    df = pd.read_csv(project_root / "data/raw/users_behavior.csv")
     reduced_df = df[cfg.features[:-1]].head(5)
     bad_input_csv = tmp_path / "bad_input.csv"
     reduced_df.to_csv(bad_input_csv, index=False)

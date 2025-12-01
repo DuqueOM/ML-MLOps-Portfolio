@@ -14,7 +14,7 @@ graph TD
     Model -->|Inference| Classifier[RandomForest/GradientBoosting]
     
     subgraph Training Pipeline
-        RawData[(users_behavior.csv)] -->|Load| ETL[Data Loader]
+        RawData[(data/raw/users_behavior.csv)] -->|Load| ETL[Data Loader]
         ETL -->|Split| Splitter[Train/Test Split]
         Splitter -->|Train| Trainer[Model Training]
         Trainer -->|Evaluate| Evaluator[Metrics Calculation]
@@ -23,7 +23,7 @@ graph TD
 ```
 
 ### 1. Data Ingestion & Processing
-- **Source:** CSV file (`users_behavior.csv`).
+- **Source:** CSV file (`data/raw/data/raw/users_behavior.csv`).
 - **Logic:** `src/telecom/data.py` handles loading and schema validation.
 - **Preprocessing:** Scikit-Learn `Pipeline` with `SimpleImputer` and `StandardScaler`. Encapsulated within the model artifact to ensure training-serving skew prevention.
 
