@@ -3,7 +3,7 @@ seed: 42
 dataset_year: 2024
 
 paths:
-  data_path: "vehicles_us.csv"
+  data_path: "data/raw/vehicles_us.csv"
   artifacts_dir: "artifacts"
   model_path: "artifacts/model.joblib"
   metrics_path: "artifacts/metrics.json"

@@ -4,7 +4,7 @@
 - **Baseline model**: Logistic Regression
 - **Version**: v1.0
 - **Task**: Predict if a customer should be on Ultra plan (`is_ultra` = 1) based on usage (`calls`, `minutes`, `messages`, `mb_used`).
-- **Dataset**: `users_behavior.csv` (tabular, synthetic/educational). Size ~3.2K rows.
+- **Dataset**: `data/raw/data/raw/users_behavior.csv` (tabular, synthetic/educational). Size ~3.2K rows.
 - **Target**: `is_ultra` (0/1)
 - **Features (raw)**: numeric — `calls`, `minutes`, `messages`, `mb_used`
 - **Features (engineered)**: `minutes_per_call`, `messages_per_call`, `mb_per_minute`

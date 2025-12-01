@@ -1,7 +1,7 @@
 # Data Card — TelecomAI Customer Intelligence
 
 ## Dataset Overview
-- **Name:** users_behavior.csv
+- **Name:** data/raw/users_behavior.csv
 - **Records:** ~3,214 subscribers
 - **Features:** `calls`, `minutes`, `messages`, `mb_used`
 - **Target:** `is_ultra` (1 = recomendar plan Ultra, 0 = plan Smart)
@@ -29,7 +29,7 @@ Adicionalmente, en el pipeline de preprocesamiento se generan features derivadas
 ## Splits & Versioning
 - Split estándar 80/20 estratificado (configurable en `configs/config.yaml`, seed=42).
 - Artefactos de entrenamiento guardados en `artifacts/` (`model.joblib`, `preprocessor.joblib`, `metrics.json`).
-- Dataset crudo permanece en `users_behavior.csv`; procesado se genera en runtime.
+- Dataset crudo permanece en `data/raw/data/raw/users_behavior.csv`; procesado se genera en runtime.
 
 ## Data Quality Considerations
 - Pequeñas variaciones de escala (minutes ≈ calls*avg_call_length) → normalizado con `StandardScaler`.

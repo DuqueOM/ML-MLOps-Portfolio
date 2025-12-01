@@ -73,7 +73,7 @@ def backtest_price_model(
 
 
 if __name__ == "__main__":
-    data_path = Path("vehicles_us.csv")
+    data_path = Path("data/raw/vehicles_us.csv")
     df = load_and_prepare(data_path)
     res = backtest_price_model(df)
     print(json.dumps(res, indent=2))

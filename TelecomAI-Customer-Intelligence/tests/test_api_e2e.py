@@ -4,9 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from fastapi.testclient import TestClient
-
 from app.fastapi_app import app
+from fastapi.testclient import TestClient
 from src.telecom.config import Config
 from src.telecom.training import train_model
 
@@ -33,7 +32,7 @@ def test_predict_endpoint_smoke():
     with TestClient(app) as client:
         # Load a single sample from dataset
         project_root = Path(__file__).resolve().parents[1]
-        df = pd.read_csv(project_root / "users_behavior.csv")
+        df = pd.read_csv(project_root / "data/raw/users_behavior.csv")
         features = ["calls", "minutes", "messages", "mb_used"]
         sample = df[features].iloc[0].to_dict()
 

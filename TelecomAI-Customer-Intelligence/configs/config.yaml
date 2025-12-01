@@ -2,7 +2,7 @@ project_name: TelecomAI-Customer-Intelligence
 random_seed: 42
 
 paths:
-  data_csv: users_behavior.csv
+  data_csv: data/raw/users_behavior.csv
   artifacts_dir: artifacts
   model_path: artifacts/model.joblib
   preprocessor_path: artifacts/preprocessor.joblib

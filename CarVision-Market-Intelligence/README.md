@@ -155,7 +155,7 @@ streamlit run app/streamlit_app.py
 Requirements for the dashboard:
 - Trained model artifact at `artifacts/model.joblib`.
 - Metrics files at `artifacts/metrics.json` (and optionally `metrics_baseline.json`, `metrics_bootstrap.json`, `metrics_temporal.json`).
-- Dataset `vehicles_us.csv` available in the project root or under `data/raw/`.
+- Dataset `data/raw/vehicles_us.csv` available in the project root or under `data/raw/`.
 
 Optional enhancements:
 - `pip install pandera` to enable data schema validation on load.

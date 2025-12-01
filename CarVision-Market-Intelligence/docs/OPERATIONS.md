@@ -32,7 +32,7 @@ Deployment is automated via GitHub Actions on merge to `main`.
 To update the model with new data:
 
 1.  **Update Data**:
-    Place new `vehicles_us.csv` in `data/raw/` or pull via DVC.
+    Place new `data/raw/vehicles_us.csv` in `data/raw/` or pull via DVC.
     ```bash
     dvc pull
     ```

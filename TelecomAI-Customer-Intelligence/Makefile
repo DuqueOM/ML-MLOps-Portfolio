@@ -14,7 +14,7 @@ eval:
 	$(PYTHON) main.py --mode eval --config $(CONFIG)
 
 predict:
-	$(PYTHON) main.py --mode predict --config $(CONFIG) --input_csv users_behavior.csv --output_path $(ARTIFACTS)/predictions.csv
+	$(PYTHON) main.py --mode predict --config $(CONFIG) --input_csv data/raw/users_behavior.csv --output_path $(ARTIFACTS)/predictions.csv
 
 serve:
 	uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000
