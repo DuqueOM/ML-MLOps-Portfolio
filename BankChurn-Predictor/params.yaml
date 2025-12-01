@@ -3,4 +3,4 @@ train:
   test_size: 0.2
   cv_folds: 5
 evaluate:
-  report: results/metrics
+  report: artifacts/metrics

@@ -75,7 +75,7 @@ python main.py --mode predict \
 
 7. **Persistencia de artefactos**
    - Modelo y preprocesador: `save_model(model_path, preprocessor_path)`.
-   - Resultados de entrenamiento: `results/training_results.json`:
+   - Resultados de entrenamiento: `artifacts/training_results.json`:
 
 ```json
 {
@@ -104,9 +104,9 @@ python main.py --mode predict \
 ## Integración con MLflow
 
 - `scripts/run_mlflow.py`:
-  - Lee `results/training_results.json`.
+  - Lee `artifacts/training_results.json`.
   - Registra métricas de CV (`cv_*`) y de test (`test_*`).
-  - Loguea como artefactos `results/training_results.json`, `configs/config.yaml` y el paquete `models/model_v1.0.0.pkl` si existe.
+  - Loguea como artefactos `artifacts/training_results.json`, `configs/config.yaml` y el paquete `models/model_v1.0.0.pkl` si existe.
   - Opcionalmente registra un `Pipeline` sklearn en el Model Registry (si backend lo permite).
   - Calcula métricas de negocio derivadas (p.ej. clientes en riesgo, clientes salvados y ROI proxy) a partir de la matriz de confusión y supuestos configurables (CLV medio y tasa de retención efectiva).
 
@@ -128,7 +128,7 @@ python main.py --mode predict \
   - AUC-ROC ≈ 0.867.
   - Recall ≈ 0.77 (clase churn).
 - Reportes adicionales:
-  - Matriz de confusión e informe de clasificación (ver `results/training_results.json`).
+  - Matriz de confusión e informe de clasificación (ver `artifacts/training_results.json`).
   - Posible análisis SHAP/feature importance documentado en README/model_card, no cubierto directamente por este script.
 
 ## Uso típico en un flujo MLOps

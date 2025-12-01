@@ -27,7 +27,7 @@
 6. **Evaluación:** `BankChurnPredictor.evaluate()` calcula métricas de test y objetos auxiliares (matriz de confusión, classification report).
 7. **Persistencia:**
    - `models/best_model.pkl` y `preprocessor_*.pkl` vía `save_model()`.
-   - `results/training_results.json` con `cv_results` y `test_results`.
+   - `artifacts/training_results.json` con `cv_results` y `test_results`.
    - Paquete combinado `models/model_v1.0.0.pkl` para demos/serving.
 
 ## Arquitectura de modelo
@@ -66,13 +66,13 @@
 
 ## MLOps y monitoreo
 
-- **Tracking:** `scripts/run_mlflow.py` lee `results/training_results.json` y registra:
+- **Tracking:** `scripts/run_mlflow.py` lee `artifacts/training_results.json` y registra:
   - métricas de CV (`cv_*`), métricas de test (`test_*`), artefactos de resultados y config.
   - opcionalmente registra un `Pipeline` sklearn en el Model Registry (si el backend lo soporta).
 - **Drift:** `monitoring/check_drift.py` (no detallado aquí) soporta KS/PSI y generación de reportes Evidently (si está instalado).
 - **Versionado:**
   - Checkpoints y preprocesador versionados con timestamps.
-  - `dvc.yaml` define un stage de entrenamiento que produce `models/` y `results/training_results.json`.
+  - `dvc.yaml` define un stage de entrenamiento que produce `models/` y `artifacts/training_results.json`.
 
 ## Estructura de carpetas (vista lógica)
 

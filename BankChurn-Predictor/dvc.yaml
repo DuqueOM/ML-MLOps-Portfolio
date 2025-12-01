@@ -15,7 +15,7 @@ stages:
     outs:
       - models/best_model.pkl
       - models/model_v1.0.0.pkl
-      - results/training_results.json
+      - artifacts/training_results.json
   evaluate:
     cmd: python main.py --mode evaluate --model models/best_model.pkl --config configs/config.yaml
     deps:
@@ -23,4 +23,4 @@ stages:
       - data/processed/churn_processed.csv
       - main.py
     outs:
-      - results/metrics
+      - artifacts/metrics

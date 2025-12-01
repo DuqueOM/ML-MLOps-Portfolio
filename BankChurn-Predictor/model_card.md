@@ -15,7 +15,7 @@
 - Divisiones: estratificadas train/val/test.
 
 ## Performance (demo)
-- CV (5-fold): f1_mean, roc_auc_mean registrados en `results/training_results.json`.
+- CV (5-fold): f1_mean, roc_auc_mean registrados en `artifacts/training_results.json`.
 - Test: `f1_score`, `roc_auc`, `precision`, `recall`, `accuracy`.
 
 ## Calibration
@@ -54,5 +54,5 @@
 - Reentrenamiento: mensual o ante drift significativo.
 
 ## Maintenance
-- Artefactos en `models/` (incluye `model_v1.0.0.pkl` empaquetado) y logs en `results/`.
+- Artefactos en `models/` (incluye `model_v1.0.0.pkl` empaquetado) y outputs en `artifacts/`.
 - MLflow opcional para registro de runs y (si disponible) Model Registry.

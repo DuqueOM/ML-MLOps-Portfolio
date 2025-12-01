@@ -90,7 +90,7 @@ def main() -> None:
     ap.add_argument("--ref", required=True, help="Reference CSV path")
     ap.add_argument("--cur", required=True, help="Current CSV path")
     ap.add_argument("--cols", nargs="*", default=DEFAULT_COLS, help="Columns to analyze")
-    ap.add_argument("--out-json", default="results/drift.json", help="Output JSON path")
+    ap.add_argument("--out-json", default="artifacts/drift.json", help="Output JSON path")
     ap.add_argument("--report-html", default=None, help="Optional Evidently HTML path")
     args = ap.parse_args()
 
