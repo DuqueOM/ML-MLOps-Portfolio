@@ -101,6 +101,12 @@ services:
       - PYTHONUNBUFFERED=1
       - ARTIFACTS_DIR=artifacts
     command: ["streamlit", "run", "app/streamlit_app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     depends_on:
       - carvision
     networks:
