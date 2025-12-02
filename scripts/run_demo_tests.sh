@@ -14,19 +14,28 @@ CARVISION_URL="http://localhost:8002"
 TELECOM_URL="http://localhost:8003"
 MLFLOW_URL="http://localhost:5000"
 
-# Helper function to check health
+# Helper function to check health with retries
 check_health() {
     local url=$1
     local name=$2
+    local max_retries=6
+    local retry_delay=10
+    
     echo -n "Checking $name ($url/health)... "
     
-    if curl -s -f "$url/health" > /dev/null; then
-        echo -e "${GREEN}OK${NC}"
-        return 0
-    else
-        echo -e "${RED}FAILED${NC}"
-        return 1
-    fi
+    for i in $(seq 1 $max_retries); do
+        if curl -s -f "$url/health" > /dev/null 2>&1; then
+            echo -e "${GREEN}OK${NC}"
+            return 0
+        fi
+        if [ $i -lt $max_retries ]; then
+            echo -n "retry $i/$max_retries... "
+            sleep $retry_delay
+        fi
+    done
+    
+    echo -e "${RED}FAILED${NC}"
+    return 1
 }
 
 # Helper function to check HTTP 200 on root/docs
