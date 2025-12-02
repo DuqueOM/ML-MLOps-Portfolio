@@ -1,6 +1,6 @@
 # Multi-stage Dockerfile para BankChurn Predictor
 # Stage 1: Builder - Compila dependencias
-FROM python:3.13-slim AS builder
+FROM python:3.11-slim AS builder
 
 # Metadatos
 LABEL maintainer="Daniel Duque <daniel.duque@example.com>"
@@ -37,7 +37,7 @@ RUN python -m venv /opt/venv && \
     pip install --no-cache-dir -r requirements_clean.txt
 
 # Stage 2: Runtime - Imagen final ligera
-FROM python:3.13-slim AS runtime
+FROM python:3.11-slim AS runtime
 
 # Variables de entorno
 ENV PYTHONUNBUFFERED=1
