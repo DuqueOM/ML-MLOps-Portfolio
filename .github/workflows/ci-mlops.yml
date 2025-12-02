@@ -346,16 +346,46 @@ jobs:
           # Start services using pre-built images
           docker-compose -f docker-compose.demo.yml up -d
           
-          # Wait for services to be ready
-          echo "Waiting for services..."
-          sleep 30
+          # Wait for services to be ready (increased for shap/heavy deps)
+          echo "Waiting for services to initialize..."
+          sleep 60
+          
+          # Show container status
           docker-compose -f docker-compose.demo.yml ps
-          docker-compose -f docker-compose.demo.yml logs --tail 20
+          
+          # Wait for health checks with retry logic
+          echo "Waiting for health checks..."
+          for service in bankchurn carvision telecom; do
+            echo "Checking $service..."
+            for i in {1..12}; do
+              if docker-compose -f docker-compose.demo.yml exec -T $service curl -sf http://localhost:8000/health > /dev/null 2>&1; then
+                echo "$service is healthy"
+                break
+              fi
+              echo "  Attempt $i/12 - $service not ready, waiting 10s..."
+              sleep 10
+            done
+          done
+          
+          # Final status
+          docker-compose -f docker-compose.demo.yml ps
+          echo "Recent logs:"
+          docker-compose -f docker-compose.demo.yml logs --tail 30
 
       - name: Run Integration Tests
         run: |
           chmod +x scripts/run_demo_tests.sh
           bash scripts/run_demo_tests.sh
+      
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== Container Status ==="
+          docker-compose -f docker-compose.demo.yml ps -a
+          echo "=== CarVision Logs ==="
+          docker-compose -f docker-compose.demo.yml logs carvision --tail 100
+          echo "=== All Logs ==="
+          docker-compose -f docker-compose.demo.yml logs --tail 50
 
       - name: Tear down
         if: always()
