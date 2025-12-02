@@ -34,7 +34,7 @@ RUN python -m venv /opt/venv && \
     pip install --no-cache-dir -r requirements_clean.txt
 
 # Stage 2: Runtime
-FROM python:3.13-slim AS runtime
+FROM python:3.11-slim AS runtime
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
