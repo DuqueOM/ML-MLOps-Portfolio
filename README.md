@@ -310,8 +310,8 @@ bash scripts/run_demo_tests.sh
 ### Manual Setup (BankChurn)
 ```bash
 # 1. Clone repository
-git clone https://github.com/DuqueOM/Portafolio-ML-MLOps.git
-cd Portafolio-ML-MLOps
+git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git
+cd ML-MLOps-Portfolio
 
 # 2. Using Docker Compose (easiest)
 docker-compose -f docker-compose.demo.yml up -d

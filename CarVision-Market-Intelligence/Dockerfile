@@ -1,6 +1,6 @@
 # Multi-stage Dockerfile for CarVision Market Intelligence
 # Stage 1: Builder
-FROM python:3.13-slim AS builder
+FROM python:3.11-slim AS builder
 
 # Metadata
 LABEL maintainer="Daniel Duque <daniel.duque@example.com>"

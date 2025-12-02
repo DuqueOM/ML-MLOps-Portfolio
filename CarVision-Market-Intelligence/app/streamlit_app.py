@@ -597,13 +597,18 @@ elif selected_tab == "🔮 Price Predictor":
                     )
                     fig.update_layout(height=280, margin=dict(l=10, r=10, t=30, b=10))
                     st.plotly_chart(fig, use_container_width=True)
+                # SHAP Explanations (included in Docker image)
                 try:
                     import shap  # type: ignore[import]  # noqa: F401
 
-                    with st.expander("🔬 SHAP Explanation"):
-                        st.info("SHAP available. Implement explainer based on your model.")
+                    with st.expander("🔬 SHAP Model Explanations", expanded=False):
+                        st.info(
+                            "✅ SHAP is available. Feature importance explanations "
+                            "can be implemented here using TreeExplainer or KernelExplainer."
+                        )
+                        st.caption("💡 See model_card.md for feature importance analysis.")
                 except ImportError:
-                    st.caption("💡 Install shap for model explanations")
+                    st.caption("ℹ️ SHAP not available in this environment (lightweight image).")
             except Exception as e:
                 st.error(f"Prediction error: {e}")
     else:
@@ -612,4 +617,4 @@ elif selected_tab == "🔮 Price Predictor":
 # POST-INSTALACIÓN:
 # 1) Asegurar artifacts/model.joblib
 # 2) Colocar data/raw/vehicles_us.csv
-# 3) Opcional: pip install pandera shap
+# Note: shap and pandera are included in requirements.txt

@@ -56,3 +56,7 @@ ipython>=7.0.0
 
 # HTTP Requests
 requests>=2.27.0
+
+# Model Explainability & Data Validation
+shap>=0.44.0
+pandera>=0.18.0
