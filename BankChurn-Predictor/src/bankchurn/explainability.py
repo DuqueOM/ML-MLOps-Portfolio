@@ -114,8 +114,7 @@ class ModelExplainer:
             self.explainer = None
 
     def get_feature_importance(self, X: Optional[pd.DataFrame] = None, top_n: int = 10) -> Dict[str, float]:
-        """
-        Get global feature importance scores.
+        """Get global feature importance scores.
 
         Args:
             X: Data to compute importance on (uses background if not provided)
@@ -124,8 +123,16 @@ class ModelExplainer:
         Returns:
             Dictionary of feature_name -> importance_score
         """
+        # If SHAP is not available, use fallback importance but still respect top_n
         if not SHAP_AVAILABLE or self.explainer is None:
-            return self._fallback_feature_importance()
+            importance_dict = self._fallback_feature_importance()
+            if not importance_dict:
+                return importance_dict
+
+            sorted_items = sorted(importance_dict.items(), key=lambda item: item[1], reverse=True)
+            if top_n is not None and top_n > 0:
+                sorted_items = sorted_items[:top_n]
+            return dict(sorted_items)
 
         try:  # pragma: no cover
             if X is None and hasattr(self, "_X_background_transformed"):
@@ -160,7 +167,7 @@ class ModelExplainer:
             sorted_importance = dict(sorted(importance_dict.items(), key=lambda x: x[1], reverse=True)[:top_n])
             return sorted_importance
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             logger.warning(f"Error computing SHAP importance: {e}")
             return self._fallback_feature_importance()
 
