@@ -1,13 +1,21 @@
 name: CML - Model Training Comparison
 
+# DISABLED: Redundant with MLflow experiment tracking.
+# This workflow compares metrics between PR and main branches,
+# but MLflow already provides comprehensive experiment comparison.
+# Re-enable if needed for specific PR-based model comparison.
+#
+# on:
+#   pull_request:
+#     branches: [ main ]
+#     paths:
+#       - '**/src/**'
+#       - '**/main.py'
+#       - '**/train*.py'
+#       - '**/configs/*.yaml'
+
 on:
-  pull_request:
-    branches: [ main ]
-    paths:
-      - '**/src/**'
-      - '**/main.py'
-      - '**/train*.py'
-      - '**/configs/*.yaml'
+  workflow_dispatch:  # Manual trigger only (for testing)
 
 env:
   PYTHON_VERSION: '3.12'
