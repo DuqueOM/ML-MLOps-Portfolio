@@ -52,6 +52,8 @@ tqdm>=4.62.0
 # HTTP Requests (for API testing)
 requests>=2.27.0
 
-# MLOps / Monitoring (optional)
+# MLOps / Monitoring / Explainability
 mlflow>=2.9
 evidently>=0.4.8
+prometheus-client>=0.17.0
+shap>=0.42.0

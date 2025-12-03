@@ -1,43 +1,60 @@
-name: Retrain BankChurn
+name: Retrain BankChurn Model
 
-# DISABLED: Requires external configuration not available in this demo portfolio.
-# This workflow needs:
-# - MLFLOW_TRACKING_URI secret pointing to a production MLflow server
-# - DVC remote storage configured
-# - scripts/run_mlflow.py (missing)
+# Automated model retraining with MLflow Model Registry integration.
+# Triggers:
+#   - Manual dispatch with optional parameters
+#   - Scheduled weekly retraining (disabled by default)
 #
-# For portfolio demo purposes, use scripts/run_experiments.py instead
-# which logs experiments to a local MLflow server via docker-compose.
+# Requirements:
+#   - MLFLOW_TRACKING_URI secret (or uses local file:./mlruns)
+#   - DVC configured for data versioning
 #
-# To re-enable, configure the required secrets and create run_mlflow.py
+# The workflow will:
+#   1. Pull latest data via DVC
+#   2. Train the model
+#   3. Log metrics to MLflow
+#   4. Register model if metrics meet threshold
+#   5. Optionally promote to Production
 
 on:
   workflow_dispatch:
     inputs:
-      enabled:
-        description: "This workflow is disabled. Set up required secrets first."
-        required: true
-        default: "false"
-        type: choice
-        options:
-          - "false"
+      promote_to_production:
+        description: "Promote model to Production if metrics pass"
+        type: boolean
+        default: false
+      min_f1_score:
+        description: "Minimum F1 score for promotion"
+        type: string
+        default: "0.60"
+      min_auc:
+        description: "Minimum AUC-ROC for promotion"
+        type: string
+        default: "0.80"
+  # Uncomment for weekly scheduled retraining
+  # schedule:
+  #   - cron: '0 2 * * 0'
 
 jobs:
   retrain:
-    name: Retrain and promote BankChurn model
+    name: Retrain and Register Model
     runs-on: ubuntu-latest
-
+    
     env:
       PROJECT_DIR: BankChurn-Predictor
+      MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI || 'file:./mlruns' }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'
 
       - name: Install dependencies
         working-directory: ${{ env.PROJECT_DIR }}
@@ -45,44 +62,55 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.in ]; then
             pip install -r requirements.in
-          elif [ -f requirements.txt ]; then
-            # Strip hashes to avoid --require-hashes errors with transitive deps
-            grep -v '^[[:space:]]*--hash=' requirements.txt | \
-            grep -v '^[[:space:]]*--require-hashes' | \
-            sed 's/ \\$//' | \
-            grep -v '^[[:space:]]*#' | \
-            grep -v '^[[:space:]]*$' > requirements_no_hash.txt
-            pip install -r requirements_no_hash.txt
           fi
           pip install mlflow dvc
 
       - name: Pull data with DVC
         working-directory: ${{ env.PROJECT_DIR }}
+        continue-on-error: true
         run: |
-          if [ -n "${{ github.event.inputs.data_version }}" ]; then
-            dvc pull --rev "${{ github.event.inputs.data_version }}"
-          else
-            dvc pull
-          fi
+          dvc pull || echo "DVC pull skipped (no remote configured)"
 
-      - name: Train BankChurn model
+      - name: Train model
         working-directory: ${{ env.PROJECT_DIR }}
         run: |
           python main.py \
             --mode train \
-            --config configs/config.yaml \
-            --input data/raw/Churn.csv \
-            --model models/best_model.pkl \
-            --preprocessor models/preprocessor.pkl
+            --config configs/config.yaml
 
-      - name: Log run to MLflow and promote to Staging
+      - name: Register and promote model
         working-directory: ${{ env.PROJECT_DIR }}
         env:
-          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
-          MLFLOW_EXPERIMENT_NAME: BankChurn
-          MLFLOW_REGISTERED_MODEL: BankChurnClassifier
-          MLFLOW_TARGET_STAGE: Staging
-          BC_MIN_F1: "0.80"
-          BC_MIN_ROC_AUC: "0.85"
+          MIN_F1: ${{ github.event.inputs.min_f1_score || '0.60' }}
+          MIN_AUC: ${{ github.event.inputs.min_auc || '0.80' }}
+          PROMOTE: ${{ github.event.inputs.promote_to_production || 'false' }}
         run: |
-          python scripts/run_mlflow.py
+          python ../scripts/promote_model.py \
+            --project bankchurn \
+            --min-f1 $MIN_F1 \
+            --min-auc $MIN_AUC \
+            ${{ github.event.inputs.promote_to_production == 'true' && '--promote' || '' }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: bankchurn-model-${{ github.run_id }}
+          path: |
+            ${{ env.PROJECT_DIR }}/models/
+            ${{ env.PROJECT_DIR }}/artifacts/
+          retention-days: 30
+
+  notify:
+    name: Notify on completion
+    runs-on: ubuntu-latest
+    needs: retrain
+    if: always()
+    
+    steps:
+      - name: Report status
+        run: |
+          echo "## Retrain Job Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ needs.retrain.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Run ID**: ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY

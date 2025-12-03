@@ -49,6 +49,7 @@ flake8>=4.0.0
 # MLOps / Monitoring
 mlflow>=2.9
 evidently>=0.4.8
+prometheus-client>=0.17.0
 
 # Jupyter Environment
 jupyter>=1.0.0

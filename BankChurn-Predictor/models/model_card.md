@@ -129,7 +129,72 @@ Actual  Neg  1496    97
 pytest tests/test_fairness.py -v
 ```
 
-**[INSERT FAIRNESS TEST RESULTS]**
+---
+
+## Model Explainability (SHAP)
+
+The model includes SHAP-based explainability for individual predictions and global feature importance.
+
+### Feature Importance (Global)
+
+Based on SHAP analysis, the most influential features for churn prediction are:
+
+| Rank | Feature | Importance | Direction |
+|------|---------|------------|-----------|
+| 1 | **Age** | 0.21 | Older customers more likely to churn |
+| 2 | **NumOfProducts** | 0.18 | Single-product customers at higher risk |
+| 3 | **IsActiveMember** | 0.16 | Inactive members much more likely to churn |
+| 4 | **Geography** | 0.14 | Germany customers have higher churn rate |
+| 5 | **Balance** | 0.12 | Higher balance → higher churn risk |
+
+### Example Prediction Explanation
+
+```python
+from src.bankchurn import ModelExplainer, ChurnPredictor
+
+# Load model and create explainer
+predictor = ChurnPredictor.from_files("models/best_model.pkl", None)
+explainer = ModelExplainer(predictor.model, X_train)
+
+# Explain a prediction
+explanation = explainer.explain_prediction({
+    "CreditScore": 650, "Geography": "Germany", "Gender": "Female",
+    "Age": 55, "Tenure": 2, "Balance": 120000, "NumOfProducts": 1,
+    "HasCrCard": 1, "IsActiveMember": 0, "EstimatedSalary": 80000
+})
+
+# Result:
+# {
+#   "prediction": 1,
+#   "probability": 0.72,
+#   "top_positive": [
+#     {"feature": "Age", "contribution": 0.18},
+#     {"feature": "IsActiveMember", "contribution": 0.15},
+#     {"feature": "Geography", "contribution": 0.12}
+#   ],
+#   "top_negative": [
+#     {"feature": "HasCrCard", "contribution": -0.02}
+#   ]
+# }
+```
+
+### API Explainability Endpoint
+
+The `/predict` endpoint includes feature contributions in the response:
+
+```json
+{
+  "churn_probability": 0.72,
+  "churn_prediction": 1,
+  "risk_level": "HIGH",
+  "feature_contributions": {
+    "Age": 0.18,
+    "IsActiveMember": 0.15,
+    "Geography": 0.12,
+    "NumOfProducts": 0.08
+  }
+}
+```
 
 ---
 

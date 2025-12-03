@@ -1,5 +1,11 @@
 """
 FastAPI application for BankChurn Predictor
+
+Features:
+- Real-time churn prediction with probability and risk level
+- Batch prediction support (up to 1000 customers)
+- Prometheus-compatible metrics endpoint
+- Health checks for Kubernetes readiness/liveness
 """
 
 import contextlib
@@ -12,7 +18,32 @@ from typing import Any, Dict, List, Optional
 import pandas as pd
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from pydantic import BaseModel, Field, validator
+
+# Prometheus metrics
+try:
+    from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
+
+    PROMETHEUS_AVAILABLE = True
+    REQUEST_COUNT = Counter(
+        "bankchurn_requests_total",
+        "Total HTTP requests",
+        ["method", "endpoint", "status"],
+    )
+    REQUEST_LATENCY = Histogram(
+        "bankchurn_request_duration_seconds",
+        "Request latency in seconds",
+        ["endpoint"],
+        buckets=[0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0],
+    )
+    PREDICTION_COUNT = Counter(
+        "bankchurn_predictions_total",
+        "Total predictions made",
+        ["risk_level"],
+    )
+except ImportError:
+    PROMETHEUS_AVAILABLE = False
 
 # Add project root to path to allow imports from src
 # app/ is one level deep, so parent is root
@@ -250,8 +281,12 @@ async def health_check():
     )
 
 
-@app.get("/metrics", response_model=ModelMetrics)
+@app.get("/metrics")
 async def get_metrics():
+    """Prometheus-compatible metrics endpoint."""
+    if PROMETHEUS_AVAILABLE:
+        return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
+    # Fallback to JSON metrics if prometheus_client not installed
     avg_time = (total_prediction_time / request_count * 1000) if request_count > 0 else 0
     return ModelMetrics(
         total_predictions=request_count,
@@ -267,6 +302,8 @@ async def predict_churn(customer: CustomerData):
     global request_count, total_prediction_time
 
     if predictor is None:
+        if PROMETHEUS_AVAILABLE:
+            REQUEST_COUNT.labels(method="POST", endpoint="/predict", status="503").inc()
         raise HTTPException(status_code=503, detail="Model not available")
 
     start_pred = time.time()
@@ -279,15 +316,22 @@ async def predict_churn(customer: CustomerData):
 
         prob = float(results.iloc[0]["probability"])
         pred = int(results.iloc[0]["prediction"])
+        risk_level = determine_risk_level(prob)
 
         pred_time = time.time() - start_pred
         request_count += 1
         total_prediction_time += pred_time
 
+        # Track Prometheus metrics
+        if PROMETHEUS_AVAILABLE:
+            REQUEST_COUNT.labels(method="POST", endpoint="/predict", status="200").inc()
+            REQUEST_LATENCY.labels(endpoint="/predict").observe(pred_time)
+            PREDICTION_COUNT.labels(risk_level=risk_level).inc()
+
         return PredictionResponse(
             churn_probability=prob,
             churn_prediction=pred,
-            risk_level=determine_risk_level(prob),
+            risk_level=risk_level,
             confidence=calculate_confidence(prob),
             feature_contributions=calculate_feature_contributions(customer_dict),
             model_version=model_metadata.get("version", "1.0.0"),
@@ -295,6 +339,8 @@ async def predict_churn(customer: CustomerData):
         )
     except Exception as e:
         logger.error(f"Prediction error: {e}")
+        if PROMETHEUS_AVAILABLE:
+            REQUEST_COUNT.labels(method="POST", endpoint="/predict", status="500").inc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
