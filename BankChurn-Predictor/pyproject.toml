@@ -150,6 +150,8 @@ omit = [
     "venv/*",
     "setup.py",
     "data/validate_data.py",
+    # Optional module with external dependency (SHAP)
+    "src/bankchurn/explainability.py",
 ]
 
 [tool.coverage.report]

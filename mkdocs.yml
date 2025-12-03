@@ -95,12 +95,12 @@ nav:
     - Portfolio Landing: portfolio_landing.md
     - Release Process: RELEASE.md
     - Technical Debt: TECHNICAL_DEBT.md
-    - Dependency Conflicts: DEPENDENCY_CONFLICTS.md
-    - PR Plan: PR_PLAN.md
-    - Deliverables: PORTFOLIO_DELIVERABLES.md
-    - Status: FINAL_PORTFOLIO_STATUS.md
   - Historical Audits:
     - Index: historical-audits/00_Index-Reportes.md
+    - Dependency Conflicts: historical-audits/DEPENDENCY_CONFLICTS.md
+    - PR Plan: historical-audits/PR_PLAN.md
+    - Deliverables: historical-audits/PORTFOLIO_DELIVERABLES.md
+    - Final Status: historical-audits/FINAL_PORTFOLIO_STATUS.md
     - BankChurn Report: historical-audits/BankChurn-Predictor-Reporte.md
     - CarVision Report: historical-audits/CarVision-Market-Intelligence-Reporte.md
     - TelecomAI Report: historical-audits/TelecomAI-Customer-Intelligence-Reporte.md
