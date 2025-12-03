@@ -118,11 +118,13 @@ class TestFallbackMethods:
 
     def test_fallback_feature_importance_no_model_attrs(self):
         """Test fallback when model has no importance attributes."""
-        mock_model = MagicMock()
-        del mock_model.feature_importances_
-        del mock_model.coef_
 
-        explainer = ModelExplainer(mock_model)
+        # Create a simple class without feature_importances_ or coef_
+        class DummyModel:
+            pass
+
+        dummy_model = DummyModel()
+        explainer = ModelExplainer(dummy_model)
         importance = explainer._fallback_feature_importance()
 
         assert importance == {"no_importance_available": 1.0}
