@@ -53,7 +53,11 @@ jobs:
             grep -v '^[[:space:]]*$' > requirements_no_hash.txt
             pip install -r requirements_no_hash.txt
           fi
-          pip install cml
+      
+      - name: Setup CML
+        uses: iterative/setup-cml@v2
+        with:
+          vega: false
       
       - name: Train model on PR branch
         id: train_pr
