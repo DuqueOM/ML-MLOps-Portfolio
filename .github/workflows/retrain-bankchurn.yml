@@ -1,12 +1,26 @@
 name: Retrain BankChurn
 
+# DISABLED: Requires external configuration not available in this demo portfolio.
+# This workflow needs:
+# - MLFLOW_TRACKING_URI secret pointing to a production MLflow server
+# - DVC remote storage configured
+# - scripts/run_mlflow.py (missing)
+#
+# For portfolio demo purposes, use scripts/run_experiments.py instead
+# which logs experiments to a local MLflow server via docker-compose.
+#
+# To re-enable, configure the required secrets and create run_mlflow.py
+
 on:
   workflow_dispatch:
     inputs:
-      data_version:
-        description: "DVC data version (tag/commit) to pull before training (optional)"
-        required: false
-        default: ""
+      enabled:
+        description: "This workflow is disabled. Set up required secrets first."
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
 
 jobs:
   retrain:
