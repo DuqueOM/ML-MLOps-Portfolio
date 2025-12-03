@@ -692,9 +692,9 @@ faker==38.0.0 \
     --hash=sha256:797aa03fa86982dfb6206918acc10ebf3655bdaa89ddfd3e668d7cc69537331a \
     --hash=sha256:ad4ea6fbfaac2a75d92943e6a79c81f38ecff92378f6541dea9a677ec789a5b2
     # via polyfactory
-fastapi==0.122.0 \
-    --hash=sha256:a456e8915dfc6c8914a50d9651133bd47ec96d331c5b44600baa635538a30d67 \
-    --hash=sha256:cd9b5352031f93773228af8b4c443eedc2ac2aa74b27780387b853c3726fb94b
+fastapi==0.123.5 \
+    --hash=sha256:54bbb660ca231d3985474498b51c621ddcf8888d9a4c1ecb10aa40ec217e4965 \
+    --hash=sha256:a9c708e47c0fa424139cddb8601d0f92d3111b77843c22e9c8d0164d65fe3c97
     # via
     #   -r requirements.in
     #   mlflow-skinny
