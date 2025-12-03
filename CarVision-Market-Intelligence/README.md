@@ -36,8 +36,9 @@ This project implements a robust Machine Learning solution designed for producti
 - **Reproducible Pipelines**: Managed via DVC/Make for consistent execution.
 - **Experiment Tracking**: MLflow integration for metrics and parameters.
 - **Containerization**: Optimized Docker images for training and inference.
-- **Quality Assurance**: High test coverage, type checking, and linting.
-- **Scalable Serving**: FastAPI for high-performance inference and Streamlit for interactive dashboards.
+- **Quality Assurance**: High test coverage (97%), type checking, and linting.
+- **Scalable Serving**: FastAPI with Prometheus metrics and Streamlit for interactive dashboards.
+- **Observability**: Prometheus metrics endpoint (`/metrics`) for production monitoring.
 
 ## 🚀 Quickstart
 

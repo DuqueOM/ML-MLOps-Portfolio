@@ -24,6 +24,12 @@
 
 A production-ready ML system for predicting telecom customer plan preferences using Scikit-Learn and FastAPI. Features automated pipelines, Dockerized inference, and comprehensive testing.
 
+### Key Features
+- **Production API**: FastAPI with Prometheus metrics endpoint for observability.
+- **High Coverage**: 97% test coverage with comprehensive unit and integration tests.
+- **Containerized**: Docker-ready with optimized multi-stage builds.
+- **Observability**: Prometheus metrics (`/metrics`) for production monitoring.
+
 ## Quickstart
 
 ### Prerequisites
