@@ -225,22 +225,22 @@ jobs:
 
 All 9 experiments (3 per project) tracked in the central MLflow server:
 
-![MLflow Experiments](../media/screenshots/mlflow-experiments.PNG)
+![MLflow Experiments](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/media/screenshots/mlflow-experiments.PNG)
 
 ### CI/CD Pipeline
 
 Unified GitHub Actions workflow with matrix testing:
 
-![GitHub Actions CI](../media/screenshots/github-actions-ci.PNG)
+![GitHub Actions CI](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/media/screenshots/github-actions-ci.PNG)
 
 ### API Documentation (Swagger UI)
 
 | BankChurn API | CarVision API | TelecomAI API |
 |---------------|---------------|---------------|
-| ![BankChurn](../media/screenshots/swagger-bankchurn.PNG) | ![CarVision](../media/screenshots/swagger-carvision.PNG) | ![TelecomAI](../media/screenshots/swagger-telecom.PNG) |
+| ![BankChurn](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/media/screenshots/swagger-bankchurn.PNG) | ![CarVision](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/media/screenshots/swagger-carvision.PNG) | ![TelecomAI](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/media/screenshots/swagger-telecom.PNG) |
 
 ### Streamlit Dashboard
 
 CarVision Market Intelligence dashboard with price predictor:
 
-![Streamlit Dashboard](../media/screenshots/streamlit-dashboard.PNG)
+![Streamlit Dashboard](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/media/screenshots/streamlit-dashboard.PNG)

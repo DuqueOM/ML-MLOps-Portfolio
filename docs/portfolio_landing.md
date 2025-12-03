@@ -102,8 +102,8 @@ All demo materials are available in `media/`:
 
 ## 7. Navigation
 
-- **[README.md](../README.md)**: Quick overview and demo commands
-- **[QUICK_START.md](../QUICK_START.md)**: One-command demo guide
+- **[README.md](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/README.md)**: Quick overview and demo commands
+- **[QUICK_START.md](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/QUICK_START.md)**: One-command demo guide
 - **[ARCHITECTURE_PORTFOLIO.md](ARCHITECTURE_PORTFOLIO.md)**: System design diagrams
 - **[OPERATIONS_PORTFOLIO.md](OPERATIONS_PORTFOLIO.md)**: Deployment and monitoring
 - **Project READMEs**: Detailed documentation per project
