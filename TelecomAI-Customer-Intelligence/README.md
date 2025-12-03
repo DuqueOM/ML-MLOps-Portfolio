@@ -8,28 +8,13 @@
 
 ---
 
-<!-- 
-=============================================================================
-🎬 DEMO GIF PLACEHOLDER
-=============================================================================
-TODO: Record a 6-8 second GIF showing:
-1. API prediction call (curl or Swagger UI)
-2. Response with plan recommendation
-
-Create GIF:
-1. Record screen: API request → response with prediction
-2. Convert: ffmpeg -i video.mp4 -vf "fps=15,scale=800:-1" telecom-demo.gif
-3. Place in: ../media/gifs/telecom-preview.gif
-4. Uncomment the line below
-=============================================================================
--->
-
 <div align="center">
 
-<!-- ![TelecomAI Demo](../media/gifs/telecom-preview.gif) -->
-**[🎬 DEMO GIF — PENDING]** <!-- Remove this line after adding GIF -->
+![TelecomAI Demo](../media/gifs/telecom-preview.gif)
 
-**[📺 Watch Full Demo Video](#)** <!-- TODO: Replace # with YouTube/Drive link -->
+### 📺 Portfolio Demo
+
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
 </div>
 
@@ -109,26 +94,33 @@ See [OPERATIONS.md](docs/OPERATIONS.md) for runbooks, monitoring, and deployment
 
 ## 📊 MLflow Integration
 
-This project integrates with MLflow for experiment tracking and model registry.
+This project integrates with MLflow for experiment tracking with **3 tracked experiments** comparing different classification approaches.
 
-### Log Experiments to MLflow
+### Tracked Experiments
+
+| Run | Model | Test Accuracy | Test F1 | Purpose |
+|-----|-------|---------------|---------|--------|
+| TL-1_Baseline_LogReg | LogisticRegression | 0.74 | 0.30 | Baseline |
+| TL-2_GradientBoosting_Tuned | GradientBoosting | 0.81 | 0.63 | Tuned |
+| **TL-3_RandomForest** | RandomForest | **0.82** | **0.63** | Best model |
+
+### Run Experiments
 
 ```bash
 # Point to the portfolio's central MLflow server
 export MLFLOW_TRACKING_URI=http://localhost:5000
 
-# Log a demo run with metrics and business impact
-make mlflow-demo
+# Run all TelecomAI experiments (from portfolio root)
+python scripts/run_experiments.py
 ```
 
 ### What Gets Logged
 
 | Category | Items |
 |----------|-------|
-| **Parameters** | Model type, project name, run type |
-| **Metrics** | Accuracy, Precision, Recall, F1, ROC-AUC |
-| **Business Metrics** | Detected churners, saved revenue, net benefit |
-| **Artifacts** | metrics.json, config.yaml, plots (best-effort) |
+| **Parameters** | n_estimators, max_depth, learning_rate |
+| **Metrics** | train/test accuracy, F1, ROC-AUC |
+| **Tags** | run_type (baseline/tuned/alternative), project |
 
 ### Full Portfolio Demo (with MLflow UI)
 

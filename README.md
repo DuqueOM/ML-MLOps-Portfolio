@@ -17,33 +17,15 @@
 
 ---
 
-<!-- 
-=============================================================================
-🎬 DEMO VIDEO & GIF SECTION
-=============================================================================
-TODO: Replace the placeholder below with your actual GIF and video links.
-
-To create the GIF:
-1. Record a 6-8 second demo of a prediction
-2. Convert to GIF using: ffmpeg -i video.mp4 -vf "fps=15,scale=800:-1" demo.gif
-3. Place in media/gifs/portfolio-demo.gif
-
-Video options:
-- Upload to YouTube (unlisted) and link here
-- Use GitHub Releases to host MP4 files
-- Use Google Drive with public link
-=============================================================================
--->
-
 <div align="center">
 
-<!-- 🎬 [PLACEHOLDER: INSERT DEMO GIF HERE] -->
-<!-- ![Portfolio Demo](media/gifs/portfolio-demo.gif) -->
+![Portfolio Demo](media/gifs/portfolio-demo.gif)
 
-**[📺 WATCH FULL DEMO VIDEO — CLICK HERE](#)** 
-<!-- TODO: Replace # with actual video link (YouTube/Drive) -->
+### 📺 Watch the Full Demo
 
-*See all 3 projects in action: API predictions, dashboards, and CI/CD pipeline*
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+
+*End-to-end walkthrough: Architecture, MLflow experiments, API demos, and Streamlit dashboards*
 
 </div>
 
@@ -68,74 +50,84 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 
 ### 🏦 1. [BankChurn Predictor](BankChurn-Predictor/) — Customer Churn Prediction
 
-<!-- 
-🎬 [PLACEHOLDER: BANKCHURN GIF]
+<details>
+<summary>🎬 Click to expand demo</summary>
+
 ![BankChurn Demo](media/gifs/bankchurn-preview.gif)
--->
 
-**Robust customer churn prediction system for banking**
+</details>
 
-| Metric | Value |
-|--------|-------|
-| **F1-Score** | **0.60** |
-| **AUC-ROC** | **0.85** |
-| **Coverage** | 79% |
-| **Latency** | <50ms |
+**Production-grade customer churn prediction system for banking**
 
-- **Architecture**: Modular design (`src/bankchurn`) installable as package
-- **MLOps**: MLflow experiment tracking, Pydantic config validation, green CI/CD pipeline
-- **Tech Stack**: FastAPI, Scikit-learn, Docker, DVC
+| Metric | Value | Notes |
+|--------|-------|-------|
+| **F1-Score** | **0.64** | Tuned RandomForest |
+| **AUC-ROC** | **0.87** | 3 experiments tracked |
+| **Coverage** | 79% | Unit + Integration |
+| **Latency** | <50ms | FastAPI async |
+
+- **Architecture**: Modular Python package (`src/bankchurn`) with Pydantic config validation
+- **MLOps**: MLflow experiment tracking with baseline/tuned/overfit comparison runs
+- **Tech Stack**: FastAPI, Scikit-learn (Ensemble), Docker, DVC
 - **Model Card**: [View](BankChurn-Predictor/models/model_card.md)
 
-[📂 View Project →](BankChurn-Predictor/) | [📺 Video Demo](#) <!-- TODO: Add video link -->
+[📂 View Project →](BankChurn-Predictor/) | [📺 Video Demo](https://youtu.be/qmw9VlgUcn8)
 
 ---
 
 ### 🚗 2. [CarVision Market Intelligence](CarVision-Market-Intelligence/) — Vehicle Price Prediction
 
-<!-- 
-🎬 [PLACEHOLDER: CARVISION GIF]
-![CarVision Demo](media/gifs/carvision-preview.gif)
--->
+<details>
+<summary>🎬 Click to expand demo (API + Streamlit)</summary>
 
-**Vehicle valuation platform with BI Dashboard and API**
+**API Demo:**
+![CarVision API Demo](media/gifs/carvision-preview.gif)
 
-| Metric | Value |
-|--------|-------|
-| **R²** | **0.77** |
-| **RMSE** | **$4,794** |
-| **Coverage** | 97% |
+**Streamlit Dashboard:**
+![Streamlit Dashboard](media/gifs/streamlit-carvision.gif)
 
-- **User Experience**: Streamlit dashboard with 4 key sections: Overview, Market Analysis, Model Metrics, Price Predictor
-- **Backend**: REST API (FastAPI) serving regression model with external integration support
-- **Modeling**: Optimized Random Forest with `[features → pre → model]` pipeline and advanced metrics (bootstrap, temporal backtest)
+</details>
+
+**Vehicle valuation platform with BI Dashboard and REST API**
+
+| Metric | Value | Notes |
+|--------|-------|-------|
+| **R²** | **0.77** | RandomForest tuned |
+| **RMSE** | **$4,396** | 3 experiments tracked |
+| **Coverage** | 97% | Comprehensive tests |
+
+- **User Experience**: Streamlit dashboard with 4 sections: Overview, Market Analysis, Model Metrics, Price Predictor
+- **Backend**: REST API (FastAPI) with centralized `FeatureEngineer` class for consistent inference
+- **Modeling**: Optimized RandomForest with `[features → pre → model]` pipeline, bootstrap CI, temporal backtest
 - **Model Card**: [View](CarVision-Market-Intelligence/models/model_card.md)
 
-[📂 View Project →](CarVision-Market-Intelligence/) | [📺 Video Demo](#) <!-- TODO: Add video link -->
+[📂 View Project →](CarVision-Market-Intelligence/) | [📺 Video Demo](https://youtu.be/qmw9VlgUcn8)
 
 ---
 
 ### 📱 3. [TelecomAI Customer Intelligence](TelecomAI-Customer-Intelligence/) — Plan Recommendation
 
-<!-- 
-🎬 [PLACEHOLDER: TELECOMAI GIF]
+<details>
+<summary>🎬 Click to expand demo</summary>
+
 ![TelecomAI Demo](media/gifs/telecom-preview.gif)
--->
+
+</details>
 
 **Strategic customer intelligence for telecommunications**
 
-| Metric | Value |
-|--------|-------|
-| **AUC-ROC** | **0.84** |
-| **F1-Score** | **0.62** |
-| **Coverage** | 97% |
+| Metric | Value | Notes |
+|--------|-------|-------|
+| **AUC-ROC** | **0.84** | GradientBoosting |
+| **F1-Score** | **0.63** | 3 experiments tracked |
+| **Coverage** | 97% | Full test suite |
 
-- **Complex Modeling**: **Voting Classifier** combining multiple strategies
-- **Pipeline**: Advanced preprocessing and domain-specific feature engineering
-- **Automation**: End-to-end tests integrated in CI pipeline
+- **Modeling**: GradientBoosting and RandomForest classifiers with experiment comparison
+- **Pipeline**: Standardized preprocessing with MLflow tracking
+- **Automation**: End-to-end tests integrated in unified CI pipeline
 - **Model Card**: [View](TelecomAI-Customer-Intelligence/models/model_card.md)
 
-[📂 View Project →](TelecomAI-Customer-Intelligence/) | [📺 Video Demo](#) <!-- TODO: Add video link -->
+[📂 View Project →](TelecomAI-Customer-Intelligence/) | [📺 Video Demo](https://youtu.be/qmw9VlgUcn8)
 
 ---
 
@@ -194,27 +186,32 @@ The entire portfolio is validated by a single master workflow (`ci-mlops.yml`) t
 
 ### MLflow Experiment Tracking
 
-All 3 projects are integrated with a central MLflow server for unified experiment tracking.
+<details>
+<summary>🎬 Click to expand MLflow demo</summary>
+
+![MLflow Demo](media/gifs/mlflow-demo.gif)
+
+</details>
+
+All 3 projects are integrated with a central MLflow server for unified experiment tracking. Each project has **3 tracked runs** demonstrating baseline, tuned, and alternative model comparisons.
 
 ```bash
 # 1. Start the demo stack (includes MLflow server)
 docker compose -f docker-compose.demo.yml up -d
 
-# 2. Log experiments from each project
-export MLFLOW_TRACKING_URI=http://localhost:5000
-
-cd BankChurn-Predictor && make mlflow-demo && cd ..
-cd CarVision-Market-Intelligence && make mlflow-demo && cd ..
-cd TelecomAI-Customer-Intelligence && make mlflow-demo && cd ..
+# 2. Run all experiments (9 total runs across 3 projects)
+python scripts/run_experiments.py
 ```
 
 **View experiments at [http://localhost:5000](http://localhost:5000)**
 
-| Experiment | Metrics Logged |
-|------------|----------------|
-| **BankChurn** | F1, AUC, Precision, Recall + Business metrics (saved revenue) |
-| **CarVision** | RMSE, MAE, R² + Business metrics (market valuation) |
-| **TelecomAI** | Accuracy, F1, AUC + Business metrics (churn prevention ROI) |
+| Experiment | Runs | Best Metric | Comparison |
+|------------|------|-------------|------------|
+| **BankChurn-Predictor** | 3 | F1=0.64, AUC=0.87 | Baseline vs Tuned vs Overfit |
+| **CarVision-Market-Intelligence** | 3 | RMSE=$4,396, R²=0.77 | Ridge vs RF vs GradientBoosting |
+| **TelecomAI-Customer-Intelligence** | 3 | Acc=0.82, F1=0.63 | LogReg vs GB vs RandomForest |
+
+![MLflow Experiments](media/screenshots/mlflow-experiments.PNG)
 
 ---
 

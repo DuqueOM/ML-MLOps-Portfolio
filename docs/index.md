@@ -2,6 +2,14 @@
 
 Welcome to the **ML-MLOps Portfolio** documentation. This portfolio demonstrates production-ready machine learning projects with enterprise-grade MLOps practices.
 
+## 📺 Video Demo
+
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+
+Watch the complete end-to-end demo: [https://youtu.be/qmw9VlgUcn8](https://youtu.be/qmw9VlgUcn8)
+
+---
+
 ## Quick Navigation
 
 <div class="grid cards" markdown>
@@ -44,11 +52,11 @@ Welcome to the **ML-MLOps Portfolio** documentation. This portfolio demonstrates
 
 This portfolio features **3 Production-Ready Projects**:
 
-| Project | Type | Coverage | Key Features |
-|---------|------|----------|--------------|
-| [BankChurn Predictor](projects/bankchurn.md) | Classification | 78% | MLflow, FastAPI, Ensemble Models |
-| [CarVision Market Intelligence](projects/carvision.md) | Regression | 96% | Streamlit Dashboard, Market Analysis |
-| [TelecomAI Customer Intelligence](projects/telecom.md) | Classification | 96% | Voting Classifier, Feature Engineering |
+| Project | Type | Best Metrics | Coverage | Key Features |
+|---------|------|--------------|----------|--------------|
+| [BankChurn Predictor](projects/bankchurn.md) | Classification | F1=0.64, AUC=0.87 | 79% | MLflow (3 runs), FastAPI, Ensemble |
+| [CarVision Market Intelligence](projects/carvision.md) | Regression | RMSE=$4,396, R²=0.77 | 97% | Streamlit Dashboard, MLflow (3 runs) |
+| [TelecomAI Customer Intelligence](projects/telecom.md) | Classification | Acc=0.82, F1=0.63 | 97% | GradientBoosting, MLflow (3 runs) |
 
 ## Key Capabilities Demonstrated
 
@@ -107,4 +115,4 @@ ML-MLOps-Portfolio/
 ---
 
 !!! info "Documentation Status"
-    This documentation is actively maintained. Last updated: November 2025.
+    This documentation is actively maintained. Last updated: December 2025.

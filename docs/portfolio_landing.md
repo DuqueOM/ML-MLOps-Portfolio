@@ -1,100 +1,109 @@
-# Data Science Portfolio — Production-Ready Demos (Landing)
+# ML/MLOps Portfolio — Production-Ready Projects
 
-## 1. Resumen Ejecutivo
+## 📺 Video Demo
 
-Portafolio centrado en **3 proyectos TOP-3** listos para demo técnica y conversación de MLOps. Cada proyecto incluye:
-
-- **Pipeline reproducible** vía `Makefile` o CLI (`main.py` con `--mode` y `--config`).
-- **API de inferencia** (FastAPI/Streamlit) cuando aplica.
-- **Artefactos versionados**: modelos (`model_v1.0.0.pkl` o `model.joblib`), métricas JSON y notebooks de demo.
-- **Monitoreo básico**: scripts de drift (KS/PSI) y, en proyectos customer-facing, integración opcional con Evidently.
-- **Soporte para MLflow** para tracking de runs en modo `file:./mlruns`.
-- **Dockerfile** y, en varios casos, `docker-compose.yml` con `HEALTHCHECK`.
-
-Esta landing sintetiza el valor de cada proyecto, el stack técnico y qué parte del trabajo fue realizada específicamente por el autor.
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
 ---
 
-## 2. Resumen por Proyecto (TOP-3)
+## 1. Executive Summary
 
-| Proyecto | Dominio | Valor principal | Stack clave | Demo rápida | Rol objetivo |
-|---------|---------|-----------------|------------|------------|--------------|
-| **BankChurn-Predictor** | Churn bancario | Clasificador con manejo de desbalance, fairness y explicación SHAP | Python, scikit-learn, FastAPI, MLflow, DVC | `make install && make train && make api-start` | Senior Data Scientist — Customer Intelligence / MLOps-aware |
-| **CarVision-Market-Intelligence** | Pricing autos usados | Modelo de precio + dashboard Streamlit + API | Python, scikit-learn, FastAPI, Streamlit, Optuna, MLflow | `make start-demo` | Senior Data Scientist — Pricing & Product Analytics |
-| **TelecomAI-Customer-Intelligence** | Telecom | Clasificador Ultra vs Smart con API, Docker y drift | Python, scikit-learn, FastAPI, Docker, MLflow, Evidently (opcional) | `make start-demo` | ML Engineer — Customer Analytics / Telco |
+A portfolio featuring **3 production-ready ML projects** with complete MLOps infrastructure. Each project includes:
 
-## 2.1 Comparativa técnica (modelo, métricas, nivel producción)
-
-| Proyecto | Problema | Modelo principal | Métricas clave (v1) | Stack ML/MLOps | Nivel de producción |
-|----------|----------|------------------|----------------------|-----------------|---------------------|
-| **BankChurn-Predictor** | Predicción de churn bancario (`Exited`) | Ensemble Voting (LogReg + RandomForest, con resampling + calibración) | F1, ROC-AUC, precision, recall, accuracy | scikit-learn, Optuna (hyperopt), MLflow, DVC, FastAPI | CLI + tests (incl. fairness) + API + Docker + CI + model/data cards |
-| **CarVision-Market-Intelligence** | Pricing de vehículos usados (`price`) | RandomForestRegressor en `Pipeline` sklearn | RMSE, MAE, MAPE, R² | scikit-learn, Optuna (HPO script), MLflow, FastAPI, Streamlit | CLI train/eval/predict + dashboard + API + tests + Docker + CI |
-| **TelecomAI-Customer-Intelligence** | Recomendación de plan móvil (`is_ultra`) | LogisticRegression en `Pipeline` | F1, ROC-AUC, accuracy, precision, recall | scikit-learn, MLflow, FastAPI, Evidently (drift demo) | CLI train/eval/predict + tests (incl. API contrato) + API + Docker + CI + model/data cards |
+- **Reproducible pipelines** via `Makefile` or CLI (`main.py` with `--mode` and `--config`)
+- **Inference APIs** (FastAPI) and dashboards (Streamlit) where applicable
+- **Versioned artifacts**: models (`model.joblib`), metrics JSON, and documentation
+- **Experiment tracking**: MLflow integration with 9 tracked runs across all projects
+- **Containerization**: Dockerfiles with multi-stage builds and health checks
+- **Unified CI/CD**: Single workflow validating all projects with matrix testing
 
 ---
 
-## 3. Stack Técnico Global
+## 2. Project Summary (TOP-3)
 
-- **Lenguaje**: Python 3.8–3.11.
-- **ML / Estadística**: scikit-learn, XGBoost, statsmodels, RandomForest, regresión logística.
-- **MLOps / Tracking**: MLflow (modo local `file:./mlruns`), DVC (datasets versionados en proyectos TOP-3).
-- **APIs y Frontends**: FastAPI, Streamlit.
-- **Monitoreo de datos**: scripts KS/PSI, integración opcional con Evidently.
-- **Optimización**: PuLP/CVXPY/OR-Tools para problemas de asignación y recursos cuando aplica.
-- **Infraestructura**: Docker, `docker-compose`, GitHub Actions (`.github/workflows/ci-mlops.yml`).
+| Project | Domain | Key Value | Tech Stack | Quick Demo | Target Role |
+|---------|--------|-----------|------------|------------|-------------|
+| **BankChurn-Predictor** | Banking Churn | Ensemble classifier with class imbalance handling | Python, scikit-learn, FastAPI, MLflow, DVC | `docker compose -f docker-compose.demo.yml up -d` | Senior Data Scientist — Customer Intelligence |
+| **CarVision-Market-Intelligence** | Used Car Pricing | Price prediction + Streamlit dashboard + API | Python, scikit-learn, FastAPI, Streamlit, MLflow | `docker compose -f docker-compose.demo.yml up -d` | Senior Data Scientist — Pricing & Analytics |
+| **TelecomAI-Customer-Intelligence** | Telecom | Plan recommendation classifier with API | Python, scikit-learn, FastAPI, Docker, MLflow | `docker compose -f docker-compose.demo.yml up -d` | ML Engineer — Customer Analytics |
 
----
+## 2.1 Technical Comparison
 
-## 4. Ownership (¿Qué hizo el autor?)
-
-Trabajo realizado específicamente sobre los **3 proyectos TOP-3**:
-
-- **BankChurn-Predictor**
-  - Integración de MLflow demo (`mlruns/` local y stack Docker opcional).
-  - Monitoreo de drift (`monitoring/check_drift.py`).
-  - API FastAPI y tests de preprocesamiento y modelo.
-  - `model_card.md` y `data_card.md` con documentación estructurada.
-
-- **CarVision-Market-Intelligence**
-  - API FastAPI de inferencia y demo de carga de modelo (`app/example_load.py`).
-  - Dashboard Streamlit integrado con el modelo de precios.
-  - Makefile con comandos `train`, `eval`, `serve` y demo integrada.
-  - `model_card.md` y `data_card.md` con supuestos y limitaciones.
-
-- **TelecomAI-Customer-Intelligence**
-  - CLI reproducible, API FastAPI + Docker, tests de contrato (`tests/`).
-  - Monitoreo de churn y scripts de drift KS/PSI.
-  - `model_card.md` y `data_card.md` para dataset y modelo.
+| Project | Problem | Model | Best Metrics | Production Level |
+|---------|---------|-------|--------------|------------------|
+| **BankChurn-Predictor** | Churn prediction (`Exited`) | RandomForest (tuned) | F1=0.64, AUC=0.87 | CLI + API + Docker + CI + Model Card |
+| **CarVision-Market-Intelligence** | Price prediction (`price`) | RandomForest in sklearn Pipeline | RMSE=$4,396, R²=0.77 | CLI + Dashboard + API + Docker + CI |
+| **TelecomAI-Customer-Intelligence** | Plan recommendation (`is_ultra`) | GradientBoosting/RandomForest | Acc=0.82, F1=0.63 | CLI + API + Docker + CI + Model Card |
 
 ---
 
-## 5. Calidad, CI y Smoke Tests
+## 3. MLflow Experiments
 
-- Workflow CI (`.github/workflows/ci-mlops.yml`):
-  - Matriz sobre los 3 proyectos TOP-3 (BankChurn, CarVision, TelecomAI).
-  - Para cada uno: instala dependencias, corre `pytest --cov=. --cov-report=term-missing`, `mypy .` y `flake8 .`.
-  - Para **BankChurn**: paso adicional de smoke-train (`SMOKE=1`) para validar el pipeline de entrenamiento end-to-end.
+All projects are integrated with a central MLflow server. Each project has **3 tracked runs** demonstrating:
 
-Esto hace que cada PR tenga una verificación mínima de:
+- **Baseline models**: Simple algorithms for comparison
+- **Tuned models**: Optimized hyperparameters
+- **Alternative approaches**: Different algorithms or configurations
 
-- Estilo (flake8).
-- Tests unitarios de datos/modelo (pytest con cobertura).
-- Type-checking (mypy) por proyecto.
-- Smoke-train en al menos un proyecto representativo.
+| Experiment | Runs | Best Model | Key Insight |
+|------------|------|------------|-------------|
+| BankChurn-Predictor | 3 | BC-2_RandomForest_Tuned | Balanced class weights improve F1 |
+| CarVision-Market-Intelligence | 3 | CV-2_RandomForest_Tuned | Tree models outperform linear |
+| TelecomAI-Customer-Intelligence | 3 | TL-3_RandomForest | Ensemble methods excel |
 
----
-
-## 6. Demos y Screenshots
-
-- Cada proyecto incluye README con comandos de demo (`make start-demo`, `make api-start`, etc.).
-- Para enriquecer el portafolio visualmente se pueden añadir más adelante:
-  - GIFs de dashboards (Streamlit, etc.).
-  - Capturas de los endpoints en uso (FastAPI docs, curl + jq).
+**Run all experiments:**
+```bash
+docker compose -f docker-compose.demo.yml up -d
+python scripts/run_experiments.py
+# View at http://localhost:5000
+```
 
 ---
 
-## 7. Cómo Navegar este Monorepo
+## 4. Technology Stack
 
-- Ver **README.md** en la raíz para una vista rápida y comandos de demo.
-- Ver cada subdirectorio de proyecto para detalles y documentación técnica.
-- Esta `portfolio_landing` sirve como índice central para reclutadores y revisores técnicos.
+| Category | Technologies |
+|----------|--------------|
+| **Language** | Python 3.11+ |
+| **ML/Statistics** | scikit-learn, XGBoost, RandomForest, GradientBoosting |
+| **MLOps/Tracking** | MLflow (central server), DVC (data versioning) |
+| **APIs/Frontends** | FastAPI, Streamlit |
+| **Infrastructure** | Docker, Docker Compose, GitHub Actions |
+| **Security** | Trivy, Bandit, Gitleaks |
+| **Testing** | pytest, pytest-cov (79-97% coverage) |
+
+---
+
+## 5. CI/CD Pipeline
+
+Unified workflow (`.github/workflows/ci-mlops.yml`) with:
+
+- **Matrix testing**: 3 projects × 2 Python versions (3.11, 3.12)
+- **Quality gates**: flake8, black, mypy, bandit
+- **Test coverage**: pytest with coverage thresholds
+- **Docker builds**: Multi-stage with caching
+- **Security scans**: Trivy container scanning
+- **Integration tests**: Full stack validation on `main` branch
+
+---
+
+## 6. Visual Assets
+
+All demo materials are available in `media/`:
+
+| Asset Type | Files | Status |
+|------------|-------|--------|
+| **GIFs** | 6 animated demos | ✅ Complete |
+| **Screenshots** | 8 UI captures | ✅ Complete |
+| **Videos** | MP4 source files | ✅ Complete |
+| **YouTube** | Full walkthrough | ✅ [Published](https://youtu.be/qmw9VlgUcn8) |
+
+---
+
+## 7. Navigation
+
+- **[README.md](../README.md)**: Quick overview and demo commands
+- **[QUICK_START.md](../QUICK_START.md)**: One-command demo guide
+- **[ARCHITECTURE_PORTFOLIO.md](ARCHITECTURE_PORTFOLIO.md)**: System design diagrams
+- **[OPERATIONS_PORTFOLIO.md](OPERATIONS_PORTFOLIO.md)**: Deployment and monitoring
+- **Project READMEs**: Detailed documentation per project

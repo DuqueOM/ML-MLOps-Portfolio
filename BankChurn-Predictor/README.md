@@ -9,34 +9,19 @@
 
 ---
 
-<!-- 
-=============================================================================
-🎬 DEMO GIF PLACEHOLDER
-=============================================================================
-TODO: Record a 6-8 second GIF showing:
-1. A curl command or Swagger UI request
-2. The JSON response with churn prediction
-
-Create GIF:
-1. Record screen: prediction request → response
-2. Convert: ffmpeg -i video.mp4 -vf "fps=15,scale=800:-1" bankchurn-demo.gif
-3. Place in: ../media/gifs/bankchurn-preview.gif
-4. Uncomment the line below
-=============================================================================
--->
-
 <div align="center">
 
-<!-- ![BankChurn Demo](../media/gifs/bankchurn-preview.gif) -->
-**[🎬 DEMO GIF — PENDING]** <!-- Remove this line after adding GIF -->
+![BankChurn Demo](../media/gifs/bankchurn-preview.gif)
 
-**[📺 Watch Full Demo Video](#)** <!-- TODO: Replace # with YouTube/Drive link -->
+### 📺 Portfolio Demo
+
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
 </div>
 
 ---
 
-> **TL;DR**: An enterprise-grade MLOps pipeline for predicting bank customer churn. Uses a unified sklearn Pipeline with RandomForest classifier (configurable resampling for class imbalance), served via high-performance FastAPI, with full reproducibility via DVC and Make.
+> **TL;DR**: An enterprise-grade MLOps pipeline for predicting bank customer churn. Features a unified sklearn Pipeline with ensemble classifiers (LogisticRegression + RandomForest), configurable resampling for class imbalance, served via high-performance FastAPI, with full experiment tracking via MLflow and reproducibility via DVC.
 
 ---
 
@@ -165,26 +150,35 @@ The API documentation (Swagger UI) is available at `http://localhost:8000/docs` 
 
 ## 📊 MLflow Integration
 
-This project integrates with MLflow for experiment tracking and model registry.
+This project integrates with MLflow for experiment tracking with **3 tracked experiments** demonstrating model comparison.
 
-### Log Experiments to MLflow
+![MLflow Experiments](../media/screenshots/mlflow-experiments.PNG)
+
+### Tracked Experiments
+
+| Run | Model | Test F1 | Test AUC | Purpose |
+|-----|-------|---------|----------|--------|
+| BC-1_Baseline | LogisticRegression | 0.29 | 0.77 | Simple baseline |
+| **BC-2_RandomForest_Tuned** | RandomForest (balanced) | **0.64** | **0.87** | Best model |
+| BC-3_Overfit_Demo | RF (no regularization) | 0.58 | 0.85 | Overfitting demo |
+
+### Run Experiments
 
 ```bash
 # Point to the portfolio's central MLflow server
 export MLFLOW_TRACKING_URI=http://localhost:5000
 
-# Log a demo run with metrics and business impact
-make mlflow-demo
+# Run all BankChurn experiments (from portfolio root)
+python scripts/run_experiments.py
 ```
 
 ### What Gets Logged
 
 | Category | Items |
 |----------|-------|
-| **Parameters** | Model config, data config, run type |
-| **Metrics** | CV metrics, test metrics (F1, AUC, Precision, Recall) |
-| **Business Metrics** | Detected at-risk customers, saved revenue proxy |
-| **Artifacts** | training_results.json, config.yaml, model (best-effort) |
+| **Parameters** | n_estimators, max_depth, min_samples_split, class_weight |
+| **Metrics** | train/test accuracy, F1, ROC-AUC |
+| **Tags** | run_type (baseline/tuned/overfit), project |
 
 ### Full Portfolio Demo (with MLflow UI)
 
