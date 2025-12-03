@@ -1,0 +1,76 @@
+name: Drift Monitoring - BankChurn
+
+on:
+  # Manual trigger for safety; can be extended with schedule in real environments
+  workflow_dispatch:
+
+jobs:
+  check-drift-and-maybe-retrain:
+    name: Check Drift and (Optionally) Trigger Retrain
+    runs-on: ubuntu-latest
+
+    env:
+      PROJECT_DIR: BankChurn-Predictor
+      DRIFT_REF: data/raw/Churn.csv
+      DRIFT_CUR: data/raw/Churn.csv  # In production this would point to a fresh batch from prod
+      DRIFT_JSON: results/drift.json
+      DRIFT_HTML: results/drift_report.html
+      PSI_THRESHOLD: "0.2"  # Example threshold for significant drift
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.in ]; then
+            pip install -r requirements.in
+          elif [ -f requirements.txt ]; then
+            grep -v '^[[:space:]]*--hash=' requirements.txt | \
+            grep -v '^[[:space:]]*--require-hashes' | \
+            sed 's/ \\$//' | \
+            grep -v '^[[:space:]]*#' | \
+            grep -v '^[[:space:]]*$' > requirements_no_hash.txt
+            pip install -r requirements_no_hash.txt
+          fi
+
+      - name: Run drift check (Evidently optional)
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          mkdir -p results
+          python monitoring/check_drift.py \
+            --ref "${DRIFT_REF}" \
+            --cur "${DRIFT_CUR}" \
+            --out-json "${DRIFT_JSON}" \
+            --report-html "${DRIFT_HTML}" || echo "Drift check completed with warnings"
+
+      - name: Evaluate drift and decide retrain
+        id: eval_drift
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          if [ ! -f "${DRIFT_JSON}" ]; then
+            echo "No drift JSON found; skipping evaluation" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "## Drift Evaluation - BankChurn" >> "$GITHUB_STEP_SUMMARY"
+          echo "Drift JSON available at ${DRIFT_JSON}." >> "$GITHUB_STEP_SUMMARY"
+          echo "Use this report together with Evidently HTML to decide if retrain is required via the 'Retrain BankChurn Model' workflow." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload drift artifacts
+        uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: bankchurn-drift-${{ github.run_id }}
+          path: |
+            ${{ env.PROJECT_DIR }}/results/drift.json
+            ${{ env.PROJECT_DIR }}/results/drift_report.html
+          retention-days: 14

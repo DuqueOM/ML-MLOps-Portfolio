@@ -219,6 +219,28 @@ jobs:
 
 ---
 
+## Future Extensions (Principal-Level Design)
+
+- **Feature Store Layer**  
+  Introduce a centralized Feature Store (e.g., Feast) to serve consistent, versioned features
+  across BankChurn, CarVision y TelecomAI. El diseño actual ya usa Pipelines de sklearn
+  y separación clara `data`/`features`, lo que facilita mapear features existentes a una
+  entidad de Feature Store sin romper los proyectos.
+
+- **Drift-Based Auto-Retraining**  
+  BankChurn ya incluye `monitoring/check_drift.py` y un workflow dedicado
+  `retrain-bankchurn.yml`. Un workflow adicional de "Drift Monitoring" puede consumir
+  el JSON de Evidently, calcular PSI/KS y, si el drift supera un umbral, disparar el
+  retraining de forma controlada (opt-in) sin impactar el CI principal.
+
+- **FinOps / Cost Awareness**  
+  La infraestructura propuesta (EKS/GKE + RDS/CloudSQL + S3/GCS + Prom/Grafana) debe
+  acompañarse de análisis de costos por entorno (dev/stage/prod), límites de auto-scaling
+  y etiquetado de recursos. Ver `docs/architecture/infrastructure.md` para recomendaciones
+  de dimensionamiento y cómo extender este portfolio con un análisis FinOps básico.
+
+---
+
 ## Visual References
 
 ### MLflow Experiment Tracking

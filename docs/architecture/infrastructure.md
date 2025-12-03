@@ -401,6 +401,49 @@ terraform apply tfplan
 terraform destroy
 ```
 
+---
+
+## Cost & FinOps Considerations
+
+This portfolio is designed to be cloud-agnostic, but running a full production stack
+has non-trivial cost. The goal is to keep the **architecture realistic** while
+encouraging **cost awareness** from day one.
+
+### Environments
+
+- **dev**: minimal replicas, small instance types, spot/preemptible nodes when possible.
+- **stage**: mirrors production topology, but with lower traffic and smaller node groups.
+- **prod**: HPA enabled, reserved/committed capacity for critical workloads.
+
+### Main Cost Drivers
+
+- **Compute (EKS/GKE nodes)**  
+  Right-size node types (e.g. `t3.medium`/`e2-standard-2`) and use Horizontal Pod
+  Autoscaling to avoid overprovisioning.
+
+- **Storage (S3/GCS + MLflow + DVC)**  
+  Versioned artifacts and datasets should use lifecycle policies (e.g. move old
+  versions to cheaper tiers or delete obsolete experiment data).
+
+- **Database (RDS/Cloud SQL)**  
+  MLflow backend DB can start on small instance classes and scale up only when
+  experiment volume justifies it.
+
+- **Monitoring (Prometheus/Grafana)**  
+  Scrape intervals and retention windows should balance observability with storage
+  usage. For small teams, a few days of high-resolution metrics is usually enough.
+
+### Best Practices
+
+- Tag all resources with `Project`, `Environment`, and `Owner` to enable cost
+  allocation reports.
+- Use a single shared MLflow instance for all projects in this portfolio to avoid
+  duplicating infrastructure.
+- Start with conservative autoscaling limits and adjust based on real traffic
+  instead of theoretical peak load.
+- Periodically review S3/GCS buckets and MLflow runs to clean up unused artifacts
+  and stale experiments.
+
 ### Kubernetes
 
 ```bash
