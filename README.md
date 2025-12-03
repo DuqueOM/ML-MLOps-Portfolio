@@ -282,58 +282,78 @@ ML-MLOps-Portfolio/
 
 ## 🚀 Quick Start
 
-### One-Liner Demo (Recommended)
+### ⚡ 5-Command Demo (Copy-Paste Ready)
+
 ```bash
-# 1. Generate demo models first (required for first run)
+# 1. Clone and enter
+git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git && cd ML-MLOps-Portfolio
+
+# 2. Generate demo models (first time only)
 bash scripts/setup_demo_models.sh
 
-# 2. Start full demo stack with all 3 services + MLflow
-make docker-demo
-# or: docker-compose -f docker-compose.demo.yml up -d --build
+# 3. Start full stack (APIs + MLflow + Dashboard)
+docker-compose -f docker-compose.demo.yml up -d --build
 
-# 3. Run integration tests to verify everything works
-bash scripts/run_demo_tests.sh
+# 4. Wait for services and verify
+sleep 60 && bash scripts/run_demo_tests.sh
+
+# 5. Open services
+echo "
+🏦 BankChurn API:    http://localhost:8001/docs
+🚗 CarVision API:    http://localhost:8002/docs
+🚗 CarVision UI:     http://localhost:8501
+📱 TelecomAI API:    http://localhost:8003/docs
+📊 MLflow:           http://localhost:5000
+📈 Prometheus:       http://localhost:9090 (--profile monitoring)
+📊 Grafana:          http://localhost:3000 (--profile monitoring)
+"
 ```
 
-**Demo includes:**
-- 🏦 BankChurn API: `http://localhost:8001/docs`
-- 🚗 CarVision API: `http://localhost:8002/docs`
-- 🚗 CarVision Dashboard: `http://localhost:8501`
-- 📱 TelecomAI API: `http://localhost:8003/docs`
-- 📊 MLflow UI: `http://localhost:5000`
-- 📈 Prometheus: `http://localhost:9090` (with --profile monitoring)
-- 📊 Grafana: `http://localhost:3000` (with --profile monitoring)
+<details>
+<summary>📋 Detailed Setup Instructions</summary>
 
-### Manual Setup (BankChurn)
+### Manual Setup (Individual Projects)
+
 ```bash
-# 1. Clone repository
+# Clone repository
 git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git
 cd ML-MLOps-Portfolio
 
-# 2. Using Docker Compose (easiest)
-docker-compose -f docker-compose.demo.yml up -d
+# Start with Docker Compose
+docker-compose -f docker-compose.demo.yml up -d --build
 
-# 3. Or build individual service
+# Or run individual project
 cd BankChurn-Predictor
-docker build -t bankchurn:latest .
-docker run -p 8000:8000 bankchurn:latest
+pip install -r requirements.txt
+python main.py --mode train
+uvicorn app.fastapi_app:app --reload --port 8000
+```
 
-# 4. Test API
+### Test API Endpoints
+
+```bash
+# BankChurn Prediction
 curl -X POST "http://localhost:8001/predict" \
      -H "Content-Type: application/json" \
-     -d '{
-       "CreditScore": 650,
-       "Geography": "France",
-       "Gender": "Female",
-       "Age": 40,
-       "Tenure": 3,
-       "Balance": 60000,
-       "NumOfProducts": 2,
-       "HasCrCard": 1,
-       "IsActiveMember": 1,
-       "EstimatedSalary": 50000
-     }'
+     -d '{"CreditScore":650,"Geography":"France","Gender":"Female","Age":40,"Tenure":3,"Balance":60000,"NumOfProducts":2,"HasCrCard":1,"IsActiveMember":1,"EstimatedSalary":50000}'
+
+# CarVision Prediction
+curl -X POST "http://localhost:8002/predict" \
+     -H "Content-Type: application/json" \
+     -d '{"model_year":2018,"model":"ford f-150","condition":"good","cylinders":6,"fuel":"gas","odometer":50000,"transmission":"automatic","drive":"4wd","type":"truck","paint_color":"white"}'
+
+# TelecomAI Prediction
+curl -X POST "http://localhost:8003/predict" \
+     -H "Content-Type: application/json" \
+     -d '{"calls":40,"minutes":311.9,"messages":83,"mb_used":19915.42}'
+
+# Prometheus Metrics (per service)
+curl http://localhost:8001/metrics
+curl http://localhost:8002/metrics
+curl http://localhost:8003/metrics
 ```
+
+</details>
 
 ### Development Setup
 ```bash

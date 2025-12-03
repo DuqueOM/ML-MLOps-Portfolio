@@ -35,4 +35,5 @@ pytest-cov>=3.0
 mlflow>=2.9
 shap>=0.42
 evidently>=0.4.8
+prometheus-client>=0.17.0
 requests>=2.28

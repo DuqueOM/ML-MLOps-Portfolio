@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from .evaluation import ModelEvaluator
+from .explainability import ModelExplainer
 from .models import ResampleClassifier
 from .prediction import ChurnPredictor
 from .training import ChurnTrainer
@@ -12,4 +13,5 @@ __all__ = [
     "ChurnPredictor",
     "ChurnTrainer",
     "ModelEvaluator",
+    "ModelExplainer",
 ]
