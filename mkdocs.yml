@@ -76,6 +76,7 @@ nav:
     - TelecomAI Customer Intelligence: projects/telecom.md
   - Architecture:
     - System Overview: architecture/overview.md
+    - Portfolio Architecture: ARCHITECTURE_PORTFOLIO.md
     - Data Flow: architecture/data-flow.md
     - CI/CD Pipeline: architecture/cicd.md
     - Infrastructure: architecture/infrastructure.md
@@ -84,11 +85,40 @@ nav:
     - CLI Tools: api/cli.md
   - Operations:
     - Deployment Guide: operations/deployment.md
+    - Operations Runbook: OPERATIONS_PORTFOLIO.md
     - Monitoring: operations/monitoring.md
     - Troubleshooting: operations/troubleshooting.md
   - Models:
     - Model Catalog: models/catalog.md
     - Reproducibility: models/reproducibility.md
+  - Reference:
+    - Portfolio Landing: portfolio_landing.md
+    - Release Process: RELEASE.md
+    - Technical Debt: TECHNICAL_DEBT.md
+    - Dependency Conflicts: DEPENDENCY_CONFLICTS.md
+    - PR Plan: PR_PLAN.md
+    - Deliverables: PORTFOLIO_DELIVERABLES.md
+    - Status: FINAL_PORTFOLIO_STATUS.md
+  - Historical Audits:
+    - Index: historical-audits/00_Index-Reportes.md
+    - BankChurn Report: historical-audits/BankChurn-Predictor-Reporte.md
+    - CarVision Report: historical-audits/CarVision-Market-Intelligence-Reporte.md
+    - TelecomAI Report: historical-audits/TelecomAI-Customer-Intelligence-Reporte.md
+    - CI Improvements: historical-audits/CI-Improvements-Proposal.md
+    - DVC Configuration: historical-audits/DVC-Cloud-Configuration.md
+    - Code Quality: historical-audits/Global-Code-Quality-Report.md
+    - Security Audit: historical-audits/Security-Audit-Remediation.md
+    - Security Dependencies: historical-audits/Security-Dependency-Report.md
+    - Baseline Metrics: historical-audits/baseline_metrics_deep_refactor.md
+    - Code Review: historical-audits/code_review_auditoria.md
+    - Codebase Cleanup: historical-audits/codebase_cleanup_auditoria.md
+    - Deep Refactor: historical-audits/deep_refactor_audit_20251125_en.md
+    - Dependency Updates: historical-audits/dependency_updates_auditoria.md
+    - Documentation (EN): historical-audits/documentation_refinement_audit_en.md
+    - Documentation (ES): historical-audits/documentation_refinement_auditoria.md
+    - Refactor Audit: historical-audits/refactor_auditoria.md
+    - Security Audit (ES): historical-audits/security_auditoria.md
+    - Technical Debt: historical-audits/technical_debt_auditoria.md
   - Contributing:
     - Guidelines: contributing/guidelines.md
     - Code Standards: contributing/code-standards.md
