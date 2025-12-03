@@ -6,8 +6,6 @@ Tests cover both SHAP-based explanations (when available) and fallback modes.
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock
-
 import numpy as np
 import pandas as pd
 import pytest
@@ -303,13 +301,14 @@ class TestEdgeCases:
 
     def test_exception_in_fallback(self):
         """Test graceful handling of exceptions in fallback."""
-        mock_model = MagicMock()
-        mock_model.feature_importances_ = property(lambda self: (_ for _ in ()).throw(ValueError()))
 
-        explainer = ModelExplainer(mock_model)
-        # Force exception by making feature_importances_ raise
-        del mock_model.feature_importances_
-        del mock_model.coef_
+        class DummyModel:
+            @property
+            def feature_importances_(self):  # pragma: no cover - only used to trigger exception
+                raise ValueError("boom")
+
+        dummy_model = DummyModel()
+        explainer = ModelExplainer(dummy_model)
 
         importance = explainer._fallback_feature_importance()
         assert importance == {"no_importance_available": 1.0}
