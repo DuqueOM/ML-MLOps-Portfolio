@@ -2,15 +2,22 @@
 
 The ML-MLOps Portfolio features three production-ready machine learning projects, each demonstrating different aspects of the ML lifecycle.
 
+## 📺 Video Demo
+
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+
+---
+
 ## Project Comparison
 
 | Aspect | BankChurn | CarVision | TelecomAI |
 |--------|-----------|-----------|-----------|
 | **Problem Type** | Binary Classification | Regression | Binary Classification |
 | **Target** | Customer Churn | Vehicle Price | Plan Upgrade |
-| **Model** | VotingClassifier | RandomForest | VotingClassifier |
-| **Primary Metric** | AUC-ROC: 0.853 | R²: 0.766 | AUC-ROC: 0.840 |
-| **Test Coverage** | 78% | 96% | 96% |
+| **Best Model** | RandomForest (tuned) | RandomForest (tuned) | RandomForest |
+| **Primary Metric** | F1=0.64, AUC=0.87 | RMSE=$4,396, R²=0.77 | Acc=0.82, F1=0.63 |
+| **MLflow Runs** | 3 experiments | 3 experiments | 3 experiments |
+| **Test Coverage** | 79% | 97% | 97% |
 | **Interface** | REST API | REST API + Dashboard | REST API |
 
 ## Performance Summary
@@ -18,12 +25,12 @@ The ML-MLOps Portfolio features three production-ready machine learning projects
 ```mermaid
 graph LR
     subgraph "Classification Models"
-        BC["BankChurn<br/>AUC: 0.853<br/>Acc: 85.7%"]
-        TC["TelecomAI<br/>AUC: 0.840<br/>Acc: 81.2%"]
+        BC["BankChurn<br/>F1: 0.64<br/>AUC: 0.87"]
+        TC["TelecomAI<br/>Acc: 0.82<br/>F1: 0.63"]
     end
     
     subgraph "Regression Model"
-        CV["CarVision<br/>R²: 0.766<br/>RMSE: $4,794"]
+        CV["CarVision<br/>R²: 0.77<br/>RMSE: $4,396"]
     end
 ```
 

@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [5.1.0] - 2025-12-03
+
+### Added
+- **Portfolio Demo Video**: Full end-to-end walkthrough published on YouTube
+  - Link: https://youtu.be/qmw9VlgUcn8
+  - Integrated across all READMEs and documentation
+
+- **Visual Assets (Complete)**:
+  - 6 GIFs for project demos (time-lapse style, 800x600)
+  - 8 screenshots for documentation (MLflow, Swagger, Streamlit)
+  - All assets properly referenced in documentation
+
+- **MLflow Experiment Script** (`scripts/run_experiments.py`):
+  - Automated 9 experiments across 3 projects
+  - BankChurn: Baseline, Tuned RF, Overfit demo
+  - CarVision: Ridge, RF, GradientBoosting
+  - TelecomAI: LogReg, GB, RandomForest
+
+### Changed
+- **Documentation Overhaul** (10 files updated):
+  - All documentation translated to English (senior/staff level)
+  - Updated metrics from MLflow experiments
+  - Added YouTube badge to all key docs
+  - Enabled GIF displays in project READMEs
+  - Updated `docs/portfolio_landing.md` with current state
+  - Added visual references to `docs/ARCHITECTURE_PORTFOLIO.md`
+
+- **Media Management**:
+  - Video files (MP4) added to `.gitignore` (hosted on YouTube)
+  - GIFs and screenshots kept in repo (small, essential for docs)
+
+### Metrics (from MLflow)
+| Project | Best Model | F1/R² | AUC/RMSE |
+|---------|------------|-------|----------|
+| BankChurn | RandomForest (tuned) | 0.64 | 0.87 |
+| CarVision | RandomForest (tuned) | 0.77 | $4,396 |
+| TelecomAI | RandomForest | 0.63 | 0.82 (Acc) |
+
+---
+
+## [5.0.0] - 2025-12-01
+
 ### Changed (2025-12-01)
 - **CI/CD Optimization**:
   - Consolidated `ci-portfolio-top3.yml` into `ci-mlops.yml` (single source of truth)

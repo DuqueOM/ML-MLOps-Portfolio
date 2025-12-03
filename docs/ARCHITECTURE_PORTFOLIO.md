@@ -1,5 +1,11 @@
 # Architecture Portfolio - ML/MLOps Multi-Project
 
+## 📺 Video Demo
+
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+
+---
+
 ## System Overview
 
 This portfolio demonstrates a production-grade ML/MLOps architecture integrating three independent machine learning projects under a unified infrastructure and CI/CD pipeline.
@@ -210,3 +216,31 @@ jobs:
 | **CI/CD** | GitHub Actions |
 | **Security** | Trivy, Bandit, Gitleaks |
 | **Testing** | pytest, pytest-cov |
+
+---
+
+## Visual References
+
+### MLflow Experiment Tracking
+
+All 9 experiments (3 per project) tracked in the central MLflow server:
+
+![MLflow Experiments](../media/screenshots/mlflow-experiments.PNG)
+
+### CI/CD Pipeline
+
+Unified GitHub Actions workflow with matrix testing:
+
+![GitHub Actions CI](../media/screenshots/github-actions-ci.PNG)
+
+### API Documentation (Swagger UI)
+
+| BankChurn API | CarVision API | TelecomAI API |
+|---------------|---------------|---------------|
+| ![BankChurn](../media/screenshots/swagger-bankchurn.PNG) | ![CarVision](../media/screenshots/swagger-carvision.PNG) | ![TelecomAI](../media/screenshots/swagger-telecom.PNG) |
+
+### Streamlit Dashboard
+
+CarVision Market Intelligence dashboard with price predictor:
+
+![Streamlit Dashboard](../media/screenshots/streamlit-dashboard.PNG)

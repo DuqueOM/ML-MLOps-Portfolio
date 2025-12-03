@@ -9,34 +9,25 @@
 
 ---
 
-<!-- 
-=============================================================================
-🎬 DEMO GIF PLACEHOLDER
-=============================================================================
-TODO: Record a 6-8 second GIF showing:
-1. Streamlit dashboard interaction
-2. Price prediction with gauge visualization
-
-Create GIF:
-1. Record screen: enter vehicle details → see prediction
-2. Convert: ffmpeg -i video.mp4 -vf "fps=15,scale=800:-1" carvision-demo.gif
-3. Place in: ../media/gifs/carvision-preview.gif
-4. Uncomment the line below
-=============================================================================
--->
-
 <div align="center">
 
-<!-- ![CarVision Demo](../media/gifs/carvision-preview.gif) -->
-**[🎬 DEMO GIF — PENDING]** <!-- Remove this line after adding GIF -->
+**API Demo:**
 
-**[📺 Watch Full Demo Video](#)** <!-- TODO: Replace # with YouTube/Drive link -->
+![CarVision API Demo](../media/gifs/carvision-preview.gif)
+
+**Streamlit Dashboard:**
+
+![Streamlit Dashboard](../media/gifs/streamlit-carvision.gif)
+
+### 📺 Portfolio Demo
+
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
 </div>
 
 ---
 
-**End-to-end ML system for vehicle price prediction and market analytics. Features centralized feature engineering, FastAPI serving, and Streamlit dashboards.**
+**End-to-end ML system for vehicle price prediction and market analytics. Features centralized `FeatureEngineer` class, FastAPI serving, Streamlit dashboards, and MLflow experiment tracking.**
 
 ## 📋 Overview
 This project implements a robust Machine Learning solution designed for production environments. It includes end-to-end pipelines for data processing, model training, evaluation, and deployment, adhering to MLOps best practices.
@@ -161,9 +152,33 @@ Optional enhancements:
 - `pip install pandera` to enable data schema validation on load.
 - `pip install shap` to enable SHAP-based prediction explanations in the Price Predictor tab.
 
-## 📈 Monitoring & Operations
+## 📊 MLflow Integration
+
+This project integrates with MLflow for experiment tracking with **3 tracked experiments** comparing different regression approaches.
+
+### Tracked Experiments
+
+| Run | Model | Test RMSE | Test R² | Purpose |
+|-----|-------|-----------|---------|--------|
+| CV-1_Baseline_Ridge | Ridge Regression | $5,591 | 0.63 | Linear baseline |
+| **CV-2_RandomForest_Tuned** | RandomForest | **$4,396** | **0.77** | Best model |
+| CV-3_GradientBoosting | GradientBoosting | $4,416 | 0.77 | Alternative |
+
+### Run Experiments
+
+```bash
+# Point to the portfolio's central MLflow server
+export MLFLOW_TRACKING_URI=http://localhost:5000
+
+# Run all CarVision experiments (from portfolio root)
+python scripts/run_experiments.py
+```
+
+---
+
+## 📝 Monitoring & Operations
 - **Health Check**: `GET /health` returns 200 OK if model is loaded.
-- **MLflow**: Tracks all training runs. View with `mlflow ui`.
+- **MLflow**: Tracks all training runs at `http://localhost:5000`.
 - **Logging**: Structured logging in `logs/` directory.
 
 See [OPERATIONS.md](docs/OPERATIONS.md) for detailed runbook.

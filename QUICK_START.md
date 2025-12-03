@@ -2,6 +2,14 @@
 
 This guide provides the fastest way to run the portfolio projects locally using Docker.
 
+## 📺 Video Walkthrough
+
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+
+Watch the full end-to-end demo before diving in: [https://youtu.be/qmw9VlgUcn8](https://youtu.be/qmw9VlgUcn8)
+
+---
+
 ## ⚡ One-Line Demo (Recommended)
 
 To spin up the entire stack (3 APIs + Streamlit Dashboard + MLflow):
