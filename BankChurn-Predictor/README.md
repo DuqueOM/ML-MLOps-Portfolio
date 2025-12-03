@@ -202,6 +202,25 @@ Periodic drift checks compare live traffic against training reference using `evi
 make check-drift
 ```
 
+Drift reports are generated via `monitoring/check_drift.py` y pueden integrarse con un
+workflow dedicado (`drift-bankchurn.yml`) que evalúa PSI/KS y, si el drift supera un
+umbral definido, recomienda o dispara un retraining controlado mediante
+`retrain-bankchurn.yml`.
+
+---
+
+## 💰 Cost & Deployment Considerations
+
+BankChurn-Predictor está pensado para ejecutarse como un microservicio independiente
+en Kubernetes o como contenedor aislado. A nivel de costos:
+
+- El proyecto puede compartir la misma infraestructura base (cluster, MLflow,
+  Prometheus/Grafana) con el resto del portfolio.
+- El dimensionamiento típico es 1–2 réplicas pequeñas para `dev` y 2–4 réplicas
+  con HPA para `prod`, dependiendo del tráfico.
+- Ver `docs/architecture/infrastructure.md` en la raíz del portfolio para una visión
+  más amplia de entornos (dev/stage/prod) y prácticas FinOps recomendadas.
+
 ---
 
 ## 🛠 Troubleshooting
