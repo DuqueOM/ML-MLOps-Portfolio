@@ -61,12 +61,8 @@ jobs:
             grep -v '^[[:space:]]*$' > requirements_no_hash.txt
             pip install -r requirements_no_hash.txt
           fi
-      
-      - name: Setup CML
-        uses: iterative/setup-cml@v2
-        with:
-          vega: false
-      
+      # CML setup removed: using plain GitHub Actions report + artifacts only
+
       - name: Train model on PR branch
         id: train_pr
         working-directory: ${{ matrix.project }}
@@ -111,11 +107,9 @@ jobs:
             cp results_main/training_results.json main_metrics.json
           fi
       
-      - name: Generate CML report
+      - name: Generate comparison report
         if: always()
         working-directory: ${{ matrix.project }}
-        env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "# 📊 Model Training Comparison - ${{ matrix.project }}" > report.md
           echo "" >> report.md
@@ -164,9 +158,6 @@ jobs:
           echo "- **Base Branch:** ${{ github.event.pull_request.base.ref }}" >> report.md
           echo "- **Commit SHA:** ${{ github.event.pull_request.head.sha }}" >> report.md
           echo "" >> report.md
-          
-          # Post comment
-          cml comment create report.md
       
       - name: Upload metrics artifacts
         uses: actions/upload-artifact@v5
