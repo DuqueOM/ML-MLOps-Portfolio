@@ -914,7 +914,7 @@ pre-commit run, --all-files, autoupdate
 
 Con Git dominado, es hora de versionar **datos** profesionalmente.
 
-**[Ir a Módulo 05: Ingeniería de Datos y DVC →](05_INGENIERIA_DATOS.md)**
+**[Ir a Módulo 06: Versionado de Datos →](06_VERSIONADO_DATOS.md)**
 
 ---
 

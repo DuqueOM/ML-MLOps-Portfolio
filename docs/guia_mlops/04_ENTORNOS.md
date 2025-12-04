@@ -955,7 +955,7 @@ CI/CD:
 
 Con el entorno configurado, es hora de dominar **Git profesionalmente**.
 
-**[Ir a Módulo 04: Git Profesional →](04_GIT_PROFESIONAL.md)**
+**[Ir a Módulo 05: Git Profesional →](05_GIT_PROFESIONAL.md)**
 
 ---
 

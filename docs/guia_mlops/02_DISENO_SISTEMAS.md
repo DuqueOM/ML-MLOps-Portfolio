@@ -797,7 +797,7 @@ ADRs:
 
 Con el diseño completo, es hora de configurar un **entorno de desarrollo profesional**.
 
-**[Ir a Módulo 03: Entornos Profesionales →](03_ENTORNOS.md)**
+**[Ir a Módulo 03: Entornos Profesionales →](04_ENTORNOS.md)**
 
 ---
 

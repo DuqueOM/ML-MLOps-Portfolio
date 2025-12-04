@@ -809,7 +809,7 @@ VERSIONADO:
 
 Con datos versionados, es hora de construir **pipelines de Sklearn avanzados**.
 
-**[Ir a Módulo 06: Pipelines Sklearn Avanzados →](06_PIPELINES_AVANZADOS.md)**
+**[Ir a Módulo 06: Pipelines Sklearn Avanzados →](07_SKLEARN_PIPELINES.md)**
 
 ---
 
