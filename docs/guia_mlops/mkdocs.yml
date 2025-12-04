@@ -1,0 +1,118 @@
+# MkDocs configuration for Guía MLOps v2
+# Run: mkdocs serve  (dev) or mkdocs build (prod)
+
+site_name: "Guía MLOps — Portfolio Edition v2"
+site_description: "Curso end-to-end para construir un portafolio ML/MLOps profesional desde cero"
+site_author: "DuqueOM"
+site_url: "https://duqueom.github.io/ML-MLOps-Portfolio/"
+
+# Repository
+repo_name: "ML-MLOps-Portfolio"
+repo_url: "https://github.com/DuqueOM/ML-MLOps-Portfolio"
+edit_uri: "edit/main/docs/guia_mlops/"
+
+# Theme
+theme:
+  name: material
+  language: es
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Cambiar a modo oscuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Cambiar a modo claro
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+  icon:
+    repo: fontawesome/brands/github
+
+# Extensions
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.mark
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.tilde
+  - admonition
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+      toc_depth: 3
+
+# Plugins
+plugins:
+  - search:
+      lang: es
+  - minify:
+      minify_html: true
+
+# Extra
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/DuqueOM
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/in/duqueom
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
+
+# Copyright
+copyright: Copyright &copy; 2024 DuqueOM — Guía MLOps v2
+
+# Navigation
+nav:
+  - Inicio: index.md
+  - Syllabus: SYLLABUS.md
+  - Módulos:
+    - "00 — Introducción": docs/00_introduccion/index.md
+    - "01 — Python Moderno": docs/01_python_moderno/index.md
+    - "02 — Ingeniería de Datos": docs/02_ingenieria_datos/index.md
+    - "03 — Feature Engineering": docs/03_feature_engineering/index.md
+    - "04 — Modelado": docs/04_modelado/index.md
+    - "05 — MLflow & DVC": docs/05_mlflow_dvc/index.md
+    - "06 — Despliegue API": docs/06_despliegue_api/index.md
+    - "07 — Dashboard": docs/07_dashboard/index.md
+    - "08 — CI/CD & Testing": docs/08_ci_cd_testing/index.md
+    - "09 — Model & Dataset Cards": docs/09_modelcards_datasetcards/index.md
+    - "10 — Observabilidad": docs/10_observabilidad_monitoring/index.md
+    - "11 — Mantenimiento": docs/11_mantenimiento_auditoria/index.md
+  - Plantillas: templates/index.md
+  - Ejercicios: EJERCICIOS.md
+  - Rúbrica: RUBRICA_EVALUACION.md
+  - Glosario: 21_GLOSARIO.md
+  - Recursos: 23_RECURSOS.md

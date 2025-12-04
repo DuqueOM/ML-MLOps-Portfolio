@@ -27,6 +27,7 @@ venv/
 ENV/
 env/
 .virtualenv/
+.venv_audio/
 
 # Unit test / coverage reports
 htmlcov/
@@ -106,8 +107,6 @@ audit-reports/
 *VERIFICATION*.md
 *IMPROVEMENTS*.md
 reports/
-guia_mlops/
-docs/guia_mlops/
 fairness_metrics.json
 metrics.json
 
