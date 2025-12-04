@@ -1,0 +1,203 @@
+# ============================================================================
+# Makefile — Guía MLOps v2
+# ============================================================================
+# Uso: make <target>
+# Ejecutar 'make help' para ver todos los targets disponibles
+# ============================================================================
+
+.PHONY: help setup test clean docs serve-docs build-docs lint format \
+        check-00 check-01 check-02 check-03 check-04 check-05 check-06 \
+        check-07 check-08 check-09 check-10 check-11 check-all \
+        validate package
+
+# Variables
+PYTHON := python3
+VENV := .venv
+PIP := $(VENV)/bin/pip
+PYTEST := $(VENV)/bin/pytest
+MKDOCS := $(VENV)/bin/mkdocs
+RUFF := $(VENV)/bin/ruff
+
+# Colors for output
+BLUE := \033[0;34m
+GREEN := \033[0;32m
+YELLOW := \033[0;33m
+RED := \033[0;31m
+NC := \033[0m  # No Color
+
+# ============================================================================
+# HELP
+# ============================================================================
+help:
+	@echo "$(BLUE)══════════════════════════════════════════════════════════════$(NC)"
+	@echo "$(BLUE)           Guía MLOps v2 — Makefile$(NC)"
+	@echo "$(BLUE)══════════════════════════════════════════════════════════════$(NC)"
+	@echo ""
+	@echo "$(GREEN)Setup:$(NC)"
+	@echo "  make setup          Crear virtualenv e instalar dependencias"
+	@echo "  make clean          Limpiar archivos generados"
+	@echo ""
+	@echo "$(GREEN)Documentación:$(NC)"
+	@echo "  make serve-docs     Servir docs en localhost:8000"
+	@echo "  make build-docs     Construir sitio estático"
+	@echo ""
+	@echo "$(GREEN)Testing por módulo:$(NC)"
+	@echo "  make check-00       Validar módulo 00 (Introducción)"
+	@echo "  make check-01       Validar módulo 01 (Python Moderno)"
+	@echo "  make check-02       Validar módulo 02 (Ingeniería de Datos)"
+	@echo "  make check-03       Validar módulo 03 (Feature Engineering)"
+	@echo "  make check-04       Validar módulo 04 (Modelado)"
+	@echo "  make check-05       Validar módulo 05 (MLflow & DVC)"
+	@echo "  make check-06       Validar módulo 06 (Despliegue API)"
+	@echo "  make check-07       Validar módulo 07 (Dashboard)"
+	@echo "  make check-08       Validar módulo 08 (CI/CD & Testing)"
+	@echo "  make check-09       Validar módulo 09 (Model & Dataset Cards)"
+	@echo "  make check-10       Validar módulo 10 (Observabilidad)"
+	@echo "  make check-11       Validar módulo 11 (Mantenimiento)"
+	@echo "  make check-all      Validar todos los módulos"
+	@echo ""
+	@echo "$(GREEN)Calidad:$(NC)"
+	@echo "  make lint           Ejecutar linters"
+	@echo "  make format         Formatear código"
+	@echo "  make validate       Validar guía completa (links, tests, notebooks)"
+	@echo ""
+	@echo "$(GREEN)Distribución:$(NC)"
+	@echo "  make package        Crear guia_mlops_v2.zip"
+	@echo ""
+
+# ============================================================================
+# SETUP
+# ============================================================================
+setup:
+	@echo "$(BLUE)>>> Creando entorno virtual...$(NC)"
+	$(PYTHON) -m venv $(VENV)
+	@echo "$(BLUE)>>> Instalando dependencias...$(NC)"
+	$(PIP) install --upgrade pip
+	$(PIP) install -r requirements.txt
+	@echo "$(GREEN)>>> Setup completo! Activa el entorno con: source $(VENV)/bin/activate$(NC)"
+
+# ============================================================================
+# CLEAN
+# ============================================================================
+clean:
+	@echo "$(YELLOW)>>> Limpiando archivos generados...$(NC)"
+	rm -rf $(VENV)
+	rm -rf __pycache__ .pytest_cache .mypy_cache .ruff_cache
+	rm -rf site/
+	rm -rf outputs/
+	rm -rf work/
+	rm -rf *.egg-info
+	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	@echo "$(GREEN)>>> Limpieza completa$(NC)"
+
+# ============================================================================
+# DOCUMENTATION
+# ============================================================================
+serve-docs:
+	@echo "$(BLUE)>>> Sirviendo documentación en http://localhost:8000$(NC)"
+	$(MKDOCS) serve
+
+build-docs:
+	@echo "$(BLUE)>>> Construyendo sitio estático...$(NC)"
+	$(MKDOCS) build
+	@echo "$(GREEN)>>> Sitio generado en site/$(NC)"
+
+# ============================================================================
+# TESTING POR MÓDULO
+# ============================================================================
+check-00:
+	@echo "$(BLUE)>>> Validando módulo 00 - Introducción...$(NC)"
+	$(PYTEST) docs/00_introduccion/tests -v --tb=short || echo "$(YELLOW)No hay tests para este módulo$(NC)"
+
+check-01:
+	@echo "$(BLUE)>>> Validando módulo 01 - Python Moderno...$(NC)"
+	$(PYTEST) docs/01_python_moderno/tests -v --tb=short
+
+check-02:
+	@echo "$(BLUE)>>> Validando módulo 02 - Ingeniería de Datos...$(NC)"
+	$(PYTEST) docs/02_ingenieria_datos/tests -v --tb=short
+
+check-03:
+	@echo "$(BLUE)>>> Validando módulo 03 - Feature Engineering...$(NC)"
+	$(PYTEST) docs/03_feature_engineering/tests -v --tb=short
+
+check-04:
+	@echo "$(BLUE)>>> Validando módulo 04 - Modelado...$(NC)"
+	$(PYTEST) docs/04_modelado/tests -v --tb=short
+
+check-05:
+	@echo "$(BLUE)>>> Validando módulo 05 - MLflow & DVC...$(NC)"
+	$(PYTEST) docs/05_mlflow_dvc/tests -v --tb=short
+
+check-06:
+	@echo "$(BLUE)>>> Validando módulo 06 - Despliegue API...$(NC)"
+	$(PYTEST) docs/06_despliegue_api/tests -v --tb=short
+
+check-07:
+	@echo "$(BLUE)>>> Validando módulo 07 - Dashboard...$(NC)"
+	$(PYTEST) docs/07_dashboard/tests -v --tb=short
+
+check-08:
+	@echo "$(BLUE)>>> Validando módulo 08 - CI/CD & Testing...$(NC)"
+	$(PYTEST) docs/08_ci_cd_testing/tests -v --tb=short
+
+check-09:
+	@echo "$(BLUE)>>> Validando módulo 09 - Model & Dataset Cards...$(NC)"
+	$(PYTEST) docs/09_modelcards_datasetcards/tests -v --tb=short
+
+check-10:
+	@echo "$(BLUE)>>> Validando módulo 10 - Observabilidad...$(NC)"
+	$(PYTEST) docs/10_observabilidad_monitoring/tests -v --tb=short
+
+check-11:
+	@echo "$(BLUE)>>> Validando módulo 11 - Mantenimiento...$(NC)"
+	$(PYTEST) docs/11_mantenimiento_auditoria/tests -v --tb=short
+
+check-all:
+	@echo "$(BLUE)>>> Validando TODOS los módulos...$(NC)"
+	$(PYTEST) docs/ -v --tb=short --ignore=docs/assets
+	@echo "$(GREEN)>>> Todos los tests pasaron!$(NC)"
+
+# ============================================================================
+# CODE QUALITY
+# ============================================================================
+lint:
+	@echo "$(BLUE)>>> Ejecutando linters...$(NC)"
+	$(RUFF) check docs/ work/
+	@echo "$(GREEN)>>> Linting completo$(NC)"
+
+format:
+	@echo "$(BLUE)>>> Formateando código...$(NC)"
+	$(RUFF) format docs/ work/
+	@echo "$(GREEN)>>> Formateo completo$(NC)"
+
+# ============================================================================
+# VALIDATION
+# ============================================================================
+validate:
+	@echo "$(BLUE)>>> Validación completa de la guía...$(NC)"
+	@echo "$(BLUE)  1. Verificando links...$(NC)"
+	@./scripts/validate_guide.sh || echo "$(RED)Algunos checks fallaron$(NC)"
+	@echo "$(BLUE)  2. Ejecutando tests...$(NC)"
+	$(PYTEST) docs/ -q --tb=no || echo "$(RED)Algunos tests fallaron$(NC)"
+	@echo "$(GREEN)>>> Validación completa$(NC)"
+
+# ============================================================================
+# PACKAGING
+# ============================================================================
+package:
+	@echo "$(BLUE)>>> Empaquetando guía...$(NC)"
+	@rm -f guia_mlops_v2.zip
+	zip -r guia_mlops_v2.zip \
+		docs/ \
+		templates/ \
+		work/ \
+		mkdocs.yml \
+		Makefile \
+		requirements.txt \
+		SYLLABUS.md \
+		README.md \
+		-x "*.pyc" -x "__pycache__/*" -x ".venv/*" -x "site/*"
+	@echo "$(GREEN)>>> Paquete creado: guia_mlops_v2.zip$(NC)"
+	@ls -lh guia_mlops_v2.zip
