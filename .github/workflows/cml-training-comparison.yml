@@ -76,11 +76,6 @@ jobs:
           
           # Extract metrics from training results
           if [ -f results/training_results.json ]; then
-            echo "PR_METRICS<<EOF" >> $GITHUB_ENV
-            cat results/training_results.json >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
-            
-            # Save metrics for CML
             cp results/training_results.json pr_metrics.json
           fi
       
@@ -104,12 +99,6 @@ jobs:
           # Extract metrics from training results
           if [ -f results/training_results.json ]; then
             mv results/training_results.json results_main/training_results.json
-            
-            echo "MAIN_METRICS<<EOF" >> $GITHUB_ENV
-            cat results_main/training_results.json >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
-            
-            # Save metrics for CML
             cp results_main/training_results.json main_metrics.json
           fi
       
