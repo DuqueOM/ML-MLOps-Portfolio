@@ -69,10 +69,9 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p results
-          python main.py train \
+          python main.py --seed 42 train \
             --config configs/config.yaml \
             --input data/raw/Churn.csv \
-            --seed 42 \
             --metrics-output results/training_results.json
           
           # Extract metrics from training results
@@ -97,10 +96,9 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p results_main
-          python main.py train \
+          python main.py --seed 42 train \
             --config configs/config.yaml \
             --input data/raw/Churn.csv \
-            --seed 42 \
             --metrics-output results/training_results.json
           
           # Extract metrics from training results
