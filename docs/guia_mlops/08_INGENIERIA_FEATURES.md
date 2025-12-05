@@ -7,16 +7,16 @@ Dominar la creación de features sin introducir **data leakage**, el error más 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║  🚨 DATA LEAKAGE: El Asesino Silencioso de Modelos                          ║
+║  🚨 DATA LEAKAGE: El Asesino Silencioso de Modelos                           ║
 ║                                                                              ║
-║  Tu modelo tiene 99% accuracy en validación...                              ║
+║  Tu modelo tiene 99% accuracy en validación...                               ║
 ║  ...pero 50% en producción.                                                  ║
 ║                                                                              ║
-║  ¿Por qué? Porque durante el entrenamiento, el modelo "vio" información     ║
-║  que NO tendrá disponible cuando haga predicciones reales.                  ║
+║  ¿Por qué? Porque durante el entrenamiento, el modelo "vio" información      ║
+║  que NO tendrá disponible cuando haga predicciones reales.                   ║
 ║                                                                              ║
-║  Es como estudiar para un examen con las respuestas en la mano.             ║
-║  Sacas 100 en el examen de práctica, pero 0 en el real.                     ║
+║  Es como estudiar para un examen con las respuestas en la mano.              ║
+║  Sacas 100 en el examen de práctica, pero 0 en el real.                      ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -42,19 +42,19 @@ Dominar la creación de features sin introducir **data leakage**, el error más 
 ║  🔍 IMAGINA UN DETECTIVE RESOLVIENDO UN CASO:                             ║
 ║                                                                           ║
 ║  SIN LEAKAGE (correcto):                                                  ║
-║  • El detective solo tiene las pistas disponibles AL MOMENTO del crimen  ║
-║  • Debe deducir quién es el culpable con información limitada            ║
+║  • El detective solo tiene las pistas disponibles AL MOMENTO del crimen   ║
+║  • Debe deducir quién es el culpable con información limitada             ║
 ║  • Es difícil, pero es la realidad                                        ║
 ║                                                                           ║
 ║  CON LEAKAGE (trampa):                                                    ║
-║  • El detective tiene acceso al informe FINAL del caso                   ║
-║  • Ya sabe quién es el culpable antes de investigar                      ║
-║  • "Resuelve" el caso fácilmente, pero no aprendió nada                  ║
+║  • El detective tiene acceso al informe FINAL del caso                    ║
+║  • Ya sabe quién es el culpable antes de investigar                       ║
+║  • "Resuelve" el caso fácilmente, pero no aprendió nada                   ║
 ║                                                                           ║
 ║  EN ML:                                                                   ║
-║  • El modelo debe predecir usando SOLO información disponible            ║
+║  • El modelo debe predecir usando SOLO información disponible             ║
 ║    en el momento de la predicción                                         ║
-║  • Si usas información del futuro o del target, es TRAMPA                ║
+║  • Si usas información del futuro o del target, es TRAMPA                 ║
 ║                                                                           ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
@@ -244,33 +244,33 @@ predictions = pipeline.predict(X_test)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                     FLUJO ANTI-LEAKAGE CON PIPELINE                        │
+│                     FLUJO ANTI-LEAKAGE CON PIPELINE                         │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  ENTRENAMIENTO:                                                             │
-│  ┌──────────┐    ┌──────────────┐    ┌────────────┐    ┌──────────┐       │
-│  │ X_train  │───►│FeatureEng   │───►│DropDanger  │───►│ Scaler   │       │
-│  │          │    │ (crea features)│  │ (elimina   │    │ fit()    │       │
-│  └──────────┘    └──────────────┘    │  leakage)  │    └────┬─────┘       │
-│                                      └────────────┘         │              │
-│                                                             ▼              │
-│                                                      ┌──────────┐          │
-│                                                      │  Model   │          │
-│                                                      │  fit()   │          │
-│                                                      └──────────┘          │
+│  ┌──────────┐    ┌────────────────┐    ┌────────────┐    ┌──────────┐       │
+│  │ X_train  │───►│FeatureEng      │───►│DropDanger  │───►│ Scaler   │       │
+│  │          │    │ (crea features)│    │ (elimina   │    │ fit()    │       │
+│  └──────────┘    └────────────────┘    │  leakage)  │    └────┬─────┘       │
+│                                        └────────────┘         │             │
+│                                                               ▼             │
+│                                                        ┌──────────┐         │
+│                                                        │  Model   │         │
+│                                                        │  fit()   │         │
+│                                                        └──────────┘         │
 │                                                                             │
 │  PREDICCIÓN:                                                                │
-│  ┌──────────┐    ┌──────────────┐    ┌────────────┐    ┌──────────┐       │
-│  │ X_new    │───►│FeatureEng   │───►│DropDanger  │───►│ Scaler   │       │
-│  │          │    │ (mismas feat)│    │ (mismas    │    │transform │       │
-│  └──────────┘    └──────────────┘    │  columnas) │    │ (NO fit) │       │
-│                                      └────────────┘    └────┬─────┘       │
-│                                                             │              │
-│                                                             ▼              │
-│                                                      ┌──────────┐          │
-│                                                      │  Model   │          │
-│                                                      │ predict()│          │
-│                                                      └──────────┘          │
+│  ┌──────────┐    ┌──────────────┐    ┌────────────┐    ┌──────────┐         │
+│  │ X_new    │───►│FeatureEng    │───►│DropDanger  │───►│ Scaler   │         │
+│  │          │    │ (mismas feat)│    │ (mismas    │    │transform │         │
+│  └──────────┘    └──────────────┘    │  columnas) │    │ (NO fit) │         │
+│                                      └────────────┘    └────┬─────┘         │
+│                                                             │               │
+│                                                             ▼               │
+│                                                      ┌──────────┐           │
+│                                                      │  Model   │           │
+│                                                      │ predict()│           │
+│                                                      └──────────┘           │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -292,15 +292,15 @@ predictions = pipeline.predict(X_test)
 ║                                                                           ║
 ║  2. ¿Esta feature usa información del target (directa o indirectamente)?  ║
 ║     □ NO → OK                                                             ║
-║     □ SÍ → ❌ LEAKAGE - eliminar o recalcular sin target                 ║
+║     □ SÍ → ❌ LEAKAGE - eliminar o recalcular sin target                  ║
 ║                                                                           ║
 ║  3. ¿Esta feature usa información del futuro?                             ║
 ║     □ NO → OK                                                             ║
-║     □ SÍ → ❌ TEMPORAL LEAKAGE - usar solo datos pasados                 ║
+║     □ SÍ → ❌ TEMPORAL LEAKAGE - usar solo datos pasados                  ║
 ║                                                                           ║
 ║  4. ¿Las estadísticas de esta feature se calcularon con datos de test?    ║
 ║     □ NO → OK                                                             ║
-║     □ SÍ → ❌ TRAIN-TEST CONTAMINATION - recalcular solo con train       ║
+║     □ SÍ → ❌ TRAIN-TEST CONTAMINATION - recalcular solo con train        ║
 ║                                                                           ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
@@ -426,6 +426,144 @@ def prepare_data_correct(df):
 - [ ] Sabes cómo usar `drop_columns` para eliminar features peligrosas
 - [ ] Entiendes por qué el Pipeline previene leakage
 - [ ] Puedes aplicar el checklist anti-leakage a nuevas features
+
+---
+
+## 📦 Cómo se Usó en el Portafolio
+
+El proyecto **CarVision** es el ejemplo principal de feature engineering seguro:
+
+### FeatureEngineer Centralizado
+
+```python
+# CarVision-Market-Intelligence/src/carvision/features.py
+class FeatureEngineer(BaseEstimator, TransformerMixin):
+    """Centraliza TODO el feature engineering.
+    
+    Usado en: training, FastAPI, Streamlit - siempre igual.
+    """
+    
+    def __init__(self, current_year: int = None):
+        self.current_year = current_year
+    
+    def transform(self, X):
+        X = X.copy()
+        year = self.current_year or pd.Timestamp.now().year
+        
+        # ✅ Features SEGURAS (no usan target)
+        X['vehicle_age'] = year - X['model_year']
+        X['brand'] = X['model'].str.split().str[0]
+        X['mileage_category'] = pd.cut(X['odometer'], bins=[0, 50000, 100000, float('inf')])
+        
+        return X
+```
+
+### Prevención de Leakage en Config
+
+```yaml
+# CarVision-Market-Intelligence/configs/config.yaml
+data:
+  target_column: price
+  drop_columns:
+    - price_per_mile    # ❌ Usa target
+    - price_category    # ❌ Usa target
+    - id                # No predictivo
+```
+
+### Caso Real: Bug Corregido
+
+El portafolio tuvo un bug de leakage que fue corregido:
+
+```python
+# ❌ ANTES (con leakage)
+X['price_per_mile'] = X['price'] / X['odometer']  # Usaba el target!
+
+# ✅ DESPUÉS (sin leakage)
+# price_per_mile se elimina en drop_columns
+# Solo se calcula para análisis exploratorio, NO para el modelo
+```
+
+### Archivos Clave
+
+| Proyecto | Feature Engineering | Anti-Leakage |
+|----------|--------------------|--------------| 
+| CarVision | `src/carvision/features.py` | `drop_columns` en config |
+| BankChurn | En `ColumnTransformer` | Sin features derivadas del target |
+| TelecomAI | En pipeline | Sin features peligrosas |
+
+### 🔧 Ejercicio: Audita CarVision
+
+```bash
+# 1. Revisa el FeatureEngineer
+cat CarVision-Market-Intelligence/src/carvision/features.py
+
+# 2. Verifica drop_columns en config
+cat CarVision-Market-Intelligence/configs/config.yaml | grep -A5 "drop_columns"
+
+# 3. Ejecuta tests para verificar que no hay leakage
+cd CarVision-Market-Intelligence
+pytest tests/test_features.py -v
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **Feature Store**: Explica por qué centralizar features mejora consistencia training/serving.
+
+2. **Data Leakage**: Da ejemplos concretos (usar target en features, información del futuro).
+
+3. **Feature Selection**: Conoce métodos (mutual information, RFE, importancia de modelo).
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Features temporales | Cuidado con leakage: no uses info futura |
+| Categorías nuevas | Usa `handle_unknown='ignore'` en encoders |
+| Features de texto | TF-IDF para baseline, embeddings para avanzado |
+| Interacciones | PolynomialFeatures con grado 2 máximo |
+
+### Checklist de Feature Engineering
+
+- [ ] Sin data leakage verificado
+- [ ] Transformaciones aplicadas consistentemente train/serve
+- [ ] Features documentadas (significado, fuente, transformación)
+- [ ] Outliers manejados (clip, winsorize, o flag)
+- [ ] Missing values con estrategia clara
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [Feature Engineering for ML - Krish Naik](https://www.youtube.com/watch?v=6WDFfaYtN6s) | Video |
+| 🟡 | [Avoiding Data Leakage](https://www.youtube.com/watch?v=NfOYWZnPK3I) | Video |
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **Data Leakage**: Filtración de información del target
+- **Feature Engineering**: Creación de variables predictivas
+- **ColumnTransformer**: Procesamiento paralelo de columnas
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 08:
+- **8.1**: Detectar data leakage
+- **8.2**: Pipeline sin leakage
 
 ---
 

@@ -4,15 +4,19 @@
 
 Transformar tu código de "funciona en un notebook" a "pasa code review en una empresa FAANG".
 
+En este portafolio aplicarás estos patrones sobre `common_utils/` y el código de los tres proyectos
+(BankChurn-Predictor, CarVision-Market-Intelligence, TelecomAI-Customer-Intelligence), para que
+tu Python sea consistente en todo el stack.
+
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║   ANTES (Data Scientist típico)          DESPUÉS (MLOps Engineer)           ║
-║   ───────────────────────────            ─────────────────────────          ║
-║   • Un archivo gigante                   • Paquete instalable               ║
-║   • Sin tipos                            • Type hints en todo               ║
-║   • Config hardcodeada                   • Pydantic validation              ║
-║   • "Funciona en mi máquina"             • Funciona en cualquier máquina   ║
+║   ANTES (Data Scientist típico)          DESPUÉS (MLOps Engineer)            ║
+║   ───────────────────────────            ─────────────────────────           ║
+║   • Un archivo gigante                   • Paquete instalable                ║
+║   • Sin tipos                            • Type hints en todo                ║
+║   • Config hardcodeada                   • Pydantic validation               ║
+║   • "Funciona en mi máquina"             • Funciona en cualquier máquina     ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -35,7 +39,7 @@ Transformar tu código de "funciona en un notebook" a "pasa code review en una e
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════╗
-║  🍽️ IMAGINA UN RESTAURANTE:                                              ║
+║  🍽️ IMAGINA UN RESTAURANTE:                                               ║
 ║                                                                           ║
 ║  SIN MENÚ (código sin tipos):                                             ║
 ║  - "Tráeme algo de comer"                                                 ║
@@ -476,12 +480,12 @@ except ValidationError as e:
 ║  CASA DESORDENADA (código en raíz):                                       ║
 ║  - Todo en el living: ropa, comida, herramientas                          ║
 ║  - Imposible encontrar algo                                               ║
-║  - Invitas a alguien: "perdón por el desorden"                           ║
+║  - Invitas a alguien: "perdón por el desorden"                            ║
 ║                                                                           ║
 ║  CASA ORGANIZADA (src/ layout):                                           ║
-║  - Cocina para cocinar, baño para baño, closet para ropa                 ║
+║  - Cocina para cocinar, baño para baño, closet para ropa                  ║
 ║  - Cada cosa en su lugar                                                  ║
-║  - Invitas a alguien: "bienvenido, siéntate"                             ║
+║  - Invitas a alguien: "bienvenido, siéntate"                              ║
 ║                                                                           ║
 ║  src/ layout = Organización profesional de código                         ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -1147,12 +1151,146 @@ Antes de continuar, verifica:
 
 ---
 
-## 📚 Recursos Adicionales
+## 📦 Cómo se Usó en el Portafolio
 
+Este módulo se aplica **directamente** en los 3 proyectos del portafolio. Aquí están los archivos reales que implementan cada concepto:
+
+### Type Hints en el Portafolio
+
+```python
+# BankChurn-Predictor/src/bankchurn/config.py (líneas 89-109)
+@classmethod
+def from_yaml(cls, config_path: str | Path) -> BankChurnConfig:
+    """Load configuration from YAML file.
+    
+    Parameters
+    ----------
+    config_path : str or Path
+        Path to YAML configuration file.
+    
+    Returns
+    -------
+    config : BankChurnConfig
+        Validated configuration object.
+    """
+```
+
+### Pydantic en el Portafolio
+
+Cada proyecto tiene su configuración Pydantic:
+
+| Proyecto | Archivo | Clases principales |
+|----------|---------|-------------------|
+| BankChurn | `src/bankchurn/config.py` | `BankChurnConfig`, `ModelConfig`, `DataConfig` |
+| CarVision | `src/carvision/config.py` | `CarVisionConfig`, `FiltersConfig` |
+| TelecomAI | `src/telecomai/config.py` | `TelecomConfig` |
+
+```python
+# Ejemplo real: BankChurn-Predictor/src/bankchurn/config.py
+class ModelConfig(BaseModel):
+    """Model training configuration."""
+    type: str = "ensemble"
+    test_size: float = Field(0.2, ge=0.0, le=1.0)  # ← Validación automática
+    random_state: int = 42
+    cv_folds: int = Field(5, ge=2)  # ← Mínimo 2 folds
+```
+
+### src/ Layout en el Portafolio
+
+Los 3 proyectos siguen exactamente la estructura descrita:
+
+```
+BankChurn-Predictor/
+├── src/bankchurn/       ← Paquete instalable
+│   ├── __init__.py
+│   ├── config.py        ← Pydantic configs
+│   ├── pipeline.py      ← sklearn Pipeline
+│   └── trainer.py       ← Clase de entrenamiento
+├── pyproject.toml       ← Metadata y dependencias
+└── setup.py             ← Fallback para pip install -e .
+```
+
+### 🔧 Ejercicio: Verifica en el Repo Real
+
+```bash
+# 1. Ve al proyecto BankChurn
+cd BankChurn-Predictor
+
+# 2. Instala en modo editable
+pip install -e ".[dev]"
+
+# 3. Verifica tipos con mypy
+mypy src/bankchurn/config.py
+
+# 4. Prueba que Pydantic valida correctamente
+python -c "from bankchurn.config import BankChurnConfig; print(BankChurnConfig.from_yaml('configs/config.yaml'))"
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **Domina Type Hints**: Los entrevistadores valoran código tipado. Practica explicar por qué `def process(data: pd.DataFrame) -> Dict[str, float]` es mejor que `def process(data)`.
+
+2. **Conoce Pydantic vs Dataclasses**: Pregunta común: "¿Cuándo usarías uno u otro?" Respuesta: Pydantic para validación de datos externos (APIs, configs), dataclasses para estructuras internas simples.
+
+3. **Demuestra comprensión de `__init__.py`**: Explica cómo controla la API pública de un paquete y por qué `from package import *` es peligroso.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Código legacy sin tipos | Añade tipos gradualmente, empezando por funciones públicas |
+| Validación de configs | Usa Pydantic con `model_validator` para validaciones cruzadas |
+| Logs en producción | Usa `structlog` o `loguru` en lugar de `print()` |
+| Errores en producción | Implementa excepciones personalizadas con contexto útil |
+
+### Anti-patrones a Evitar
+
+- ❌ `from typing import *` — importa solo lo que necesitas
+- ❌ `except Exception:` sin logging — siempre registra el error
+- ❌ Funciones de más de 50 líneas — refactoriza en funciones más pequeñas
+- ❌ Nombres como `data`, `info`, `result` — usa nombres descriptivos
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [Type Hints - ArjanCodes](https://www.youtube.com/watch?v=dgBCEB2jVU0) | Video |
+| 🔴 | [Pydantic V2 Tutorial](https://www.youtube.com/watch?v=502XOB0u8OY) | Video |
+| 🟡 | [Python Type Checking - Real Python](https://realpython.com/python-type-checking/) | Tutorial |
+
+**Documentación oficial:**
 - [PEP 484 – Type Hints](https://peps.python.org/pep-0484/)
 - [Pydantic Documentation](https://docs.pydantic.dev/)
 - [Python Packaging Guide](https://packaging.python.org/)
-- [Real Python: Python Type Checking](https://realpython.com/python-type-checking/)
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **Type Hints**: Anotaciones de tipos en Python
+- **Pydantic**: Validación de datos con type hints
+- **src/ Layout**: Estructura de proyecto profesional
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 01:
+- **1.1**: Añadir type hints a funciones
+- **1.2**: Crear config con Pydantic
+- **1.3**: Estructurar proyecto con src/ layout
 
 ---
 

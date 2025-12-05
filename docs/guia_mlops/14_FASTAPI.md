@@ -591,6 +591,143 @@ Con esta disciplina, tu API FastAPI pasará de “funciona solo en local” a es
 
 ---
 
+## 📦 Cómo se Usó en el Portafolio
+
+Cada proyecto tiene una API FastAPI en `app/fastapi_app.py`:
+
+### API de BankChurn
+
+```python
+# BankChurn-Predictor/app/fastapi_app.py (estructura)
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI(title="BankChurn Predictor API")
+
+class PredictionRequest(BaseModel):
+    CreditScore: int
+    Geography: str
+    Gender: str
+    Age: int
+    Balance: float
+    # ... más features
+
+class PredictionResponse(BaseModel):
+    prediction: int
+    probability: float
+    risk_level: str
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy", "model_loaded": model is not None}
+
+@app.post("/predict", response_model=PredictionResponse)
+async def predict(request: PredictionRequest):
+    features = request.dict()
+    df = pd.DataFrame([features])
+    prediction = pipeline.predict(df)[0]
+    probability = pipeline.predict_proba(df)[0, 1]
+    return PredictionResponse(
+        prediction=int(prediction),
+        probability=float(probability),
+        risk_level="high" if probability > 0.7 else "low"
+    )
+```
+
+### APIs por Proyecto
+
+| Proyecto | Endpoint Principal | Tipo |
+|----------|-------------------|------|
+| BankChurn | `/predict` | Clasificación binaria |
+| CarVision | `/predict` | Regresión |
+| TelecomAI | `/predict` | Clasificación multiclase |
+
+### 🔧 Ejercicio: Prueba las APIs Reales
+
+```bash
+# 1. Inicia API de BankChurn
+cd BankChurn-Predictor
+uvicorn app.fastapi_app:app --reload
+
+# 2. Prueba con curl
+curl http://localhost:8000/health
+
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{"CreditScore": 650, "Geography": "France", ...}'
+
+# 3. Ve docs interactivos
+# http://localhost:8000/docs
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **Pydantic + FastAPI**: Explica cómo la validación automática reduce código.
+
+2. **Async vs Sync**: Cuándo usar cada uno (IO-bound vs CPU-bound).
+
+3. **OpenAPI/Swagger**: Documentación automática como feature de FastAPI.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| ML Serving | Carga modelo en startup, no en cada request |
+| Validación | Usa Pydantic para input/output schemas |
+| Errores | HTTPException con códigos y mensajes claros |
+| Producción | Gunicorn + Uvicorn workers |
+
+### Endpoints Esenciales para ML
+
+```python
+/health          → Liveness check
+/ready           → Readiness check (modelo cargado)
+/predict         → Inferencia principal
+/predict/batch   → Inferencia batch
+/model/info      → Versión, métricas, metadata
+```
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [FastAPI Tutorial - Sebastián Ramírez](https://www.youtube.com/watch?v=0sOvCWFmrtA) | Video |
+| 🟡 | [ML APIs with FastAPI](https://www.youtube.com/watch?v=kBIX3_cMHzE) | Video |
+
+**Documentación oficial:**
+- [FastAPI Documentation](https://fastapi.tiangolo.com/)
+- [Pydantic v2](https://docs.pydantic.dev/latest/)
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **FastAPI**: Framework web async para APIs
+- **Pydantic**: Validación de datos con type hints
+- **OpenAPI**: Especificación de APIs (Swagger)
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 14:
+- **14.1**: Schemas Pydantic para request/response
+- **14.2**: Endpoint de predicción completo
+
+---
+
 <div align="center">
 
 [← Docker Avanzado](13_DOCKER.md) | [Siguiente: Streamlit Dashboards →](15_STREAMLIT.md)

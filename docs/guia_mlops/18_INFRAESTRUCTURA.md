@@ -17,12 +17,12 @@ Conceptos de IaC (Terraform) y orquestación (Kubernetes) para despliegue ML.
 ║  TERRAFORM = Definir infraestructura en código                            ║
 ║                                                                           ║
 ║  En lugar de:                                                             ║
-║  "Crear una instancia EC2 manualmente en la consola AWS"                 ║
+║  "Crear una instancia EC2 manualmente en la consola AWS"                  ║
 ║                                                                           ║
 ║  Escribes:                                                                ║
-║  resource "aws_instance" "ml_server" {                                   ║
-║    ami           = "ami-12345"                                           ║
-║    instance_type = "t3.medium"                                           ║
+║  resource "aws_instance" "ml_server" {                                    ║
+║    ami           = "ami-12345"                                            ║
+║    instance_type = "t3.medium"                                            ║
 ║  }                                                                        ║
 ║                                                                           ║
 ║  Beneficios:                                                              ║
@@ -87,7 +87,7 @@ resource "aws_ecs_service" "bankchurn_api" {
 ║                                                                           ║
 ║  Para ML:                                                                 ║
 ║  • Deployment para API de inferencia                                      ║
-║  • HPA (Horizontal Pod Autoscaler) para escalar con carga                ║
+║  • HPA (Horizontal Pod Autoscaler) para escalar con carga                 ║
 ║  • Secrets para API keys y credenciales                                   ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
@@ -249,12 +249,224 @@ Con este enfoque, IaC y K8s se vuelven herramientas que suman, no otra fuente de
 
 ---
 
+## Horizontal Pod Autoscaler (HPA)
+
+El HPA escala automáticamente los pods basándose en métricas como CPU o memoria.
+
+```yaml
+# k8s/hpa.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: bankchurn-hpa
+  namespace: mlops
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: bankchurn-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300  # Esperar 5 min antes de escalar abajo
+    scaleUp:
+      stabilizationWindowSeconds: 0    # Escalar arriba inmediatamente
+```
+
+**¿Por qué 70% CPU?** Es un balance entre eficiencia (no desperdiciar recursos) y capacidad de respuesta (tener margen para picos).
+
+---
+
+## ConfigMaps y Secrets
+
+### ConfigMap (configuración no sensible)
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bankchurn-config
+  namespace: mlops
+data:
+  LOG_LEVEL: "INFO"
+  MODEL_PATH: "/app/artifacts/model.joblib"
+  MLFLOW_TRACKING_URI: "http://mlflow-service:5000"
+```
+
+### Secret (ejemplo didáctico, **no usar en producción**)
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ml-secrets
+  namespace: mlops
+type: Opaque
+data:
+  # Valores de ejemplo. En un entorno real se inyectan desde el sistema de secretos.
+  database-password: REEMPLAZAR_EN_ENTORNO_REAL
+  api-key: REEMPLAZAR_EN_ENTORNO_REAL
+```
+
+### Uso en Deployment
+
+```yaml
+spec:
+  containers:
+  - name: bankchurn
+    envFrom:
+    - configMapRef:
+        name: bankchurn-config
+    - secretRef:
+        name: ml-secrets
+```
+
+---
+
+## Ingress para Routing HTTP
+
+```yaml
+# k8s/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mlops-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: api.mlops.example.com
+    http:
+      paths:
+      - path: /bankchurn
+        pathType: Prefix
+        backend:
+          service:
+            name: bankchurn-service
+            port:
+              number: 80
+      - path: /carvision
+        pathType: Prefix
+        backend:
+          service:
+            name: carvision-service
+            port:
+              number: 80
+```
+
+---
+
+## 📦 Cómo se usó en el Portafolio
+
+El directorio `k8s/` del portafolio contiene 8 manifests production-ready:
+
+| Archivo | Propósito |
+|---------|-----------|
+| `namespace.yaml` | Namespace `mlops` aislado |
+| `bankchurn-deployment.yaml` | Deployment + Service + HPA |
+| `carvision-deployment.yaml` | Deployment + Service |
+| `telecom-deployment.yaml` | Deployment + Service |
+| `prometheus-deployment.yaml` | Monitoreo |
+| `grafana-deployment.yaml` | Dashboards |
+| `ingress.yaml` | Routing HTTP |
+| `storage.yaml` | PersistentVolumeClaims |
+
+**Comandos útiles:**
+
+```bash
+# Aplicar todos los manifests
+kubectl apply -f k8s/
+
+# Ver estado de pods
+kubectl get pods -n mlops
+
+# Ver logs de un pod
+kubectl logs -f deployment/bankchurn-api -n mlops
+
+# Escalar manualmente (si no usas HPA)
+kubectl scale deployment bankchurn-api --replicas=3 -n mlops
+
+# Port-forward para testing local
+kubectl port-forward svc/bankchurn-service 8001:80 -n mlops
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **IaC (Infrastructure as Code)**: Por qué Terraform/Pulumi sobre click-ops.
+
+2. **Kubernetes basics**: Pods, Deployments, Services, ConfigMaps.
+
+3. **Cloud agnostic**: Diseña para portabilidad cuando sea posible.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Multi-environment | Usa Terraform workspaces o directorios |
+| Secrets | External Secrets Operator o cloud-native solutions |
+| Costos | Tagging obligatorio para cost allocation |
+| DR (Disaster Recovery) | Documenta y prueba regularmente |
+
+### Stack Recomendado
+
+```
+IaC:        Terraform + Terragrunt
+Containers: Docker + Kubernetes
+CI/CD:      GitHub Actions + ArgoCD
+Secrets:    Vault o AWS Secrets Manager
+Monitoring: Prometheus + Grafana
+```
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo | Duración |
+|:--:|:--------|:-----|:--------:|
+| 🔴 | [Kubernetes Tutorial - TechWorld Nana](https://www.youtube.com/watch?v=X48VuDVv0do) | Video | 4h |
+| 🟡 | [Terraform Tutorial - freeCodeCamp](https://www.youtube.com/watch?v=7xngnjfIlK4) | Video | 2.5h |
+| 🟢 | [Kubernetes Fundamentals - LF](https://training.linuxfoundation.org/) | Curso | 35h |
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones detalladas de:
+- **Kubernetes**: Orquestación de contenedores
+- **HPA**: Horizontal Pod Autoscaler
+- **ConfigMap/Secret**: Configuración en K8s
+- **Terraform**: Infrastructure as Code
+
+---
+
 ## ✅ Checkpoint
 
 Para este nivel:
-- [ ] Entiendes el concepto de IaC
+- [ ] Entiendes el concepto de IaC (infraestructura como código)
 - [ ] Puedes leer un deployment.yaml de K8s
+- [ ] Sabes qué hace un HPA y cuándo usarlo
+- [ ] Entiendes la diferencia entre ConfigMap y Secret
 - [ ] Sabes cuándo escalar más allá de Docker
+
+**Ejercicios**: Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulos 17-18
 
 ---
 

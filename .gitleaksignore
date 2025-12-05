@@ -6,3 +6,6 @@ CarVision-Market-Intelligence/notebooks/legacy/EDA_original_backup.ipynb:aws-acc
 
 # Any notebook output cells (data artifacts, not secrets)
 **/notebooks/**/*.ipynb:*:*
+
+# Simulacro MID: ejemplos didácticos de API_KEY
+docs/guia_mlops/SIMULACRO_ENTREVISTA_MID.md:generic-api-key:*

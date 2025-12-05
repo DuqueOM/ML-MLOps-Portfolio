@@ -7,8 +7,8 @@ Crear la estructura de proyecto que usarás en los 3 proyectos del portafolio.
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║  Una buena estructura de proyecto es como los cimientos de una casa:        ║
-║  invisible cuando está bien hecha, DESASTROSA cuando está mal.              ║
+║  Una buena estructura de proyecto es como los cimientos de una casa:         ║
+║  invisible cuando está bien hecha, DESASTROSA cuando está mal.               ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -76,6 +76,29 @@ MiProyecto-ML/
 ├── .pre-commit-config.yaml       # 🔍 HOOKS PRE-COMMIT
 └── README.md                     # 📖 DOCUMENTACIÓN PRINCIPAL
 ```
+
+## 🧩 Cómo se aplica en este portafolio
+
+Esta estructura no es teórica: los **3 proyectos** del portafolio la siguen con ligeras
+variaciones. Esto conecta directamente con los macro-módulos **00** y **01** de la
+**Ruta 0 → Senior/Staff** descrita en el [SYLLABUS](SYLLABUS.md).
+
+| Proyecto | Carpeta raíz | Paquete principal | Archivos clave |
+|----------|--------------|-------------------|----------------|
+| BankChurn Predictor | `BankChurn-Predictor/` | `src/bankchurn/` | `pyproject.toml`, `main.py`, `Makefile`, `tests/` |
+| CarVision Market Intelligence | `CarVision-Market-Intelligence/` | `src/carvision/` | `pyproject.toml`, `main.py`, `Makefile`, `tests/` |
+| TelecomAI Customer Intelligence | `TelecomAI-Customer-Intelligence/` | `src/telecom/` | `pyproject.toml`, `main.py`, `Makefile`, `tests/` |
+
+Para aprovechar este módulo al máximo en el repositorio real:
+
+- **Compara** el árbol genérico de `MiProyecto-ML/` con, por ejemplo,
+  `BankChurn-Predictor/` (fíjate especialmente en `src/`, `configs/`, `tests/`,
+  `Makefile` y `pyproject.toml`).
+- **Verifica** que los comandos que defines aquí (`make install`, `make test`,
+  `make train`, `make serve`) tienen su equivalente funcional en los Makefiles de
+  cada proyecto.
+- **Usa** esta plantilla como referencia si creas un **cuarto proyecto** durante el
+  [20_PROYECTO_INTEGRADOR](20_PROYECTO_INTEGRADOR.md).
 
 ---
 
@@ -398,15 +421,78 @@ Este checklist de estructura es lo primero que un revisor Senior mira cuando abr
 
 ---
 
-## ✅ Ejercicio: Crear Estructura
+## 💼 Consejos Profesionales
 
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **Explica tu estructura**: Los entrevistadores valoran que puedas justificar cada carpeta y archivo de tu proyecto.
+
+2. **Cookiecutter es tu amigo**: Menciona que usas plantillas estandarizadas para consistencia entre proyectos.
+
+3. **Conoce la diferencia `src/` vs flat**: Explica por qué `src/` layout previene imports accidentales del código local.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Proyecto nuevo | Usa cookiecutter-data-science o similar como base |
+| Equipo grande | Documenta convenciones en CONTRIBUTING.md |
+| Monorepo vs Multirepo | Monorepo para proyectos relacionados, multirepo para independientes |
+| Configs | Nunca hardcodees: usa archivos YAML + variables de entorno |
+
+### Checklist de Proyecto Profesional
+
+- [ ] README.md con badges, instalación, y uso rápido
+- [ ] pyproject.toml con metadata completa
+- [ ] Makefile con comandos estándar (install, test, lint)
+- [ ] .pre-commit-config.yaml para calidad automática
+- [ ] tests/ con estructura que refleja src/
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [Python Project Structure - ArjanCodes](https://www.youtube.com/watch?v=e8IIYRMnxcE) | Video |
+| 🟡 | [src Layout - Packaging Guide](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/) | Docs |
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **src/ Layout**: Estructura de proyecto profesional
+- **pyproject.toml**: Archivo de configuración moderno
+- **Makefile**: Automatización de comandos
+
+---
+
+## 📋 Plantillas Relacionadas
+
+Ver [templates/](templates/index.md) para plantillas listas:
+- [pyproject_template.toml](templates/pyproject_template.toml) — Configuración de paquete Python
+- [README_TEMPLATE.md](templates/README_TEMPLATE.md) — README profesional
+- [Makefile](templates/Makefile) — Automatización de tareas
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 03:
+- **3.1**: Crear estructura de proyecto
+- **3.2**: Configurar pyproject.toml
+
+**Ejercicio rápido:**
 ```bash
-# Script para crear la estructura base
 mkdir -p mi-proyecto/{src/miproyecto,app,tests,configs,data/raw,artifacts,scripts,docs}
-touch mi-proyecto/src/__init__.py
-touch mi-proyecto/src/miproyecto/__init__.py
-touch mi-proyecto/tests/__init__.py
-touch mi-proyecto/README.md
+touch mi-proyecto/src/__init__.py mi-proyecto/src/miproyecto/__init__.py
+touch mi-proyecto/tests/__init__.py mi-proyecto/README.md
 ```
 
 ---

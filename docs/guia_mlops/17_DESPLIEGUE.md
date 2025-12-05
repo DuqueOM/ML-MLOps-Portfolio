@@ -51,20 +51,20 @@
 ║                    MATRIZ DE DECISIÓN DE DESPLIEGUE                           ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
-║   Factor              │ Lambda/Serverless │ ECS/Cloud Run │ Kubernetes       ║
-║   ────────────────────┼───────────────────┼───────────────┼─────────────────║
-║   Tráfico             │ < 1M req/mes      │ 1M-100M       │ > 100M           ║
-║   Latencia            │ Variable (cold)   │ Consistente   │ Consistente      ║
-║   Costo bajo tráfico  │ 💰 Muy bajo       │ 💰💰 Medio    │ 💰💰💰 Alto       ║
+║   Factor              │ Lambda/Serverless │ ECS/Cloud Run │ Kubernetes        ║
+║   ────────────────────┼───────────────────┼───────────────┼───────────────────║
+║   Tráfico             │ < 1M req/mes      │ 1M-100M       │ > 100M            ║
+║   Latencia            │ Variable (cold)   │ Consistente   │ Consistente       ║
+║   Costo bajo tráfico  │ 💰 Muy bajo       │ 💰💰 Medio    │ 💰💰💰 Alto      ║
 ║   Costo alto tráfico  │ 💰💰💰 Caro       │ 💰💰 Medio    │ 💰 Barato        ║
-║   Complejidad Ops     │ ⭐ Baja           │ ⭐⭐ Media     │ ⭐⭐⭐⭐ Alta       ║
-║   Equipo necesario    │ 1 persona         │ 2-3 personas  │ 5+ personas      ║
-║   GPU Support         │ ❌                │ ✅             │ ✅               ║
-║   Max memoria         │ 10GB              │ 120GB+        │ Ilimitado        ║
-║   Max timeout         │ 15 min            │ Ilimitado     │ Ilimitado        ║
-║   Modelo size límite  │ ~250MB pkg        │ Sin límite    │ Sin límite       ║
-║   Auto-scaling        │ Automático        │ Automático    │ Configurable     ║
-║   Vendor lock-in      │ Alto              │ Medio         │ Bajo             ║
+║   Complejidad Ops     │ ⭐ Baja           │ ⭐⭐ Media   │ ⭐⭐⭐⭐ Alta  ║
+║   Equipo necesario    │ 1 persona         │ 2-3 personas  │ 5+ personas       ║
+║   GPU Support         │ ❌                │ ✅           │ ✅               ║
+║   Max memoria         │ 10GB              │ 120GB+        │ Ilimitado         ║
+║   Max timeout         │ 15 min            │ Ilimitado     │ Ilimitado         ║
+║   Modelo size límite  │ ~250MB pkg        │ Sin límite    │ Sin límite        ║
+║   Auto-scaling        │ Automático        │ Automático    │ Configurable      ║
+║   Vendor lock-in      │ Alto              │ Medio         │ Bajo              ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -368,12 +368,12 @@ spec:
 ║                                                                               ║
 ║   ESCENARIO: 1M requests/mes, ~1 req/seg promedio                             ║
 ║                                                                               ║
-║   AWS Lambda:                                                                  ║
+║   AWS Lambda:                                                                 ║
 ║   • 1M requests × $0.20/1M = $0.20                                            ║
 ║   • 1M × 200ms × 1GB = 200K GB-s × $0.0000166 = $3.32                         ║
-║   • Total: ~$4/mes ✅ (bajo tráfico es barato)                                 ║
+║   • Total: ~$4/mes ✅ (bajo tráfico es barato)                                ║
 ║                                                                               ║
-║   ECS Fargate:                                                                 ║
+║   ECS Fargate:                                                                ║
 ║   • 0.5 vCPU × 730h × $0.04 = $14.60                                          ║
 ║   • 1GB RAM × 730h × $0.004 = $2.92                                           ║
 ║   • Total: ~$18/mes (consistente)                                             ║
@@ -387,14 +387,14 @@ spec:
 ║                                                                               ║
 ║   ESCENARIO: 100M requests/mes, ~40 req/seg promedio                          ║
 ║                                                                               ║
-║   AWS Lambda:                                                                  ║
+║   AWS Lambda:                                                                 ║
 ║   • 100M × $0.20/1M = $20                                                     ║
 ║   • 100M × 200ms × 1GB = 20M GB-s × $0.0000166 = $332                         ║
-║   • Total: ~$350/mes (ya no tan barato)                                        ║
+║   • Total: ~$350/mes (ya no tan barato)                                       ║
 ║                                                                               ║
 ║   ECS Fargate (auto-scaling):                                                 ║
 ║   • ~5 tareas promedio                                                        ║
-║   • Total: ~$90/mes ✅                                                         ║
+║   • Total: ~$90/mes ✅                                                        ║
 ║                                                                               ║
 ║   EKS (auto-scaling):                                                         ║
 ║   • 5 nodos t3.medium promedio                                                ║
@@ -425,7 +425,7 @@ spec:
 ║  DECISIÓN: Usar Google Cloud Run para el MVP                                  ║
 ║                                                                               ║
 ║  RAZONES:                                                                     ║
-║  • Escala a cero cuando no hay tráfico (costo mínimo)                        ║
+║  • Escala a cero cuando no hay tráfico (costo mínimo)                         ║
 ║  • Sin gestión de infraestructura                                             ║
 ║  • Latencia consistente (mejor que Lambda para ML)                            ║
 ║  • Soporta contenedores Docker estándar                                       ║
@@ -549,6 +549,137 @@ curl -X POST https://bankchurn-xxx.run.app/api/v1/predict \
 
 ---
 
+## 📋 Operaciones y Runbooks
+
+### Estructura de un Runbook ML
+
+```markdown
+# Runbook: [Nombre del Servicio]
+
+## Información del Servicio
+- **Propósito**: Predicción de churn
+- **Owner**: ML Team
+- **Criticality**: Tier 2
+
+## Endpoints
+| Endpoint | Descripción | SLO |
+|----------|-------------|-----|
+| /health | Health check | 99.9% |
+| /predict | Predicción | p99 < 200ms |
+
+## Alertas Comunes
+
+### Alta Latencia (> 500ms)
+1. Verificar métricas: `kubectl top pods`
+2. Revisar logs: `kubectl logs -f deploy/bankchurn-api`
+3. Escalar si es necesario: `kubectl scale deploy/bankchurn-api --replicas=5`
+
+### Error Rate > 5%
+1. Verificar modelo: ¿Cambió la distribución de inputs?
+2. Revisar logs de errores
+3. Rollback si es necesario: `kubectl rollout undo deploy/bankchurn-api`
+
+## Procedimientos de Emergencia
+- **Rollback**: `make rollback VERSION=v1.0.0`
+- **Escalar**: `kubectl scale deploy/bankchurn-api --replicas=10`
+- **Deshabilitar**: `kubectl scale deploy/bankchurn-api --replicas=0`
+```
+
+### SLOs para APIs ML
+
+```yaml
+# Ejemplo de SLOs
+slos:
+  availability:
+    target: 99.5%
+    window: 30d
+  
+  latency:
+    p50: 50ms
+    p95: 150ms
+    p99: 300ms
+  
+  error_rate:
+    target: < 1%
+    
+  prediction_quality:
+    accuracy_drift: < 5%  # vs baseline
+```
+
+### Checklist de Operaciones
+
+- [ ] **Monitoreo activo**: Dashboards y alertas configurados
+- [ ] **Runbook documentado**: Procedimientos de respuesta
+- [ ] **Rollback probado**: Capacidad de volver a versión anterior
+- [ ] **Escalado automático**: HPA configurado
+- [ ] **Logs centralizados**: Acceso a logs históricos
+- [ ] **On-call definido**: Rotación y escalamiento
+
+> 📖 Ver ejemplo completo en [RUNBOOK.md](../../RUNBOOK.md) del repositorio principal.
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **Deployment Strategies**: Blue-green, canary, rolling. Pros y cons de cada uno.
+
+2. **A/B Testing**: Cómo evaluar modelos en producción con tráfico real.
+
+3. **Rollback**: Siempre ten plan de rollback automático.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Nuevo modelo | Canary deployment con 5% de tráfico |
+| Alta disponibilidad | Múltiples réplicas + load balancer |
+| Modelo grande | Considera serverless o batch serving |
+| Costos | Autoscaling basado en tráfico real |
+
+### Checklist Pre-Deployment
+
+- [ ] Tests pasando en staging
+- [ ] Métricas baseline documentadas
+- [ ] Runbook actualizado
+- [ ] Rollback probado
+- [ ] Alertas configuradas
+- [ ] Comunicación a stakeholders
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [Docker Deploy - TechWorld Nana](https://www.youtube.com/watch?v=3c-iBn73dDE) | Video |
+| 🟡 | [Cloud Run Tutorial](https://www.youtube.com/watch?v=3OP-q55hOUI) | Video |
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **Multi-stage Build**: Optimización de imágenes Docker
+- **Cloud Run**: Serverless containers de GCP
+- **Non-root user**: Seguridad en contenedores
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 17:
+- **17.1**: Dockerfile multi-stage
+- **17.2**: Docker Compose para stack ML
+
+---
+
 ## 🔜 Siguiente Paso
 
 Con la plataforma elegida, es hora de gestionar **infraestructura como código**.
@@ -559,8 +690,6 @@ Con la plataforma elegida, es hora de gestionar **infraestructura como código**
 
 <div align="center">
 
-*Módulo 12 completado. Ya sabes dónde desplegar según tu contexto.*
-
-*© 2025 DuqueOM - Guía MLOps v5.0: Senior Edition*
+[← Observabilidad](16_OBSERVABILIDAD.md) | [Siguiente: Infraestructura →](18_INFRAESTRUCTURA.md)
 
 </div>

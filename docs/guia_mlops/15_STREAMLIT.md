@@ -7,7 +7,7 @@ Construir dashboards interactivos profesionales como el de CarVision.
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║  Streamlit = La forma más rápida de crear UIs para ML                       ║
+║  Streamlit = La forma más rápida de crear UIs para ML                        ║
 ║                                                                              ║
 ║  ✅ Python puro (sin HTML/CSS/JS)                                            ║
 ║  ✅ Reactivo (cambios automáticos)                                           ║
@@ -39,20 +39,20 @@ Construir dashboards interactivos profesionales como el de CarVision.
 │                     CarVision Dashboard                                     │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐           │
-│  │  Overview   │ │   Market    │ │   Model     │ │    Price    │           │
-│  │   (KPIs)    │ │  Analysis   │ │  Metrics    │ │  Predictor  │           │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘           │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐            │
+│  │  Overview   │ │   Market    │ │   Model     │ │    Price    │            │
+│  │   (KPIs)    │ │  Analysis   │ │  Metrics    │ │  Predictor  │            │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘            │
 │                                                                             │
-│  TAB 1: Overview                TAB 2: Market Analysis                     │
-│  • Total vehicles               • Investment recommendations               │
-│  • Average price                • Risk assessment                          │
-│  • Price distribution           • Market trends                            │
+│  TAB 1: Overview                TAB 2: Market Analysis                      │
+│  • Total vehicles               • Investment recommendations                │
+│  • Average price                • Risk assessment                           │
+│  • Price distribution           • Market trends                             │
 │                                                                             │
-│  TAB 3: Model Metrics           TAB 4: Price Predictor                     │
-│  • RMSE, MAE, R², MAPE         • Input form                                │
-│  • Bootstrap confidence         • Single prediction                        │
-│  • Temporal backtest            • Gauge visualization                      │
+│  TAB 3: Model Metrics           TAB 4: Price Predictor                      │
+│  • RMSE, MAE, R², MAPE         • Input form                                 │
+│  • Bootstrap confidence         • Single prediction                         │
+│  • Temporal backtest            • Gauge visualization                       │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -549,12 +549,273 @@ Con este enfoque, tus dashboards serán rápidos, robustos y mantenibles.
 
 ---
 
-## ✅ Ejercicio
+## 16.6 Dashboard Avanzado: Visualizaciones Profesionales
 
+### Gauge Chart para Predicciones
+
+```python
+import plotly.graph_objects as go
+
+def create_price_gauge(predicted_price: float, min_price: float = 0, max_price: float = 100000):
+    """Crea un gauge chart para visualizar predicción de precio."""
+    
+    # Determinar color según rango
+    if predicted_price < max_price * 0.3:
+        color = "green"
+    elif predicted_price < max_price * 0.7:
+        color = "orange"
+    else:
+        color = "red"
+    
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number+delta",
+        value=predicted_price,
+        domain={'x': [0, 1], 'y': [0, 1]},
+        title={'text': "Predicted Price", 'font': {'size': 24}},
+        number={'prefix': "$", 'font': {'size': 40}},
+        gauge={
+            'axis': {'range': [min_price, max_price], 'tickwidth': 1},
+            'bar': {'color': color},
+            'bgcolor': "white",
+            'borderwidth': 2,
+            'steps': [
+                {'range': [0, max_price * 0.3], 'color': 'lightgreen'},
+                {'range': [max_price * 0.3, max_price * 0.7], 'color': 'lightyellow'},
+                {'range': [max_price * 0.7, max_price], 'color': 'lightcoral'}
+            ],
+            'threshold': {
+                'line': {'color': "black", 'width': 4},
+                'thickness': 0.75,
+                'value': predicted_price
+            }
+        }
+    ))
+    
+    fig.update_layout(height=300)
+    return fig
+
+# Uso en Streamlit
+if prediction is not None:
+    gauge = create_price_gauge(prediction, min_price=0, max_price=80000)
+    st.plotly_chart(gauge, use_container_width=True)
+```
+
+### Métricas con Confianza (Bootstrap)
+
+```python
+def display_model_metrics(metrics: dict):
+    """Muestra métricas del modelo con intervalos de confianza."""
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric(
+            label="RMSE",
+            value=f"${metrics['rmse']:,.0f}",
+            delta=f"±{metrics.get('rmse_ci', 500):,.0f}",
+            delta_color="inverse"  # Menor es mejor
+        )
+    
+    with col2:
+        st.metric(
+            label="MAE",
+            value=f"${metrics['mae']:,.0f}",
+            delta=f"±{metrics.get('mae_ci', 300):,.0f}",
+            delta_color="inverse"
+        )
+    
+    with col3:
+        st.metric(
+            label="R²",
+            value=f"{metrics['r2']:.3f}",
+            delta=f"{metrics.get('r2_improvement', 0):.1%} vs baseline",
+            delta_color="normal"
+        )
+    
+    with col4:
+        st.metric(
+            label="MAPE",
+            value=f"{metrics['mape']:.1%}",
+            delta=f"±{metrics.get('mape_ci', 0.02):.1%}",
+            delta_color="inverse"
+        )
+```
+
+### Feature Importance Interactivo
+
+```python
+import plotly.express as px
+
+def plot_feature_importance(model, feature_names: list, top_n: int = 15):
+    """Gráfico interactivo de importancia de features."""
+    
+    # Extraer importancias (asume RandomForest o similar)
+    if hasattr(model, 'feature_importances_'):
+        importances = model.feature_importances_
+    elif hasattr(model, 'named_steps'):
+        # Pipeline sklearn
+        clf = model.named_steps.get('classifier') or model.named_steps.get('model')
+        importances = clf.feature_importances_
+    else:
+        st.warning("Modelo no soporta feature_importances_")
+        return None
+    
+    # Crear DataFrame y ordenar
+    df_imp = pd.DataFrame({
+        'feature': feature_names,
+        'importance': importances
+    }).sort_values('importance', ascending=True).tail(top_n)
+    
+    # Gráfico horizontal
+    fig = px.bar(
+        df_imp, 
+        x='importance', 
+        y='feature',
+        orientation='h',
+        title=f'Top {top_n} Feature Importances',
+        labels={'importance': 'Importance', 'feature': 'Feature'},
+        color='importance',
+        color_continuous_scale='Viridis'
+    )
+    
+    fig.update_layout(height=400, showlegend=False)
+    return fig
+
+# Uso
+with st.expander("🔍 Feature Importance", expanded=True):
+    fig = plot_feature_importance(model, feature_names)
+    if fig:
+        st.plotly_chart(fig, use_container_width=True)
+```
+
+### Multi-page App con Navigation
+
+```python
+# pages/1_📊_Overview.py
+import streamlit as st
+
+st.set_page_config(page_title="Overview", page_icon="📊")
+st.title("📊 Dashboard Overview")
+
+# ... contenido de overview
+
+# pages/2_🔮_Predictor.py
+import streamlit as st
+
+st.set_page_config(page_title="Predictor", page_icon="🔮")
+st.title("🔮 Price Predictor")
+
+# ... contenido de predictor
+
+# Estructura de archivos:
+# app/
+# ├── streamlit_app.py       # Main entry point
+# └── pages/
+#     ├── 1_📊_Overview.py
+#     ├── 2_📈_Analysis.py
+#     └── 3_🔮_Predictor.py
+```
+
+---
+
+## 📦 Cómo se usó en el Portafolio
+
+El dashboard de CarVision (`CarVision-Market-Intelligence/app/streamlit_app.py`) implementa:
+
+| Componente | Líneas | Técnica |
+|------------|:------:|---------|
+| 4 Tabs navegables | 150-600 | `st.tabs()` |
+| KPIs ejecutivos | 200-250 | `st.metric()` con delta |
+| Gauge de predicción | 450-500 | Plotly `go.Indicator` |
+| Feature importance | 350-400 | Plotly `px.bar` horizontal |
+| Bootstrap validation | 400-430 | Métricas con intervalos |
+| Caching de modelo | 50-80 | `@st.cache_resource` |
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **Streamlit vs Gradio vs Dash**: Trade-offs (Streamlit simple, Gradio para ML demos, Dash para dashboards complejos).
+
+2. **Session State**: Explica cómo mantener estado entre reruns.
+
+3. **Caching**: `@st.cache_data` vs `@st.cache_resource`.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Modelo pesado | Usa `@st.cache_resource` para cargarlo una vez |
+| Datos grandes | Pagina o muestra samples |
+| Deployment | Streamlit Cloud para demos, Docker para producción |
+| UX | Añade spinners y progress bars |
+
+### Estructura de App Profesional
+
+```
+app/
+├── streamlit_app.py   # Entry point limpio
+├── pages/             # Multi-page app
+├── components/        # Widgets reutilizables
+└── utils/             # Lógica de negocio
+```
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo | Duración |
+|:--:|:--------|:-----|:--------:|
+| 🔴 | [Streamlit Crash Course - Patrick Loeber](https://www.youtube.com/watch?v=JwSS70SZdyM) | Video | 45 min |
+| 🟡 | [30 Days of Streamlit](https://30days.streamlit.app/) | Curso | 30 días |
+| 🟡 | [Streamlit Multi-page Apps](https://www.youtube.com/watch?v=nSw96qUbK9o) | Video | 20 min |
+| 🟢 | [Streamlit Gallery](https://streamlit.io/gallery) | Ejemplos | - |
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **Streamlit**: Framework para dashboards en Python
+- **@st.cache_resource**: Decorator para cachear modelos
+- **Plotly**: Librería de visualizaciones interactivas
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 15:
+- **15.1**: Dashboard de predicción
+
+**Ejercicio completo:**
 Crea un dashboard Streamlit para BankChurn con:
 1. Tab Overview: Distribución de churn, KPIs
 2. Tab Analysis: Factores de riesgo por segmento
 3. Tab Predictor: Formulario para predecir churn de un cliente
+
+**Bonus**:
+- Añade gauge chart para probabilidad de churn
+- Implementa SHAP waterfall plot para explicar predicciones
+- Usa multi-page structure
+
+---
+
+## 🎤 Checkpoint: Simulacro Mid
+
+> 🎯 **¡Has completado ML Core + Deploy!** (Módulos 07-15)
+> 
+> Si buscas posiciones **Mid-Level ML Engineer**, ahora es buen momento para practicar:
+> 
+> **[→ SIMULACRO_ENTREVISTA_MID.md](SIMULACRO_ENTREVISTA_MID.md)**
+> - 60 preguntas de pipelines, testing, CI/CD, Docker, APIs
+> - Enfoque en implementación end-to-end y debugging
 
 ---
 

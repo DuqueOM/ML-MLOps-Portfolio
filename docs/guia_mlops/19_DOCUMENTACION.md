@@ -483,6 +483,105 @@ README:
 
 ---
 
+## 📹 Material Audiovisual
+
+Para crear demos profesionales (GIFs, screenshots, videos) de tu documentación y portafolio, consulta:
+
+**[→ Guía Audiovisual Completa](GUIA_AUDIOVISUAL.md)**
+
+Incluye:
+- Cómo grabar GIFs demostrativos de APIs y dashboards
+- Screenshots profesionales para README
+- Video de 5 minutos explicando el portafolio
+- Scripts y comandos para levantar el stack demo
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **Model Cards**: Explica por qué documentar limitaciones y sesgos es crítico.
+
+2. **Documentation as Code**: Docs versionados junto al código.
+
+3. **Audience-aware**: Diferentes docs para diferentes audiencias.
+
+### Para Proyectos Reales
+
+| Documento | Audiencia | Contenido |
+|-----------|-----------|-----------|
+| README.md | Todos | Quick start, overview |
+| Model Card | ML team, stakeholders | Métricas, limitaciones, ética |
+| API Docs | Developers | Endpoints, schemas, ejemplos |
+| Runbook | Ops | Troubleshooting, alertas |
+
+### Documentación que Diferencia
+
+- **ADRs**: Decisiones arquitectónicas con contexto
+- **Changelogs**: Generados automáticamente desde commits
+- **Diagramas**: Mermaid/PlantUML versionados
+- **Ejemplos**: Notebooks con casos de uso reales
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [Model Cards - Google](https://modelcards.withgoogle.com/about) | Documentación |
+| 🟡 | [MkDocs Tutorial](https://www.youtube.com/watch?v=Q-YA_dA8C20) | Video |
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **Model Card**: Documentación estandarizada de modelos
+- **ADR**: Architecture Decision Record
+- **MkDocs**: Generador de documentación
+
+---
+
+## 📋 Plantillas Relacionadas
+
+Ver [templates/](templates/index.md) para plantillas listas:
+- [model_card_template.md](templates/model_card_template.md) — Documentación completa de modelos
+- [dataset_card_template.md](templates/dataset_card_template.md) — Documentación de datasets
+
+---
+
+## 🎬 Material Audiovisual
+
+Documentar tu trabajo también incluye crear demos visuales profesionales.
+
+> 📺 **Ver [GUIA_AUDIOVISUAL.md](GUIA_AUDIOVISUAL.md)** para:
+> - Crear GIFs demostrativos de cada proyecto
+> - Capturar screenshots profesionales
+> - Producir video principal del portafolio
+> - Scripts y comandos para demos
+
+| Material | Propósito |
+|----------|-----------|
+| GIFs (3-5 por proyecto) | README, documentación rápida |
+| Screenshots | Issues, PRs, documentación |
+| Video principal (5-7 min) | LinkedIn, presentaciones |
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 19:
+- **19.1**: Crear Model Card
+- **19.2**: Crear Dataset Card
+
+---
+
 ## 🔜 Siguiente Paso
 
 Con documentación lista, es hora del **Proyecto Integrador**.
@@ -493,8 +592,6 @@ Con documentación lista, es hora del **Proyecto Integrador**.
 
 <div align="center">
 
-*Módulo 16 completado. Tu trabajo ahora está documentado profesionalmente.*
-
-*© 2025 DuqueOM - Guía MLOps v5.0: Senior Edition*
+[← Infraestructura](18_INFRAESTRUCTURA.md) | [Siguiente: Proyecto Integrador →](20_PROYECTO_INTEGRADOR.md)
 
 </div>

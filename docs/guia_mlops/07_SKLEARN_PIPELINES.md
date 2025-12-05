@@ -7,16 +7,16 @@ Dominar el patrón más importante de ML profesional: **pipelines unificados** q
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║  🚨 EL ERROR #1 EN PRODUCCIÓN ML:                                           ║
+║  🚨 EL ERROR #1 EN PRODUCCIÓN ML:                                            ║
 ║                                                                              ║
-║  Entrenar con una transformación, servir con otra.                          ║
+║  Entrenar con una transformación, servir con otra.                           ║
 ║                                                                              ║
 ║  Ejemplo real:                                                               ║
-║  • Training: StandardScaler fitted en train set (mean=45000, std=20000)     ║
-║  • Production: StandardScaler fitted en cada request (mean=???, std=???)    ║
+║  • Training: StandardScaler fitted en train set (mean=45000, std=20000)      ║
+║  • Production: StandardScaler fitted en cada request (mean=???, std=???)     ║
 ║  • Resultado: Predicciones COMPLETAMENTE diferentes                          ║
 ║                                                                              ║
-║  🛡️ LA SOLUCIÓN: Pipeline unificado que guarda TODO junto                   ║
+║  🛡️ LA SOLUCIÓN: Pipeline unificado que guarda TODO junto                    ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -42,16 +42,16 @@ Dominar el patrón más importante de ML profesional: **pipelines unificados** q
 ║  🏭 IMAGINA UNA FÁBRICA DE AUTOS:                                         ║
 ║                                                                           ║
 ║  SIN LÍNEA DE ENSAMBLAJE (código suelto):                                 ║
-║  • Trabajador 1 pone ruedas, pero a veces se le olvida                   ║
-║  • Trabajador 2 pinta, pero usa colores diferentes cada día              ║
-║  • Trabajador 3 instala motor, pero a veces del modelo equivocado        ║
-║  • Resultado: Cada auto es diferente, imposible de mantener              ║
+║  • Trabajador 1 pone ruedas, pero a veces se le olvida                    ║
+║  • Trabajador 2 pinta, pero usa colores diferentes cada día               ║
+║  • Trabajador 3 instala motor, pero a veces del modelo equivocado         ║
+║  • Resultado: Cada auto es diferente, imposible de mantener               ║
 ║                                                                           ║
 ║  CON LÍNEA DE ENSAMBLAJE (Pipeline):                                      ║
-║  • Paso 1: Chasis → Paso 2: Motor → Paso 3: Pintura → Paso 4: Ruedas    ║
-║  • Cada paso está definido y es SIEMPRE igual                            ║
-║  • El proceso completo es una sola unidad                                ║
-║  • Resultado: Todos los autos son consistentes                           ║
+║  • Paso 1: Chasis → Paso 2: Motor → Paso 3: Pintura → Paso 4: Ruedas      ║
+║  • Cada paso está definido y es SIEMPRE igual                             ║
+║  • El proceso completo es una sola unidad                                 ║
+║  • Resultado: Todos los autos son consistentes                            ║
 ║                                                                           ║
 ║  sklearn Pipeline = Línea de ensamblaje para ML                           ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
@@ -233,13 +233,13 @@ X_processed = preprocessor.fit_transform(X_train)
 ║  Crea un Custom Transformer cuando:                                       ║
 ║                                                                           ║
 ║  ✅ Necesitas feature engineering específico del dominio                  ║
-║  ✅ La transformación debe aplicarse igual en train y producción         ║
-║  ✅ sklearn no tiene un transformer que haga lo que necesitas            ║
+║  ✅ La transformación debe aplicarse igual en train y producción          ║
+║  ✅ sklearn no tiene un transformer que haga lo que necesitas             ║
 ║                                                                           ║
 ║  Ejemplos del portafolio:                                                 ║
-║  • CarVision: Calcular vehicle_age desde model_year                      ║
-║  • CarVision: Extraer brand desde model                                  ║
-║  • BankChurn: Resampling para clases desbalanceadas                      ║
+║  • CarVision: Calcular vehicle_age desde model_year                       ║
+║  • CarVision: Extraer brand desde model                                   ║
+║  • BankChurn: Resampling para clases desbalanceadas                       ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -1027,11 +1027,137 @@ Antes de continuar, verifica:
 
 ---
 
-## 📚 Recursos Adicionales
+## 📦 Cómo se Usó en el Portafolio
 
-- [sklearn Pipeline Documentation](https://scikit-learn.org/stable/modules/compose.html)
-- [ColumnTransformer Guide](https://scikit-learn.org/stable/modules/generated/sklearn.compose.ColumnTransformer.html)
-- [Creating Custom Transformers](https://scikit-learn.org/stable/developers/develop.html)
+Los pipelines sklearn son el corazón de los 3 proyectos del portafolio:
+
+### Pipeline Unificado de BankChurn
+
+```python
+# BankChurn-Predictor/src/bankchurn/pipeline.py (estructura real)
+def build_pipeline(config: BankChurnConfig) -> Pipeline:
+    """Pipeline completo de 3 etapas."""
+    return Pipeline([
+        ('preprocessor', ColumnTransformer([
+            ('num', Pipeline([
+                ('imputer', SimpleImputer(strategy='median')),
+                ('scaler', StandardScaler())
+            ]), config.data.numerical_features),
+            ('cat', Pipeline([
+                ('imputer', SimpleImputer(strategy='constant', fill_value='missing')),
+                ('encoder', OneHotEncoder(handle_unknown='ignore'))
+            ]), config.data.categorical_features)
+        ])),
+        ('model', get_model(config))
+    ])
+```
+
+### FeatureEngineer de CarVision
+
+```python
+# CarVision-Market-Intelligence/src/carvision/features.py
+class FeatureEngineer(BaseEstimator, TransformerMixin):
+    """Custom transformer para features de autos."""
+    
+    def __init__(self, current_year: int = None):
+        self.current_year = current_year
+    
+    def fit(self, X, y=None):
+        return self
+    
+    def transform(self, X):
+        X = X.copy()
+        # vehicle_age, brand, mileage_category, etc.
+        return X
+```
+
+### Archivos Clave por Proyecto
+
+| Proyecto | Pipeline | Features | Artefacto |
+|----------|----------|----------|-----------|
+| BankChurn | `src/bankchurn/pipeline.py` | En preprocessor | `artifacts/pipeline.joblib` |
+| CarVision | `src/carvision/pipeline.py` | `src/carvision/features.py` | `artifacts/pipeline.joblib` |
+| TelecomAI | `src/telecomai/training.py` | En pipeline | `artifacts/model.joblib` |
+
+### 🔧 Ejercicio: Explora los Pipelines Reales
+
+```bash
+# 1. Ve a BankChurn y carga el pipeline
+cd BankChurn-Predictor
+python -c "
+import joblib
+pipe = joblib.load('artifacts/pipeline.joblib')
+print('Steps:', [name for name, _ in pipe.steps])
+print('Preprocessor:', pipe.named_steps['preprocessor'])
+"
+
+# 2. Inspecciona el FeatureEngineer de CarVision
+cat CarVision-Market-Intelligence/src/carvision/features.py
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **¿Por qué Pipelines?**: Evitan data leakage, garantizan reproducibilidad, simplifican deployment.
+
+2. **Custom Transformers**: Demuestra que puedes crear transformadores con `fit()` y `transform()`.
+
+3. **ColumnTransformer**: Explica cómo aplicar diferentes transformaciones a diferentes columnas.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Features nuevas | Añade transformadores al pipeline, no código suelto |
+| Debugging | Usa `pipeline.named_steps` para inspeccionar etapas |
+| Producción | Serializa el pipeline completo, no solo el modelo |
+| Testing | Testea cada transformador individualmente |
+
+### Patrones Avanzados
+
+- **FeatureUnion**: Combinar features de diferentes fuentes
+- **Pipeline dentro de Pipeline**: Para transformaciones complejas
+- **make_pipeline**: Sintaxis simplificada sin nombres
+- **clone**: Para cross-validation sin modificar original
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [sklearn Pipelines - Data School](https://www.youtube.com/watch?v=irHhDMbw3xo) | Video |
+| 🟡 | [Custom Transformers - ArjanCodes](https://www.youtube.com/watch?v=e8IIYRMnxcE) | Video |
+
+**Documentación oficial:**
+- [sklearn Pipeline](https://scikit-learn.org/stable/modules/compose.html)
+- [ColumnTransformer](https://scikit-learn.org/stable/modules/generated/sklearn.compose.ColumnTransformer.html)
+- [Custom Transformers](https://scikit-learn.org/stable/developers/develop.html)
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **Pipeline**: Cadena de transformaciones + modelo
+- **ColumnTransformer**: Procesamiento paralelo de columnas
+- **Data Leakage**: Filtración de información del target
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 07:
+- **7.1**: Pipeline básico con scaler + modelo
+- **7.2**: ColumnTransformer para features mixtas
 
 ---
 

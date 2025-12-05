@@ -7,16 +7,26 @@ Implementar un pipeline de entrenamiento robusto, reproducible y loggeable como 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║  NOTEBOOK TÍPICO:                    CÓDIGO PROFESIONAL:                    ║
-║  ─────────────────                   ────────────────────                   ║
-║  • 500 líneas en un archivo          • Clases modulares                     ║
-║  • Variables globales                • Configuración externa                ║
-║  • Sin logging                       • Logging estructurado                 ║
-║  • "Funcionó... creo"                • Métricas rastreadas                  ║
-║  • Imposible reproducir              • 100% reproducible                    ║
+║  NOTEBOOK TÍPICO:                    CÓDIGO PROFESIONAL:                     ║ 
+║  ─────────────────                   ────────────────────                    ║
+║  • 500 líneas en un archivo          • Clases modulares                      ║
+║  • Variables globales                • Configuración externa                 ║
+║  • Sin logging                       • Logging estructurado                  ║
+║  • "Funcionó... creo"                • Métricas rastreadas                   ║
+║  • Imposible reproducir              • 100% reproducible                     ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
+
+### 🧩 Cómo se aplica en este portafolio
+
+- Este módulo se apoya directamente en el código real de **BankChurn-Predictor**:
+  - `src/bankchurn/training.py` (`ChurnTrainer`).
+  - `configs/config.yaml` (config Pydantic usada en el trainer).
+  - Carpeta `artifacts/` donde se guardan `model.joblib` y `training_results.json`.
+- También establece el patrón que luego deberás replicar en **CarVision** y **TelecomAI**
+  (por ejemplo, implementando tu propio `PriceTrainer` o `TelecomTrainer`) y que se conecta
+  con los módulos de **Experiment Tracking** (MLflow) y **CI/CD**.
 
 ---
 
@@ -180,27 +190,27 @@ class ChurnTrainer:
 ### Diagrama del Flujo
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        ChurnTrainer.run() Flow                             │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│   ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐                │
-│   │ Config  │───►│  Load   │───►│ Prepare │───►│  Split  │                │
-│   │  YAML   │    │  Data   │    │Features │    │Train/Test│               │
-│   └─────────┘    └─────────┘    └─────────┘    └────┬────┘                │
-│                                                      │                      │
-│                                                      ▼                      │
-│   ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐                │
-│   │ MLflow  │◄───│  Save   │◄───│Evaluate │◄───│  Train  │                │
-│   │  Log    │    │Artifacts│    │ (Test)  │    │ + CV    │                │
-│   └─────────┘    └─────────┘    └─────────┘    └─────────┘                │
-│                                                                             │
-│   OUTPUT:                                                                   │
-│   • model.joblib (Pipeline completo)                                        │
-│   • training_results.json (métricas)                                        │
-│   • MLflow run (experimento rastreado)                                      │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        ChurnTrainer.run() Flow                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌──────────┐             │
+│   │ Config  │───►│  Load   │───►│ Prepare │───►│  Split   │             │
+│   │  YAML   │    │  Data   │    │Features │    │Train/Test│             │
+│   └─────────┘    └─────────┘    └─────────┘    └────┬─────┘             │
+│                                                     │                   │
+│                                                     ▼                   │
+│   ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐              │
+│   │ MLflow  │◄───│  Save   │◄───│Evaluate │◄───│  Train  │              │
+│   │  Log    │    │Artifacts│    │ (Test)  │    │ + CV    │              │
+│   └─────────┘    └─────────┘    └─────────┘    └─────────┘              │
+│                                                                         │
+│   OUTPUT:                                                               │
+│   • model.joblib (Pipeline completo)                                    │
+│   • training_results.json (métricas)                                    │
+│   • MLflow run (experimento rastreado)                                  │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -610,6 +620,165 @@ class PriceTrainer:
         # TODO: Construir pipeline [features -> pre -> model]
         pass
 ```
+
+---
+
+## 📦 Cómo se Usó en el Portafolio
+
+El proyecto **BankChurn** implementa el patrón de training profesional completo:
+
+### Clase ChurnTrainer Real
+
+```python
+# BankChurn-Predictor/src/bankchurn/trainer.py (estructura)
+class ChurnTrainer:
+    """Entrenador profesional con CV, MLflow y artefactos."""
+    
+    def __init__(self, config: BankChurnConfig):
+        self.config = config
+        self.model_ = None
+        self.metrics_ = {}
+    
+    def run(self, input_path: Path, output_dir: Path) -> dict:
+        """Flujo completo: load → split → CV → train → evaluate → save."""
+        df = self.load_data(input_path)
+        X, y = self.prepare_features(df)
+        X_train, X_test, y_train, y_test = self.split_data(X, y)
+        
+        # Cross-validation
+        cv_scores = self.cross_validate(X_train, y_train)
+        
+        # Entrenamiento final
+        self.model_ = self.build_pipeline()
+        self.model_.fit(X_train, y_train)
+        
+        # Evaluación
+        self.metrics_ = self.evaluate(X_test, y_test)
+        
+        # Guardar artefactos
+        self.save_artifacts(output_dir)
+        
+        return self.metrics_
+```
+
+### Flujo de Entrenamiento
+
+```
+┌───────────────────────────────────────────────────────────────┐
+│                    FLUJO DE TRAINING                          │
+├───────────────────────────────────────────────────────────────┤
+│                                                               │
+│  load_data → prepare_features → split_data                    │
+│      │              │               │                         │
+│      ▼              ▼               ▼                         │
+│  DataFrame     X, y arrays    train/test split                │
+│                                     │                         │
+│                    ┌────────────────┴────────────────┐        │
+│                    │                                 │        │
+│              cross_validate                    build_pipeline │
+│                    │                                 │        │
+│              cv_scores                          Pipeline      │
+│                    │                                 │        │
+│                    └────────────────┬────────────────┘        │
+│                                     │                         │
+│                              model_.fit()                     │
+│                                     │                         │
+│                              evaluate()                       │
+│                                     │                         │
+│                           save_artifacts()                    │
+│                                     │                         │
+│                       pipeline.joblib + metrics.json          │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
+```
+
+### Archivos de Training por Proyecto
+
+| Proyecto | Trainer | Config | Artefactos |
+|----------|---------|--------|------------|
+| BankChurn | `src/bankchurn/trainer.py` | `configs/config.yaml` | `artifacts/` |
+| CarVision | `main.py` | `configs/config.yaml` | `artifacts/` |
+| TelecomAI | `src/telecomai/training.py` | `configs/config.yaml` | `artifacts/` |
+
+### 🔧 Ejercicio: Ejecuta Training Real
+
+```bash
+# 1. Ve a BankChurn
+cd BankChurn-Predictor
+
+# 2. Entrena el modelo
+python main.py --config configs/config.yaml
+
+# 3. Verifica artefactos generados
+ls -la artifacts/
+cat artifacts/training_results.json
+
+# 4. Verifica MLflow
+mlflow ui  # Abre http://localhost:5000
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **Cross-Validation**: Explica stratified k-fold, time series split, y cuándo usar cada uno.
+
+2. **Hyperparameter Tuning**: RandomSearch vs GridSearch vs Bayesian (Optuna).
+
+3. **Métricas de negocio**: Traduce métricas técnicas a impacto de negocio.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Clases desbalanceadas | SMOTE, class_weight, o threshold tuning |
+| Overfitting | Early stopping, regularización, más datos |
+| Modelo en producción | Entrena con todos los datos al final |
+| Reproducibilidad | Fija seeds en todos los componentes |
+
+### Pipeline de Training Profesional
+
+```
+1. Split estratificado (train/val/test)
+2. Feature engineering solo en train
+3. Hyperparameter tuning con val
+4. Evaluación final en test (una sola vez)
+5. Re-entrenamiento con todos los datos
+6. Versionado de modelo + métricas
+```
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [Cross-Validation - StatQuest](https://www.youtube.com/watch?v=fSytzGwwBVw) | Video |
+| 🟡 | [ML Training Best Practices](https://www.youtube.com/watch?v=uQc5BZw5o_g) | Video |
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **Cross-Validation**: Validación cruzada para evaluar modelos
+- **class_weight**: Manejo de clases desbalanceadas
+- **Reproducibility**: Resultados repetibles con random_state
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 09:
+- **9.1**: Implementar Trainer class
+- **9.2**: Garantizar reproducibilidad
 
 ---
 

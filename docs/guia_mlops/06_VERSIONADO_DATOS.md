@@ -27,14 +27,14 @@
 ║  ADR-006: Criterios para Usar DVC                                             ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
-║  ✅ USA DVC SI:                                                                ║
+║  ✅ USA DVC SI:                                                               ║
 ║  • Datos > 100MB que no caben cómodamente en Git                              ║
 ║  • Necesitas reproducibilidad exacta de datasets                              ║
 ║  • Equipo colabora en el mismo pipeline de datos                              ║
 ║  • Quieres DAGs declarativos para pipelines                                   ║
 ║  • Datos son batch (no streaming)                                             ║
 ║                                                                               ║
-║  ❌ NO USES DVC SI:                                                            ║
+║  ❌ NO USES DVC SI:                                                           ║
 ║  • Datos < 50MB y no cambian frecuentemente → Git LFS o Git directo           ║
 ║  • Datos son streaming (Kafka, Kinesis) → No aplica versionado batch          ║
 ║  • Ya tienes Data Lake con Delta Lake/Iceberg → Usar versionado nativo        ║
@@ -54,6 +54,21 @@
 2. **Configurar** DVC con remote storage
 3. **Crear** pipelines reproducibles con `dvc.yaml`
 4. **Diseñar** DAGs para proyectos complejos
+
+### 🧩 Cómo se aplica en este portafolio
+
+- En `BankChurn-Predictor/` ya tienes configurado DVC con:
+  - `dvc.yaml` y `params.yaml` en la raíz del proyecto.
+  - Carpeta `data/` con datasets y `.dvc/` con metadatos de versionado.
+- Desde esa carpeta puedes practicar el flujo completo de este módulo ejecutando:
+  ```bash
+  cd BankChurn-Predictor
+  dvc status
+  dvc repro
+  dvc pull
+  ```
+- Aplica los mismos principios a futuros proyectos del portafolio para mantener datos y
+  pipelines de forma reproducible, especialmente cuando crees el proyecto integrador.
 
 ---
 
@@ -264,9 +279,9 @@ dvc checkout
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
 ║   SIN PIPELINE:                                                               ║
-║   "Para reproducir, ejecuta preprocess.py, luego train.py, luego..."         ║
-║   "Ah, pero primero asegúrate de tener los datos correctos..."               ║
-║   "Y usa los mismos hiperparámetros que están en... algún lugar..."          ║
+║   "Para reproducir, ejecuta preprocess.py, luego train.py, luego..."          ║
+║   "Ah, pero primero asegúrate de tener los datos correctos..."                ║
+║   "Y usa los mismos hiperparámetros que están en... algún lugar..."           ║
 ║                                                                               ║
 ║   CON PIPELINE DVC:                                                           ║
 ║   $ dvc repro                                                                 ║
@@ -438,9 +453,9 @@ dvc dag --outs train
 ║                                 │                                             ║
 ║                     ┌───────────┴───────────┐                                 ║
 ║                     ▼                       ▼                                 ║
-║            ┌─────────────────┐    ┌─────────────────┐                        ║
-║            │     train       │    │    (test data)  │                        ║
-║            └────────┬────────┘    └────────┬────────┘                        ║
+║            ┌─────────────────┐    ┌─────────────────┐                         ║
+║            │     train       │    │    (test data)  │                         ║
+║            └────────┬────────┘    └────────┬────────┘                         ║
 ║                     │                      │                                  ║
 ║                     └──────────┬───────────┘                                  ║
 ║                                ▼                                              ║
@@ -805,18 +820,171 @@ VERSIONADO:
 
 ---
 
+## 📦 Cómo se Usó en el Portafolio
+
+El portafolio tiene DVC configurado a nivel global:
+
+### Estructura DVC del Portafolio
+
+```
+ML-MLOps-Portfolio/
+├── .dvc/                  # Configuración DVC
+│   └── config             # Remote storage config
+├── .dvc-storage/          # Remote local (para demo)
+├── .dvcignore            # Archivos a ignorar
+└── */data/raw/*.dvc       # Archivos .dvc en cada proyecto
+```
+
+### Archivos .dvc Reales
+
+```bash
+# BankChurn-Predictor/data/raw/bank_churn.csv.dvc
+md5: abc123def456...
+size: 1234567
+path: bank_churn.csv
+
+# CarVision-Market-Intelligence/data/raw/car_prices.csv.dvc
+md5: xyz789ghi012...
+size: 2345678
+path: car_prices.csv
+```
+
+### Flujo de Datos en el Portafolio
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                    FLUJO DE DATOS DVC                        │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  data/raw/*.csv    →    .dvc files    →    .dvc-storage/     │
+│  (gitignored)           (tracked)          (remote local)    │
+│                                                              │
+│  Para CI/CD:                                                 │
+│  git clone → dvc pull → datos disponibles                    │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Comandos DVC del Portafolio
+
+```bash
+# Ver qué datos están trackeados
+dvc status
+
+# Obtener datos después de clonar
+dvc pull
+
+# Agregar nuevos datos
+dvc add data/raw/nuevos_datos.csv
+git add data/raw/nuevos_datos.csv.dvc data/raw/.gitignore
+git commit -m "data(dvc): add nuevos_datos"
+dvc push
+```
+
+### 🔧 Ejercicio: Trabaja con DVC Real
+
+```bash
+# 1. Ve a la raíz del portafolio
+cd ML-MLOps-Portfolio
+
+# 2. Verifica estado de DVC
+dvc status
+
+# 3. Obtén los datos (si no los tienes)
+dvc pull
+
+# 4. Verifica que los datos existen
+ls -la BankChurn-Predictor/data/raw/
+ls -la CarVision-Market-Intelligence/data/raw/
+
+# 5. Experimenta: modifica params y reproduce
+cd BankChurn-Predictor
+dvc repro  # Si tienes dvc.yaml configurado
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **DVC vs Git LFS**: Explica que DVC es específico para ML (pipelines, métricas), LFS es genérico para archivos grandes.
+
+2. **Reproducibilidad**: Menciona que puedes recrear cualquier experimento con `dvc checkout` + `git checkout`.
+
+3. **Data Lineage**: Explica cómo DVC trackea la procedencia de datos transformados.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Datos sensibles | Usa DVC con storage encriptado (S3 + KMS) |
+| Datasets grandes | Usa `dvc push/pull` selectivo por carpeta |
+| CI/CD | Cachea datos en CI para evitar descargas repetidas |
+| Colaboración | Documenta dónde está el remote storage |
+
+### Flujo Profesional de Datos
+
+1. Raw data → nunca modificar, solo agregar
+2. Processed data → versionado con DVC
+3. Features → cacheados para reutilización
+4. Modelos → versionados con métricas
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [DVC Tutorial - DataTalks](https://www.youtube.com/watch?v=kLKBcPonMYw) | Video |
+| 🟡 | [DVC Documentation](https://dvc.org/doc) | Docs |
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **DVC**: Data Version Control
+- **Remote Storage**: Almacenamiento externo para datos
+- **dvc.yaml**: Definición de pipelines reproducibles
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 06:
+- **6.1**: Configurar DVC en proyecto
+- **6.2**: Push/pull de datos
+
+---
+
+## 🎤 Checkpoint: Simulacro Junior
+
+> 🎯 **¡Has completado los fundamentos!** (Módulos 01-06)
+> 
+> Si buscas posiciones **Junior ML Engineer**, ahora es buen momento para practicar:
+> 
+> **[→ SIMULACRO_ENTREVISTA_JUNIOR.md](SIMULACRO_ENTREVISTA_JUNIOR.md)**
+> - 50 preguntas de Python, ML básico, Git y estructura
+> - Enfoque en fundamentos y capacidad de aprendizaje
+
+---
+
 ## 🔜 Siguiente Paso
 
-Con datos versionados, es hora de construir **pipelines de Sklearn avanzados**.
+Con datos versionados, es hora de construir **pipelines de sklearn avanzados**.
 
-**[Ir a Módulo 06: Pipelines Sklearn Avanzados →](07_SKLEARN_PIPELINES.md)**
+**[Ir a Módulo 07: sklearn Pipelines →](07_SKLEARN_PIPELINES.md)**
 
 ---
 
 <div align="center">
 
-*Módulo 05 completado. Tus datos ahora tienen historial como tu código.*
-
-*© 2025 DuqueOM - Guía MLOps v5.0: Senior Edition*
+[← Git Profesional](05_GIT_PROFESIONAL.md) | [Siguiente: sklearn Pipelines →](07_SKLEARN_PIPELINES.md)
 
 </div>

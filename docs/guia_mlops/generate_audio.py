@@ -32,33 +32,40 @@ SLOW = False
 # Directorio de salida
 OUTPUT_DIR = "audio"
 
-# Archivos a procesar (orden) - v5.0 Senior Edition
+# Archivos a procesar (orden correcto) - v5.0 Senior Edition
 MODULE_FILES = [
+    # === ÍNDICE Y NAVEGACIÓN ===
     "00_INDICE.md",
+    "SYLLABUS.md",
+    # === FASE 1: FUNDAMENTOS ===
     "01_PYTHON_MODERNO.md",
     "02_DISENO_SISTEMAS.md",
-    "03_ENTORNOS.md",
-    "04_GIT_PROFESIONAL.md",
-    "05_INGENIERIA_DATOS.md",
-    "06_PIPELINES_AVANZADOS.md",
-    "07_EXPERIMENT_TRACKING.md",
-    "08_TESTING_ML.md",
-    "09_GITHUB_ACTIONS.md",
-    "10_DOCKER_AVANZADO.md",
-    "11_FASTAPI_PRO.md",
-    "12_DESPLIEGUE_HIBRIDO.md",
-    "13_TERRAFORM_MODULAR.md",
-    "14_KUBERNETES_ML.md",
-    "15_OBSERVABILIDAD.md",
-    "16_DOCS_ETICA.md",
-    "17_PROYECTO_INTEGRADOR.md",
-    "18_GLOSARIO.md",
-    "19_DECISIONES_TECH.md",
-    "20_PLAN_ESTUDIOS.md",
-    "21_PLANTILLAS.md",
+    "03_ESTRUCTURA_PROYECTO.md",
+    "04_ENTORNOS.md",
+    "05_GIT_PROFESIONAL.md",
+    "06_VERSIONADO_DATOS.md",
+    # === FASE 2: ML ENGINEERING ===
+    "07_SKLEARN_PIPELINES.md",
+    "08_INGENIERIA_FEATURES.md",
+    "09_TRAINING_PROFESIONAL.md",
+    "10_EXPERIMENT_TRACKING.md",
+    # === FASE 3: MLOps CORE ===
+    "11_TESTING_ML.md",
+    "12_CI_CD.md",
+    "13_DOCKER.md",
+    "14_FASTAPI.md",
+    "15_STREAMLIT.md",
+    # === FASE 4: PRODUCCIÓN ===
+    "16_OBSERVABILIDAD.md",
+    "17_DESPLIEGUE.md",
+    "18_INFRAESTRUCTURA.md",
+    # === FASE 5: ESPECIALIZACIÓN ===
+    "19_DOCUMENTACION.md",
+    "20_PROYECTO_INTEGRADOR.md",
+    # === REFERENCIAS ===
+    "21_GLOSARIO.md",
     "22_CHECKLIST.md",
     "23_RECURSOS.md",
-    "SYLLABUS.md",
 ]
 
 

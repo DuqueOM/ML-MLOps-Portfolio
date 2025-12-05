@@ -115,3 +115,7 @@ media/videos/*.mp4
 media/videos/*.mov
 media/videos/*.avi
 media/videos/*.mkv
+
+# Generated PDFs and audio for guia_mlops docs
+docs/guia_mlops/pdf/
+docs/guia_mlops/audio/

@@ -7,14 +7,14 @@ Construir imágenes Docker optimizadas, seguras y pequeñas como las del portafo
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║  NIVEL 1: Funcional       NIVEL 2: Optimizado      NIVEL 3: Production      ║
-║  ─────────────────        ──────────────────       ──────────────────       ║
-║  FROM python:3.11         Multi-stage build        Distroless/Alpine        ║
-║  COPY . .                 Slim base                Non-root user            ║
-║  pip install              Layer caching            CVE scanning             ║
+║  NIVEL 1: Funcional       NIVEL 2: Optimizado      NIVEL 3: Production       ║
+║  ─────────────────        ──────────────────       ──────────────────        ║
+║  FROM python:3.11         Multi-stage build        Distroless/Alpine         ║
+║  COPY . .                 Slim base                Non-root user             ║
+║  pip install              Layer caching            CVE scanning              ║
 ║                                                                              ║
-║  ~1.2GB                   ~400MB                   ~150MB                   ║
-║  ⚠️ Básica                 ✅ Mejor                  🛡️ Hardened              ║
+║  ~1.2GB                   ~400MB                   ~150MB                    ║
+║  ⚠️ Básica                 ✅ Mejor                  🛡️ Hardened            ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -102,21 +102,21 @@ CMD ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000"]
 │                         MULTI-STAGE BUILD                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  STAGE 1: Builder                    STAGE 2: Runtime                      │
-│  ────────────────                    ────────────────                      │
-│  • Imagen completa                   • Imagen mínima                       │
-│  • Compila código                    • Solo runtime                        │
-│  • Instala dependencias              • Copia solo binarios                 │
-│  • Genera wheels                     • Sin compiladores                    │
+│  STAGE 1: Builder                    STAGE 2: Runtime                       │
+│  ────────────────                    ────────────────                       │
+│  • Imagen completa                   • Imagen mínima                        │
+│  • Compila código                    • Solo runtime                         │
+│  • Instala dependencias              • Copia solo binarios                  │
+│  • Genera wheels                     • Sin compiladores                     │
 │                                                                             │
-│  ┌─────────────────┐                 ┌─────────────────┐                  │
-│  │ python:3.11     │                 │ python:3.11-slim │                 │
-│  │ + gcc, make     │                 │                  │                 │
-│  │ + pip wheel     │   ──COPY──►     │ + wheels only    │                 │
-│  │ = 1.2GB         │                 │ = 150-400MB      │                 │
-│  └─────────────────┘                 └─────────────────┘                  │
+│  ┌─────────────────┐                 ┌──────────────────┐                   │
+│  │ python:3.11     │                 │ python:3.11-slim │                   │
+│  │ + gcc, make     │                 │                  │                   │
+│  │ + pip wheel     │   ──COPY──►     │ + wheels only    │                   │
+│  │ = 1.2GB         │                 │ = 150-400MB      │                   │
+│  └─────────────────┘                 └──────────────────┘                   │
 │                                                                             │
-│  Se DESCARTA                         Se USA en producción                  │
+│  Se DESCARTA                         Se USA en producción                   │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -547,17 +547,85 @@ Con este enfoque, tus imágenes Docker serán reproducibles, ligeras y listas pa
 
 ---
 
-## ✅ Ejercicio
+## 💼 Consejos Profesionales
 
-1. Crea un Dockerfile multi-stage para TelecomAI
-2. Añade healthcheck apropiado
-3. Asegúrate de que corra como non-root
-4. Verifica el tamaño: debe ser < 500MB
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
 
-```bash
-# Verificar tamaño
-docker images telecom-api
+### Para Entrevistas
+
+1. **Multi-stage builds**: Explica cómo reducen tamaño de imagen.
+
+2. **Layer caching**: Por qué el orden de instrucciones importa.
+
+3. **Security**: No correr como root, no incluir secrets en imagen.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Imágenes grandes | Multi-stage + slim base images |
+| Secrets | Usa build args o secrets mounting |
+| Debugging | Usa `docker exec -it container bash` |
+| Producción | Healthchecks obligatorios |
+
+### Dockerfile Optimizado
+
+```dockerfile
+# Stage 1: Build
+FROM python:3.11-slim AS builder
+COPY requirements.txt .
+RUN pip wheel --no-cache-dir -r requirements.txt
+
+# Stage 2: Runtime
+FROM python:3.11-slim
+COPY --from=builder /wheels /wheels
+RUN pip install --no-cache /wheels/*
+COPY src/ /app/src/
+USER nobody
+HEALTHCHECK CMD curl -f http://localhost:8000/health
 ```
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [Docker Tutorial - TechWorld Nana](https://www.youtube.com/watch?v=3c-iBn73dDE) | Video |
+| 🟡 | [Multi-stage Builds](https://www.youtube.com/watch?v=zpkqNPwEzac) | Video |
+
+**Documentación oficial:**
+- [Docker Multi-stage Builds](https://docs.docker.com/build/building/multi-stage/)
+- [Dockerfile Best Practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **Multi-stage Build**: Separar build de runtime
+- **Docker Compose**: Orquestar múltiples contenedores
+- **Non-root user**: Seguridad en contenedores
+
+---
+
+## 📋 Plantillas Relacionadas
+
+Ver [templates/](templates/index.md) para plantillas listas:
+- [Dockerfile](templates/Dockerfile) — Multi-stage completo para ML APIs
+- [Dockerfile_template](templates/Dockerfile_template) — Versión simplificada
+- [docker-compose.yml](templates/docker-compose.yml) — Stack con servicios
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 13:
+- **13.1**: Dockerfile multi-stage
+- **13.2**: Docker Compose para stack ML
 
 ---
 

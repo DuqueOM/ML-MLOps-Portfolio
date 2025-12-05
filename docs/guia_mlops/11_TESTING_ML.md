@@ -7,17 +7,17 @@ Dominar el testing en proyectos ML para alcanzar **80%+ de coverage** sin tests 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║  🚨 LA REALIDAD DEL ML SIN TESTS:                                           ║
+║  🚨 LA REALIDAD DEL ML SIN TESTS:                                            ║
 ║                                                                              ║
-║  "El modelo funcionaba ayer, hoy da predicciones random"                    ║
-║  "Cambié una línea y rompí todo el pipeline"                                ║
-║  "No sé si el bug está en los datos, el preprocesamiento, o el modelo"     ║
+║  "El modelo funcionaba ayer, hoy da predicciones random"                     ║
+║  "Cambié una línea y rompí todo el pipeline"                                 ║
+║  "No sé si el bug está en los datos, el preprocesamiento, o el modelo"       ║
 ║                                                                              ║
-║  🛡️ LA REALIDAD CON TESTS:                                                  ║
+║  🛡️ LA REALIDAD CON TESTS:                                                   ║
 ║                                                                              ║
-║  "CI me avisó que rompí algo antes de hacer merge"                          ║
-║  "Sé exactamente qué componente falló"                                      ║
-║  "Puedo refactorizar con confianza"                                         ║
+║  "CI me avisó que rompí algo antes de hacer merge"                           ║
+║  "Sé exactamente qué componente falló"                                       ║
+║  "Puedo refactorizar con confianza"                                          ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -33,6 +33,16 @@ Dominar el testing en proyectos ML para alcanzar **80%+ de coverage** sin tests 
 5. [Model Tests: Comportamiento del Modelo](#115-model-tests-comportamiento-del-modelo)
 6. [Integration Tests: Pipeline Completo](#116-integration-tests-pipeline-completo)
 7. [Alcanzar 80% Coverage](#117-alcanzar-80-coverage)
+
+### 🧩 Cómo se aplica en este portafolio
+
+- Cada uno de los tres proyectos tiene una carpeta `tests/` rica en ejemplos reales:
+  - **BankChurn-Predictor**: tests de pipeline de entrenamiento y métricas.
+  - **CarVision-Market-Intelligence**: tests de features, datos y modelo (incluidos en este módulo).
+  - **TelecomAI-Customer-Intelligence**: tests centrados en clasificación y contratos de datos.
+- El workflow `ci-mlops.yml` ejecuta estos tests en matrix (3 proyectos × 2 versiones de Python)
+  y aplica thresholds de coverage (79–80%). Este módulo te da el modelo mental para entender
+  y extender esos tests sin romper la pirámide de testing.
 
 ---
 
@@ -58,7 +68,7 @@ Dominar el testing en proyectos ML para alcanzar **80%+ de coverage** sin tests 
 ║  • El avión despega, vuela, y aterriza                                    ║
 ║  • Todo funciona junto bajo condiciones reales                            ║
 ║                                                                           ║
-║  EN ML ES IGUAL: Testeas componentes → sistemas → pipeline completo      ║
+║  EN ML ES IGUAL: Testeas componentes → sistemas → pipeline completo       ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -110,9 +120,9 @@ Dominar el testing en proyectos ML para alcanzar **80%+ de coverage** sin tests 
 ║  🧪 FIXTURE = Datos o recursos preparados para tests                      ║
 ║                                                                           ║
 ║  Analogía del laboratorio:                                                ║
-║  • Antes de cada experimento, preparas tus instrumentos                  ║
-║  • Los instrumentos son los mismos para varios experimentos              ║
-║  • No los preparas desde cero cada vez                                   ║
+║  • Antes de cada experimento, preparas tus instrumentos                   ║
+║  • Los instrumentos son los mismos para varios experimentos               ║
+║  • No los preparas desde cero cada vez                                    ║
 ║                                                                           ║
 ║  En pytest:                                                               ║
 ║  • Fixture prepara datos/modelos/configs                                  ║
@@ -1011,7 +1021,7 @@ pytest --cov-fail-under=80
 ║     → Muestra líneas NO cubiertas                                         ║
 ║                                                                           ║
 ║  2. PRIORIZAR                                                             ║
-║     • Lógica de negocio crítica (training, prediction)                   ║
+║     • Lógica de negocio crítica (training, prediction)                    ║
 ║     • Código que maneja errores                                           ║
 ║     • Branches condicionales (if/else)                                    ║
 ║                                                                           ║
@@ -1021,9 +1031,9 @@ pytest --cov-fail-under=80
 ║     • Código de terceros                                                  ║
 ║                                                                           ║
 ║  4. TESTEAR EDGE CASES                                                    ║
-║     • ¿Qué pasa con NaN?                                                 ║
-║     • ¿Qué pasa con lista vacía?                                         ║
-║     • ¿Qué pasa con tipos incorrectos?                                   ║
+║     • ¿Qué pasa con NaN?                                                  ║
+║     • ¿Qué pasa con lista vacía?                                          ║
+║     • ¿Qué pasa con tipos incorrectos?                                    ║
 ║                                                                           ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
@@ -1043,17 +1053,142 @@ Antes de continuar, verifica:
 
 ---
 
-## 📚 Recursos Adicionales
+## 📦 Cómo se Usó en el Portafolio
 
+Los 3 proyectos del portafolio implementan testing profesional con 80%+ coverage:
+
+### Coverage por Proyecto
+
+| Proyecto | Coverage | Tests | Archivos Clave |
+|----------|:--------:|:-----:|----------------|
+| BankChurn | 79%+ | 45+ | `tests/conftest.py`, `test_pipeline.py` |
+| CarVision | 97% | 50+ | `tests/test_features.py`, `test_data.py` |
+| TelecomAI | 97% | 35+ | `tests/test_training.py` |
+
+### conftest.py Real (CarVision)
+
+```python
+# CarVision-Market-Intelligence/tests/conftest.py
+import pytest
+import pandas as pd
+
+@pytest.fixture
+def sample_df():
+    """DataFrame de prueba con datos realistas."""
+    return pd.DataFrame({
+        'model': ['Ford F-150', 'Toyota Camry'],
+        'model_year': [2020, 2019],
+        'odometer': [50000, 30000],
+        'price': [35000, 25000]
+    })
+
+@pytest.fixture
+def config():
+    """Configuración de prueba."""
+    return {
+        'data': {'target_column': 'price'},
+        'model': {'random_state': 42}
+    }
+```
+
+### Estructura de Tests
+
+```
+tests/
+├── conftest.py           # Fixtures compartidas
+├── test_config.py        # Tests de configuración
+├── test_data.py          # Tests de carga/validación
+├── test_features.py      # Tests de FeatureEngineer
+├── test_pipeline.py      # Tests de pipeline
+├── test_training.py      # Tests de entrenamiento
+└── test_api.py           # Tests de FastAPI
+```
+
+### 🔧 Ejercicio: Ejecuta Tests Reales
+
+```bash
+# 1. Ejecuta tests de CarVision
+cd CarVision-Market-Intelligence
+pytest tests/ -v --cov=src/carvision --cov-report=term-missing
+
+# 2. Ve qué líneas NO están cubiertas
+pytest --cov-report=html  # Genera htmlcov/index.html
+
+# 3. Compara con BankChurn
+cd ../BankChurn-Predictor
+pytest tests/ -v --cov=src/bankchurn
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **Testing ML es diferente**: Explica tests de datos, modelo, y serving (no solo código).
+
+2. **Great Expectations**: Menciona que usas validación de datos como parte del pipeline.
+
+3. **Coverage no es todo**: Un modelo con 100% coverage puede fallar en producción.
+
+### Para Proyectos Reales
+
+| Tipo de Test | Qué Verificar |
+|--------------|---------------|
+| Data Tests | Schema, rangos, distribuciones, nulls |
+| Model Tests | Métricas mínimas, overfitting, invariancia |
+| Integration | Pipeline end-to-end, API responses |
+| Performance | Latencia, throughput, memory |
+
+### Estrategia de Testing ML
+
+```
+Unit Tests:     Transformadores individuales
+Integration:    Pipeline completo con datos sintéticos
+Validation:     Métricas en holdout real
+Monitoring:     Drift detection en producción
+```
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [pytest Tutorial - ArjanCodes](https://www.youtube.com/watch?v=cHYq1MRoyI0) | Video |
+| 🟡 | [Testing for Data Science - Eric Ma](https://www.youtube.com/watch?v=0ysyWk-ox-8) | Video |
+
+**Documentación oficial:**
 - [pytest Documentation](https://docs.pytest.org/)
 - [pytest-cov](https://pytest-cov.readthedocs.io/)
-- [Effective Testing for ML Systems](https://www.jeremyjordan.me/testing-ml/)
 - [Great Expectations](https://greatexpectations.io/) - Data validation
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **conftest.py**: Fixtures compartidas de pytest
+- **Coverage**: Porcentaje de código ejecutado por tests
+- **Fixture**: Setup reutilizable para tests
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 11:
+- **11.1**: Test de validación de datos
+- **11.2**: Test de pipeline ML
 
 ---
 
 <div align="center">
 
-[← Volver al Índice](00_INDICE.md) | [Siguiente: Coverage y Linting →](12_CI_CD.md)
+[← Volver al Índice](00_INDICE.md) | [Siguiente: CI/CD →](12_CI_CD.md)
 
 </div>

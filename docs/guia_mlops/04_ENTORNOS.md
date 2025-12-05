@@ -28,11 +28,11 @@
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
 ║  CONTEXTO:                                                                    ║
-║  El 30% de bugs en producción ML se deben a diferencias de versiones         ║
+║  El 30% de bugs en producción ML se deben a diferencias de versiones          ║
 ║  entre desarrollo y producción (Google ML Engineering Best Practices).        ║
 ║                                                                               ║
 ║  DECISIÓN:                                                                    ║
-║  Todo proyecto DEBE tener un sistema de gestión de dependencias con          ║
+║  Todo proyecto DEBE tener un sistema de gestión de dependencias con           ║
 ║  versiones pinneadas y un método documentado de reproducir el entorno.        ║
 ║                                                                               ║
 ║  CONSECUENCIAS:                                                               ║
@@ -51,6 +51,18 @@
 3. **Configurar** un entorno profesional con lockfiles
 4. **Integrar** el entorno con CI/CD
 
+### 🧩 Cómo se aplica en este portafolio
+
+- En **BankChurn-Predictor**, **CarVision-Market-Intelligence** y
+  **TelecomAI-Customer-Intelligence** ya encontrarás:
+  - Ficheros `requirements-core.txt`, `requirements.in` y `requirements.txt` para gestionar
+    dependencias de forma reproducible.
+  - Un `Makefile` con targets como `install`, `test` y `serve` que asumen un entorno activo.
+  - Archivos `docker-compose.demo.yml` y `docker-compose.yml` que levantan el stack completo
+    (APIs, MLflow, dashboards).
+- Usa este módulo para entender **por qué** esas piezas existen y cómo recrear el mismo entorno
+  desde cero en tu máquina o en CI/CD.
+
 ---
 
 ## 3.1 El Problema: "Funciona en Mi Máquina"
@@ -67,14 +79,14 @@
 ║   • scikit-learn 1.3.0                                                        ║
 ║   • pandas 2.0.3                                                              ║
 ║   • numpy 1.24.3                                                              ║
-║   → "Todo funciona perfecto" ✅                                                ║
+║   → "Todo funciona perfecto" ✅                                               ║
 ║                                                                               ║
 ║   Developer B (otra laptop):                                                  ║
 ║   • Python 3.9.7                                                              ║
 ║   • scikit-learn 1.0.2                                                        ║
 ║   • pandas 1.4.0                                                              ║
 ║   • numpy 1.21.0                                                              ║
-║   → "AttributeError: module 'sklearn' has no attribute 'X'" ❌                 ║
+║   → "AttributeError: module 'sklearn' has no attribute 'X'" ❌                ║
 ║                                                                               ║
 ║   Servidor de producción:                                                     ║
 ║   • Python 3.8.10                                                             ║
@@ -143,7 +155,7 @@ flowchart TB
 ║  • No necesitas lockfile sofisticado                                          ║
 ║                                                                               ║
 ║  USA Conda SI:                                                                ║
-║  • Necesitas librerías con dependencias C/C++ (CUDA, MKL, OpenCV)            ║
+║  • Necesitas librerías con dependencias C/C++ (CUDA, MKL, OpenCV)             ║
 ║  • Trabajas en Data Science pesado (numpy, scipy optimizados)                 ║
 ║  • Tu equipo ya usa Conda                                                     ║
 ║  • Necesitas múltiples versiones de Python fácilmente                         ║
@@ -406,14 +418,14 @@ El archivo `poetry.lock` contiene TODAS las versiones exactas de TODAS las depen
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║                         ✅ USA CONDA SI NECESITAS:                             ║
+║                         ✅ USA CONDA SI NECESITAS:                            ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
 ║   • CUDA / cuDNN para GPU computing                                           ║
-║   • NumPy/SciPy compilados con MKL (Intel) o OpenBLAS optimizado             ║
+║   • NumPy/SciPy compilados con MKL (Intel) o OpenBLAS optimizado              ║
 ║   • OpenCV con dependencias de sistema                                        ║
 ║   • R + Python en el mismo entorno                                            ║
-║   • Librerías geoespaciales (GDAL, GEOS, PROJ)                               ║
+║   • Librerías geoespaciales (GDAL, GEOS, PROJ)                                ║
 ║   • Dependencias de sistema que pip no puede instalar                         ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
@@ -504,13 +516,13 @@ mamba install numpy
 ║                       DOCKER DEV CONTAINERS: PROS/CONS                        ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
-║   ✅ PROS:                                                                     ║
+║   ✅ PROS:                                                                    ║
 ║   • Reproducibilidad TOTAL (mismo OS, mismas versiones de todo)               ║
 ║   • Onboarding = "git clone && code ." (con VS Code Dev Containers)           ║
 ║   • Mismo entorno en dev, CI y producción                                     ║
 ║   • Puedes incluir servicios (PostgreSQL, Redis, MLflow server)               ║
 ║                                                                               ║
-║   ❌ CONS:                                                                     ║
+║   ❌ CONS:                                                                    ║
 ║   • Overhead de Docker (memoria, CPU)                                         ║
 ║   • Más complejo de configurar inicialmente                                   ║
 ║   • Debugging puede ser más difícil                                           ║
@@ -951,6 +963,134 @@ CI/CD:
 
 ---
 
+## 📦 Cómo se Usó en el Portafolio
+
+Cada proyecto del portafolio implementa la gestión de entornos descrita:
+
+### pyproject.toml Real
+
+```toml
+# BankChurn-Predictor/pyproject.toml (extracto)
+[project]
+name = "bankchurn"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0.0",
+    "scikit-learn>=1.3.0",
+    "pydantic>=2.5.0",
+    "mlflow>=2.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.9",
+]
+```
+
+### Comandos Make del Portafolio
+
+Todos los proyectos tienen Makefile con comandos consistentes:
+
+```makefile
+# Comandos disponibles en los 3 proyectos
+make install     # pip install -e ".[dev]"
+make test        # pytest con coverage
+make lint        # ruff check
+make train       # Entrena el modelo
+make serve       # Inicia API FastAPI
+```
+
+### Estructura de Dependencias
+
+| Proyecto | Archivo | Dependencias Core |
+|----------|---------|-------------------|
+| BankChurn | `pyproject.toml` | pandas, sklearn, pydantic, mlflow |
+| CarVision | `pyproject.toml` | pandas, sklearn, pydantic, pyyaml |
+| TelecomAI | `pyproject.toml` | pandas, sklearn, pydantic |
+
+### 🔧 Ejercicio: Instala un Proyecto Real
+
+```bash
+# 1. Ve a BankChurn
+cd BankChurn-Predictor
+
+# 2. Crea entorno virtual
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+# .venv\Scripts\activate   # Windows
+
+# 3. Instala con dependencias de desarrollo
+pip install -e ".[dev]"
+
+# 4. Verifica que funciona
+python -c "from bankchurn.config import BankChurnConfig; print('OK')"
+make test
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **"¿Cómo manejas dependencias?"**: Explica pip-tools, Poetry, o uv. Menciona lock files y reproducibilidad.
+
+2. **Containers vs Virtualenvs**: Conoce cuándo usar cada uno (dev local vs producción).
+
+3. **DevContainers**: Menciona que usas VS Code DevContainers para entornos reproducibles.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Conflictos de dependencias | Usa pip-compile para resolver y fijar versiones |
+| CI/CD | Usa la misma imagen Docker en local y CI |
+| Múltiples versiones de Python | pyenv + tox para testing multi-versión |
+| Dependencias de sistema | Documenta en Dockerfile o README |
+
+### Herramientas Modernas
+
+- **uv**: Reemplazo rápido de pip (10-100x más rápido)
+- **pip-tools**: pip-compile + pip-sync para reproducibilidad
+- **Poetry**: Gestión completa de dependencias y publicación
+- **Conda**: Para dependencias científicas complejas (CUDA, etc.)
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [Python Virtual Environments - Corey Schafer](https://www.youtube.com/watch?v=Kg1Yvry_Ydk) | Video |
+| 🟡 | [pip-tools Tutorial](https://www.youtube.com/watch?v=LAig6s9Hkj0) | Video |
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **venv**: Entornos virtuales de Python
+- **pip-tools**: Gestión de dependencias
+- **pyproject.toml**: Configuración de proyecto moderno
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 04:
+- **4.1**: Crear entorno virtual
+- **4.2**: Configurar pip-tools
+
+---
+
 ## 🔜 Siguiente Paso
 
 Con el entorno configurado, es hora de dominar **Git profesionalmente**.
@@ -961,8 +1101,6 @@ Con el entorno configurado, es hora de dominar **Git profesionalmente**.
 
 <div align="center">
 
-*Módulo 03 completado. "Funciona en mi máquina" ya no es excusa.*
-
-*© 2025 DuqueOM - Guía MLOps v5.0: Senior Edition*
+[← Estructura de Proyecto](03_ESTRUCTURA_PROYECTO.md) | [Siguiente: Git Profesional →](05_GIT_PROFESIONAL.md)
 
 </div>

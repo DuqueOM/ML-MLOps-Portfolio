@@ -309,13 +309,13 @@ Antes de cada push importante:
 
 ### Niveles
 
-| Puntuación   | Nivel                                         |
-|--------------|-----------------------------------------------|
-| 90-100       | 🏆 Excepcional - Listo para entrevistas senior |
-| 80-89        | ⭐ Excelente - Muy competitivo                 |
-| 70-79        | ✅ Bueno - Sólido para aplicar                 |
-| 60-69        | 📈 Aceptable - Necesita mejoras menores        |
-| <60          | 🔄 En progreso - Continuar trabajando          |
+| Puntuación   | Nivel                                            |
+|--------------|--------------------------------------------------|
+| 90-100       | 🏆 Excepcional - Listo para entrevistas senior   |
+| 80-89        | ⭐ Excelente - Muy competitivo                   |
+| 70-79        | ✅ Bueno - Sólido para aplicar                   |
+| 60-69        | 📈 Aceptable - Necesita mejoras menores          |
+| <60          | 🔄 En progreso - Continuar trabajando            |
 
 ---
 
@@ -339,9 +339,9 @@ Antes de cada push importante:
 
 ### Navegación
 
-| ◀️ Anterior                          | 📑 Índice               | ▶️ Siguiente                     |
-|:-------------------------------------|:----------------------:|:---------------------------------|
-| [21_PLANTILLAS.md](21_PLANTILLAS.md) | [Índice](00_INDICE.md) | [23_RECURSOS.md](23_RECURSOS.md) |
+| ◀️ Anterior                      | 📑 Índice             | ▶️ Siguiente                    |
+|:---------------------------------|:----------------------:|:---------------------------------|
+| [21_GLOSARIO.md](21_GLOSARIO.md) | [Índice](00_INDICE.md) | [23_RECURSOS.md](23_RECURSOS.md) |
 
 ---
 

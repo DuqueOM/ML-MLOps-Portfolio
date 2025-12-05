@@ -104,3 +104,22 @@ Las secciones marcadas con `<!-- OPCIONAL -->` pueden eliminarse si no aplican.
 - [Datasheets for Datasets](https://arxiv.org/abs/1803.09010) - Gebru et al., 2021
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [Docker Best Practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+
+---
+
+## 📚 Módulos Relacionados
+
+| Plantilla | Módulo |
+|-----------|--------|
+| pyproject, README, Makefile | [03_ESTRUCTURA_PROYECTO.md](../03_ESTRUCTURA_PROYECTO.md) |
+| CI workflows | [12_CI_CD.md](../12_CI_CD.md) |
+| Dockerfile, docker-compose | [13_DOCKER.md](../13_DOCKER.md) |
+| Model Card, Dataset Card | [19_DOCUMENTACION.md](../19_DOCUMENTACION.md) |
+
+---
+
+<div align="center">
+
+[← Índice Principal](../00_INDICE.md) | [PLANTILLAS.md](../PLANTILLAS.md)
+
+</div>
