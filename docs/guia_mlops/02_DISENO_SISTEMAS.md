@@ -29,7 +29,7 @@
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
 ║  CONTEXTO:                                                                    ║
-║  El 73% de proyectos ML que fallan lo hacen por problemas de DISEÑO,         ║
+║  El 73% de proyectos ML que fallan lo hacen por problemas de DISEÑO,          ║
 ║  no de algoritmos (Sculley et al., "Hidden Technical Debt in ML Systems").    ║
 ║                                                                               ║
 ║  DECISIÓN:                                                                    ║
@@ -65,28 +65,28 @@
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
 ║   JUNIOR:                                                                     ║
-║   "Tengo datos de clientes → Voy a probar XGBoost → Algo saldrá"             ║
+║   "Tengo datos de clientes → Voy a probar XGBoost → Algo saldrá"              ║
 ║                                                                               ║
 ║   PROBLEMA:                                                                   ║
-║   • No sabe qué métrica optimizar (¿accuracy? ¿F1? ¿costo de negocio?)       ║
-║   • No sabe si el modelo genera valor                                        ║
-║   • No puede priorizar features porque no entiende el negocio                ║
-║   • Cuando el proyecto "termina", nadie lo usa                               ║
+║   • No sabe qué métrica optimizar (¿accuracy? ¿F1? ¿costo de negocio?)        ║
+║   • No sabe si el modelo genera valor                                         ║
+║   • No puede priorizar features porque no entiende el negocio                 ║
+║   • Cuando el proyecto "termina", nadie lo usa                                ║
 ║                                                                               ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                         ✅ EL ENFOQUE DEL SENIOR                              ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
 ║   SENIOR:                                                                     ║
-║   "El banco pierde $2M/año por churn → Predecir top 10% de riesgo →          ║
-║    Campaña de retención → ROI esperado $400K → Métricas:                     ║
-║    Precision@10% > 50%, AUC > 0.85, Latencia < 100ms"                        ║
+║   "El banco pierde $2M/año por churn → Predecir top 10% de riesgo →           ║
+║    Campaña de retención → ROI esperado $400K → Métricas:                      ║
+║    Precision@10% > 50%, AUC > 0.85, Latencia < 100ms"                         ║
 ║                                                                               ║
 ║   VENTAJAS:                                                                   ║
-║   • Métrica clara conectada a $$$                                            ║
+║   • Métrica clara conectada a $$$                                             ║
 ║   • Sabe cuándo el modelo es "suficientemente bueno"                          ║
-║   • Puede justificar inversión en infraestructura                            ║
-║   • El proyecto genera valor medible                                         ║
+║   • Puede justificar inversión en infraestructura                             ║
+║   • El proyecto genera valor medible                                          ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -155,77 +155,77 @@ El **ML Canvas** es un framework de 1 página que captura todas las decisiones c
 ║                                      ML CANVAS: BANKCHURN PREDICTOR                                   ║
 ╠═══════════════════════════════════════════════════════════════════════════════════════════════════════╣
 ║                                                                                                       ║
-║  ┌───────────────────────────────────────────┐   ┌─────────────────────────────────────────────────┐ ║
-║  │ 1. 🎯 PROBLEMA DE NEGOCIO                 │   │ 2. 💰 PROPUESTA DE VALOR                        │ ║
-║  │                                           │   │                                                 │ ║
-║  │ • El banco pierde $2M/año por clientes    │   │ • Reducir churn 20% = $400K ahorro/año         │ ║
-║  │   que abandonan sin previo aviso          │   │ • Identificar top 10% clientes en riesgo       │ ║
-║  │ • Equipo de retención actúa reactivamente │   │ • Tiempo de acción: de 0 días a 30 días previo │ ║
-║  │ • Costo de adquisición 5x vs retención    │   │ • Campañas personalizadas por segmento riesgo  │ ║
-║  │                                           │   │                                                 │ ║
-║  └───────────────────────────────────────────┘   └─────────────────────────────────────────────────┘ ║
+║  ┌───────────────────────────────────────────┐   ┌─────────────────────────────────────────────────┐  ║
+║  │ 1. 🎯 PROBLEMA DE NEGOCIO                 │   │ 2. 💰 PROPUESTA DE VALOR                       │  ║
+║  │                                           │   │                                                 │  ║
+║  │ • El banco pierde $2M/año por clientes    │   │ • Reducir churn 20% = $400K ahorro/año          │  ║
+║  │   que abandonan sin previo aviso          │   │ • Identificar top 10% clientes en riesgo        │  ║
+║  │ • Equipo de retención actúa reactivamente │   │ • Tiempo de acción: de 0 días a 30 días previo  │  ║
+║  │ • Costo de adquisición 5x vs retención    │   │ • Campañas personalizadas por segmento riesgo   │  ║
+║  │                                           │   │                                                 │  ║
+║  └───────────────────────────────────────────┘   └─────────────────────────────────────────────────┘  ║
 ║                                                                                                       ║
-║  ┌───────────────────────────────────────────┐   ┌─────────────────────────────────────────────────┐ ║
-║  │ 3. 📊 DATOS DISPONIBLES                   │   │ 4. 🔧 FEATURES CANDIDATAS                       │ ║
-║  │                                           │   │                                                 │ ║
-║  │ FUENTE: Sistema CRM (PostgreSQL)          │   │ DEMOGRÁFICAS:                                   │ ║
-║  │ • 10,000 registros históricos (2 años)    │   │ • Age, Gender, Geography                        │ ║
-║  │ • Label: Exited (0=activo, 1=abandonó)    │   │                                                 │ ║
-║  │ • Frecuencia: Snapshot mensual            │   │ FINANCIERAS:                                    │ ║
-║  │ • Latencia: T-1 día                       │   │ • CreditScore, Balance, EstimatedSalary        │ ║
-║  │                                           │   │                                                 │ ║
-║  │ CALIDAD:                                  │   │ COMPORTAMIENTO:                                 │ ║
-║  │ • Nulos: < 1%                             │   │ • Tenure, NumOfProducts, HasCrCard              │ ║
-║  │ • Desbalanceo: 20% churn (manejable)      │   │ • IsActiveMember                                │ ║
-║  │ • Data drift: Estacional (navidad)        │   │                                                 │ ║
-║  │                                           │   │ DERIVADAS (Feature Engineering):                │ ║
-║  │ RESTRICCIONES LEGALES:                    │   │ • BalancePerProduct = Balance / NumOfProducts   │ ║
-║  │ • GDPR: Pseudonimización requerida        │   │ • BalanceSalaryRatio = Balance / Salary         │ ║
-║  │ • No usar: Raza, Religión, etc.           │   │ • TenureAgeRatio = Tenure / Age                 │ ║
-║  │                                           │   │                                                 │ ║
-║  └───────────────────────────────────────────┘   └─────────────────────────────────────────────────┘ ║
+║  ┌───────────────────────────────────────────┐   ┌─────────────────────────────────────────────────┐  ║
+║  │ 3. 📊 DATOS DISPONIBLES                   │   │ 4. 🔧 FEATURES CANDIDATAS                      │  ║
+║  │                                           │   │                                                 │  ║
+║  │ FUENTE: Sistema CRM (PostgreSQL)          │   │ DEMOGRÁFICAS:                                   │  ║
+║  │ • 10,000 registros históricos (2 años)    │   │ • Age, Gender, Geography                        │  ║
+║  │ • Label: Exited (0=activo, 1=abandonó)    │   │                                                 │  ║
+║  │ • Frecuencia: Snapshot mensual            │   │ FINANCIERAS:                                    │  ║
+║  │ • Latencia: T-1 día                       │   │ • CreditScore, Balance, EstimatedSalary         │  ║
+║  │                                           │   │                                                 │  ║
+║  │ CALIDAD:                                  │   │ COMPORTAMIENTO:                                 │  ║
+║  │ • Nulos: < 1%                             │   │ • Tenure, NumOfProducts, HasCrCard              │  ║
+║  │ • Desbalanceo: 20% churn (manejable)      │   │ • IsActiveMember                                │  ║
+║  │ • Data drift: Estacional (navidad)        │   │                                                 │  ║
+║  │                                           │   │ DERIVADAS (Feature Engineering):                │  ║
+║  │ RESTRICCIONES LEGALES:                    │   │ • BalancePerProduct = Balance / NumOfProducts   │  ║
+║  │ • GDPR: Pseudonimización requerida        │   │ • BalanceSalaryRatio = Balance / Salary         │  ║
+║  │ • No usar: Raza, Religión, etc.           │   │ • TenureAgeRatio = Tenure / Age                 │  ║
+║  │                                           │   │                                                 │  ║
+║  └───────────────────────────────────────────┘   └─────────────────────────────────────────────────┘  ║
 ║                                                                                                       ║
-║  ┌───────────────────────────────────────────┐   ┌─────────────────────────────────────────────────┐ ║
-║  │ 5. 🤖 MODELO                              │   │ 6. 📏 MÉTRICAS DE ÉXITO                         │ ║
-║  │                                           │   │                                                 │ ║
-║  │ TIPO: Clasificación Binaria               │   │ NEGOCIO:                                        │ ║
-║  │                                           │   │ • $ Retenido por Campaña > $400K/año           │ ║
-║  │ BASELINE:                                 │   │ • Lift vs random > 3x                           │ ║
-║  │ • Logistic Regression (interpretable)     │   │                                                 │ ║
-║  │ • Umbral: 50% churn rate                  │   │ MODELO:                                         │ ║
-║  │                                           │   │ • AUC-ROC > 0.85 (target)                       │ ║
-║  │ TARGET:                                   │   │ • Precision@10% > 50%                           │ ║
-║  │ • Random Forest / XGBoost                 │   │ • Recall > 60% (no perder churners)             │ ║
-║  │ • Con class_weight='balanced'             │   │                                                 │ ║
-║  │                                           │   │ SISTEMA:                                        │ ║
-║  │ APPROACH:                                 │   │ • Latencia P99 < 100ms                          │ ║
-║  │ • Train/Test split temporal (no random)   │   │ • Throughput > 100 req/s                        │ ║
-║  │ • Cross-validation: TimeSeriesSplit       │   │ • Uptime > 99.5%                                │ ║
-║  │ • Hyperparameter tuning: Optuna           │   │ • Coverage > 80%                                │ ║
-║  │                                           │   │                                                 │ ║
-║  └───────────────────────────────────────────┘   └─────────────────────────────────────────────────┘ ║
+║  ┌───────────────────────────────────────────┐   ┌─────────────────────────────────────────────────┐  ║
+║  │ 5. 🤖 MODELO                              │   │ 6. 📏 MÉTRICAS DE ÉXITO                        │  ║
+║  │                                           │   │                                                 │  ║
+║  │ TIPO: Clasificación Binaria               │   │ NEGOCIO:                                        │  ║
+║  │                                           │   │ • $ Retenido por Campaña > $400K/año            │  ║
+║  │ BASELINE:                                 │   │ • Lift vs random > 3x                           │  ║
+║  │ • Logistic Regression (interpretable)     │   │                                                 │  ║
+║  │ • Umbral: 50% churn rate                  │   │ MODELO:                                         │  ║
+║  │                                           │   │ • AUC-ROC > 0.85 (target)                       │  ║
+║  │ TARGET:                                   │   │ • Precision@10% > 50%                           │  ║
+║  │ • Random Forest / XGBoost                 │   │ • Recall > 60% (no perder churners)             │  ║
+║  │ • Con class_weight='balanced'             │   │                                                 │  ║
+║  │                                           │   │ SISTEMA:                                        │  ║
+║  │ APPROACH:                                 │   │ • Latencia P99 < 100ms                          │  ║
+║  │ • Train/Test split temporal (no random)   │   │ • Throughput > 100 req/s                        │  ║
+║  │ • Cross-validation: TimeSeriesSplit       │   │ • Uptime > 99.5%                                │  ║
+║  │ • Hyperparameter tuning: Optuna           │   │ • Coverage > 80%                                │  ║
+║  │                                           │   │                                                 │  ║
+║  └───────────────────────────────────────────┘   └─────────────────────────────────────────────────┘  ║
 ║                                                                                                       ║
-║  ┌───────────────────────────────────────────┐   ┌─────────────────────────────────────────────────┐ ║
-║  │ 7. ⚠️ RIESGOS Y MITIGACIONES              │   │ 8. 🚀 PLAN DE DESPLIEGUE                        │ ║
-║  │                                           │   │                                                 │ ║
-║  │ TÉCNICOS:                                 │   │ MVP (Semana 10):                                │ ║
-║  │ • Desbalanceo → class_weight, SMOTE       │   │ • API REST (FastAPI)                            │ ║
-║  │ • Data leakage → Validación temporal      │   │ • Docker container                              │ ║
-║  │ • Overfitting → Regularización, CV        │   │ • Consumidor: Dashboard BI (PowerBI)            │ ║
-║  │                                           │   │ • Batch scoring diario                          │ ║
-║  │ OPERACIONALES:                            │   │                                                 │ ║
-║  │ • Model decay → Monitoreo + retrain       │   │ V2 (Mes 3):                                     │ ║
-║  │ • Data drift → Evidently/NannyML          │   │ • Kubernetes deployment                         │ ║
-║  │ • Latencia alta → Caching, async          │   │ • Integración CRM real-time                     │ ║
-║  │                                           │   │ • A/B testing framework                         │ ║
-║  │ ÉTICOS:                                   │   │ • Reentrenamiento mensual automatizado          │ ║
-║  │ • Sesgo geográfico → Fairness metrics     │   │                                                 │ ║
-║  │ • Explicabilidad → SHAP values            │   │ CONSUMIDORES:                                   │ ║
-║  │                                           │   │ • Equipo de Retención (principal)               │ ║
-║  │                                           │   │ • Dashboard Ejecutivo (secundario)              │ ║
-║  │                                           │   │ • CRM para campañas automatizadas               │ ║
-║  │                                           │   │                                                 │ ║
-║  └───────────────────────────────────────────┘   └─────────────────────────────────────────────────┘ ║
+║  ┌───────────────────────────────────────────┐   ┌─────────────────────────────────────────────────┐  ║
+║  │ 7. ⚠️ RIESGOS Y MITIGACIONES              │   │ 8. 🚀 PLAN DE DESPLIEGUE                       │  ║
+║  │                                           │   │                                                 │  ║
+║  │ TÉCNICOS:                                 │   │ MVP (Semana 10):                                │  ║
+║  │ • Desbalanceo → class_weight, SMOTE       │   │ • API REST (FastAPI)                            │  ║
+║  │ • Data leakage → Validación temporal      │   │ • Docker container                              │  ║
+║  │ • Overfitting → Regularización, CV        │   │ • Consumidor: Dashboard BI (PowerBI)            │  ║
+║  │                                           │   │ • Batch scoring diario                          │  ║
+║  │ OPERACIONALES:                            │   │                                                 │  ║
+║  │ • Model decay → Monitoreo + retrain       │   │ V2 (Mes 3):                                     │  ║
+║  │ • Data drift → Evidently/NannyML          │   │ • Kubernetes deployment                         │  ║
+║  │ • Latencia alta → Caching, async          │   │ • Integración CRM real-time                     │  ║
+║  │                                           │   │ • A/B testing framework                         │  ║
+║  │ ÉTICOS:                                   │   │ • Reentrenamiento mensual automatizado          │  ║
+║  │ • Sesgo geográfico → Fairness metrics     │   │                                                 │  ║
+║  │ • Explicabilidad → SHAP values            │   │ CONSUMIDORES:                                   │  ║
+║  │                                           │   │ • Equipo de Retención (principal)               │  ║
+║  │                                           │   │ • Dashboard Ejecutivo (secundario)              │  ║
+║  │                                           │   │ • CRM para campañas automatizadas               │  ║
+║  │                                           │   │                                                 │  ║
+║  └───────────────────────────────────────────┘   └─────────────────────────────────────────────────┘  ║
 ║                                                                                                       ║
 ╚═══════════════════════════════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -793,18 +793,229 @@ ADRs:
 
 ---
 
+## 📦 Cómo se Usó en el Portafolio
+
+El diseño de sistemas no es solo teoría. Aquí está cómo se aplicó en el portafolio real:
+
+### ML Canvas del Portafolio
+
+Cada proyecto tiene su Canvas implícito en la documentación:
+
+| Proyecto | Problema de Negocio | Métrica de Negocio | Métrica ML |
+|----------|--------------------|--------------------|------------|
+| BankChurn | Reducir pérdida de clientes | Retención +5% | AUC-ROC, Recall |
+| CarVision | Pricing automatizado de autos | Error de precio <10% | MAE, R² |
+| TelecomAI | Segmentación de clientes | Campañas personalizadas | Accuracy, F1 |
+
+### Arquitectura C4 del Portafolio
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    ML-MLOps-Portfolio (CONTEXTO)                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+│  │   BankChurn     │  │   CarVision     │  │   TelecomAI     │  │
+│  │   Predictor     │  │   Market Intel  │  │   Customer Int  │  │
+│  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘  │
+│           │                    │                    │           │
+│           └────────────────────┴────────────────────┘           │
+│                               │                                 │
+│                    ┌──────────▼──────────┐                      │
+│                    │   common_utils/     │                      │
+│                    │   (logger, seed)    │                      │
+│                    └──────────┬──────────┘                      │
+│                               │                                 │
+│           ┌───────────────────┴───────────────────┐             │
+│           │          GitHub Actions CI            │             │
+│           │   (ci-mlops.yml, matrix testing)      │             │
+│           └───────────────────────────────────────┘             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### ADRs del Portafolio
+
+Las decisiones arquitectónicas están documentadas en:
+- `docs/guia_mlops/DECISIONES_TECH.md` → ADRs globales
+- `*/docs/ARCHITECTURE.md` → ADRs por proyecto
+
+**Ejemplo ADR real del portafolio:**
+```markdown
+# ADR-001: Pipeline Unificado vs Artefactos Separados
+
+## Contexto
+Inicialmente BankChurn guardaba preprocessor.pkl y model.pkl por separado.
+
+## Decisión
+Unificar todo en un solo pipeline.pkl
+
+## Consecuencias
+✅ Elimina training-serving skew
+✅ Un solo artefacto para deploy
+❌ Archivo más grande
+```
+
+### 🔧 Ejercicio: Revisa la Arquitectura Real
+
+```bash
+# Ver la arquitectura de BankChurn
+cat BankChurn-Predictor/docs/architecture.md
+
+# Ver las decisiones técnicas globales
+cat docs/guia_mlops/DECISIONES_TECH.md
+```
+
+---
+
+## 📊 Diagramas Mermaid de Arquitectura
+
+### Flujo de Datos MLOps
+
+```mermaid
+flowchart LR
+    subgraph Data["📊 Data Layer"]
+        RAW[(Raw Data)]
+        DVC[DVC Storage]
+    end
+    
+    subgraph Training["🎯 Training"]
+        PIPE[sklearn Pipeline]
+        MLFLOW[MLflow Tracking]
+        ART[Artifacts]
+    end
+    
+    subgraph Serving["🚀 Serving"]
+        API[FastAPI]
+        DASH[Streamlit]
+    end
+    
+    subgraph Ops["⚙️ Operations"]
+        CI[GitHub Actions]
+        DOCKER[Docker]
+        K8S[Kubernetes]
+    end
+    
+    RAW --> DVC
+    DVC --> PIPE
+    PIPE --> MLFLOW
+    PIPE --> ART
+    ART --> API
+    ART --> DASH
+    CI --> DOCKER
+    DOCKER --> K8S
+    K8S --> API
+```
+
+### Pipeline de ML (C4 - Container)
+
+```mermaid
+flowchart TB
+    subgraph Pipeline["sklearn Pipeline"]
+        direction TB
+        FE[FeatureEngineer]
+        CT[ColumnTransformer]
+        MODEL[RandomForest]
+        
+        FE --> CT --> MODEL
+    end
+    
+    subgraph Preprocessor["ColumnTransformer"]
+        NUM[Numeric: Imputer + Scaler]
+        CAT[Categorical: OneHotEncoder]
+        BIN[Binary: Passthrough]
+    end
+    
+    CT -.-> Preprocessor
+```
+
+### CI/CD Pipeline
+
+```mermaid
+flowchart LR
+    PUSH[Git Push] --> LINT[Lint & Format]
+    LINT --> TEST[pytest + Coverage]
+    TEST --> SEC[Security Scan]
+    SEC --> BUILD[Docker Build]
+    BUILD --> PUSH_REG[Push to Registry]
+    PUSH_REG --> DEPLOY[Deploy to K8s]
+    
+    style PUSH fill:#e1f5fe
+    style DEPLOY fill:#c8e6c9
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas de System Design
+
+1. **Siempre empieza con requisitos**: Antes de dibujar, pregunta sobre escala, latencia esperada, y casos de uso principales.
+
+2. **Conoce los trade-offs**: "¿Por qué elegiste esta arquitectura?" es la pregunta que siempre viene. Ten lista tu justificación.
+
+3. **Menciona observabilidad**: Pocos candidatos hablan de logs, métricas y alertas. Hacerlo te diferencia.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Sistema nuevo | Empieza simple (monolito), escala después |
+| Alta disponibilidad | Diseña para fallos: circuit breakers, retries, fallbacks |
+| Decisiones de arquitectura | Documenta en ADRs (Architecture Decision Records) |
+| Integración con ML | Separa serving de training, usa feature stores |
+
+### Patrones que Debes Conocer
+
+- **Batch vs Streaming**: Cuándo usar cada uno para ML pipelines
+- **Event-Driven**: Para sistemas desacoplados y escalables
+- **CQRS**: Cuando lectura y escritura tienen requisitos muy diferentes
+- **Saga Pattern**: Para transacciones distribuidas
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [System Design for ML - Chip Huyen](https://www.youtube.com/watch?v=2h2Z2j8PmKc) | Video |
+| 🟡 | [C4 Model - Simon Brown](https://www.youtube.com/watch?v=x2-rSnhpw0g) | Video |
+| 🟢 | [ML Canvas](https://www.ownml.co/machine-learning-canvas) | Herramienta |
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **ADR**: Architecture Decision Record
+- **C4 Model**: Modelo de documentación de arquitectura
+- **ML Canvas**: Plantilla para diseño de proyectos ML
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 02:
+- **2.1**: Completar ML Canvas para un proyecto
+- **2.2**: Escribir un ADR para una decisión técnica
+
+---
+
 ## 🔜 Siguiente Paso
 
 Con el diseño completo, es hora de configurar un **entorno de desarrollo profesional**.
 
-**[Ir a Módulo 03: Entornos Profesionales →](04_ENTORNOS.md)**
+**[Ir a Módulo 03: Estructura de Proyecto →](03_ESTRUCTURA_PROYECTO.md)**
 
 ---
 
 <div align="center">
 
-*Módulo 02 completado. Ahora piensas como un arquitecto.*
-
-*© 2025 DuqueOM - Guía MLOps v5.0: Senior Edition*
+[← Volver al Índice](00_INDICE.md) | [Siguiente: Estructura de Proyecto →](03_ESTRUCTURA_PROYECTO.md)
 
 </div>

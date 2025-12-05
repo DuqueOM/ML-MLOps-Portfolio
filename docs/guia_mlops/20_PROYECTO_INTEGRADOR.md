@@ -7,13 +7,13 @@ Construir un proyecto ML completo desde cero, aplicando TODO lo aprendido.
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║  🏆 EL RETO FINAL                                                           ║
+║  🏆 EL RETO FINAL                                                            ║
 ║                                                                              ║
-║  Has aprendido los conceptos. Has estudiado el código del portafolio.       ║
-║  Ahora es momento de DEMOSTRAR que puedes construirlo desde cero.           ║
+║  Has aprendido los conceptos. Has estudiado el código del portafolio.        ║
+║  Ahora es momento de DEMOSTRAR que puedes construirlo desde cero.            ║
 ║                                                                              ║
 ║  TIEMPO: 1-2 semanas                                                         ║
-║  RESULTADO: Un 4to proyecto digno del portafolio                            ║
+║  RESULTADO: Un 4to proyecto digno del portafolio                             ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -286,6 +286,67 @@ Con este enfoque, reduces la frustración y aumentas la probabilidad de tener un
 
 ---
 
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **Cuenta una historia**: Tu portafolio debe mostrar progresión y aprendizaje.
+
+2. **Explica decisiones**: "¿Por qué elegiste X?" es la pregunta más común.
+
+3. **Muestra métricas**: Impacto cuantificable impresiona más que features.
+
+### Para tu Portafolio
+
+| Elemento | Por qué Importa |
+|----------|-----------------|
+| README profesional | Primera impresión, 30 segundos para captar atención |
+| Demo en vivo | Muestra que funciona, no solo que existe |
+| Código limpio | Los revisores leen tu código |
+| Documentación | Demuestra comunicación técnica |
+
+### Checklist Final del Portafolio
+
+- [ ] Cada proyecto tiene problema claro y solución
+- [ ] Métricas de performance documentadas
+- [ ] CI/CD funcionando con badges
+- [ ] Docker para reproducibilidad
+- [ ] README con GIFs o screenshots
+- [ ] Deployed y accesible (demo link)
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [End-to-End ML Project - Krish Naik](https://www.youtube.com/watch?v=S_F_c9e2bz4) | Video |
+| 🟡 | [MLOps Zoomcamp - DataTalks](https://github.com/DataTalksClub/mlops-zoomcamp) | Curso |
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **E2E Pipeline**: Flujo completo de datos a predicción
+- **Integration Test**: Tests que verifican componentes juntos
+- **CI/CD**: Integración y despliegue continuo
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 20:
+- **20.1**: Script E2E completo
+- **20.2**: Health Check Script
+
+---
+
 ## 🏁 Entrega
 
 1. Repositorio público en GitHub
@@ -295,10 +356,25 @@ Con este enfoque, reduces la frustración y aumentas la probabilidad de tener un
 
 ---
 
+## 🎤 Checkpoint: Simulacro Senior/Lead
+
+> 🎯 **¡Has completado la guía completa!** (Módulos 01-20)
+> 
+> Si buscas posiciones **Senior/Lead ML Engineer**, es momento del simulacro completo:
+> 
+> **[→ SIMULACRO_ENTREVISTA_SENIOR_PARTE1.md](SIMULACRO_ENTREVISTA_SENIOR_PARTE1.md)** — 70 preguntas técnicas avanzadas
+> **[→ SIMULACRO_ENTREVISTA_SENIOR_PARTE2.md](SIMULACRO_ENTREVISTA_SENIOR_PARTE2.md)** — System design, liderazgo, trade-offs
+> 
+> Material complementario:
+> - [APENDICE_A_SPEECH_PORTAFOLIO.md](APENDICE_A_SPEECH_PORTAFOLIO.md) — Guión de presentación 5-7 min
+> - [APENDICE_B_TALKING_POINTS.md](APENDICE_B_TALKING_POINTS.md) — Puntos clave concisos
+
+---
+
 <div align="center">
 
 **¡Éxito en tu proyecto! 🚀**
 
-[← Observabilidad](16_OBSERVABILIDAD.md) | [Volver al Índice](00_INDICE.md)
+[← Documentación](19_DOCUMENTACION.md) | [Siguiente: Glosario →](21_GLOSARIO.md)
 
 </div>

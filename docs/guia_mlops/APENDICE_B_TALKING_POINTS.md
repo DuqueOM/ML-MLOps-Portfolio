@@ -152,8 +152,18 @@ Guía rápida para responder preguntas de entrevista sobre el portafolio y cada 
 ## 6. Uso recomendado de esta guía
 
 - Imprimir o tener abierta esta hoja durante simulacros de entrevista.
-- Practicar el **speech de 5–7 minutos** del archivo `24_SPEECH_PORTAFOLIO_MLOPS.md`.
+- Practicar el **speech de 5–7 minutos** del archivo [APENDICE_A_SPEECH_PORTAFOLIO.md](APENDICE_A_SPEECH_PORTAFOLIO.md).
 - Usar estas bullets para responder preguntas de seguimiento sin perder el mensaje principal:
   - soluciones de negocio,
   - calidad técnica,
   - visión de plataforma.
+
+---
+
+<div align="center">
+
+**Apéndice B — Material de Preparación para Entrevistas**
+
+[← Apéndice A: Speech](APENDICE_A_SPEECH_PORTAFOLIO.md) | [Volver al Índice](00_INDICE.md)
+
+</div>

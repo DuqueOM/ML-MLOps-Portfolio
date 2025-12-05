@@ -24,6 +24,8 @@
 
 Esta lista contiene los recursos más valiosos para profundizar en cada área de MLOps.
 
+> 📺 **¿Buscas recursos específicos por módulo?** Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para videos, cursos y documentación curados para cada módulo con sistema de clasificación 🔴🟡🟢.
+
 > Además de estos recursos externos, revisa también los recursos internos de esta guía:
 > [PLANTILLAS.md](PLANTILLAS.md), [GUIA_AUDIOVISUAL.md](GUIA_AUDIOVISUAL.md) y los scripts
 > `generate_pdfs.py` / `generate_audio.py` para exportar la guía a PDF y audio.
@@ -324,6 +326,13 @@ Cuentas recomendadas:
 ---
 
 <div align="center">
+
+### Recursos Relacionados
+
+| Recurso | Descripción |
+|---------|-------------|
+| 📺 [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) | Videos y cursos específicos para cada módulo |
+| 📋 [PLANTILLAS.md](PLANTILLAS.md) | Templates reutilizables |
 
 ### Navegación
 

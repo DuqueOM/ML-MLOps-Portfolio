@@ -144,8 +144,102 @@ pipe = Pipeline([
 
 ---
 
+## 📚 Evaluación por Módulo
+
+Sistema de autoevaluación para cada fase del programa.
+
+### Fase 1: Fundamentos (Módulos 01-06)
+
+| Módulo | Criterio de Aprobación | Ejercicio Requerido |
+|:------:|:-----------------------|:--------------------|
+| 01 | Type hints en 100% funciones, config Pydantic | 1.1, 1.2 |
+| 02 | Diagrama C4 de un proyecto, ADR documentado | 2.1 |
+| 03 | Proyecto con src/ layout instalable | 3.1 |
+| 04 | requirements.txt + lockfile, .env funcional | 4.1 |
+| 05 | pre-commit configurado, commits convencionales | 5.1 |
+| 06 | DVC pipeline funcional, remote configurado | 6.1 |
+
+**Checkpoint Fase 1**: Proyecto con estructura profesional, versionado con DVC
+
+---
+
+### Fase 2: ML Engineering (Módulos 07-10)
+
+| Módulo | Criterio de Aprobación | Ejercicio Requerido |
+|:------:|:-----------------------|:--------------------|
+| 07 | Pipeline sklearn unificado, ColumnTransformer | 7.1, 7.2 |
+| 08 | Custom Transformer (FeatureEngineer o similar) | 8.1 |
+| 09 | Clase Trainer con fit/predict, cross-validation | 9.1 |
+| 10 | MLflow tracking: params, metrics, artifacts | 10.1 |
+
+**Checkpoint Fase 2**: Modelo entrenado con pipeline unificado, experimentos en MLflow
+
+---
+
+### Fase 3: MLOps Core (Módulos 11-16)
+
+| Módulo | Criterio de Aprobación | Ejercicio Requerido |
+|:------:|:-----------------------|:--------------------|
+| 11 | Tests con ≥80% coverage, conftest.py | 11.1, 11.2 |
+| 12 | GitHub Actions CI funcionando en cada push | 12.1 |
+| 13 | Dockerfile multi-stage, non-root user | 13.1 (→17.1) |
+| 14 | FastAPI /predict + /health, schemas Pydantic | 14.1, 14.2 |
+| 15 | Dashboard Streamlit funcional | 15.1 |
+| 16 | Logging JSON estructurado | 16.1 |
+
+**Checkpoint Fase 3**: API dockerizada con CI/CD verde, ≥80% coverage
+
+---
+
+### Fase 4: Producción (Módulos 17-18)
+
+| Módulo | Criterio de Aprobación | Ejercicio Requerido |
+|:------:|:-----------------------|:--------------------|
+| 17 | Docker Compose con API + MLflow + Prometheus | 17.2 |
+| 18 | K8s Deployment con probes, HPA configurado | 18.1, 18.2 |
+
+**Checkpoint Fase 4**: Stack completo desplegable en K8s local
+
+---
+
+### Fase 5: Especialización (Módulos 19-23)
+
+| Módulo | Criterio de Aprobación | Ejercicio Requerido |
+|:------:|:-----------------------|:--------------------|
+| 19 | Model Card + Dataset Card completados | 19.1, 19.2 |
+| 20 | Script E2E funcionando | 20.1 |
+| 21 | Flashcards revisadas, términos dominados | 21.1 |
+| 22 | Auditoría de proyecto completada | 22.1 |
+| 23 | Plan de estudio personalizado | 23.1 |
+
+**Checkpoint Fase 5**: Portafolio documentado, listo para entrevistas
+
+---
+
+## 🎯 Autoevaluación Rápida
+
+Completa esta tabla honestamente para identificar tus gaps:
+
+```markdown
+| Competencia | 1-5 | Gap? | Recurso |
+|-------------|:---:|:----:|---------|
+| Type hints + Pydantic | _ | | Módulo 01 |
+| sklearn Pipeline | _ | | Módulo 07 |
+| Testing (pytest) | _ | | Módulo 11 |
+| GitHub Actions | _ | | Módulo 12 |
+| Docker | _ | | Módulo 13, 17 |
+| FastAPI | _ | | Módulo 14 |
+| MLflow | _ | | Módulo 10 |
+| Observabilidad | _ | | Módulo 16 |
+| Kubernetes | _ | | Módulo 18 |
+```
+
+> 📺 Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para videos y cursos según tus gaps
+
+---
+
 <div align="center">
 
-[← Volver al Índice](00_INDICE.md)
+[← Volver al Índice](00_INDICE.md) | [Ejercicios](EJERCICIOS.md) | [Recursos Externos](RECURSOS_POR_MODULO.md)
 
 </div>

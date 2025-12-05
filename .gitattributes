@@ -34,6 +34,5 @@ models/**/*.h5 filter=lfs diff=lfs merge=lfs -text
 __pycache__/** -filter -diff -merge -text
 *.pyc -filter -diff -merge -text
 
-*.ipynb filter=nbstripout
-*.zpln filter=nbstripout
+# Notebooks: solo diff especial, sin filtro nbstripout
 *.ipynb diff=ipynb

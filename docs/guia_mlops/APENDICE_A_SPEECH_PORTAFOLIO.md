@@ -125,3 +125,13 @@ Frase de cierre:
 Cierre corto:
 
 > "Si queréis, puedo profundizar en cualquiera de los tres proyectos, en la parte de CI/CD, en explainability o en cómo diseñaría el Feature Store y el coste en vuestra infraestructura actual."
+
+---
+
+<div align="center">
+
+**Apéndice A — Material de Preparación para Entrevistas**
+
+[← Volver al Índice](00_INDICE.md) | [Apéndice B: Talking Points →](APENDICE_B_TALKING_POINTS.md)
+
+</div>

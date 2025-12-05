@@ -1,6 +1,10 @@
-# 📅 SYLLABUS — Guía MLOps v2 (Portfolio Edition)
+# 📅 SYLLABUS — Guía MLOps (Portfolio Edition)
 
-> **Programa completo de 6-8 semanas para construir un portafolio ML/MLOps profesional desde cero**
+> **Programa completo de 8 semanas para construir el portafolio ML-MLOps-Portfolio desde cero**
+
+---
+
+> 📌 **Navegación**: Este documento complementa el [Índice Principal (00_INDICE.md)](00_INDICE.md) con detalles de macro-módulos y progresión 0 → Senior/Staff. Para la estructura módulo por módulo, consulta el índice.
 
 ---
 
@@ -34,11 +38,101 @@ Al completar este programa serás capaz de:
 | 10 | Observabilidad | 2 días | Logging + alertas |
 | 11 | Mantenimiento & Auditoría | 2 días | Runbooks |
 
-**Tiempo total estimado**: 32 días (~6-8 semanas a ritmo moderado)
+ **Tiempo total estimado**: 32 días (~6-8 semanas a ritmo moderado)
 
----
+ ---
 
-## 📚 Detalle por Módulo
+ ## 🧭 Ruta 0 → Senior/Staff (macro-módulos)
+
+ > Esta ruta agrupa los 23 módulos de la guía en **11 macro-módulos** que siguen el plan
+ > "0 → Senior/Staff MLOps" que definiste. No reemplaza la numeración actual (01–23),
+ > sino que ofrece una vista de alto nivel basada en madurez.
+
+ | Macro-Módulo | Nombre | Objetivo principal | Módulos relacionados |
+ |:------------:|--------|--------------------|----------------------|
+ | 00 | Entorno, Herramientas y Flujo de Trabajo | Poder ejecutar los 3 proyectos del portafolio en tu máquina | 00_INDICE, 03_ESTRUCTURA_PROYECTO, 04_ENTORNOS, 05_GIT_PROFESIONAL, 17_DESPLIEGUE, PLAN_ESTUDIOS, QUICK_START del repo |
+ | 01 | Python Fundamentos para Producción | Pasar de Python junior a escribir código pythonico y mantenible | 01_PYTHON_MODERNO, 03_ESTRUCTURA_PROYECTO, common_utils/* |
+ | 02 | Fundamentos de Data Science y ML | Tener bases sólidas de DS/ML antes de entrar a MLOps | 07_SKLEARN_PIPELINES, 08_INGENIERIA_FEATURES, 09_TRAINING_PROFESIONAL, notebooks de los proyectos |
+ | 03 | Ingeniería de Datos Aplicada a ML | Preparar datos como en una empresa, pensando en ML downstream | 06_VERSIONADO_DATOS, 08_INGENIERIA_FEATURES, partes de TelecomAI-Customer-Intelligence |
+ | 04 | Fundamentos de MLOps | Entender reproducibilidad, versionado y artefactos | 06_VERSIONADO_DATOS, 10_EXPERIMENT_TRACKING, DECISIONES_TECH, 22_CHECKLIST |
+ | 05 | Pipelines + CI/CD | Construir pipelines reales con tests y gates de calidad | 07_SKLEARN_PIPELINES, 11_TESTING_ML, 12_CI_CD, workflows de .github/workflows/ |
+ | 06 | Model Deployment | Desplegar modelos con nivel Senior (APIs, Docker, serverless) | 13_DOCKER, 14_FASTAPI, 17_DESPLIEGUE, docker-compose.demo.yml |
+ | 07 | Monitoring, Observabilidad y Alertas | Diferenciarte como Senior mediante observabilidad real | 16_OBSERVABILIDAD, 22_CHECKLIST, dashboards de Grafana |
+ | 08 | Infraestructura y Nube | Operar como engineer: IaC, redes y cloud basics | 17_DESPLIEGUE, 18_INFRAESTRUCTURA, infra/terraform/*, k8s/* |
+ | 09 | Escalado y Sistemas Distribuidos | Pensar en batch/streaming y K8s para ML a gran escala | 18_INFRAESTRUCTURA, partes avanzadas de 17_DESPLIEGUE, tests/load/* |
+ | 10 | Seguridad, Gobernanza y Cumplimiento | Tratar el portafolio como un sistema empresarial | 19_DOCUMENTACION, 12_CI_CD (gitleaks, security), .gitleaks.toml, RUNBOOK.md |
+ | 11 | Arquitectura MLOps Senior/Staff | Ver el sistema completo: multi-model, observabilidad y gobierno | 20_PROYECTO_INTEGRADOR, 21_GLOSARIO, 23_RECURSOS, DECISIONES_TECH, RUNBOOK.md |
+
+ **Guion resumido por macro-módulo**
+
+ **MÓDULO 00 — Entorno, Herramientas y Flujo de Trabajo**  
+ Objetivo: garantizar que puedas ejecutar los 3 proyectos (BankChurn, CarVision, TelecomAI).  
+ Incluye: Conda/pipx/uv, Docker + Docker Compose, Git + branching, VS Code + DevContainers, Makefiles, estructura estándar ML/MLOps.  
+ Práctica en este repo: seguir `00_INDICE.md`, `PLAN_ESTUDIOS.md` y el QUICK_START de la raíz hasta ejecutar BankChurn end-to-end.
+
+ **MÓDULO 01 — Python Fundamentos para Producción**  
+ Objetivo: llevar de Python junior a código pythonico y mantenible.  
+ Incluye: POO aplicada a ML, tipado estático (mypy), logging profesional, manejo de errores, estructura de paquetes.  
+ Práctica en este repo: trabajar `01_PYTHON_MODERNO.md` y refactorizar utilidades en `common_utils/` y el código de BankChurn.
+
+ **MÓDULO 02 — Fundamentos de Data Science y ML**  
+ Objetivo: construir bases sólidas de DS/ML antes de MLOps.  
+ Incluye: exploración, limpieza, feature engineering, validación cruzada, overfitting/underfitting.  
+ Práctica en este repo: rehacer el pipeline de features y validación de BankChurn apoyándote en `07_SKLEARN_PIPELINES.md`, `08_INGENIERIA_FEATURES.md` y `09_TRAINING_PROFESIONAL.md`.
+
+ **MÓDULO 03 — Ingeniería de Datos Aplicada a ML**  
+ Objetivo: preparar datos como en una empresa, pensando en su uso en modelos.  
+ Incluye: ETL/ELT, orquestación ligera, data quality, feature stores.  
+ Práctica en este repo: usar `06_VERSIONADO_DATOS.md` y `08_INGENIERIA_FEATURES.md` para montar un mini feature store inspirado en TelecomAI.
+
+ **MÓDULO 04 — Fundamentos de MLOps**  
+ Objetivo: introducir el mindset MLOps (reproducibilidad, versionado, artefactos).  
+ Incluye: versionado de datos y modelos, ML metadata, experiment tracking, artefactos.  
+ Práctica en este repo: integrar MLflow y DVC a BankChurn siguiendo `06_VERSIONADO_DATOS.md`, `10_EXPERIMENT_TRACKING.md` y `DECISIONES_TECH.md`.
+
+ **MÓDULO 05 — Pipelines + CI/CD**  
+ Objetivo: crear pipelines reales con CI/CD enterprise-like.  
+ Incluye: GitHub Actions, testing, coverage, code-quality gates.  
+ Práctica en este repo: combinar `07_SKLEARN_PIPELINES.md`, `11_TESTING_ML.md` y `12_CI_CD.md` para obtener un pipeline completo para los 3 proyectos usando los workflows reales del repositorio.
+
+ **MÓDULO 06 — Model Deployment**  
+ Objetivo: desplegar con nivel Senior.  
+ Incluye: APIs con FastAPI, dockerización, serverless, patrones de model serving.  
+ Práctica en este repo: usar `13_DOCKER.md`, `14_FASTAPI.md` y `17_DESPLIEGUE.md` para desplegar CarVision en contenedor + endpoint (local y/o cloud).
+
+ **MÓDULO 07 — Monitoring, Observabilidad y Alertas**  
+ Objetivo: incorporar observabilidad que diferencie un junior de un senior.  
+ Incluye: concept vs data drift, monitoreo de features/predicciones, logging estructurado, Prometheus + Grafana.  
+ Práctica en este repo: seguir `16_OBSERVABILIDAD.md` para instrumentar BankChurn con métricas y paneles, apoyándote en los manifiestos de `k8s/` y las reglas de `infra/`.
+
+ **MÓDULO 08 — Infraestructura y Nube**  
+ Objetivo: operar como un engineer en cloud.  
+ Incluye: IaC (Terraform), fundamentos AWS/GCP, redes y seguridad básica.  
+ Práctica en este repo: partir de `17_DESPLIEGUE.md` y `18_INFRAESTRUCTURA.md` para desplegar un stack MLOps básico en cloud (o simularlo localmente con los manifests y Terraform). 
+
+ **MÓDULO 09 — Escalado y Sistemas Distribuidos**  
+ Objetivo: pensar en batch/streaming y K8s para producción masiva.  
+ Incluye: batch vs streaming, Kubernetes, automatización avanzada.  
+ Práctica en este repo: usar las secciones avanzadas de `18_INFRAESTRUCTURA.md`, los manifests en `k8s/` y los tests de carga en `tests/load/` como base para diseñar un despliegue escalable de CarVision.
+
+ **MÓDULO 10 — Seguridad, Gobernanza y Cumplimiento**  
+ Objetivo: llevar la senioridad al plano empresarial.  
+ Incluye: políticas, roles, seguridad de repos (secrets, escaneo), Model Cards y ética.  
+ Práctica en este repo: combinar `19_DOCUMENTACION.md`, la configuración de `12_CI_CD.md` (gitleaks, security scanning) y `.gitleaks.toml` para definir políticas mínimas y completar Model Cards para los 3 proyectos.
+
+ **MÓDULO 11 — Arquitectura MLOps Senior/Staff**  
+ Objetivo: tener visión completa de sistemas reales (multi-model, gobierno, observabilidad a gran escala).  
+ Incluye: arquitecturas event-driven, multi-model governance, patrones de observabilidad.  
+ Práctica en este repo: usar `20_PROYECTO_INTEGRADOR.md`, `DECISIONES_TECH.md` y `RUNBOOK.md` para diseñar y documentar una arquitectura MLOps completa que integre los 3 proyectos.
+
+ Puedes usar:
+
+ - Esta sección para entender el **mapa mental 0 → Senior/Staff**.
+ - El índice de 23 módulos (`00_INDICE.md`) y el plan por semanas para avanzar **paso a paso**.
+
+ ---
+
+ ## 📚 Detalle por Módulo
 
 ### Módulo 00 — Introducción (0.5 días)
 
@@ -242,6 +336,27 @@ Semana 4:   Módulos 05-06 (Tracking + API)
 Semana 5:   Módulos 07-08 (Dashboard + CI/CD)
 Semana 6:   Módulos 09-11 (Docs + Mantenimiento)
 ```
+
+---
+
+## 🎤 Preparación para Entrevistas
+
+La guía incluye simulacros de entrevista adaptados a cada nivel de experiencia:
+
+| Nivel | Simulacro | Preguntas | Cuándo Usar |
+|:-----:|-----------|:---------:|-------------|
+| 🟢 Junior | [SIMULACRO_ENTREVISTA_JUNIOR.md](SIMULACRO_ENTREVISTA_JUNIOR.md) | 50 | Semanas 1-4 |
+| 🟡 Mid | [SIMULACRO_ENTREVISTA_MID.md](SIMULACRO_ENTREVISTA_MID.md) | 60 | Semanas 5-6 |
+| 🔴 Senior | [SIMULACRO_ENTREVISTA_SENIOR_PARTE1.md](SIMULACRO_ENTREVISTA_SENIOR_PARTE1.md) + [PARTE2](SIMULACRO_ENTREVISTA_SENIOR_PARTE2.md) | 115 | Semanas 7-8 |
+
+**Progresión recomendada**:
+1. **Junior**: Python básico, ML fundamentos, Git, estructura de proyecto
+2. **Mid**: Pipelines, testing, CI/CD, Docker, APIs
+3. **Senior**: System design, arquitectura, liderazgo, trade-offs
+
+**Material complementario**:
+- [Speech de Portafolio](APENDICE_A_SPEECH_PORTAFOLIO.md) — Guión de 5-7 min
+- [Talking Points](APENDICE_B_TALKING_POINTS.md) — Puntos clave concisos
 
 ---
 

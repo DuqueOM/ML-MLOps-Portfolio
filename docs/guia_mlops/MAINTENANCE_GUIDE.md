@@ -1,27 +1,50 @@
-# 🔧 Guía de Mantenimiento — guia_mlops v2
+# 🔧 Guía de Mantenimiento — guia_mlops v5
 
-> Esta guía describe cómo mantener la guía MLOps actualizada y funcional.
+> **Meta-documento**: Esta guía describe cómo mantener **la guía MLOps en sí misma** actualizada y funcional.
+> 
+> ⚠️ **¿Buscas contenido sobre operaciones de sistemas ML en producción?** Ver:
+> - [17_DESPLIEGUE.md → Operaciones y Runbooks](17_DESPLIEGUE.md#-operaciones-y-runbooks)
+> - [16_OBSERVABILIDAD.md](16_OBSERVABILIDAD.md) — Monitoreo y alertas
+> - [RUNBOOK.md](../../RUNBOOK.md) — Operaciones del portafolio
+
+*Última actualización: Diciembre 2025*
+
+---
+
+## 📊 Estado Actual de la Guía
+
+| Componente | Cantidad | Estado |
+|:-----------|:--------:|:------:|
+| Módulos principales | 23 | ✅ Completos |
+| Ejercicios | 42 | ✅ Con soluciones |
+| ADRs | 14 | ✅ Actualizados |
+| Recursos externos | 50+ videos | ✅ Curados |
+| Glosario | 100+ términos | ✅ Expandido |
 
 ---
 
 ## 📅 Calendario de Mantenimiento
 
 ### Mensual
-- [ ] Verificar que todos los links funcionan
+- [ ] Verificar que todos los links funcionan (`./scripts/check_links.sh`)
 - [ ] Actualizar versiones de dependencias en `requirements.txt`
 - [ ] Ejecutar tests de todos los módulos
+- [ ] Verificar que videos de RECURSOS_POR_MODULO.md siguen disponibles
 
 ### Trimestral
-- [ ] Revisar y actualizar ejemplos de código
+- [ ] Revisar y actualizar ejemplos de código con mejores prácticas
 - [ ] Regenerar `requirements.txt` con versiones actuales
-- [ ] Verificar compatibilidad con Python más reciente
+- [ ] Verificar compatibilidad con Python más reciente (actualmente 3.11+)
 - [ ] Actualizar templates con mejores prácticas
+- [ ] Revisar y actualizar RECURSOS_POR_MODULO.md con nuevos videos/cursos
 
 ### Semestral
-- [ ] Revisar estructura completa de la guía
+- [ ] Revisar estructura completa de la guía (23 módulos)
 - [ ] Actualizar referencias y recursos externos
 - [ ] Incorporar feedback de usuarios
 - [ ] Evaluar nuevas herramientas del ecosistema MLOps
+- [ ] Actualizar DECISIONES_TECH.md con nuevas herramientas
+- [ ] Revisar que el glosario cubre todos los términos usados en módulos
 
 ---
 
@@ -173,10 +196,13 @@ docs/XX_nombre_modulo/
 
 | Métrica | Objetivo | Actual |
 |:--------|:---------|:-------|
-| Tests pasando | 100% | - |
-| Links rotos | 0 | - |
-| Coverage de docs | 100% módulos | 12/12 |
-| Validación YAML | 100% | - |
+| Tests pasando | 100% | ✅ |
+| Links rotos | 0 | ✅ |
+| Módulos completos | 23/23 | ✅ |
+| Ejercicios con solución | 42/42 | ✅ |
+| ADRs documentados | 14/14 | ✅ |
+| Glosario términos | 100+ | ✅ |
+| Recursos externos | 50+ | ✅ |
 
 ### Monitoreo
 
@@ -188,7 +214,41 @@ Ejecutar semanalmente:
 
 ---
 
-## 🔗 Recursos
+## 📁 Estructura de Archivos de la Guía
+
+```
+docs/guia_mlops/
+├── 00_INDICE.md              # Índice principal
+├── 01-23_*.md                # 23 módulos temáticos
+├── EJERCICIOS.md             # 42 ejercicios prácticos
+├── EJERCICIOS_SOLUCIONES.md  # Soluciones detalladas
+├── RUBRICA_EVALUACION.md     # Sistema de evaluación (100 puntos)
+├── RECURSOS_POR_MODULO.md    # 📺 Videos y cursos externos
+├── DECISIONES_TECH.md        # 14 ADRs de herramientas
+├── 21_GLOSARIO.md            # 100+ términos con ejemplos
+├── SIMULACRO_*.md            # Entrevistas técnicas
+├── APENDICE_A_SPEECH.md      # Speech de portafolio
+├── APENDICE_B_TALKING.md     # Puntos clave
+├── SYLLABUS.md               # Programa de 8 semanas
+├── PLAN_ESTUDIOS.md          # Cronograma día a día
+├── GUIA_AUDIOVISUAL.md       # Crear demos y videos
+├── MAINTENANCE_GUIDE.md      # Esta guía
+├── templates/                # 13 plantillas reutilizables
+└── mkdocs.yml                # Configuración MkDocs
+```
+
+---
+
+## 🔗 Recursos Internos
+
+| Archivo | Propósito | Actualización |
+|---------|-----------|:-------------:|
+| [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) | Videos y cursos externos | Trimestral |
+| [DECISIONES_TECH.md](DECISIONES_TECH.md) | ADRs de herramientas | Semestral |
+| [21_GLOSARIO.md](21_GLOSARIO.md) | Definiciones de términos | Mensual |
+| [RUBRICA_EVALUACION.md](RUBRICA_EVALUACION.md) | Sistema de puntuación | Semestral |
+
+### Recursos Externos
 
 - [MkDocs Documentation](https://www.mkdocs.org/)
 - [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
@@ -203,4 +263,8 @@ Ejecutar semanalmente:
 
 ---
 
-*Última actualización: 2024-12*
+<div align="center">
+
+[← Volver al Índice](00_INDICE.md)
+
+</div>

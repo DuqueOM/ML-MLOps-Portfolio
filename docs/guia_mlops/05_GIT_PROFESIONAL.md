@@ -27,6 +27,17 @@
 3. **Aplicar** estrategias de branching profesionales
 4. **Dominar** comandos avanzados (rebase, cherry-pick, bisect)
 
+### 🧩 Cómo se aplica en este portafolio
+
+- El repositorio `ML-MLOps-Portfolio` y los tres proyectos
+  (`BankChurn-Predictor`, `CarVision-Market-Intelligence`, `TelecomAI-Customer-Intelligence`)
+  ya usan:
+  - Historial basado en **Conventional Commits**.
+  - Hooks de **pre-commit** configurados en `.pre-commit-config.yaml`.
+  - Escaneo de seguridad con **Gitleaks** vía `.gitleaks.toml` y workflows de CI.
+- Usa este módulo como guía para entender y ajustar esos flujos en tu propio fork del portafolio
+  y para mantener un historial que soporte entrevistas técnicas Senior/Staff.
+
 ---
 
 ## 4.1 Conventional Commits: El Estándar de Industria
@@ -35,7 +46,7 @@
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║                    ❌ HISTORIAL TÍPICO (CAÓTICO)                               ║
+║                    ❌ HISTORIAL TÍPICO (CAÓTICO)                              ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
 ║   * fix                                                                       ║
@@ -54,7 +65,7 @@
 ║   • Code review es un infierno                                                ║
 ║                                                                               ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║                    ✅ HISTORIAL PROFESIONAL (CONVENTIONAL)                     ║
+║                    ✅ HISTORIAL PROFESIONAL (CONVENTIONAL)                    ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
 ║   * feat(api): add /predict endpoint with batch support                       ║
@@ -193,7 +204,7 @@ EOF
 ║                                    │                                          ║
 ║                         ┌─────────┴─────────┐                                 ║
 ║                         ▼                   ▼                                 ║
-║                    ALL PASS ✅          ANY FAIL ❌                           ║
+║                    ALL PASS ✅          ANY FAIL ❌                          ║
 ║                    Commit OK            Commit BLOCKED                        ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
@@ -356,7 +367,7 @@ git commit --no-verify -m "hotfix: emergency fix"
 ║  ─────────────────────────────────────────                                    ║
 ║  main ──●────────────────────●────────────────●──                             ║
 ║          \                  / \              /                                ║
-║  develop  ●──●──●──●──●──●──●   ●──●──●──●──●                                ║
+║  develop  ●──●──●──●──●──●──●   ●──●──●──●──●                                 ║
 ║              \     /                  /                                       ║
 ║  feature      ●──●                   /                                        ║
 ║                    \                /                                         ║
@@ -910,6 +921,147 @@ pre-commit run, --all-files, autoupdate
 
 ---
 
+## 📦 Cómo se Usó en el Portafolio
+
+El portafolio implementa todas las prácticas de Git profesional descritas:
+
+### .pre-commit-config.yaml Real
+
+```yaml
+# ML-MLOps-Portfolio/.pre-commit-config.yaml (extracto)
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=5000']
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.1
+    hooks:
+      - id: gitleaks
+```
+
+### Conventional Commits del Portafolio
+
+Ejemplos de commits reales en el historial:
+
+```bash
+# Ejemplos del historial real del portafolio
+feat(bankchurn): add unified sklearn pipeline
+fix(carvision): prevent data leakage in FeatureEngineer
+docs(guia): add module 11 Testing ML
+test(telecomai): increase coverage to 97%
+ci(actions): add matrix testing for Python 3.10/3.11
+refactor(config): migrate to Pydantic v2
+```
+
+### Branching Strategy
+
+El portafolio usa **GitHub Flow** simplificado:
+
+```
+main ────────────────────────────────────────────────►
+       │                    │
+       └── feature/xyz ─────┘ (PR + CI verde + merge)
+```
+
+### 🔧 Ejercicio: Configura Pre-commit
+
+```bash
+# 1. Ve a la raíz del portafolio
+cd ML-MLOps-Portfolio
+
+# 2. Instala pre-commit
+pip install pre-commit
+
+# 3. Instala los hooks
+pre-commit install
+
+# 4. Ejecuta en todos los archivos
+pre-commit run --all-files
+
+# 5. Haz un commit y verifica que los hooks se ejecutan
+echo "# test" >> test.md
+git add test.md
+git commit -m "test: verify pre-commit hooks"  # Los hooks se ejecutan aquí
+git reset --soft HEAD~1  # Deshaz el commit de prueba
+rm test.md
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **Conventional Commits**: Explica por qué `feat:`, `fix:`, `docs:` facilitan changelogs automáticos.
+
+2. **Git Flow vs Trunk-Based**: Conoce ambos y cuándo usar cada uno.
+
+3. **Rebase vs Merge**: Pregunta clásica. Respuesta: rebase para historia limpia, merge para preservar contexto.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Commits grandes | Divide en commits atómicos con `git add -p` |
+| Historia sucia | Usa `git rebase -i` antes de PR |
+| Secretos en repo | Usa git-secrets o gitleaks en pre-commit |
+| Colaboración | PRs pequeños (< 400 líneas) se revisan mejor |
+
+### Comandos que Debes Dominar
+
+```bash
+git stash push -m "descripción"  # Guardar trabajo temporal
+git bisect start                 # Encontrar commit que introdujo bug
+git reflog                       # Recuperar commits "perdidos"
+git cherry-pick <commit>         # Aplicar commit específico
+```
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [Git for Professionals - freeCodeCamp](https://www.youtube.com/watch?v=Uszj_k0DGsg) | Video |
+| 🟡 | [Conventional Commits](https://www.conventionalcommits.org/) | Docs |
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **pre-commit**: Hooks de validación antes de commit
+- **Conventional Commits**: Formato estándar de mensajes
+- **GitHub Flow**: Workflow de branching
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 05:
+- **5.1**: Configurar .gitignore profesional
+- **5.2**: Instalar pre-commit hooks
+
+---
+
 ## 🔜 Siguiente Paso
 
 Con Git dominado, es hora de versionar **datos** profesionalmente.
@@ -920,8 +1072,6 @@ Con Git dominado, es hora de versionar **datos** profesionalmente.
 
 <div align="center">
 
-*Módulo 04 completado. Tu historial de Git ahora cuenta una historia clara.*
-
-*© 2025 DuqueOM - Guía MLOps v5.0: Senior Edition*
+[← Entornos](04_ENTORNOS.md) | [Siguiente: Versionado de Datos →](06_VERSIONADO_DATOS.md)
 
 </div>

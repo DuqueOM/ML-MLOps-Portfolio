@@ -2,20 +2,28 @@
 
 > **Por qué elegimos cada herramienta y tecnología**
 
+*Última actualización: Diciembre 2025*
+
 ---
 
 ## 📋 Índice de ADRs
 
-| # | Decisión | Alternativas | Estado |
-|:--|:---------|:-------------|:-------|
-| 001 | Python 3.11+ | R, Julia | ✅ Aceptada |
-| 002 | scikit-learn | XGBoost, LightGBM | ✅ Aceptada |
-| 003 | Pydantic v2 | dataclasses, attrs | ✅ Aceptada |
-| 004 | FastAPI | Flask, Django | ✅ Aceptada |
-| 005 | pytest | unittest | ✅ Aceptada |
-| 006 | GitHub Actions | Jenkins, GitLab CI | ✅ Aceptada |
-| 007 | MLflow | W&B, Neptune | ✅ Aceptada |
-| 008 | Docker | Conda, Poetry | ✅ Aceptada |
+| # | Decisión | Alternativas | Módulo | Estado |
+|:--|:---------|:-------------|:------:|:-------|
+| 001 | Python 3.11+ | R, Julia | 01 | ✅ Aceptada |
+| 002 | scikit-learn | XGBoost, LightGBM | 07 | ✅ Aceptada |
+| 003 | Pydantic v2 | dataclasses, attrs | 01 | ✅ Aceptada |
+| 004 | FastAPI | Flask, Django | 14 | ✅ Aceptada |
+| 005 | pytest | unittest | 11 | ✅ Aceptada |
+| 006 | GitHub Actions | Jenkins, GitLab CI | 12 | ✅ Aceptada |
+| 007 | MLflow | W&B, Neptune | 10 | ✅ Aceptada |
+| 008 | Docker | Conda, Poetry | 13, 17 | ✅ Aceptada |
+| 009 | DVC | Git LFS, S3 directo | 06 | ✅ Aceptada |
+| 010 | Streamlit | Gradio, Panel | 15 | ✅ Aceptada |
+| 011 | Prometheus + Grafana | Datadog, New Relic | 16 | ✅ Aceptada |
+| 012 | Kubernetes | Docker Swarm, ECS | 18 | ✅ Aceptada |
+| 013 | Ruff | Flake8 + Black + isort | 01 | ✅ Aceptada |
+| 014 | src/ Layout | Flat layout | 03 | ✅ Aceptada |
 
 ---
 
@@ -192,23 +200,176 @@ Usar Docker con multi-stage builds.
 
 ---
 
+## ADR-009: DVC para Versionado de Datos
+
+### Contexto
+Necesitamos versionar datasets grandes sin guardarlos en Git.
+
+### Decisión
+Usar DVC (Data Version Control).
+
+### Alternativas Consideradas
+- **Git LFS**: Pago por storage, menos features
+- **S3 directo**: Sin versionado semántico
+- **Delta Lake**: Overkill para nuestro tamaño
+
+### Consecuencias
+- ✅ Versionado semántico de datos
+- ✅ Pipelines reproducibles
+- ✅ Integración con Git
+- ❌ Curva de aprendizaje adicional
+
+> 📖 Ver [Módulo 06](06_VERSIONADO_DATOS.md)
+
+---
+
+## ADR-010: Streamlit para Dashboards
+
+### Contexto
+Necesitamos crear dashboards interactivos para stakeholders.
+
+### Decisión
+Usar Streamlit para dashboards ML.
+
+### Alternativas Consideradas
+- **Gradio**: Más simple, menos personalizable
+- **Panel**: Menos popular, más verboso
+- **Dash**: Más complejo, mejor para apps empresariales
+
+### Consecuencias
+- ✅ Python puro, sin HTML/CSS/JS
+- ✅ Reactivo por defecto
+- ✅ Caching de modelos integrado
+- ✅ Deploy fácil (Streamlit Cloud)
+- ❌ Menos control sobre UI que frameworks web
+
+> 📖 Ver [Módulo 15](15_STREAMLIT.md)
+
+---
+
+## ADR-011: Prometheus + Grafana para Observabilidad
+
+### Contexto
+Necesitamos monitorear modelos en producción y detectar drift.
+
+### Decisión
+Usar Prometheus para métricas y Grafana para dashboards.
+
+### Alternativas Consideradas
+- **Datadog**: Excelente pero costoso
+- **New Relic**: Similar a Datadog
+- **CloudWatch/Stackdriver**: Vendor lock-in
+
+### Consecuencias
+- ✅ Open source, sin costo
+- ✅ Estándar de la industria
+- ✅ Alertas configurables
+- ✅ Integración con K8s nativa
+- ❌ Más setup que SaaS
+
+> 📖 Ver [Módulo 16](16_OBSERVABILIDAD.md)
+
+---
+
+## ADR-012: Kubernetes para Orquestación
+
+### Contexto
+Necesitamos orquestar contenedores en producción con auto-scaling.
+
+### Decisión
+Usar Kubernetes para deployment.
+
+### Alternativas Consideradas
+- **Docker Swarm**: Más simple, menos features
+- **ECS/Fargate**: Vendor lock-in AWS
+- **Nomad**: Menos adopción
+
+### Consecuencias
+- ✅ Estándar de la industria
+- ✅ Auto-scaling (HPA)
+- ✅ Self-healing (probes)
+- ✅ Portable entre clouds
+- ❌ Curva de aprendizaje alta
+
+> 📖 Ver [Módulo 18](18_INFRAESTRUCTURA.md)
+
+---
+
+## ADR-013: Ruff para Linting
+
+### Contexto
+Necesitamos herramientas de calidad de código rápidas.
+
+### Decisión
+Usar Ruff como linter y formateador unificado.
+
+### Alternativas Consideradas
+- **Flake8 + Black + isort**: Múltiples herramientas, más lento
+- **Pylint**: Muy lento, muchos false positives
+
+### Consecuencias
+- ✅ 10-100x más rápido que alternativas
+- ✅ Una herramienta = una config
+- ✅ Compatible con reglas de Flake8
+- ✅ Formateador incluido
+- ❌ Herramienta relativamente nueva
+
+> 📖 Ver [Módulo 01](01_PYTHON_MODERNO.md) - Glosario: [Ruff](21_GLOSARIO.md#ruff)
+
+---
+
+## ADR-014: src/ Layout para Proyectos
+
+### Contexto
+Necesitamos una estructura de proyecto profesional e instalable.
+
+### Decisión
+Usar src/ layout en todos los proyectos.
+
+### Alternativas Consideradas
+- **Flat layout**: Más simple pero problemático con imports
+- **Monorepo**: Más complejo para este tamaño
+
+### Consecuencias
+- ✅ Evita importar código local en vez del paquete
+- ✅ Estructura profesional estándar
+- ✅ Instalable con `pip install -e .`
+- ❌ Un nivel más de directorios
+
+> 📖 Ver [Módulo 03](03_ESTRUCTURA_PROYECTO.md)
+
+---
+
 ## 📊 Matriz de Decisiones Resumen
 
-| Área | Herramienta | Por qué |
-|:-----|:------------|:--------|
-| Lenguaje | Python 3.11+ | Ecosistema ML |
-| ML Framework | scikit-learn | Pipelines unificados |
-| Config | Pydantic v2 | Validación + FastAPI |
-| API | FastAPI | Async + docs auto |
-| Testing | pytest | Fixtures + plugins |
-| CI/CD | GitHub Actions | Integración nativa |
-| Tracking | MLflow | Open source + local |
-| Container | Docker | Reproducibilidad |
+| Área | Herramienta | Por qué | Módulo |
+|:-----|:------------|:--------|:------:|
+| Lenguaje | Python 3.11+ | Ecosistema ML | 01 |
+| ML Framework | scikit-learn | Pipelines unificados | 07 |
+| Config | Pydantic v2 | Validación + FastAPI | 01 |
+| API | FastAPI | Async + docs auto | 14 |
+| Dashboard | Streamlit | Python puro, reactivo | 15 |
+| Testing | pytest | Fixtures + plugins | 11 |
+| CI/CD | GitHub Actions | Integración nativa | 12 |
+| Tracking | MLflow | Open source + local | 10 |
+| Versionado datos | DVC | Git + datos grandes | 06 |
+| Container | Docker | Reproducibilidad | 13, 17 |
+| Orquestación | Kubernetes | Auto-scaling, probes | 18 |
+| Monitoreo | Prometheus + Grafana | Open source, estándar | 16 |
+| Linting | Ruff | Rápido, unificado | 01 |
+| Estructura | src/ layout | Profesional, instalable | 03 |
+
+---
+
+## 🔗 Referencias
+
+- [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) - Videos y cursos por herramienta
+- [21_GLOSARIO.md](21_GLOSARIO.md) - Definiciones detalladas de cada herramienta
 
 ---
 
 <div align="center">
 
-[← Volver al Índice](00_INDICE.md)
+[← Volver al Índice](00_INDICE.md) | [Recursos Externos](RECURSOS_POR_MODULO.md)
 
 </div>

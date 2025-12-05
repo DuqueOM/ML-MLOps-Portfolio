@@ -1,6 +1,6 @@
 # 13. CI/CD con GitHub Actions
 
-## �� Objetivo del Módulo
+## 🎯 Objetivo del Módulo
 
 Implementar un pipeline CI/CD profesional que valide automáticamente tu código en cada push, como el workflow `ci-mlops.yml` del portafolio.
 
@@ -10,14 +10,14 @@ Implementar un pipeline CI/CD profesional que valide automáticamente tu código
 ║  🔄 CI/CD = Tu Guardián Automático                                          ║
 ║                                                                              ║
 ║  ANTES (sin CI/CD):                                                          ║
-║  • "Olvidé correr los tests antes de mergear"                               ║
-║  • "Rompí producción con un cambio pequeño"                                 ║
-║  • "No sabía que mi código no pasaba linting"                               ║
+║  • "Olvidé correr los tests antes de mergear"                                ║
+║  • "Rompí producción con un cambio pequeño"                                  ║
+║  • "No sabía que mi código no pasaba linting"                                ║
 ║                                                                              ║
 ║  DESPUÉS (con CI/CD):                                                        ║
 ║  • Cada push ejecuta tests automáticamente                                   ║
-║  • No puedes mergear si los tests fallan                                    ║
-║  • Coverage, linting, y seguridad verificados siempre                       ║
+║  • No puedes mergear si los tests fallan                                     ║
+║  • Coverage, linting, y seguridad verificados siempre                        ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -71,7 +71,7 @@ jobs:                                 # ¿Qué ejecutar?
 ║  Workflow = Línea de inspección de calidad                                ║
 ║                                                                           ║
 ║  on (trigger):                                                            ║
-║  → "Cada vez que un auto nuevo llega a la línea"                         ║
+║  → "Cada vez que un auto nuevo llega a la línea"                          ║
 ║                                                                           ║
 ║  jobs:                                                                    ║
 ║  → Diferentes estaciones de inspección                                    ║
@@ -79,11 +79,11 @@ jobs:                                 # ¿Qué ejecutar?
 ║  steps:                                                                   ║
 ║  → Tareas específicas en cada estación                                    ║
 ║                                                                           ║
-║  ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐                  ║
-║  │ Checkout│──►│ Install │──►│  Test   │──►│  Build  │                  ║
-║  │  (get   │   │  (prep  │   │  (run   │   │ (create │                  ║
-║  │  code)  │   │  tools) │   │  tests) │   │ Docker) │                  ║
-║  └─────────┘   └─────────┘   └─────────┘   └─────────┘                  ║
+║  ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐                    ║
+║  │ Checkout│──►│ Install │──►│  Test   │──►│  Build  │                    ║
+║  │  (get   │   │  (prep  │   │  (run   │   │ (create │                    ║
+║  │  code)  │   │  tools) │   │  tests) │   │ Docker) │                    ║
+║  └─────────┘   └─────────┘   └─────────┘   └─────────┘                    ║
 ║                                                                           ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
@@ -160,17 +160,17 @@ jobs:
                     Python 3.11          Python 3.12
                   ┌─────────────┐      ┌─────────────┐
 BankChurn         │   Job 1     │      │   Job 2     │
-                  │   ✅ Pass    │      │   ✅ Pass    │
+                  │   ✅ Pass   │      │   ✅ Pass  │
                   └─────────────┘      └─────────────┘
 
                   ┌─────────────┐      ┌─────────────┐
 CarVision         │   Job 3     │      │   Job 4     │
-                  │   ✅ Pass    │      │   ✅ Pass    │
+                  │   ✅ Pass   │      │   ✅ Pass  │
                   └─────────────┘      └─────────────┘
 
                   ┌─────────────┐      ┌─────────────┐
 TelecomAI         │   Job 5     │      │   Job 6     │
-                  │   ✅ Pass    │      │   ✅ Pass    │
+                  │   ✅ Pass   │      │   ✅ Pass  │
                   └─────────────┘      └─────────────┘
 
 Total: 6 jobs ejecutándose EN PARALELO
@@ -358,68 +358,68 @@ docker-build:
 │                         CI/CD Pipeline: ci-mlops.yml                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  TRIGGER: push to main/develop OR pull_request to main                     │
+│  TRIGGER: push to main/develop OR pull_request to main                      │
 │                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                         JOB 1: tests                                 │   │
-│  │  Matrix: Python 3.11/3.12 × 3 proyectos = 6 jobs paralelos         │   │
-│  │                                                                     │   │
-│  │  Steps:                                                             │   │
-│  │  1. Checkout code                                                   │   │
-│  │  2. Setup Python (con cache)                                        │   │
-│  │  3. Install dependencies                                            │   │
-│  │  4. Run linting (flake8, black, isort)                             │   │
-│  │  5. Run tests with coverage                                         │   │
-│  │  6. Upload coverage to Codecov                                      │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                         JOB 1: tests                                │    │
+│  │  Matrix: Python 3.11/3.12 × 3 proyectos = 6 jobs paralelos          │    │
+│  │                                                                     │    │
+│  │  Steps:                                                             │    │
+│  │  1. Checkout code                                                   │    │
+│  │  2. Setup Python (con cache)                                        │    │
+│  │  3. Install dependencies                                            │    │
+│  │  4. Run linting (flake8, black, isort)                              │    │
+│  │  5. Run tests with coverage                                         │    │
+│  │  6. Upload coverage to Codecov                                      │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
 │                              │                                              │
 │                              ▼                                              │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                      JOB 2: quality-gates                           │   │
-│  │  needs: [tests]                                                     │   │
-│  │                                                                     │   │
-│  │  Steps:                                                             │   │
-│  │  1. Check Black formatting                                          │   │
-│  │  2. Check import sorting (isort)                                    │   │
-│  │  3. Run flake8 strict                                               │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                      JOB 2: quality-gates                           │    │
+│  │  needs: [tests]                                                     │    │
+│  │                                                                     │    │
+│  │  Steps:                                                             │    │
+│  │  1. Check Black formatting                                          │    │
+│  │  2. Check import sorting (isort)                                    │    │
+│  │  3. Run flake8 strict                                               │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
 │                              │                                              │
 │                              ▼                                              │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                      JOB 3: security-scan                           │   │
-│  │  needs: [tests]                                                     │   │
-│  │                                                                     │   │
-│  │  Steps:                                                             │   │
-│  │  1. Gitleaks (secretos)                                             │   │
-│  │  2. Bandit (código Python)                                          │   │
-│  │  3. pip-audit (dependencias)                                        │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                      JOB 3: security-scan                           │    │
+│  │  needs: [tests]                                                     │    │
+│  │                                                                     │    │
+│  │  Steps:                                                             │    │
+│  │  1. Gitleaks (secretos)                                             │    │
+│  │  2. Bandit (código Python)                                          │    │
+│  │  3. pip-audit (dependencias)                                        │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
 │                              │                                              │
 │                              ▼                                              │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                      JOB 4: docker-build                            │   │
-│  │  needs: [tests, quality-gates]                                      │   │
-│  │  if: push to main                                                   │   │
-│  │                                                                     │   │
-│  │  Steps:                                                             │   │
-│  │  1. Setup Docker Buildx                                             │   │
-│  │  2. Login to GHCR                                                   │   │
-│  │  3. Build multi-stage images                                        │   │
-│  │  4. Push to registry                                                │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                      JOB 4: docker-build                            │    │
+│  │  needs: [tests, quality-gates]                                      │    │
+│  │  if: push to main                                                   │    │
+│  │                                                                     │    │
+│  │  Steps:                                                             │    │
+│  │  1. Setup Docker Buildx                                             │    │
+│  │  2. Login to GHCR                                                   │    │
+│  │  3. Build multi-stage images                                        │    │
+│  │  4. Push to registry                                                │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
 │                              │                                              │
 │                              ▼                                              │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                        JOB 5: e2e-test                              │   │
-│  │  needs: [docker-build]                                              │   │
-│  │                                                                     │   │
-│  │  Steps:                                                             │   │
-│  │  1. Start Docker Compose stack                                      │   │
-│  │  2. Wait for services                                               │   │
-│  │  3. Run API health checks                                           │   │
-│  │  4. Run integration tests                                           │   │
-│  │  5. Cleanup                                                         │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                        JOB 5: e2e-test                              │    │
+│  │  needs: [docker-build]                                              │    │
+│  │                                                                     │    │
+│  │  Steps:                                                             │    │
+│  │  1. Start Docker Compose stack                                      │    │
+│  │  2. Wait for services                                               │    │
+│  │  3. Run API health checks                                           │    │
+│  │  4. Run integration tests                                           │    │
+│  │  5. Cleanup                                                         │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -762,6 +762,148 @@ Añade un job nuevo con Bandit y Gitleaks.
 - [ ] Coverage está enforced con threshold
 - [ ] Tienes al menos un scan de seguridad
 - [ ] Los artifacts se suben correctamente
+
+---
+
+## 📦 Cómo se Usó en el Portafolio
+
+El portafolio tiene un workflow CI/CD real en `.github/workflows/ci-mlops.yml`:
+
+### Workflow Real del Portafolio
+
+```yaml
+# .github/workflows/ci-mlops.yml (extracto)
+name: CI/CD MLOps Portfolio
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [BankChurn-Predictor, CarVision-Market-Intelligence, TelecomAI-Customer-Intelligence]
+        python-version: ['3.10', '3.11']
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install dependencies
+        run: |
+          cd ${{ matrix.project }}
+          pip install -e ".[dev]"
+      
+      - name: Run tests with coverage
+        run: |
+          cd ${{ matrix.project }}
+          pytest tests/ --cov=src/ --cov-fail-under=79
+```
+
+### Features del CI/CD
+
+| Feature | Implementación |
+|---------|----------------|
+| Matrix Testing | 3 proyectos × 2 versiones Python |
+| Coverage Gate | `--cov-fail-under=79` |
+| Security Scan | gitleaks en pre-commit |
+| Artifacts | Coverage reports |
+
+### 🔧 Ejercicio: Revisa el CI Real
+
+```bash
+# 1. Ve el workflow real
+cat .github/workflows/ci-mlops.yml
+
+# 2. Simula localmente con act (opcional)
+act -j test --matrix project:BankChurn-Predictor
+
+# 3. Ve los runs en GitHub
+# https://github.com/DuqueOM/ML-MLOps-Portfolio/actions
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **CI vs CD**: CI = integrar código frecuentemente, CD = desplegar automáticamente.
+
+2. **GitHub Actions vs Jenkins vs GitLab CI**: Trade-offs de cada uno.
+
+3. **ML-specific CI**: Explica cómo CI para ML incluye validación de datos y modelos.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Secrets | Usa GitHub Secrets, nunca hardcodees |
+| Caching | Cachea dependencias y datos para velocidad |
+| Paralelización | Matriz de tests para múltiples versiones |
+| Rollback | Siempre ten estrategia de rollback |
+
+### Pipeline CI/CD para ML
+
+```yaml
+1. Lint + Format (ruff, black)
+2. Unit Tests (pytest)
+3. Integration Tests
+4. Security Scan (gitleaks, bandit)
+5. Build Docker Image
+6. Model Validation
+7. Deploy to Staging
+8. Smoke Tests
+9. Deploy to Production
+```
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [GitHub Actions Tutorial - TechWorld Nana](https://www.youtube.com/watch?v=R8_veQiYBjI) | Video |
+| 🟡 | [CI/CD for ML - Made With ML](https://madewithml.com/courses/mlops/cicd/) | Tutorial |
+
+**Documentación oficial:**
+- [GitHub Actions](https://docs.github.com/en/actions)
+- [pre-commit](https://pre-commit.com/)
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **CI/CD**: Integración y despliegue continuo
+- **GitHub Actions**: Automatización de workflows
+- **pre-commit**: Hooks de validación antes de commit
+
+---
+
+## 📋 Plantillas Relacionadas
+
+Ver [templates/](templates/index.md) para plantillas listas:
+- [ci_github_actions.yml](templates/ci_github_actions.yml) — Pipeline CI/CD completo
+- [ci_template.yml](templates/ci_template.yml) — Versión mínima para quick start
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 12:
+- **12.1**: GitHub Actions workflow básico
 
 ---
 

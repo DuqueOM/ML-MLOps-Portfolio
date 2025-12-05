@@ -2,6 +2,8 @@
 
 > **Templates listos para usar en tus proyectos ML**
 
+> 📁 **Ver también**: [templates/](templates/index.md) contiene las plantillas como archivos individuales descargables.
+
 ---
 
 ## 📄 1. Template README.md
@@ -293,8 +295,19 @@ rm -rf __pycache__ .pytest_cache .coverage htmlcov
 
 ---
 
+## 📚 Módulos que Usan Estas Plantillas
+
+| Plantilla | Módulo |
+|-----------|--------|
+| README, pyproject, Makefile | [03_ESTRUCTURA_PROYECTO.md](03_ESTRUCTURA_PROYECTO.md) |
+| GitHub Actions | [12_CI_CD.md](12_CI_CD.md) |
+| Dockerfile | [13_DOCKER.md](13_DOCKER.md) |
+| Model Card | [19_DOCUMENTACION.md](19_DOCUMENTACION.md) |
+
+---
+
 <div align="center">
 
-[← Volver al Índice](00_INDICE.md)
+[← Volver al Índice](00_INDICE.md) | [templates/](templates/index.md)
 
 </div>

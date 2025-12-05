@@ -97,22 +97,52 @@ copyright: Copyright &copy; 2024 DuqueOM — Guía MLOps v2
 # Navigation
 nav:
   - Inicio: index.md
+  - Índice Principal: 00_INDICE.md
   - Syllabus: SYLLABUS.md
-  - Módulos:
-    - "00 — Introducción": docs/00_introduccion/index.md
-    - "01 — Python Moderno": docs/01_python_moderno/index.md
-    - "02 — Ingeniería de Datos": docs/02_ingenieria_datos/index.md
-    - "03 — Feature Engineering": docs/03_feature_engineering/index.md
-    - "04 — Modelado": docs/04_modelado/index.md
-    - "05 — MLflow & DVC": docs/05_mlflow_dvc/index.md
-    - "06 — Despliegue API": docs/06_despliegue_api/index.md
-    - "07 — Dashboard": docs/07_dashboard/index.md
-    - "08 — CI/CD & Testing": docs/08_ci_cd_testing/index.md
-    - "09 — Model & Dataset Cards": docs/09_modelcards_datasetcards/index.md
-    - "10 — Observabilidad": docs/10_observabilidad_monitoring/index.md
-    - "11 — Mantenimiento": docs/11_mantenimiento_auditoria/index.md
-  - Plantillas: templates/index.md
-  - Ejercicios: EJERCICIOS.md
-  - Rúbrica: RUBRICA_EVALUACION.md
-  - Glosario: 21_GLOSARIO.md
-  - Recursos: 23_RECURSOS.md
+  - Fase 1 - Fundamentos:
+    - "01 — Python Moderno": 01_PYTHON_MODERNO.md
+    - "02 — Diseño de Sistemas": 02_DISENO_SISTEMAS.md
+    - "03 — Estructura de Proyecto": 03_ESTRUCTURA_PROYECTO.md
+    - "04 — Entornos": 04_ENTORNOS.md
+    - "05 — Git Profesional": 05_GIT_PROFESIONAL.md
+    - "06 — Versionado de Datos": 06_VERSIONADO_DATOS.md
+  - Fase 2 - ML Engineering:
+    - "07 — sklearn Pipelines": 07_SKLEARN_PIPELINES.md
+    - "08 — Ingeniería de Features": 08_INGENIERIA_FEATURES.md
+    - "09 — Training Profesional": 09_TRAINING_PROFESIONAL.md
+    - "10 — Experiment Tracking": 10_EXPERIMENT_TRACKING.md
+  - Fase 3 - MLOps Core:
+    - "11 — Testing ML": 11_TESTING_ML.md
+    - "12 — CI/CD": 12_CI_CD.md
+    - "13 — Docker": 13_DOCKER.md
+    - "14 — FastAPI": 14_FASTAPI.md
+    - "15 — Streamlit": 15_STREAMLIT.md
+    - "16 — Observabilidad": 16_OBSERVABILIDAD.md
+  - Fase 4 - Producción:
+    - "17 — Despliegue": 17_DESPLIEGUE.md
+    - "18 — Infraestructura": 18_INFRAESTRUCTURA.md
+  - Fase 5 - Especialización:
+    - "19 — Documentación": 19_DOCUMENTACION.md
+    - "20 — Proyecto Integrador": 20_PROYECTO_INTEGRADOR.md
+    - "21 — Glosario": 21_GLOSARIO.md
+    - "22 — Checklist": 22_CHECKLIST.md
+    - "23 — Recursos": 23_RECURSOS.md
+  - Práctica:
+    - Ejercicios: EJERCICIOS.md
+    - Soluciones: EJERCICIOS_SOLUCIONES.md
+    - Rúbrica: RUBRICA_EVALUACION.md
+  - Entrevistas:
+    - "🟢 Junior (0-2 años)": SIMULACRO_ENTREVISTA_JUNIOR.md
+    - "🟡 Mid (2-4 años)": SIMULACRO_ENTREVISTA_MID.md
+    - "🔴 Senior Parte 1": SIMULACRO_ENTREVISTA_SENIOR_PARTE1.md
+    - "🔴 Senior Parte 2": SIMULACRO_ENTREVISTA_SENIOR_PARTE2.md
+    - "Apéndice A - Speech": APENDICE_A_SPEECH_PORTAFOLIO.md
+    - "Apéndice B - Talking Points": APENDICE_B_TALKING_POINTS.md
+  - Recursos:
+    - "📺 Videos y Cursos por Módulo": RECURSOS_POR_MODULO.md
+    - "📓 Notebook Pipelines (07-08)": notebooks/07_08_sklearn_pipelines.ipynb
+    - Plantillas: templates/index.md
+    - Plan de Estudios: PLAN_ESTUDIOS.md
+    - Decisiones Técnicas: DECISIONES_TECH.md
+    - Guía Audiovisual: GUIA_AUDIOVISUAL.md
+    - Mantenimiento: MAINTENANCE_GUIDE.md

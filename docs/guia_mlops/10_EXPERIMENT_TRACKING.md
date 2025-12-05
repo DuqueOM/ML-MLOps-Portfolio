@@ -7,17 +7,27 @@ Implementar tracking de experimentos como lo hace el portafolio con `run_mlflow.
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║  SIN MLFLOW:                           CON MLFLOW:                          ║
-║  ───────────                           ────────────                         ║
-║  "¿Qué hiperparámetros usé hace        "MLflow run abc123: RF con           ║
-║   2 semanas cuando obtuve F1=0.85?"    n_estimators=200, F1=0.85"           ║
+║  SIN MLFLOW:                           CON MLFLOW:                           ║
+║  ───────────                           ────────────                          ║
+║  "¿Qué hiperparámetros usé hace        "MLflow run abc123: RF con            ║
+║   2 semanas cuando obtuve F1=0.85?"    n_estimators=200, F1=0.85"            ║
 ║                                                                              ║
-║  "¿Dónde guardé ese modelo bueno?"     "Artifacts en run abc123/model.pkl"  ║
+║  "¿Dónde guardé ese modelo bueno?"     "Artifacts en run abc123/model.pkl"   ║
 ║                                                                              ║
-║  "¿Por qué este modelo es peor?"       "Comparar runs en UI: diff params"   ║
+║  "¿Por qué este modelo es peor?"       "Comparar runs en UI: diff params"    ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
+
+### 🧩 Cómo se aplica en este portafolio
+
+- En **BankChurn-Predictor** ya tienes:
+  - `scripts/run_mlflow.py` como script de logging posterior al entrenamiento.
+  - Configuración de MLflow en `configs/config.yaml` y `src/bankchurn/config.py`.
+- El archivo `docker-compose.mlflow.yml` en la raíz del repo levanta un servidor MLflow
+  real que puedes usar para practicar este módulo.
+- El mismo patrón de logging puedes aplicarlo a **CarVision** y **TelecomAI**, usando
+  sus `artifacts/` y modelos entrenados como fuente de métricas y artifacts.
 
 ---
 
@@ -40,16 +50,16 @@ Implementar tracking de experimentos como lo hace el portafolio con `run_mlflow.
 │                          MLFLOW COMPONENTS                                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  1. TRACKING                    2. PROJECTS                                │
+│  1. TRACKING                    2. PROJECTS                                 │
 │  ─────────────                  ────────────                                │
 │  • Log params, metrics          • Empaquetar código                         │
 │  • Guardar artifacts            • MLproject file                            │
 │  • Comparar runs                • Reproducibilidad                          │
 │                                                                             │
-│  3. MODELS                      4. REGISTRY                                │
+│  3. MODELS                      4. REGISTRY                                 │
 │  ──────────                     ─────────────                               │
-│  • Formato estándar             • Versionado de modelos                    │
-│  • Flavors (sklearn, pytorch)   • Staging → Production                     │
+│  • Formato estándar             • Versionado de modelos                     │
+│  • Flavors (sklearn, pytorch)   • Staging → Production                      │
 │  • Serving                      • Aprobaciones                              │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -506,6 +516,162 @@ Con este patrón, MLflow pasa de ser “caja negra” a una herramienta confiabl
 2. Log las métricas: accuracy, f1, precision, recall, roc_auc
 3. Calcula métricas de negocio (customers retained, revenue saved)
 4. Registra el modelo como "TelecomPlanClassifier"
+
+---
+
+## 📦 Cómo se Usó en el Portafolio
+
+MLflow está integrado en los 3 proyectos del portafolio:
+
+### Configuración MLflow en BankChurn
+
+```python
+# BankChurn-Predictor/src/bankchurn/config.py
+class MLflowConfig(BaseModel):
+    """MLflow tracking configuration."""
+    tracking_uri: str = "file:./mlruns"  # Local por defecto
+    experiment_name: str = "bankchurn"
+    enabled: bool = True
+```
+
+### Integración en Trainer
+
+```python
+# BankChurn-Predictor/src/bankchurn/trainer.py (extracto)
+def _log_to_mlflow(self):
+    """Log experimento a MLflow."""
+    if not self.config.mlflow.enabled:
+        return
+    
+    mlflow.set_tracking_uri(self.config.mlflow.tracking_uri)
+    mlflow.set_experiment(self.config.mlflow.experiment_name)
+    
+    with mlflow.start_run():
+        # Parámetros
+        mlflow.log_params({
+            "model_type": self.config.model.type,
+            "test_size": self.config.model.test_size,
+            "cv_folds": self.config.model.cv_folds,
+        })
+        
+        # Métricas
+        mlflow.log_metrics(self.metrics_)
+        
+        # Modelo
+        mlflow.sklearn.log_model(self.model_, "model")
+```
+
+### Estructura de mlruns/
+
+```
+BankChurn-Predictor/
+└── mlruns/
+    ├── 0/                    # Default experiment
+    └── 123456789/            # bankchurn experiment
+        └── abc123def456/     # Run ID
+            ├── artifacts/
+            │   └── model/
+            ├── metrics/
+            │   ├── accuracy
+            │   ├── f1_score
+            │   └── roc_auc
+            ├── params/
+            │   ├── model_type
+            │   └── cv_folds
+            └── meta.yaml
+```
+
+### MLflow por Proyecto
+
+| Proyecto | Tracking URI | Experiment | Métricas Principales |
+|----------|--------------|------------|---------------------|
+| BankChurn | `file:./mlruns` | `bankchurn` | accuracy, f1, roc_auc |
+| CarVision | `file:./mlruns` | `carvision` | mae, rmse, r2 |
+| TelecomAI | `file:./mlruns` | `telecomai` | accuracy, f1_weighted |
+
+### 🔧 Ejercicio: Explora MLflow Real
+
+```bash
+# 1. Ve a BankChurn
+cd BankChurn-Predictor
+
+# 2. Entrena con MLflow habilitado
+python main.py --config configs/config.yaml
+
+# 3. Inicia la UI de MLflow
+mlflow ui --backend-store-uri file:./mlruns
+
+# 4. Abre en navegador
+# http://localhost:5000
+
+# 5. Explora:
+# - Compara runs
+# - Ve artifacts
+# - Registra modelo en Model Registry
+```
+
+---
+
+## 💼 Consejos Profesionales
+
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **MLflow vs W&B vs Neptune**: Conoce trade-offs (MLflow open-source, W&B mejor UI, Neptune escalabilidad).
+
+2. **Model Registry**: Explica stages (Staging → Production → Archived).
+
+3. **Reproducibilidad**: Cómo reconstruir cualquier experimento desde el tracking.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Equipo distribuido | Usa servidor MLflow centralizado |
+| Muchos experimentos | Organiza con tags y naming conventions |
+| Modelos grandes | Usa artifact storage externo (S3, GCS) |
+| Comparación | Siempre registra baseline para comparar |
+
+### Qué Trackear Siempre
+
+- **Params**: Hiperparámetros, versiones de datos
+- **Metrics**: Train/val/test, métricas de negocio
+- **Artifacts**: Modelo, configs, plots, requirements.txt
+- **Tags**: Git commit, autor, dataset version
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [MLflow Tutorial - Krish Naik](https://www.youtube.com/watch?v=qdcHHrsXA48) | Video |
+| 🟡 | [MLflow Complete Course](https://www.youtube.com/watch?v=MHcqGxA6JPs) | Video |
+
+**Documentación oficial:**
+- [MLflow Tracking](https://mlflow.org/docs/latest/tracking.html)
+- [MLflow Model Registry](https://mlflow.org/docs/latest/model-registry.html)
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **MLflow**: Plataforma de experiment tracking
+- **Model Registry**: Registro de versiones de modelos
+- **Artifact**: Archivo asociado a un experimento
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 10:
+- **10.1**: MLflow básico (params, metrics, model)
+- **10.2**: Comparar múltiples experimentos
 
 ---
 

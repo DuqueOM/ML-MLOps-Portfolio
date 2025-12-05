@@ -7,10 +7,10 @@ Implementar monitoreo completo: logs, métricas, y drift detection como en el po
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║  "Si no puedo verlo en un dashboard, no sé si está funcionando."            ║
+║  "Si no puedo verlo en un dashboard, no sé si está funcionando."             ║
 ║                                        — Mentalidad Senior                   ║
 ║                                                                              ║
-║  OBSERVABILIDAD = LOGS + METRICS + TRACES + ML MONITORING                   ║
+║  OBSERVABILIDAD = LOGS + METRICS + TRACES + ML MONITORING                    ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -30,28 +30,28 @@ Implementar monitoreo completo: logs, métricas, y drift detection como en el po
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                     📊 LAS 4 SEÑALES DE ORO (+ ML)                         │
+│                     📊 LAS 4 SEÑALES DE ORO (+ ML)                          │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  1. LATENCIA          ¿Cuánto tarda una predicción?                        │
-│     ───────────       Target: P99 < 100ms                                  │
+│  1. LATENCIA          ¿Cuánto tarda una predicción?                         │
+│     ───────────       Target: P99 < 100ms                                   │
 │                       Alerta: P99 > 200ms                                   │
 │                                                                             │
-│  2. TRÁFICO           ¿Cuántas requests por segundo?                       │
-│     ────────          Monitorear: picos, tendencias, anomalías             │
+│  2. TRÁFICO           ¿Cuántas requests por segundo?                        │
+│     ────────          Monitorear: picos, tendencias, anomalías              │
 │                                                                             │
-│  3. ERRORES           ¿Qué porcentaje de requests falla?                   │
-│     ───────           Target: Error rate < 0.1%                            │
+│  3. ERRORES           ¿Qué porcentaje de requests falla?                    │
+│     ───────           Target: Error rate < 0.1%                             │
 │                       Alerta: Error rate > 1%                               │
 │                                                                             │
-│  4. SATURACIÓN        ¿Cuánto recurso queda?                               │
-│     ──────────        Alerta: CPU > 80%, Memory > 85%                      │
+│  4. SATURACIÓN        ¿Cuánto recurso queda?                                │
+│     ──────────        Alerta: CPU > 80%, Memory > 85%                       │
 │                                                                             │
 │  + ML-ESPECÍFICO:                                                           │
 │  ────────────────                                                           │
-│  5. DATA DRIFT        ¿Los datos de entrada cambiaron?                     │
-│  6. PREDICTION DRIFT  ¿Las predicciones cambiaron distribución?            │
-│  7. MODEL DECAY       ¿El accuracy está degradando?                        │
+│  5. DATA DRIFT        ¿Los datos de entrada cambiaron?                      │
+│  6. PREDICTION DRIFT  ¿Las predicciones cambiaron distribución?             │
+│  7. MODEL DECAY       ¿El accuracy está degradando?                         │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -555,8 +555,68 @@ Con esta mentalidad, la observabilidad deja de ser un "extra" y se convierte en 
 
 ---
 
-## ✅ Checkpoint
+## 💼 Consejos Profesionales
 
+> **Recomendaciones para destacar en entrevistas y proyectos reales**
+
+### Para Entrevistas
+
+1. **Observability vs Monitoring**: Monitoring = métricas predefinidas, Observability = entender comportamiento inesperado.
+
+2. **Three Pillars**: Logs, Metrics, Traces. Explica cada uno.
+
+3. **ML Monitoring**: Model drift, data drift, concept drift.
+
+### Para Proyectos Reales
+
+| Situación | Consejo |
+|-----------|---------|
+| Alertas | Evita alert fatigue: alerta solo lo accionable |
+| Dashboards | Un dashboard por audiencia (ops, ML, negocio) |
+| On-call | Documenta runbooks para cada alerta |
+| Drift detection | Monitorea distribuciones de features y predictions |
+
+### Métricas Clave para ML
+
+- **Serving**: Latency p50/p95/p99, error rate, throughput
+- **Model**: Prediction distribution, confidence scores
+- **Data**: Missing values, schema changes, drift
+- **Business**: Conversion, revenue impact
+
+
+---
+
+## 📺 Recursos Externos Recomendados
+
+> Ver [RECURSOS_POR_MODULO.md](RECURSOS_POR_MODULO.md) para la lista completa.
+
+| 🏷️ | Recurso | Tipo |
+|:--:|:--------|:-----|
+| 🔴 | [Prometheus + Grafana - TechWorld Nana](https://www.youtube.com/watch?v=7gW5pSM6dlU) | Video |
+| 🟡 | [ML Monitoring with Evidently](https://www.youtube.com/watch?v=nGFnk7e3R-g) | Video |
+
+**Documentación oficial:**
+- [Prometheus](https://prometheus.io/docs/)
+- [Grafana](https://grafana.com/docs/)
+- [Evidently AI](https://docs.evidentlyai.com/)
+
+---
+
+## 🔗 Referencias del Glosario
+
+Ver [21_GLOSARIO.md](21_GLOSARIO.md) para definiciones de:
+- **Data Drift**: Cambio en distribución de features
+- **Prometheus**: Sistema de monitoreo y alertas
+- **PSI**: Population Stability Index
+
+---
+
+## ✅ Ejercicios
+
+Ver [EJERCICIOS.md](EJERCICIOS.md) - Módulo 16:
+- **16.1**: Logging estructurado JSON
+
+**Checkpoint:**
 - [ ] Tienes endpoint `/metrics` en tu API
 - [ ] Logs en formato JSON estructurado
 - [ ] Script de drift detection funcional
@@ -566,6 +626,6 @@ Con esta mentalidad, la observabilidad deja de ser un "extra" y se convierte en 
 
 <div align="center">
 
-[← Streamlit Dashboards](15_STREAMLIT.md) | [Siguiente: Proyecto Integrador →](20_PROYECTO_INTEGRADOR.md)
+[← Streamlit Dashboards](15_STREAMLIT.md) | [Siguiente: Despliegue →](17_DESPLIEGUE.md)
 
 </div>
