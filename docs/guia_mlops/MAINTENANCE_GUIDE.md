@@ -5,7 +5,7 @@
 > ⚠️ **¿Buscas contenido sobre operaciones de sistemas ML en producción?** Ver:
 > - [17_DESPLIEGUE.md → Operaciones y Runbooks](17_DESPLIEGUE.md#-operaciones-y-runbooks)
 > - [16_OBSERVABILIDAD.md](16_OBSERVABILIDAD.md) — Monitoreo y alertas
-> - [RUNBOOK.md](../../RUNBOOK.md) — Operaciones del portafolio
+> - [Runbook del Portafolio](../OPERATIONS_PORTFOLIO.md) — Operaciones end-to-end del portafolio
 
 *Última actualización: Diciembre 2025*
 
