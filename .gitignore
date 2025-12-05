@@ -116,6 +116,10 @@ media/videos/*.mov
 media/videos/*.avi
 media/videos/*.mkv
 
-# Generated PDFs and audio for guia_mlops docs
-docs/guia_mlops/pdf/
+# Generated audio for guia_mlops docs
 docs/guia_mlops/audio/
+
+# Debug artifacts for guia_mlops PDF generator
+docs/guia_mlops/pdf/_DEBUG_*
+docs/guia_mlops/pdf/_test_links.pdf
+docs/guia_mlops/pdf/_*.css

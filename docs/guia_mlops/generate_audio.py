@@ -103,7 +103,12 @@ def convert_table_to_speech(table_text: str) -> str:
 
     for line in lines:
         # Saltar líneas separadoras (|---|---|---| o |:---:|:---:|)
-        cells_raw = [cell.strip() for cell in line.split("|")]
+        cells_raw = []
+        for cell in line.split("|"):
+            c = cell.strip()
+            # Quitar enlaces markdown dentro de la celda: [Texto](archivo.md) -> Texto
+            c = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", c)
+            cells_raw.append(c)
         cells = [c for c in cells_raw if c]  # Eliminar vacíos
 
         # Si todas las celdas son solo guiones, espacios o dos puntos, es separador
@@ -245,20 +250,29 @@ def clean_markdown_for_speech(content: str) -> str:
     # 13. Eliminar caracteres especiales restantes
     text = re.sub(r"[╔╗╚╝═║┌┐└┘─│├┤┬┴┼▶▼►◀●○◆◇★☆→←↑↓⟶⟵]", "", text)
 
-    # 14. Limpiar múltiples espacios y líneas vacías
+    # 14. Normalizar unidades y siglas problemáticas para TTS en español
+    #    - "8h" / "8 h" -> "8 horas"
+    #    - "18 min" -> "18 minutos"
+    #    - "ML" / "ml" -> "eme ele"
+    text = re.sub(r"\b(\d+)\s*h\b", r"\1 horas", text)
+    text = re.sub(r"\b(\d+)h\b", r"\1 horas", text)
+    text = re.sub(r"\b(\d+)\s*min\b", r"\1 minutos", text)
+    text = re.sub(r"\b[Mm][Ll]\b", "eme ele", text)
+
+    # 15. Limpiar múltiples espacios y líneas vacías
     text = re.sub(r"\n{3,}", "\n\n", text)
     text = re.sub(r" {2,}", " ", text)
 
-    # 15. Limpiar líneas que quedaron con solo espacios
+    # 16. Limpiar líneas que quedaron con solo espacios
     text = re.sub(r"^\s+$", "", text, flags=re.MULTILINE)
 
-    # 16. Agregar pausas naturales
+    # 17. Agregar pausas naturales
     text = text.replace("---", "\n")
     text = text.replace(">", "")
 
-    # 17. Limpiar inicio/fin
+    # 18. Limpiar inicio/fin
     text = text.strip()
-    # 18. Eliminar cualquier asterisco residual que quede del markdown
+    # 19. Eliminar cualquier asterisco residual que quede del markdown
     text = text.replace("*", "")
 
     return text
