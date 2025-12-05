@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
+# flake8: noqa
 """
-GENERADOR PDF PRO v8.0
-- Símbolos Unicode que funcionan en wkhtmltopdf
-- Títulos de portada basados en nombre de archivo
+GENERADOR PDF PRO v9.0 - WeasyPrint Edition
+- Generación nativa de PDF (texto seleccionable garantizado)
+- Control estricto de huérfanos y viudas
+- Portadas y contenido integrados
 """
 
 import re
-import subprocess
 from pathlib import Path
 from typing import List, Optional
 
 import markdown
-from bs4 import BeautifulSoup
+from PyPDF2 import PdfMerger
+from weasyprint import CSS, HTML
+from weasyprint.text.fonts import FontConfiguration
 
 BASE_DIR = Path(__file__).parent
 OUTPUT_DIR = BASE_DIR / "pdf"
@@ -60,7 +63,7 @@ ORDERED_FILES = [
     "MAINTENANCE_GUIDE.md",
 ]
 
-# Símbolos Unicode que SÍ funcionan en wkhtmltopdf
+# Mapa de Emojis a Símbolos Unicode
 EMOJI_TO_SYMBOL = {
     "📚": "▣",
     "📖": "▤",
@@ -72,6 +75,11 @@ EMOJI_TO_SYMBOL = {
     "⚡": "★",
     "🔥": "★",
     "✨": "★",
+    "🔴": "●",
+    "🟡": "◐",
+    "🟢": "○",
+    "🏷️": "▪",
+    "🎬": "▶",
     "🧪": "◆",
     "🔬": "◆",
     "⚗️": "◆",
@@ -124,7 +132,6 @@ EMOJI_TO_SYMBOL = {
     "🌍": "◯",
     "🌎": "◯",
     "📺": "▣",
-    "🎬": "▣",
     "🎥": "▣",
     "🧭": "◈",
     "🗺️": "◈",
@@ -141,7 +148,6 @@ EMOJI_TO_SYMBOL = {
     "📃": "▤",
 }
 
-# Nombres legibles para portadas (basados en nombre de archivo)
 FILE_TITLES = {
     "00_INDICE.md": "ÍNDICE",
     "SYLLABUS.md": "SYLLABUS",
@@ -185,581 +191,585 @@ FILE_TITLES = {
     "MAINTENANCE_GUIDE.md": "GUÍA DE MANTENIMIENTO",
 }
 
+# CSS Optimizado para WeasyPrint (Estilo Compacto y Profesional)
 CONTENT_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+/* Intentar cargar fuente de emojis si está disponible localmente */
+@font-face {
+  font-family: 'Noto Color Emoji';
+  src: local('Noto Color Emoji'), local('Apple Color Emoji'), local('Segoe UI Emoji');
+}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+@page {
+    size: Letter;
+    margin: 10mm 15mm 10mm 15mm; /* Márgenes de página reducidos (1.5cm laterales, 1cm verticales) */
+    @bottom-right {
+        content: counter(page);
+        font-family: 'Inter', sans-serif;
+        font-size: 9pt;
+        color: #64748b;
+        margin-bottom: 5mm;
+        margin-right: 5mm;
+    }
+}
+
+@page :first {
+    margin: 0;
+    @bottom-right { content: none; }
+}
+
+@page cover {
+    margin: 0;
+    size: Letter;
+    @bottom-right { content: none; }
+}
+
+* { box-sizing: border-box; }
 
 body {
-    font-family: 'Inter', 'DejaVu Sans', Arial, sans-serif;
-    font-size: 10.5pt;
-    line-height: 1.6;
-    color: #1a1a2e;
+    font-family: 'Inter', 'Noto Color Emoji', sans-serif;
+    font-size: 8.5pt;
+    line-height: 1.4;
+    color: #1e293b;
+    margin: 0;
+    padding: 0; /* SIN padding para que las portadas funcionen */
+    max-width: 100%;
+}
+
+/* Contenido con margen de seguridad */
+.content {
+    padding: 0 15px 0 5px; /* Padding solo en el contenido, no en portadas */
+}
+
+/* Headers */
+h1, h2, h3, h4 { 
+    font-family: 'Inter', sans-serif; 
+    line-height: 1.2; 
+    max-width: 100%;
+    word-wrap: break-word;
+    page-break-after: avoid;
 }
 
 h1 {
-    font-size: 22pt;
+    font-size: 11pt; /* Reducido drásticamente */
     font-weight: 700;
     color: #1e3a8a;
-    border-bottom: 3px solid #3b82f6;
-    padding-bottom: 10px;
-    margin: 0 0 25px 0;
-    page-break-after: avoid;
+    border-bottom: 2px solid #3b82f6;
+    padding-bottom: 4px;
+    margin: 0 0 6px 0;
 }
 
 h2 {
-    font-size: 15pt;
+    font-size: 10pt; /* Reducido */
     font-weight: 600;
     color: #1e40af;
-    margin: 28px 0 14px 0;
-    padding-bottom: 5px;
-    border-bottom: 2px solid #dbeafe;
-    page-break-after: avoid;
+    margin: 8px 0 4px 0;
+    padding-bottom: 2px;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 h3 {
-    font-size: 12pt;
+    font-size: 9pt; /* Reducido */
     font-weight: 600;
     color: #2563eb;
-    margin: 22px 0 10px 0;
-    page-break-after: avoid;
+    margin: 6px 0 3px 0;
 }
 
 h4 {
-    font-size: 11pt;
+    font-size: 8.5pt; /* Mismo tamaño que body pero bold */
     font-weight: 600;
     color: #3b82f6;
-    margin: 18px 0 8px 0;
+    margin: 4px 0 2px 0;
 }
 
-p {
-    margin: 0 0 11px 0;
-    text-align: justify;
-    orphans: 4;
-    widows: 4;
-}
-
-ul, ol { margin: 0 0 14px 0; padding-left: 22px; }
-li { margin-bottom: 5px; }
-strong { color: #1e3a8a; }
-
-blockquote {
-    background: #eff6ff;
-    border-left: 4px solid #3b82f6;
-    border-radius: 0 8px 8px 0;
-    margin: 18px 0;
-    padding: 14px 18px;
+/* Evitar partir tablas, imágenes y CÓDIGO */
+table, img, figure, .admonition, pre {
     page-break-inside: avoid;
+    break-inside: avoid; /* Refuerzo para navegadores modernos/WeasyPrint */
 }
 
-blockquote p { margin: 0; }
+/* Text Blocks */
+p, li {
+    margin: 0 0 6px 0;
+    text-align: left; /* Izquierda para mejor legibilidad */
+    orphans: 2;
+    widows: 2;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    max-width: 100%;
+}
 
+ul, ol { margin: 0 0 8px 0; padding-left: 16px; max-width: 100%; }
+li { margin-bottom: 2px; text-align: left; }
+}
+blockquote p { margin: 0; text-align: left; } /* Forzar izquierda dentro del blockquote */
+
+/* Links - IMPORTANTE para PDF */
+a {
+    color: #2563eb;
+    text-decoration: underline;
+    cursor: pointer;
+}
+a:hover {
+    color: #1d4ed8;
+}
+/* Links en tablas */
+td a, th a {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+/* Code */
 code {
     background: #f1f5f9;
     color: #be185d;
-    padding: 2px 5px;
+    padding: 0px 2px;
     border-radius: 3px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.88em;
+    font-size: 0.9em;
+    overflow-wrap: break-word;
+    word-break: break-all; /* Romper links largos */
 }
 
 pre {
-    background: #1e293b;
-    color: #e2e8f0;
-    border-radius: 6px;
-    padding: 14px;
-    margin: 18px 0;
+    background: #0f172a;
+    color: #f1f5f9;
+    border-radius: 4px;
+    padding: 8px;
+    
+    /* FIX ANCHO */
+    width: auto;
+    margin: 8px 10px 8px 0;
+    
     font-family: 'JetBrains Mono', monospace;
-    font-size: 8.5pt;
-    line-height: 1.4;
+    font-size: 7.5pt;
+    line-height: 1.3;
     white-space: pre-wrap;
-    page-break-inside: avoid;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-all;
+    text-align: left;
+    break-inside: auto;
+    border: 1px solid #1e293b;
+}
+pre code { background: none; color: inherit; padding: 0; word-break: break-all; }
+
+/* Imágenes */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 8px auto;
 }
 
-pre code { background: none; color: inherit; padding: 0; }
-
+/* Tables */
 table {
     width: 100%;
+    max-width: 100%;
+    table-layout: auto; /* Auto para optimizar ancho de columnas según contenido */
     border-collapse: collapse;
-    margin: 18px 0;
-    font-size: 9.5pt;
-    page-break-inside: avoid;
+    margin: 10px 0;
+    font-size: 8pt;
+    break-inside: auto;
+    border: 1px solid #e2e8f0;
 }
 
 th {
-    background: #1e40af;
-    color: white;
+    background: #f1f5f9;
+    color: #1e293b;
     font-weight: 600;
     text-align: left;
-    padding: 10px 12px;
+    padding: 8px 8px;
+    border-bottom: 2px solid #e2e8f0;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 td {
-    border: 1px solid #e5e7eb;
-    padding: 8px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 6px 8px;
     vertical-align: top;
+    text-align: left; /* Texto en tablas siempre a la izquierda */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
 }
 
 tr:nth-child(even) { background: #f8fafc; }
 
-.section-block {
-    page-break-inside: avoid;
-    margin-bottom: 12px;
+/* Portadas - FULL PAGE sin márgenes */
+.cover-page {
+    page: cover;
+    break-after: page;
+    width: 100%;
+    height: 279.4mm; /* Altura exacta Letter */
+    background: linear-gradient(160deg, #1e3a8a 0%, #172554 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    box-sizing: border-box;
 }
 
-hr { display: none; }
+.cover-content {
+    width: 80%;
+    padding: 40px 20px;     /* Más padding vertical */
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.03);
+}
+
+.cover-title {
+    font-size: 24pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    line-height: 1.2;
+    color: #ffffff;
+}
+
+.cover-subtitle {
+    font-size: 12pt;
+    font-weight: 300;
+    color: #bfdbfe;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+}
+
+.cover-badge {
+    display: inline-block;
+    background: #3b82f6;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 10pt;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.global-cover {
+    background: #0f172a;
+    background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+}
+
+.global-title {
+    font-size: 42pt;
+    font-weight: 900;
+    color: #60a5fa;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    line-height: 1;
+}
+
+/* Anti-huérfanos CSS puro (sin wrappers) */
+h2, h3, h4 {
+    break-after: avoid-page;
+}
+h2 + *, h3 + *, h4 + * {
+    break-before: avoid-page;
+}
 """
 
 
 class PDFGenerator:
     def __init__(self):
         OUTPUT_DIR.mkdir(exist_ok=True)
-        (OUTPUT_DIR / "_style.css").write_text(CONTENT_CSS, encoding="utf-8")
-
-    def convert_emojis(self, text: str) -> str:
-        """Convierte emojis a símbolos Unicode que funcionan en wkhtmltopdf."""
-        for emoji, symbol in EMOJI_TO_SYMBOL.items():
-            text = text.replace(emoji, symbol)
-        # Eliminar emojis restantes que no están en el mapa
-        text = re.sub(r"[\U00010000-\U0010ffff]", "", text)
-        return text
+        self.font_config = FontConfiguration()
+        self.css = CSS(string=CONTENT_CSS, font_config=self.font_config)
 
     def clean_markdown(self, text: str) -> str:
-        """Limpia markdown y convierte emojis."""
-        text = self.convert_emojis(text)
-
         lines = text.split("\n")
         cleaned = []
         in_code = False
 
         for line in lines:
             s = line.strip()
+
+            # Manejo de bloques de código
             if s.startswith("```"):
                 in_code = not in_code
                 cleaned.append(line)
                 continue
+
             if in_code:
                 cleaned.append(line)
                 continue
-            # Eliminar HR
+
+            # Limpieza de regex (headers, nav, etc)
             if re.match(r"^[-_*]{3,}\s*$", s):
                 continue
-            # Eliminar HTML
-            if "<div" in s or "</div>" in s or "<p " in s:
+            if re.match(r"^═+\s*$", s) or "════" in s:
                 continue
-            # Eliminar banners
-            if s.startswith("# ═") or s.startswith("## ═"):
+            if "[←" in s or "Volver al Índice" in s or "[Siguiente:" in s:
                 continue
+
+            # Eliminar divs HTML que rompen tablas Markdown
+            if "<div" in s or "</div>" in s:
+                continue
+
+            # Limpieza de artefactos '# #' que aparecen antes de títulos
+            if re.match(r"^#+\s+#+\s+", s):
+                s = re.sub(r"^#+\s+#+\s+", "", s)
+
+            # Limpieza específica para '# # ' suelto
+            s = re.sub(r"^#\s+#\s+", "", s)
+
+            # Para headers: usar la versión limpia (s) para que Markdown los reconozca
+            # Los espacios iniciales rompen el parseo de headers
+            if s.startswith("#"):
+                # Asegurar línea en blanco antes de headers
+                if cleaned and cleaned[-1].strip() != "":
+                    cleaned.append("")
+                cleaned.append(s)  # Usar versión sin espacios iniciales
+                continue
+
+            # Lógica de Tablas:
+            if s.startswith("|"):
+                if cleaned:
+                    prev_s = cleaned[-1].strip()
+                    if prev_s != "" and not prev_s.startswith("|"):
+                        cleaned.append("")
+
             cleaned.append(line)
 
         return "\n".join(cleaned)
 
+    def transform_internal_links(self, text: str, debug: bool = False) -> str:
+        """
+        Convierte enlaces Markdown [Texto](archivo.md) a enlaces internos HTML <a href="#archivo">Texto</a>.
+        """
+        transformed_count = 0
+
+        def replace_link(match):
+            nonlocal transformed_count
+            link_text = match.group(1)
+            path = match.group(2)
+
+            # Links web: no tocar
+            if path.startswith("http"):
+                return match.group(0)
+
+            # Links a archivos .md: convertir a anclas internas
+            if path.endswith(".md"):
+                filename = Path(path).name
+                # ID: mod_FILENAME (sin extensión, limpio)
+                base_name = filename.replace(".md", "")
+                clean_id = "mod_" + re.sub(r"[^\w]+", "_", base_name)
+                transformed_count += 1
+                return f"[{link_text}](#{clean_id})"
+
+            return match.group(0)
+
+        result = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", replace_link, text)
+
+        if debug and transformed_count > 0:
+            print(f"    [DEBUG] {transformed_count} links transformados a anclas internas")
+
+        return result
+
     def get_cover_title(self, filename: str) -> str:
-        """Obtiene el título para la portada basado en el nombre del archivo."""
         return FILE_TITLES.get(filename, filename.replace(".md", "").replace("_", " ").upper())
 
-    def group_sections(self, html: str) -> str:
-        """Agrupa títulos con contenido siguiente."""
-        soup = BeautifulSoup(html, "html.parser")
+    def generate_module_html(self, title: str, md_content: str, filename: str) -> str:
+        # 1. Limpiar Markdown
+        clean_md = self.clean_markdown(md_content)
 
-        for h in soup.find_all(["h2", "h3", "h4"]):
-            wrap = soup.new_tag("div")
-            wrap["class"] = "section-block"
-            h.insert_before(wrap)
-            wrap.append(h.extract())
+        # 2. Transformar enlaces a internos (con debug)
+        linked_md = self.transform_internal_links(clean_md, debug=True)
 
-            count = 0
-            cur = wrap.next_sibling
-            while cur and count < 3:
-                if isinstance(cur, str):
-                    if not cur.strip():
-                        tmp = cur.next_sibling
-                        cur.extract()
-                        cur = tmp
-                        continue
-                    break
-                if hasattr(cur, "name") and cur.name in ["h1", "h2", "h3", "h4"]:
-                    break
-                if hasattr(cur, "name"):
-                    tmp = cur.next_sibling
-                    wrap.append(cur.extract())
-                    cur = tmp
-                    count += 1
-                else:
-                    cur = cur.next_sibling
+        content_html = markdown.markdown(linked_md, extensions=["tables", "fenced_code", "nl2br"])
 
-        return str(soup)
+        # ID para el ancla: mod_FILENAME (mismo formato que transform_internal_links)
+        base_name = filename.replace(".md", "")
+        module_id = "mod_" + re.sub(r"[^\w]+", "_", base_name)
 
-    def generate_cover_pdf(self, title: str, stem: str) -> Path:
-        """Genera portada con título basado en archivo."""
-        html = f"""<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800&display=swap');
+        full_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"></head>
+        <body>
+            <!-- PORTADA CON ANCLA INTEGRADA -->
+            <div id="{module_id}" class="cover-page">
+                <a name="{module_id}"></a>
+                <div class="cover-content">
+                    <div style="font-size:40pt;margin-bottom:20px;">💎</div>
+                    <div class="cover-title">{title}</div>
+                    <div class="cover-subtitle">Guía MLOps v5.0</div>
+                    <div class="cover-badge">PORTFOLIO EDITION</div>
+                </div>
+                <div style="position:absolute;bottom:30px;font-size:10pt;opacity:0.6;">DUQUEOM | 2025</div>
+            </div>
 
-html, body {{
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-}}
+            <!-- CONTENIDO -->
+            <div class="content">
+                {content_html}
+            </div>
+        </body>
+        </html>
+        """
+        return full_html
 
-body {{
-    background: linear-gradient(160deg, #1e3a8a 0%, #312e81 50%, #1e1b4b 100%);
-    font-family: 'Inter', Arial, sans-serif;
-    position: relative;
-}}
+    def generate_global_cover_html(self) -> str:
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"></head>
+        <body>
+            <div class="cover-page global-cover">
+                <div class="cover-content" style="border-color:rgba(96,165,250,0.3);background:rgba(15,23,42,0.6);">
+                    <div style="font-size:60pt;margin-bottom:30px;">🚀</div>
+                    <div class="global-title">GUÍA MLOPS</div>
+                    <div class="cover-subtitle" style="color:#94a3b8;margin-bottom:40px;">De Cero a Senior / Staff</div>
+                    <div class="cover-badge" style="background:linear-gradient(90deg,#3b82f6,#8b5cf6);border:none;padding:10px 30px;">VERSION 5.0 — PORTFOLIO EDITION</div>
+                </div>
+                <div style="position:absolute;bottom:30px;font-size:11pt;color:#64748b;">DUQUEOM | 2025</div>
+            </div>
+        </body>
+        </html>
+        """
 
-.center-box {{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    width: 85%;
-}}
-
-.diamond {{
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
-    transform: rotate(45deg);
-    margin: 0 auto 30px auto;
-}}
-
-h1 {{
-    font-size: 28px;
-    font-weight: 800;
-    color: white;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    line-height: 1.3;
-    margin-bottom: 12px;
-}}
-
-.subtitle {{
-    font-size: 13px;
-    font-weight: 300;
-    color: #93c5fd;
-    letter-spacing: 3px;
-    margin-bottom: 35px;
-    text-transform: uppercase;
-}}
-
-.badge {{
-    display: inline-block;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.25);
-    color: white;
-    padding: 10px 28px;
-    border-radius: 25px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1px;
-}}
-
-.footer {{
-    position: absolute;
-    bottom: 30px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-size: 10px;
-    color: rgba(255,255,255,0.4);
-    letter-spacing: 1px;
-}}
-</style>
-</head>
-<body>
-<div class="center-box">
-    <div class="diamond"></div>
-    <h1>{title}</h1>
-    <div class="subtitle">Guía MLOps v5.0 — Senior Edition</div>
-    <div class="badge">PORTFOLIO EDITION</div>
-</div>
-<div class="footer">DUQUEOM | 2025</div>
-</body>
-</html>"""
-
-        tmp = OUTPUT_DIR / f"_c_{stem}.html"
-        tmp.write_text(html, encoding="utf-8")
-
-        pdf = OUTPUT_DIR / f"_c_{stem}.pdf"
-        cmd = [
-            "wkhtmltopdf",
-            "--page-size",
-            "Letter",
-            "--margin-top",
-            "0mm",
-            "--margin-bottom",
-            "0mm",
-            "--margin-left",
-            "0mm",
-            "--margin-right",
-            "0mm",
-            "--quiet",
-            str(tmp),
-            str(pdf),
-        ]
-        subprocess.run(cmd, capture_output=True)
-        tmp.unlink()
-        return pdf
-
-    def generate_content_pdf(self, html: str, stem: str) -> Path:
-        """Genera PDF de contenido."""
-        full = f"""<!DOCTYPE html>
-<html><head><meta charset="UTF-8">
-<link rel="stylesheet" href="_style.css">
-</head><body>{html}</body></html>"""
-
-        tmp = OUTPUT_DIR / f"_t_{stem}.html"
-        tmp.write_text(full, encoding="utf-8")
-
-        pdf = OUTPUT_DIR / f"_t_{stem}.pdf"
-        cmd = [
-            "wkhtmltopdf",
-            "--page-size",
-            "Letter",
-            "--margin-top",
-            "15mm",
-            "--margin-bottom",
-            "15mm",
-            "--margin-left",
-            "15mm",
-            "--margin-right",
-            "15mm",
-            "--enable-local-file-access",
-            "--quiet",
-            str(tmp),
-            str(pdf),
-        ]
-        subprocess.run(cmd, capture_output=True)
-        tmp.unlink()
-        return pdf
-
-    def merge_pdfs(self, p1: Path, p2: Path, out: Path):
-        """Une dos PDFs."""
-        from PyPDF2 import PdfMerger
-
-        m = PdfMerger()
-        m.append(str(p1))
-        m.append(str(p2))
-        m.write(str(out))
-        m.close()
-
-    def process_module(self, md_file: str) -> Optional[Path]:
-        """Procesa un módulo completo."""
+    def process_module(self, md_file: str, debug_html: bool = False) -> Optional[Path]:
         path = BASE_DIR / md_file
         if not path.exists():
             return None
 
         print(f"  > {md_file}")
-
         raw = path.read_text(encoding="utf-8")
         clean = self.clean_markdown(raw)
+        title = self.get_cover_title(md_file)
 
-        # Título para portada = nombre del archivo (no del contenido)
-        cover_title = self.get_cover_title(md_file)
+        html_content = self.generate_module_html(title, clean, md_file)
 
-        html = markdown.markdown(clean, extensions=["tables", "fenced_code", "nl2br"])
-        html = self.group_sections(html)
+        # DEBUG: Guardar HTML del índice para inspección
+        if debug_html and md_file == "00_INDICE.md":
+            debug_path = OUTPUT_DIR / "_DEBUG_00_INDICE.html"
+            debug_path.write_text(html_content, encoding="utf-8")
+            print(f"    [DEBUG] HTML guardado en {debug_path}")
 
         stem = md_file.replace(".md", "")
-        cover = self.generate_cover_pdf(cover_title, stem)
-        content = self.generate_content_pdf(html, stem)
+        pdf_path = OUTPUT_DIR / f"{stem}.pdf"
 
-        final = OUTPUT_DIR / f"{stem}.pdf"
-        self.merge_pdfs(cover, content, final)
-
-        cover.unlink()
-        content.unlink()
-        return final
+        HTML(string=html_content, base_url=str(BASE_DIR)).write_pdf(target=pdf_path, stylesheets=[self.css])
+        return pdf_path
 
     def generate_global_cover(self) -> Path:
-        """Portada principal."""
-        html = """<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;600;900&display=swap');
-
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-}
-
-body {
-    background: linear-gradient(180deg, #0c0f1a 0%, #1a1f3a 50%, #0f172a 100%);
-    font-family: 'Inter', Arial, sans-serif;
-    position: relative;
-}
-
-.center-box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    width: 90%;
-}
-
-.logo {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-    border-radius: 16px;
-    margin: 0 auto 35px auto;
-}
-
-h1 {
-    font-size: 42px;
-    font-weight: 900;
-    color: #60a5fa;
-    letter-spacing: 5px;
-    margin-bottom: 8px;
-}
-
-h2 {
-    font-size: 18px;
-    font-weight: 300;
-    color: #94a3b8;
-    letter-spacing: 4px;
-    margin-bottom: 40px;
-    text-transform: uppercase;
-}
-
-.badge {
-    display: inline-block;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-    color: white;
-    padding: 12px 32px;
-    border-radius: 30px;
-    font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 2px;
-    margin-bottom: 45px;
-}
-
-.stats {
-    margin-bottom: 30px;
-}
-
-.stat {
-    display: inline-block;
-    margin: 0 25px;
-    text-align: center;
-}
-
-.stat-num {
-    font-size: 32px;
-    font-weight: 700;
-    color: #60a5fa;
-    display: block;
-}
-
-.stat-label {
-    font-size: 10px;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.footer {
-    position: absolute;
-    bottom: 30px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-size: 12px;
-    color: #475569;
-    letter-spacing: 1px;
-}
-</style>
-</head>
-<body>
-<div class="center-box">
-    <div class="logo"></div>
-    <h1>GUÍA MLOPS</h1>
-    <h2>De Cero a Senior / Staff</h2>
-    <div class="badge">VERSION 5.0 — PORTFOLIO EDITION</div>
-    <div class="stats">
-        <div class="stat"><span class="stat-num">23</span><span class="stat-label">Módulos</span></div>
-        <div class="stat"><span class="stat-num">86</span><span class="stat-label">Horas</span></div>
-        <div class="stat"><span class="stat-num">8</span><span class="stat-label">Semanas</span></div>
-    </div>
-</div>
-<div class="footer">DUQUEOM | 2025</div>
-</body>
-</html>"""
-
-        tmp = OUTPUT_DIR / "_global.html"
-        tmp.write_text(html, encoding="utf-8")
-
-        out = OUTPUT_DIR / "_000_COVER.pdf"
-        cmd = [
-            "wkhtmltopdf",
-            "--page-size",
-            "Letter",
-            "--margin-top",
-            "0mm",
-            "--margin-bottom",
-            "0mm",
-            "--margin-left",
-            "0mm",
-            "--margin-right",
-            "0mm",
-            "--quiet",
-            str(tmp),
-            str(out),
-        ]
-        subprocess.run(cmd, capture_output=True)
-        tmp.unlink()
-        return out
+        html = self.generate_global_cover_html()
+        pdf_path = OUTPUT_DIR / "_000_COVER.pdf"
+        HTML(string=html, base_url=str(BASE_DIR)).write_pdf(target=pdf_path, stylesheets=[self.css])
+        return pdf_path
 
     def merge_all(self, pdfs: List[Path]):
-        """Combina todos los PDFs."""
-        from PyPDF2 import PdfMerger
-
         final = OUTPUT_DIR / FINAL_FILENAME
         print(f"\n[*] Combinando {len(pdfs)} PDFs...")
-
         m = PdfMerger()
         for p in pdfs:
             if p.exists():
                 m.append(str(p))
         m.write(str(final))
         m.close()
-
-        mb = final.stat().st_size / (1024 * 1024)
-        print(f"[OK] {final.name} ({mb:.1f} MB)")
+        print(f"[OK] {final.name} ({final.stat().st_size / 1e6:.1f} MB)")
 
 
 def main():
     print("=" * 50)
-    print("  GENERADOR PDF PRO v8.0")
+    print("  GENERADOR PDF PRO v9.1 (WeasyPrint - Single Document)")
     print("=" * 50)
 
     gen = PDFGenerator()
 
-    print("\n[1] Portada global...")
-    cover = gen.generate_global_cover()
+    # Generar TODO como un solo HTML para preservar links internos
+    print("\n[1] Generando documento único...")
 
-    print("\n[2] Módulos:")
-    pdfs = [cover]
+    all_html_parts = []
+
+    # Portada global
+    all_html_parts.append(gen.generate_global_cover_html())
+    print("  > Portada global")
+
+    # Módulos
+    print("\n[2] Procesando módulos:")
     for f in ORDERED_FILES:
-        p = gen.process_module(f)
-        if p:
-            pdfs.append(p)
+        path = BASE_DIR / f
+        if not path.exists():
+            continue
 
-    gen.merge_all(pdfs)
+        print(f"  > {f}")
+        raw = path.read_text(encoding="utf-8")
+        clean = gen.clean_markdown(raw)
+        title = gen.get_cover_title(f)
+
+        # Transformar links
+        linked_md = gen.transform_internal_links(clean, debug=True)
+
+        # Convertir a HTML
+        content_html = markdown.markdown(linked_md, extensions=["tables", "fenced_code", "nl2br"])
+
+        # ID para el ancla
+        base_name = f.replace(".md", "")
+        module_id = "mod_" + re.sub(r"[^\w]+", "_", base_name)
+
+        # HTML del módulo - ID en el título visible para que WeasyPrint genere el destino PDF
+        module_html = f"""
+            <!-- MÓDULO: {f} -->
+            <div class="cover-page">
+                <div class="cover-content">
+                    <div style="font-size:40pt;margin-bottom:20px;">💎</div>
+                    <div id="{module_id}" class="cover-title">{title}</div>
+                    <div class="cover-subtitle">Guía MLOps v5.0</div>
+                    <div class="cover-badge">PORTFOLIO EDITION</div>
+                </div>
+                <div style="position:absolute;bottom:30px;font-size:10pt;opacity:0.6;">DUQUEOM | 2025</div>
+            </div>
+            <div class="content">
+                {content_html}
+            </div>
+        """
+        all_html_parts.append(module_html)
+
+    # Combinar todo en un solo HTML
+    print("\n[3] Combinando en documento único...")
+
+    # Extraer solo el body content de la portada global
+    global_cover_body = gen.generate_global_cover_html()
+    # Buscar el contenido del body
+    import re as re_module
+
+    body_match = re_module.search(r"<body>(.*?)</body>", global_cover_body, re_module.DOTALL)
+    global_cover_content = body_match.group(1) if body_match else ""
+
+    full_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="UTF-8"></head>
+    <body>
+        {global_cover_content}
+        {"".join(all_html_parts[1:])}
+    </body>
+    </html>
+    """
+
+    # Guardar HTML de debug
+    debug_path = OUTPUT_DIR / "_DEBUG_FULL.html"
+    debug_path.write_text(full_html, encoding="utf-8")
+    print(f"  [DEBUG] HTML completo guardado en {debug_path}")
+
+    # Generar PDF único
+    print("\n[4] Generando PDF final...")
+    final_path = OUTPUT_DIR / "GUIA_MLOPS_COMPLETA_v5.pdf"
+
+    HTML(string=full_html, base_url=str(BASE_DIR)).write_pdf(target=final_path, stylesheets=[gen.css])
+
+    print(f"\n[OK] {final_path.name} ({final_path.stat().st_size / 1e6:.1f} MB)")
     print("\n" + "=" * 50)
 
 
 if __name__ == "__main__":
-    main()
     main()
