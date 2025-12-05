@@ -615,7 +615,7 @@ slos:
 - [ ] **Logs centralizados**: Acceso a logs históricos
 - [ ] **On-call definido**: Rotación y escalamiento
 
-> 📖 Ver ejemplo completo en [RUNBOOK.md](../../RUNBOOK.md) del repositorio principal.
+> 📖 Ver ejemplo completo en el [Runbook del Portafolio](../OPERATIONS_PORTFOLIO.md).
 
 ---
 
