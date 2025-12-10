@@ -692,9 +692,9 @@ faker==38.0.0 \
     --hash=sha256:797aa03fa86982dfb6206918acc10ebf3655bdaa89ddfd3e668d7cc69537331a \
     --hash=sha256:ad4ea6fbfaac2a75d92943e6a79c81f38ecff92378f6541dea9a677ec789a5b2
     # via polyfactory
-fastapi==0.122.0 \
-    --hash=sha256:a456e8915dfc6c8914a50d9651133bd47ec96d331c5b44600baa635538a30d67 \
-    --hash=sha256:cd9b5352031f93773228af8b4c443eedc2ac2aa74b27780387b853c3726fb94b
+fastapi==0.124.0 \
+    --hash=sha256:260cd178ad75e6d259991f2fd9b0fee924b224850079df576a3ba604ce58f4e6 \
+    --hash=sha256:91596bdc6dde303c318f06e8d2bc75eafb341fc793a0c9c92c0bc1db1ac52480
     # via
     #   -r requirements.in
     #   mlflow-skinny
@@ -2051,7 +2051,9 @@ polyfactory==3.0.0 \
 prometheus-client==0.23.1 \
     --hash=sha256:6ae8f9081eaaaf153a2e959d2e6c4f4fb57b12ef76c8c7980202f1e57b48b2ce \
     --hash=sha256:dd1913e6e76b59cfe44e7a4b83e01afc9873c1bdfd2ed8739f1e76aeca115f99
-    # via jupyter-server
+    # via
+    #   -r requirements.in
+    #   jupyter-server
 prompt-toolkit==3.0.52 \
     --hash=sha256:28cde192929c8e7321de85de1ddbe736f1375148b02f2e17edd840042b1be855 \
     --hash=sha256:9aac639a3bbd33284347de5ad8d68ecc044b91a762dc39b7c21095fcd6a19955
