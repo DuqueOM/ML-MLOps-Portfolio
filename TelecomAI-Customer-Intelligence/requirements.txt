@@ -1419,17 +1419,17 @@ mistune==3.1.4 \
     --hash=sha256:93691da911e5d9d2e23bc54472892aff676df27a75274962ff9edc210364266d \
     --hash=sha256:b5a7f801d389f724ec702840c11d8fc48f2b33519102fc7ee739e8177b672164
     # via nbconvert
-mlflow==3.6.0 \
-    --hash=sha256:04d1691facd412be8e61b963fad859286cfeb2dbcafaea294e6aa0b83a15fc04 \
-    --hash=sha256:d945d259b5c6b551a9f26846db8979fd84c78114a027b77ada3298f821a9b0e1
+mlflow==3.7.0 \
+    --hash=sha256:391951abe33596497faaad2c8baf902c745472111b06e72130d5b44756bae74a \
+    --hash=sha256:da7dd2744c4b1ae8d7986ef36edc35d5250d742f47cfb2637070366ed9404092
     # via -r requirements.in
-mlflow-skinny==3.6.0 \
-    --hash=sha256:c83b34fce592acb2cc6bddcb507587a6d9ef3f590d9e7a8658c85e0980596d78 \
-    --hash=sha256:cc04706b5b6faace9faf95302a6e04119485e1bfe98ddc9b85b81984e80944b6
+mlflow-skinny==3.7.0 \
+    --hash=sha256:0fb37de3c8e1787dfcf1b04919b43328c133d9045ca54dfd3f359860670e5f0e \
+    --hash=sha256:5f04343ec2101fa39f798351b4f5c0e6664dffd0cd76ad8a68a087b1a8a5e702
     # via mlflow
-mlflow-tracing==3.6.0 \
-    --hash=sha256:a68ff03ba5129c67dc98e6871e0d5ef512dd3ee66d01e1c1a0c946c08a6d4755 \
-    --hash=sha256:ccff80b3aad6caa18233c98ba69922a91a6f914e0a13d12e1977af7523523d4c
+mlflow-tracing==3.7.0 \
+    --hash=sha256:3bbe534bae95e5162a086df3f4722952ac1b7950f31907fb6ddd84affdac5c9f \
+    --hash=sha256:d5404f737441d86149e27ab9e758db26b141ec4fbb35572e2e27b608df87ab6b
     # via mlflow
 msgspec==0.19.0 \
     --hash=sha256:00e87ecfa9795ee5214861eab8326b0e75475c2e68a384002aa135ea2a27d909 \
@@ -2051,7 +2051,9 @@ polyfactory==3.0.0 \
 prometheus-client==0.23.1 \
     --hash=sha256:6ae8f9081eaaaf153a2e959d2e6c4f4fb57b12ef76c8c7980202f1e57b48b2ce \
     --hash=sha256:dd1913e6e76b59cfe44e7a4b83e01afc9873c1bdfd2ed8739f1e76aeca115f99
-    # via jupyter-server
+    # via
+    #   -r requirements.in
+    #   jupyter-server
 prompt-toolkit==3.0.52 \
     --hash=sha256:28cde192929c8e7321de85de1ddbe736f1375148b02f2e17edd840042b1be855 \
     --hash=sha256:9aac639a3bbd33284347de5ad8d68ecc044b91a762dc39b7c21095fcd6a19955
