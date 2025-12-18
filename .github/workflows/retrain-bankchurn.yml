@@ -92,7 +92,7 @@ jobs:
             ${{ github.event.inputs.promote_to_production == 'true' && '--promote' || '' }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: bankchurn-model-${{ github.run_id }}
           path: |
