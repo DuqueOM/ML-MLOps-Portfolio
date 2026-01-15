@@ -3,7 +3,7 @@
 **Project:** BankChurn-Predictor  
 **Version:** 1.0.0  
 **Status:** Production-Ready  
-**Maintainer:** Daniel Duque
+**Maintainer:** Duque Ortega Mutis (DuqueOM)
 
 ---
 

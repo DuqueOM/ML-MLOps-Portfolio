@@ -62,5 +62,5 @@
 - Log dataset metadata (date, source) in MLflow/DVC when available.
 
 ## Contacts
-- Maintainer: Daniel Duque (DuqueOM)
+- Maintainer: Duque Ortega Mutis (DuqueOM)
 - Repository: `CarVision-Market-Intelligence/`

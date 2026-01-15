@@ -102,8 +102,8 @@ See [OPERATIONS.md](OPERATIONS.md) for:
 ---
 
 ## 👥 Maintainers
-- **Lead MLOps:** Daniel Duque
-- **Contact:** daniel.duque@example.com
+- **Lead MLOps:** Duque Ortega Mutis (DuqueOM)
+- **Contact:** contact@duqueom.dev
 
 ---
 *Generated via MLOps Documentation Standard v1.0*

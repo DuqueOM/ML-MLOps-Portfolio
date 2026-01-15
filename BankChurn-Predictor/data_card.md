@@ -46,5 +46,5 @@
 - Track dataset version in MLflow/DVC when available.
 
 ## Contacts
-- Maintainer: Daniel Duque (DuqueOM)
+- Maintainer: Duque Ortega Mutis (DuqueOM)
 - Repository: `BankChurn-Predictor/`

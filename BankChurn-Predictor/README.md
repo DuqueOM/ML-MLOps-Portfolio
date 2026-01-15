@@ -236,7 +236,7 @@ en Kubernetes o como contenedor aislado. A nivel de costos:
 
 ## 👥 Maintainers
 
-- **Daniel Duque** - Lead MLOps Engineer
+- **Duque Ortega Mutis (DuqueOM)** - Lead MLOps Engineer
 
 ---
 

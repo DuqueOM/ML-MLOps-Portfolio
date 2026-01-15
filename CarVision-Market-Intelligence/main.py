@@ -8,7 +8,7 @@ Uso:
     python main.py --mode report --output reports/market_analysis.html
     python main.py --mode export --format excel --output market_data.xlsx
 
-Autor: Daniel Duque
+Autor: Duque Ortega Mutis (DuqueOM)
 Versión: 1.0.0
 Fecha: 2024-11-16
 """
