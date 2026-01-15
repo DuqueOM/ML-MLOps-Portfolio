@@ -12,8 +12,6 @@ Welcome to the **ML-MLOps Portfolio** documentation. This portfolio demonstrates
 
 Watch the complete end-to-end demo: [https://youtu.be/qmw9VlgUcn8](https://youtu.be/qmw9VlgUcn8)
 
-</div>
-
 ---
 
 ## Quick Navigation
