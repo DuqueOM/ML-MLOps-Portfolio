@@ -14,37 +14,37 @@ Welcome to the **ML-MLOps Portfolio** documentation. This portfolio demonstrates
 
 <div class="grid cards" markdown>
 
--   :material-rocket-launch:{ .lg .middle } **Getting Started**
+-   🚀 **Getting Started**
 
     ---
 
     Get up and running in minutes with our quick start guide.
 
-    [:octicons-arrow-right-24: Quick Start](getting-started/quickstart.md)
+    [➜ Quick Start](getting-started/quickstart.md)
 
--   :material-view-dashboard:{ .lg .middle } **Projects**
+-   📊 **Projects**
 
     ---
 
     Explore our three production-ready ML projects.
 
-    [:octicons-arrow-right-24: View Projects](projects/overview.md)
+    [➜ View Projects](projects/overview.md)
 
--   :material-cog:{ .lg .middle } **Architecture**
+-   ⚙️ **Architecture**
 
     ---
 
     Understand the system design and data flow.
 
-    [:octicons-arrow-right-24: Architecture](architecture/overview.md)
+    [➜ Architecture](architecture/overview.md)
 
--   :material-api:{ .lg .middle } **API Reference**
+-   🔌 **API Reference**
 
     ---
 
     Complete API and CLI documentation.
 
-    [:octicons-arrow-right-24: API Docs](api/rest-apis.md)
+    [➜ API Docs](api/rest-apis.md)
 
 </div>
 
