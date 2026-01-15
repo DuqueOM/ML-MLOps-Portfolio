@@ -4,9 +4,9 @@ Welcome to the **ML-MLOps Portfolio** documentation. This portfolio demonstrates
 
 ![Portfolio Demo](media/gifs/portfolio-demo.gif)
 
-<div align="center">
-
 ## 📺 Video Demo
+
+<div align="center">
 
 [![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
