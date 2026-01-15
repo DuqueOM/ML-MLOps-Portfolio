@@ -54,5 +54,5 @@ Adicionalmente, en el pipeline de preprocesamiento se generan features derivadas
 - Registrar versión del CSV y fecha en README o MLflow.
 
 ## Contacts
-- Maintainer: Daniel Duque (DuqueOM)
+- Maintainer: Duque Ortega Mutis (DuqueOM)
 - Repository: `TelecomAI-Customer-Intelligence/`

@@ -2,7 +2,7 @@
 
 [![Documentation](https://img.shields.io/badge/Docs-Project%20Site-blue)](https://duqueom.github.io/ML-MLOps-Portfolio/projects/telecom/)
 [![CI Status](https://img.shields.io/github/actions/workflow/status/DuqueOM/ML-MLOps-Portfolio/ci-mlops.yml?branch=main&label=CI)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
-[![Coverage](https://img.shields.io/badge/Coverage-97%25-brightgreen)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
+[![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg?flag=TelecomAI-Customer-Intelligence)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio?flag=TelecomAI-Customer-Intelligence)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue)](https://python.org)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](Dockerfile)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
@@ -177,4 +177,4 @@ See [models/model_card.md](models/model_card.md) for:
 
 ## 👥 Maintainers
 
-- **Daniel Duque** - Lead MLOps Engineer - [GitHub](https://github.com/DuqueOM)
+- **Duque Ortega Mutis** - Lead MLOps Engineer - [GitHub](https://github.com/DuqueOM)
