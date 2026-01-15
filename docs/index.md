@@ -4,7 +4,7 @@ Welcome to the **ML-MLOps Portfolio** documentation. This portfolio demonstrates
 
 ![Portfolio Demo](media/gifs/portfolio-demo.gif)
 
-## 📺 Video Demo
+## 📺 Video Demo { : .center }
 
 <div align="center">
 
