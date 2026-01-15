@@ -12,7 +12,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 <!-- Tech Stack Badges -->
-[![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow&logoColor=white)](BankChurn-Predictor/mlruns)
+[![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow&logoColor=white)](BankChurn-Predictor/configs/config.yaml)
 [![DVC](https://img.shields.io/badge/DVC-Data%20Versioning-945DD6.svg)](BankChurn-Predictor/dvc.yaml)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi&logoColor=white)](BankChurn-Predictor/app/fastapi_app.py)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B.svg?logo=streamlit&logoColor=white)](CarVision-Market-Intelligence/app/streamlit_app.py)
