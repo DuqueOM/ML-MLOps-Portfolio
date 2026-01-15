@@ -132,6 +132,5 @@ extra:
 
 watch:
   - docs
-  - media
 
 copyright: Copyright &copy; 2025 Duque Ortega Mutis
