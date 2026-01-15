@@ -7,7 +7,7 @@ Use this checklist before publishing or sharing the portfolio.
 ## 🎬 Media Assets
 
 - [ ] **Video: BankChurn Demo** (2-3 min)
-  - Location: `media/videos/bankchurn-demo.mp4` or [YouTube link]
+  - Location: `docs/media/videos/bankchurn-demo.mp4` or [YouTube link]
   - **[RECORD AND UPLOAD — See media/README.md for script]**
 
 - [ ] **Video: CarVision Demo** (2-3 min)
@@ -15,7 +15,7 @@ Use this checklist before publishing or sharing the portfolio.
   - **[RECORD AND UPLOAD — See media/README.md for script]**
 
 - [ ] **Video: TelecomAI Demo** (2-3 min)
-  - Location: `media/videos/telecom-demo.mp4` or [YouTube link]
+  - Location: `docs/media/videos/telecom-demo.mp4` or [YouTube link]
   - **[RECORD AND UPLOAD — See media/README.md for script]**
 
 - [ ] **GIF: BankChurn Preview** (6-8 sec)
@@ -29,7 +29,7 @@ Use this checklist before publishing or sharing the portfolio.
   - **[CREATE FROM VIDEO]**
 
 - [ ] **GIF: TelecomAI Preview** (6-8 sec)
-  - Location: `media/gifs/telecom-preview.gif`
+  - Location: `docs/media/gifs/telecom-preview.gif`
   - Content: API call → plan recommendation
   - **[CREATE FROM VIDEO]**
 

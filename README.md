@@ -219,11 +219,11 @@ python scripts/run_experiments.py
 
 | Document | Description |
 |----------|-------------|
-| **[Architecture](docs/docs/ARCHITECTURE_PORTFOLIO.md)** | System design with Mermaid diagrams, Docker multi-stage, CI/CD pipeline |
-| **[Operations Runbook](docs/docs/OPERATIONS_PORTFOLIO.md)** | Deployment guide (Docker/K8s), monitoring, troubleshooting |
+| **[Architecture](docs/ARCHITECTURE_PORTFOLIO.md)** | System design with Mermaid diagrams, Docker multi-stage, CI/CD pipeline |
+| **[Operations Runbook](docs/OPERATIONS_PORTFOLIO.md)** | Deployment guide (Docker/K8s), monitoring, troubleshooting |
 | **[Runbook (Quick Reference)](RUNBOOK.md)** | Copy-paste commands for common operations |
-| **[Release Process](docs/docs/RELEASE.md)** | Release workflow, GHCR publishing, rollback procedures |
-| **[Dependencies](docs/docs/DEPENDENCY_CONFLICTS.md)** | Conflict analysis (PyArrow, Pydantic), remediation plan |
+| **[Release Process](docs/RELEASE.md)** | Release workflow, GHCR publishing, rollback procedures |
+| **[Dependencies](docs/DEPENDENCY_CONFLICTS.md)** | Conflict analysis (PyArrow, Pydantic), remediation plan |
 | **[Release Checklist](CHECKLIST_RELEASE.md)** | Pre-launch verification checklist |
 | **[Quick Start](QUICK_START.md)** | One-command demo for quick evaluation |
 
@@ -257,8 +257,7 @@ ML-MLOps-Portfolio/
 ├── tests/integration/             # Cross-project integration tests
 ├── infra/                         # Docker Compose, Terraform, Prometheus/Grafana
 ├── k8s/                           # Kubernetes manifests (deployments, HPA, ingress)
-├── docs/media/                        # Videos, GIFs, screenshots
-├── docs/                          # Global documentation
+├── docs/media/                    # Videos, GIFs, screenshots, Global documentation
 ├── RUNBOOK.md                     # Quick command reference
 ├── CHECKLIST_RELEASE.md           # Pre-launch checklist
 ├── CONTRIBUTING.md                # Contribution guidelines
