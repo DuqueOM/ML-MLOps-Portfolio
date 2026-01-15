@@ -8,3 +8,6 @@ mkdocs-mermaid2-plugin>=0.6.0
 
 # Quality checks
 codespell>=2.2.0
+
+# Node.js dependencies (see package.json)
+# jest>=30.2.0 - For documentation testing and validation
