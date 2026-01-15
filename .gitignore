@@ -111,10 +111,10 @@ fairness_metrics.json
 metrics.json
 
 # Large media files (videos hosted on YouTube)
-media/videos/*.mp4
-media/videos/*.mov
-media/videos/*.avi
-media/videos/*.mkv
+docs/media/videos/*.mp4
+docs/media/videos/*.mov
+docs/media/videos/*.avi
+docs/media/videos/*.mkv
 
 # Generated audio for guia_mlops docs
 docs/guia_mlops/audio/
