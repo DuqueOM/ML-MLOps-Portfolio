@@ -1,10 +1,11 @@
 # 🚀 ML/MLOps Portfolio — Production-Ready
 
 **Professional Machine Learning & MLOps Portfolio featuring 3 Production-Ready Projects**
+**[📚 View Full Documentation & Site](https://duqueom.github.io/ML-MLOps-Portfolio/)**
 
 <!-- CI/CD Badges -->
 [![CI Pipeline](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
-[![Coverage](https://img.shields.io/badge/Coverage-79%25--97%25-brightgreen.svg)](reports/)
+[![Coverage](https://img.shields.io/badge/Coverage-79%25--97%25-brightgreen.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://python.org)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.demo.yml)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)

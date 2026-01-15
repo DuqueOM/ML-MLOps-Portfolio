@@ -1,7 +1,8 @@
 # TelecomAI Customer Intelligence
 
+[![Documentation](https://img.shields.io/badge/Docs-Project%20Site-blue)](https://duqueom.github.io/ML-MLOps-Portfolio/projects/telecom/)
 [![CI Status](https://img.shields.io/github/actions/workflow/status/DuqueOM/ML-MLOps-Portfolio/ci-mlops.yml?branch=main&label=CI)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
-[![Coverage](https://img.shields.io/badge/Coverage-97%25-brightgreen)](../reports/)
+[![Coverage](https://img.shields.io/badge/Coverage-97%25-brightgreen)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue)](https://python.org)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](Dockerfile)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
