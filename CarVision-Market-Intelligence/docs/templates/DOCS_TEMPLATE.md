@@ -103,7 +103,7 @@ See [OPERATIONS.md](OPERATIONS.md) for:
 
 ## 👥 Maintainers
 - **Lead MLOps:** Duque Ortega Mutis (DuqueOM)
-- **Contact:** contact@duqueom.dev
+- **Contact:** DuqueOrtegaMutis@gmail.com
 
 ---
 *Generated via MLOps Documentation Standard v1.0*

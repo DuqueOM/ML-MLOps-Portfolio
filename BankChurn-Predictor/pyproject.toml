@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
 authors = [
-    {name = "Duque Ortega Mutis (DuqueOM)", email = "contact@duqueom.dev"}
+    {name = "Duque Ortega Mutis (DuqueOM)", email = "DuqueOrtegaMutis@gmail.com"}
 ]
 keywords = ["machine-learning", "churn-prediction", "classification", "mlops"]
 classifiers = [
