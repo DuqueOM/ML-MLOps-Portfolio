@@ -130,8 +130,5 @@ extra:
     - icon: fontawesome/brands/linkedin
       link: https://linkedin.com/in/duqueom
 
-watch:
-  - docs
-  - media
 
 copyright: Copyright &copy; 2025 Duque Ortega Mutis
