@@ -11,7 +11,7 @@
 
 <div align="center">
 
-![BankChurn Demo](../media/gifs/bankchurn-preview.gif)
+![BankChurn Demo](../docs/media/gifs/bankchurn-preview.gif)
 
 ### 📺 Portfolio Demo
 
@@ -153,7 +153,7 @@ The API documentation (Swagger UI) is available at `http://localhost:8000/docs` 
 
 This project integrates with MLflow for experiment tracking with **3 tracked experiments** demonstrating model comparison.
 
-![MLflow Experiments](../media/screenshots/mlflow-experiments.PNG)
+![MLflow Experiments](../docs/media/screenshots/mlflow-experiments.PNG)
 
 ### Tracked Experiments
 

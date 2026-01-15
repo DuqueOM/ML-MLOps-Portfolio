@@ -13,11 +13,11 @@
 
 **API Demo:**
 
-![CarVision API Demo](../media/gifs/carvision-preview.gif)
+![CarVision API Demo](../docs/media/gifs/carvision-preview.gif)
 
 **Streamlit Dashboard:**
 
-![Streamlit Dashboard](../media/gifs/streamlit-carvision.gif)
+![Streamlit Dashboard](../docs/media/gifs/streamlit-carvision.gif)
 
 ### 📺 Portfolio Demo
 

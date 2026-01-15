@@ -89,7 +89,7 @@ Unified workflow (`.github/workflows/ci-mlops.yml`) with:
 
 ## 6. Visual Assets
 
-All demo materials are available in `media/`:
+All demo materials are available in `docs/media/`:
 
 | Asset Type | Files | Status |
 |------------|-------|--------|

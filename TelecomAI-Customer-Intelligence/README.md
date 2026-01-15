@@ -10,7 +10,7 @@
 
 <div align="center">
 
-![TelecomAI Demo](../media/gifs/telecom-preview.gif)
+![TelecomAI Demo](../docs/media/gifs/telecom-preview.gif)
 
 ### 📺 Portfolio Demo
 
