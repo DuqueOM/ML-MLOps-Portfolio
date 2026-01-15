@@ -49,5 +49,5 @@
 - No PII in dataset. Do not log raw payloads in production.
 
 ## Contact
-- Owner: Daniel Duque
+- Owner: Duque Ortega Mutis (DuqueOM)
 - Issues: open GitHub issues or contact maintainer.
