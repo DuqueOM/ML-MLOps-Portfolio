@@ -19,7 +19,7 @@
 
 <div align="center">
 
-![Portfolio Demo](media/gifs/portfolio-demo.gif)
+![Portfolio Demo](docs/media/gifs/portfolio-demo.gif)
 
 ### 📺 Watch the Full Demo
 
@@ -53,7 +53,7 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 <details>
 <summary>🎬 Click to expand demo</summary>
 
-![BankChurn Demo](media/gifs/bankchurn-preview.gif)
+![BankChurn Demo](docs/media/gifs/bankchurn-preview.gif)
 
 </details>
 
@@ -81,10 +81,10 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 <summary>🎬 Click to expand demo (API + Streamlit)</summary>
 
 **API Demo:**
-![CarVision API Demo](media/gifs/carvision-preview.gif)
+![CarVision API Demo](docs/media/gifs/carvision-preview.gif)
 
 **Streamlit Dashboard:**
-![Streamlit Dashboard](media/gifs/streamlit-carvision.gif)
+![Streamlit Dashboard](docs/media/gifs/streamlit-carvision.gif)
 
 </details>
 
@@ -110,7 +110,7 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 <details>
 <summary>🎬 Click to expand demo</summary>
 
-![TelecomAI Demo](media/gifs/telecom-preview.gif)
+![TelecomAI Demo](docs/media/gifs/telecom-preview.gif)
 
 </details>
 
@@ -189,7 +189,7 @@ The entire portfolio is validated by a single master workflow (`ci-mlops.yml`) t
 <details>
 <summary>🎬 Click to expand MLflow demo</summary>
 
-![MLflow Demo](media/gifs/mlflow-demo.gif)
+![MLflow Demo](docs/media/gifs/mlflow-demo.gif)
 
 </details>
 
@@ -211,7 +211,7 @@ python scripts/run_experiments.py
 | **CarVision-Market-Intelligence** | 3 | RMSE=$4,396, R²=0.77 | Ridge vs RF vs GradientBoosting |
 | **TelecomAI-Customer-Intelligence** | 3 | Acc=0.82, F1=0.63 | LogReg vs GB vs RandomForest |
 
-![MLflow Experiments](media/screenshots/mlflow-experiments.PNG)
+![MLflow Experiments](docs/media/screenshots/mlflow-experiments.PNG)
 
 ---
 
@@ -219,11 +219,11 @@ python scripts/run_experiments.py
 
 | Document | Description |
 |----------|-------------|
-| **[Architecture](docs/ARCHITECTURE_PORTFOLIO.md)** | System design with Mermaid diagrams, Docker multi-stage, CI/CD pipeline |
-| **[Operations Runbook](docs/OPERATIONS_PORTFOLIO.md)** | Deployment guide (Docker/K8s), monitoring, troubleshooting |
+| **[Architecture](docs/docs/ARCHITECTURE_PORTFOLIO.md)** | System design with Mermaid diagrams, Docker multi-stage, CI/CD pipeline |
+| **[Operations Runbook](docs/docs/OPERATIONS_PORTFOLIO.md)** | Deployment guide (Docker/K8s), monitoring, troubleshooting |
 | **[Runbook (Quick Reference)](RUNBOOK.md)** | Copy-paste commands for common operations |
-| **[Release Process](docs/RELEASE.md)** | Release workflow, GHCR publishing, rollback procedures |
-| **[Dependencies](docs/DEPENDENCY_CONFLICTS.md)** | Conflict analysis (PyArrow, Pydantic), remediation plan |
+| **[Release Process](docs/docs/RELEASE.md)** | Release workflow, GHCR publishing, rollback procedures |
+| **[Dependencies](docs/docs/DEPENDENCY_CONFLICTS.md)** | Conflict analysis (PyArrow, Pydantic), remediation plan |
 | **[Release Checklist](CHECKLIST_RELEASE.md)** | Pre-launch verification checklist |
 | **[Quick Start](QUICK_START.md)** | One-command demo for quick evaluation |
 
@@ -257,7 +257,7 @@ ML-MLOps-Portfolio/
 ├── tests/integration/             # Cross-project integration tests
 ├── infra/                         # Docker Compose, Terraform, Prometheus/Grafana
 ├── k8s/                           # Kubernetes manifests (deployments, HPA, ingress)
-├── media/                         # Videos, GIFs, screenshots
+├── docs/media/                        # Videos, GIFs, screenshots
 ├── docs/                          # Global documentation
 ├── RUNBOOK.md                     # Quick command reference
 ├── CHECKLIST_RELEASE.md           # Pre-launch checklist
