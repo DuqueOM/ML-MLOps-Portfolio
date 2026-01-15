@@ -90,5 +90,5 @@ curl -X POST "http://localhost:8003/predict" \
 
 ## 👤 Author
 
-**Daniel Duque** — ML/MLOps Engineer  
+**Duque Ortega Mutis (DuqueOM)** — ML/MLOps Engineer  
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://linkedin.com/in/duqueom)

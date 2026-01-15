@@ -20,7 +20,7 @@
   - Notebook `notebooks/explainability_shap.ipynb` para análisis SHAP global/local sobre el modelo entrenado.
 - **Versioning & Reproducibility**:
   - Config-driven. Artifacts stored under `artifacts/` with metrics and splits.
-- **Contacts**: Maintainer Daniel Duque.
+- **Contacts**: Maintainer Duque Ortega Mutis (DuqueOM).
 
 ## Privacy & Data Governance
 

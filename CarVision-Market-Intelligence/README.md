@@ -233,4 +233,4 @@ See [models/model_card.md](models/model_card.md) for:
 
 ## 👥 Maintainers
 
-- **Daniel Duque** - Lead MLOps Engineer - [GitHub](https://github.com/DuqueOM)
+- **Duque Ortega Mutis (DuqueOM)** - Lead MLOps Engineer - [GitHub](https://github.com/DuqueOM)

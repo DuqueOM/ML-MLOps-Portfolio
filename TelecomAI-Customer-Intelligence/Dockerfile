@@ -3,7 +3,7 @@
 FROM python:3.11-slim AS builder
 
 # Metadata
-LABEL maintainer="Daniel Duque <daniel.duque@example.com>"
+LABEL maintainer="Duque Ortega Mutis (DuqueOM) <contact@duqueom.dev>"
 LABEL project="TelecomAI-Customer-Intelligence"
 
 ENV PYTHONUNBUFFERED=1 \

@@ -249,8 +249,8 @@ The Streamlit dashboard (`app/streamlit_app.py`) provides:
 
 | Role | Name | Contact |
 |------|------|---------|
-| **Model Owner** | Daniel Duque | [GitHub](https://github.com/DuqueOM) |
-| **MLOps Lead** | Daniel Duque | [LinkedIn](https://linkedin.com/in/duqueom) |
+| **Model Owner** | Duque Ortega Mutis (DuqueOM) | [GitHub](https://github.com/DuqueOM) |
+| **MLOps Lead** | Duque Ortega Mutis (DuqueOM) | [LinkedIn](https://linkedin.com/in/duqueom) |
 
 ---
 

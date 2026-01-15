@@ -3,7 +3,7 @@
 FROM python:3.11-slim AS builder
 
 # Metadatos
-LABEL maintainer="Daniel Duque <daniel.duque@example.com>"
+LABEL maintainer="Duque Ortega Mutis (DuqueOM) <contact@duqueom.dev>"
 LABEL version="1.0.0"
 LABEL description="BankChurn Predictor - Sistema de predicción de abandono de clientes bancarios"
 

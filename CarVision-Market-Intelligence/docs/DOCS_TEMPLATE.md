@@ -111,4 +111,4 @@ See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for system design, data flow, and co
 - **Tests failing**: Run `pytest` to identify regressions.
 
 ## 👥 Maintainers
-- **MLOps Team**: [Daniel Duque]
+- **MLOps Team**: [Duque Ortega Mutis (DuqueOM)]
