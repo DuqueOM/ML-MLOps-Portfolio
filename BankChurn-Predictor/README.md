@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg?flag=BankChurn-Predictor)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio?flag=BankChurn-Predictor)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue)](pyproject.toml)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](Dockerfile)
-[![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2?logo=mlflow&logoColor=white)](mlruns)
+[![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2?logo=mlflow&logoColor=white)](configs/config.yaml)
 [![DVC](https://img.shields.io/badge/DVC-Enabled-945DD6)](dvc.yaml)
 
 ---
