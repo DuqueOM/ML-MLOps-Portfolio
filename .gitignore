@@ -4,6 +4,7 @@
 *$py.class
 *.so
 .Python
+node_modules/
 build/
 develop-eggs/
 dist/
