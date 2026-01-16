@@ -114,7 +114,6 @@ ML-MLOps-Portfolio/
 
 - **Issues**: [GitHub Issues](https://github.com/DuqueOM/ML-MLOps-Portfolio/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/DuqueOM/ML-MLOps-Portfolio/discussions)
-- **Contributing**: See [Contributing Guidelines](https://duqueom.github.io/ML-MLOps-Portfolio/contributing/guidelines/)
 
 ---
 
