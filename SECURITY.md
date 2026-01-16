@@ -138,12 +138,4 @@ This security policy is provided "as is" without warranty of any kind. We reserv
 
 ---
 
-**Last Updated**: January 2026  
-**Next Review**: April 2026
-
-## Related Resources
-
-- [GitHub Security Advisories](https://github.com/DuqueOM/ML-MLOps-Portfolio/security/advisories)
-- [Dependabot Alerts](https://github.com/DuqueOM/ML-MLOps-Portfolio/security/dependabot)
-- [Security Best Practices](https://docs.github.com/en/code-security/getting-started/secure-coding-practices)
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+**Last Updated**: March 2026  
