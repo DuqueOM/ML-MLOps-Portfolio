@@ -75,15 +75,34 @@ This document analyzes dependency conflicts across the portfolio projects and pr
 
 | Dependency | BankChurn | CarVision | TelecomAI | Notes |
 |------------|-----------|-----------|-----------|-------|
-| pydantic | >=2.0.0 | >=1.10.0 | TBD | Standardize on v2 |
-| pyarrow | - | >=8.0.0 | - | Evaluate necessity |
-| fastapi | >=0.78.0 | >=0.78.0 | TBD | Consistent version |
-| scikit-learn | Latest | Latest | TBD | No conflicts |
+| pydantic | >=2.0.0 | >=1.10.0 | >=1.10 | Standardize on v2 |
+| pyarrow | - | >=8.0.0 | 22.0.0 | Evaluate necessity |
+| fastapi | >=0.78.0 | >=0.78.0 | >=0.78 | Consistent version |
+| scikit-learn | Latest | Latest | >=1.0 | No conflicts |
+
+### 3. TelecomAI Dependencies Analysis
+
+**Projects Affected:**
+- TelecomAI-Customer-Intelligence
+
+**Current State:**
+- Uses `pydantic>=1.10` (should be v2)
+- Uses `pyarrow==22.0.0` (via mlflow dependencies)
+- Uses `fastapi>=0.78` (consistent)
+- Uses `scikit-learn>=1.0` (latest)
+
+**Issues:**
+- Pydantic v1 should be updated to v2 for consistency
+- PyArrow pulled as transitive dependency via MLflow
+
+**Remediation:**
+1. Update `pydantic>=1.10` to `pydantic>=2.0.0` in `requirements.in`
+2. Monitor PyArrow usage - may be required for MLflow integration
 
 ## Resolution Priority
 
-1. **High Priority**: Pydantic version standardization
-2. **Medium Priority**: PyArrow dependency evaluation
+1. **High Priority**: Pydantic version standardization across all projects
+2. **Medium Priority**: PyArrow dependency evaluation (CarVision)
 3. **Low Priority**: Minor version mismatches
 
 ## Testing Strategy
