@@ -312,5 +312,5 @@ curl http://localhost:8000/health
 ## References
 
 - [Training Pipeline Documentation](../docs/architecture.md)
-- [API Documentation](http://localhost:8000/docs)
-- [Experiment Tracking (MLflow)](http://localhost:5000)
+- [API Documentation](http://localhost:8000/docs) (after running demo stack)
+- [Experiment Tracking (MLflow)](http://localhost:5000) (after running demo stack)
