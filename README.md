@@ -214,7 +214,7 @@ docker compose -f docker-compose.demo.yml up -d
 python scripts/run_experiments.py
 ```
 
-**View experiments at [http://localhost:5000](http://localhost:5000)**
+**View experiments at [http://localhost:5000](http://localhost:5000) *(after running demo stack)*
 
 | Experiment | Runs | Best Metric | Comparison |
 |------------|------|-------------|------------|
