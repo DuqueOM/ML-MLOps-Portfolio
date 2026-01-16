@@ -5,7 +5,6 @@
 <div align="center">
 
 [![Portfolio](https://img.shields.io/badge/🚀_Portfolio-Live_Demo-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
-
 **[📚 View Full Documentation & Site](https://duqueom.github.io/ML-MLOps-Portfolio/)**
 
 
