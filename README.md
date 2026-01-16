@@ -8,7 +8,9 @@
 
 [![Portfolio](https://img.shields.io/badge/🚀_Portfolio-Live_Demo-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
 
+</div>
 
+---
 
 <!-- CI/CD Badges -->
 [![CI Pipeline](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
@@ -22,8 +24,6 @@
 [![DVC](https://img.shields.io/badge/DVC-Data%20Versioning-945DD6.svg)](BankChurn-Predictor/dvc.yaml)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi&logoColor=white)](BankChurn-Predictor/app/fastapi_app.py)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B.svg?logo=streamlit&logoColor=white)](CarVision-Market-Intelligence/app/streamlit_app.py)
-
-</div>
 
 ---
 
