@@ -123,7 +123,7 @@ python scripts/run_experiments.py
 
 ## Monitoring
 
-定期检查依赖更新：
+Regular dependency updates check:
 ```bash
 # Check for outdated packages
 pip list --outdated
