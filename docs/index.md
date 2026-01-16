@@ -2,6 +2,8 @@
 
 Welcome to the **ML-MLOps Portfolio** documentation. This portfolio demonstrates production-ready machine learning projects with enterprise-grade MLOps practices.
 
+## 🚀 Full Code
+
 [![GitHub](https://img.shields.io/badge/📁_Portfolio-Repo-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/DuqueOM/ML-MLOps-Portfolio)
 
 ![Portfolio Demo](media/gifs/portfolio-demo.gif)
