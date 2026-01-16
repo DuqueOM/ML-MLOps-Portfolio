@@ -14,7 +14,7 @@ If you discover a security vulnerability in this ML-MLOps Portfolio project, ple
 ### How to Report
 
 **Preferred Method:**
-- Send an email to: security@duqueom.dev
+- Send an email to: DuqueOrtegaMutis@gmail.com
 - Use the subject line: `Security Vulnerability Report - ML-MLOps-Portfolio`
 
 **Alternative Methods:**
@@ -104,12 +104,12 @@ Security researchers will be acknowledged in our security advisories unless they
 
 ### Security Team
 - **Lead**: Duque Ortega Mutis
-- **Email**: security@duqueom.dev
+- **Email**: DuqueOrtegaMutis@gmail.com
 - **GitHub**: @DuqueOM
 
 ### Emergency Contact
 For critical security issues requiring immediate attention:
-- **Emergency Email**: emergency@duqueom.dev
+- **Emergency Email**: DuqueOrtegaMutis@gmail.com
 - **Response Time**: Within 24 hours
 
 ## Security Updates
