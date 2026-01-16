@@ -2,7 +2,11 @@
 
 **Professional Machine Learning & MLOps Portfolio featuring 3 Production-Ready Projects**
 
+<div align="center">
+
 [![Portfolio](https://img.shields.io/badge/🚀_Portfolio-Live_Demo-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
+
+</div>
 
 <!-- CI/CD Badges -->
 [![CI Pipeline](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
