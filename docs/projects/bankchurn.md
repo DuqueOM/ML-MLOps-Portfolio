@@ -222,4 +222,5 @@ BankChurn-Predictor/
 
 - [Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/BankChurn-Predictor/models/model_card.md)
 - [API Reference](../api/rest-apis.md)
+- [Architecture Overview](../architecture/overview.md)
 - [Deployment Guide](../operations/deployment.md)
