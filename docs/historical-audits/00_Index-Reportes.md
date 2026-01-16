@@ -1,6 +1,6 @@
 # Índice de Reportes de Auditoría — Portafolio ML-MLOps
 
-**Fecha de auditoría**: 2025-11-25  
+**Fecha de auditoría**: March 2026  
 **Auditor**: Sistema automatizado de evaluación de calidad  
 **Repositorio**: [ML-MLOps-Portfolio](https://github.com/DuqueOM/ML-MLOps-Portfolio)
 
