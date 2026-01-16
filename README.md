@@ -4,9 +4,9 @@
 
 <div align="center">
 
-[![Portfolio](https://img.shields.io/badge/🚀_Portfolio-Live_Demo-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
 **[📚 View Full Documentation & Site](https://duqueom.github.io/ML-MLOps-Portfolio/)**
 
+[![Portfolio](https://img.shields.io/badge/🚀_Portfolio-Live_Demo-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
 
 <!-- CI/CD Badges -->
 [![CI Pipeline](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
@@ -404,7 +404,7 @@ docker run --rm aquasec/trivy image <image-name>
 
 <div align="center">
 
-**Status**: ✅ Production-Ready | **Last Updated**: December 2025
+**Status**: ✅ Production-Ready | **Last Updated**: March 2026
 
 *Star ⭐ this repo if you find it useful!*
 
