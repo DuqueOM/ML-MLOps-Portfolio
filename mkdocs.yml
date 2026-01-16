@@ -94,7 +94,6 @@ nav:
   - Reference:
     - Portfolio Landing: portfolio_landing.md
     - Release Process: RELEASE.md
-    - Technical Debt: TECHNICAL_DEBT.md
     - Dependency Conflicts: DEPENDENCY_CONFLICTS.md
   - Contributing:
     - Guidelines: contributing/guidelines.md
