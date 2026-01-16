@@ -400,7 +400,7 @@ docker run --rm aquasec/trivy image <image-name>
 
 - **Issues**: [GitHub Issues](https://github.com/DuqueOM/ML-MLOps-Portfolio/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/DuqueOM/ML-MLOps-Portfolio/discussions)
-- **Contributing**: See [Contributing Guidelines](contributing/guidelines.md)
+- **Contributing**: See [Contributing Guidelines](docs/contributing/guidelines.md)
 
 ---
 
