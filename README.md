@@ -398,9 +398,9 @@ docker run --rm aquasec/trivy image <image-name>
 
 ## 📬 How to Reach Me
 
-- **Portfolio Review**: Open an issue with tag `[portfolio-review]`
-- **Collaboration**: Reach out via LinkedIn
-- **Bug Reports**: Use GitHub Issues
+- **Issues**: [GitHub Issues](https://github.com/DuqueOM/ML-MLOps-Portfolio/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/DuqueOM/ML-MLOps-Portfolio/discussions)
+- **Contributing**: See [Contributing Guidelines](contributing/guidelines.md)
 
 ---
 
