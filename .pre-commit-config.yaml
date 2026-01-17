@@ -59,10 +59,6 @@ repos:
         files: >
           ^(BankChurn-Predictor|
             CarVision-Market-Intelligence|
-            Chicago-Mobility-Analytics|
-            Gaming-Market-Intelligence|
-            GoldRecovery-Process-Optimizer|
-            OilWell-Location-Optimizer|
             TelecomAI-Customer-Intelligence)/
             (main\.py|app/.*|monitoring/.*|scripts/.*|tests/.*)$
         exclude: >
@@ -82,7 +78,7 @@ repos:
     hooks:
       - id: bandit
         args: ['-ll', '-i']
-        files: ^(BankChurn-Predictor|CarVision-Market-Intelligence|TelecomAI-Customer-Intelligence|Chicago-Mobility-Analytics|Gaming-Market-Intelligence|GoldRecovery-Process-Optimizer|OilWell-Location-Optimizer)/
+        files: ^(BankChurn-Predictor|CarVision-Market-Intelligence|TelecomAI-Customer-Intelligence)/
         exclude: ^.*\/tests\/
 
   # Secret detection with gitleaks
