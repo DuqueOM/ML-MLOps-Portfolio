@@ -124,3 +124,4 @@ docs/guia_mlops/audio/
 docs/guia_mlops/pdf/_DEBUG_*
 docs/guia_mlops/pdf/_test_links.pdf
 docs/guia_mlops/pdf/_*.css
+requirements.txt
