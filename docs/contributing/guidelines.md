@@ -1,187 +1,125 @@
-# Contributing Guidelines
+# Contributing to ML/MLOps Portfolio
 
-Thank you for your interest in contributing to the ML-MLOps Portfolio! This guide will help you get started.
+Thank you for your interest in contributing to this portfolio! This project demonstrates production-grade MLOps practices.
+
+## 📋 Table of Contents
+- [Getting Started](#getting-started)
+- [Development Workflow](#development-workflow)
+- [Code Standards](#code-standards)
+- [Commit Messages](#commit-messages)
+- [Pull Request Process](#pull-request-process)
 
 ## Getting Started
 
 ### Prerequisites
+- **Python 3.11+** (3.12 also supported)
+- **Docker** & **Docker Compose**
+- **Make** utility
+- **pytest** for running tests
 
-- Python 3.11 or 3.12
-- Docker and Docker Compose
-- Git
+### Recommended Reading
+Before contributing, please review:
+- **[Architecture Documentation](docs/ARCHITECTURE_PORTFOLIO.md)**: Understand the system design
+- **[Operations Runbook](docs/OPERATIONS_PORTFOLIO.md)**: Learn deployment and monitoring procedures
+- **[Dependency Management](docs/DEPENDENCY_CONFLICTS.md)**: Understand dependency strategy
+- **[PR Plan](docs/PR_PLAN.md)**: See planned improvements and priorities
 
-### Development Setup
+### Setup
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git
+   cd ML-MLOps-Portfolio
+   ```
 
-```bash
-# Clone the repository
-git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git
-cd ML-MLOps-Portfolio
+2. **Install Dependencies**
+   We use `make` to manage dependencies across all projects:
+   ```bash
+   make install
+   ```
 
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # or `.venv\Scripts\activate` on Windows
-
-# Install pre-commit hooks
-pip install pre-commit
-pre-commit install
-
-# Install project dependencies (example for BankChurn)
-cd BankChurn-Predictor
-pip install -e ".[dev]"
-```
+3. **Verify Environment**
+   Run the test suite to ensure everything is working:
+   ```bash
+   make test
+   ```
 
 ## Development Workflow
 
-### Branch Naming
+### 1. Project Structure
+The portfolio consists of three main microservices:
+- `BankChurn-Predictor/` (FastAPI + Scikit-learn)
+- `CarVision-Market-Intelligence/` (Streamlit + FastAPI)
+- `TelecomAI-Customer-Intelligence/` (FastAPI + VotingClassifier)
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Feature | `feature/<description>` | `feature/add-shap-explainer` |
-| Bug Fix | `fix/<description>` | `fix/prediction-timeout` |
-| Documentation | `docs/<description>` | `docs/update-readme` |
-| Refactor | `refactor/<description>` | `refactor/simplify-pipeline` |
+### 2. Dependency Management
+We use `requirements.in` for direct dependencies and `pip-compile` for locking.
+**To add a package:**
+1. Edit `requirements.in` in the specific project folder.
+2. Run:
+   ```bash
+   pip-compile requirements.in
+   ```
+3. Re-install: `pip install -r requirements.txt`
 
-### Commit Messages
-
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-<type>(<scope>): <description>
-
-[optional body]
-
-[optional footer]
-```
-
-**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
-
-**Examples**:
-```
-feat(bankchurn): add SHAP explainer for predictions
-fix(carvision): handle missing odometer values
-docs(telecom): update API documentation
-refactor(training): extract preprocessing logic
+### 3. Running Locally
+Use the unified Docker stack for testing integration:
+```bash
+make docker-demo
 ```
 
 ## Code Standards
 
 ### Python Style
+- **Formatter**: `black`
+- **Linter**: `flake8`
+- **Type Checking**: `mypy`
+- **Imports**: `isort`
 
-- **Formatter**: Black (line length 120)
-- **Linter**: Flake8
-- **Type Hints**: Required for public functions
-- **Docstrings**: Google style
-
-### Pre-commit Checks
-
-All commits run these checks automatically:
-
+Run the linting suite before committing:
 ```bash
-# Run manually
-pre-commit run --all-files
-
-# Individual tools
-black .
-isort .
-flake8 .
+make lint
 ```
 
-## Testing
+### Testing
+- **Unit Tests**: Required for all new logic (`tests/test_*.py`).
+- **Integration Tests**: Required for API endpoints.
+  - Use `tests/integration/test_demo.py` for cross-project validation.
+  - Ensure all services pass health checks and prediction tests.
+- **Coverage**: Must remain above 70% (target: 75%+).
 
-### Running Tests
-
+**Run integration tests**:
 ```bash
-# Run all tests for a project
-cd BankChurn-Predictor
-pytest tests/ -v
+# Start demo stack
+docker-compose -f docker-compose.demo.yml up -d
 
-# With coverage
-pytest tests/ --cov=src/bankchurn --cov-report=html
+# Run tests
+pytest tests/integration/test_demo.py -v
 
-# Specific test
-pytest tests/test_training.py::test_train_model -v
+# Tear down
+docker-compose -f docker-compose.demo.yml down
 ```
 
-### Writing Tests
+## Commit Messages
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-- Place tests in `tests/` directory
-- Name files `test_<module>.py`
-- Use fixtures for shared setup
-- Aim for >70% coverage
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation
+- `chore`: Maintenance (deps, build)
+- `refactor`: Code restructuring
+
+**Example:**
+```text
+feat(bankchurn): add probability calibration to XGBoost model
+```
 
 ## Pull Request Process
 
-1. **Create a branch** from `main`
-2. **Make changes** with appropriate tests
-3. **Run pre-commit** and ensure all checks pass
-4. **Push branch** and create PR
-5. **Fill out PR template** completely
-6. **Request review** from maintainers
-7. **Address feedback** and update
-8. **Merge** after approval
+1. Create a branch: `feat/my-new-feature`
+2. Commit changes ensuring `make test` passes.
+3. Open a PR targeting `main`.
+4. Ensure the CI pipeline (Tests, Lint, Docker Build) is green.
+5. Request review.
 
-### PR Template
-
-```markdown
-## Summary
-Brief description of changes.
-
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Documentation
-- [ ] Refactoring
-
-## Testing
-Describe how you tested the changes.
-
-## Checklist
-- [ ] Tests pass locally
-- [ ] Pre-commit hooks pass
-- [ ] Documentation updated (if needed)
-```
-
-## Documentation
-
-### MkDocs Site
-
-```bash
-# Install docs dependencies
-pip install -r requirements-docs.txt
-
-# Serve locally
-mkdocs serve
-
-# Build static site
-mkdocs build
-```
-
-### Docstrings
-
-Use Google-style docstrings:
-
-```python
-def predict(self, X: pd.DataFrame, threshold: float = 0.5) -> pd.DataFrame:
-    """Make predictions on input data.
-    
-    Args:
-        X: Feature matrix for prediction.
-        threshold: Classification threshold (default: 0.5).
-    
-    Returns:
-        DataFrame with predictions and probabilities.
-    
-    Raises:
-        ValueError: If X has incorrect columns.
-    """
-```
-
-## Getting Help
-
-- **Questions**: Open a GitHub Discussion
-- **Bugs**: Open a GitHub Issue
-- **Security**: See [Security Policy](https://github.com/DuqueOM/ML-MLOps-Portfolio/security/policy)
-
----
-
-Thank you for contributing! 🎉
+## License
+By contributing, you agree that your contributions will be licensed under the MIT License.
