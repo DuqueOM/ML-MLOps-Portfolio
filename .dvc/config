@@ -1,0 +1,4 @@
+[core]
+    analytics = false
+[remote "storage"]
+    url = /home/duque_om/projects/ML-MLOps-Portfolio/.dvc-storage
