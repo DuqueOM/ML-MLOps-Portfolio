@@ -2,13 +2,6 @@
 
 Thank you for your interest in contributing to this portfolio! This project demonstrates production-grade MLOps practices.
 
-## 📋 Table of Contents
-- [Getting Started](#getting-started)
-- [Development Workflow](#development-workflow)
-- [Code Standards](#code-standards)
-- [Commit Messages](#commit-messages)
-- [Pull Request Process](#pull-request-process)
-
 ## Getting Started
 
 ### Prerequisites
