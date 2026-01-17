@@ -97,11 +97,10 @@ nav:
     - Dependency Conflicts: DEPENDENCY_CONFLICTS.md
   - Contributing:
     - Guidelines: contributing/guidelines.md
-    - Code Standards: contributing/code-standards.md
 
 extra:
   social:
-    - icon: fontawesome/brands/github
+    - icon: fontawesome/brands/github-alt
       link: https://github.com/DuqueOM
     - icon: fontawesome/brands/linkedin
       link: https://linkedin.com/in/duqueom

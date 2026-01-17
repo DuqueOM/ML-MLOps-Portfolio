@@ -19,10 +19,10 @@ Thank you for your interest in contributing to this portfolio! This project demo
 
 ### Recommended Reading
 Before contributing, please review:
-- **[Architecture Documentation](docs/ARCHITECTURE_PORTFOLIO.md)**: Understand the system design
-- **[Operations Runbook](docs/OPERATIONS_PORTFOLIO.md)**: Learn deployment and monitoring procedures
-- **[Dependency Management](docs/DEPENDENCY_CONFLICTS.md)**: Understand dependency strategy
-- **[PR Plan](docs/PR_PLAN.md)**: See planned improvements and priorities
+- **[Architecture Documentation](../ARCHITECTURE_PORTFOLIO.md)**: Understand the system design
+- **[Operations Runbook](../OPERATIONS_PORTFOLIO.md)**: Learn deployment and monitoring procedures
+- **[Dependency Management](../DEPENDENCY_CONFLICTS.md)**: Understand dependency strategy
+- **[PR Plan](../PR_PLAN.md)**: See planned improvements and priorities
 
 ### Setup
 1. **Clone the repository**
