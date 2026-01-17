@@ -8,7 +8,7 @@
 | **Version** | 1.0.0 |
 | **Type** | Binary Classification (Churn Prediction) |
 | **Framework** | Scikit-learn |
-| **Last Updated** | November 2025 |
+| **Last Updated** | March 2026 |
 
 ---
 
@@ -258,8 +258,7 @@ curl -X POST "http://localhost:8000/predict" \
 | Environment | URL | Status |
 |-------------|-----|--------|
 | **Local Docker** | `http://localhost:8000` | ✅ Available |
-| **GHCR Image** | `ghcr.io/duqueom/bankchurn-api:latest` | **[PENDING PUSH]** |
-| **Production** | **[INSERT IF DEPLOYED]** | — |
+| **GHCR Image** | `ghcr.io/duqueom/bankchurn-api:latest` | ✅ Available |
 
 ### Docker Deployment
 
