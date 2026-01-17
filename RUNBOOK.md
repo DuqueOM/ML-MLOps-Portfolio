@@ -1,6 +1,6 @@
 # Runbook — ML/MLOps Portfolio
 
-Quick reference for common operations. For detailed procedures, see [docs/OPERATIONS_PORTFOLIO.md](docs/OPERATIONS_PORTFOLIO.md).
+Quick reference for common operations. For detailed procedures, see [docs/ARCHITECTURE_PORTFOLIO.md](docs/ARCHITECTURE_PORTFOLIO.md).
 
 ---
 
