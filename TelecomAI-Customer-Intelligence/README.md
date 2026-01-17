@@ -31,6 +31,17 @@ A production-ready ML system for predicting telecom customer plan preferences us
 - **Containerized**: Docker-ready with optimized multi-stage builds.
 - **Observability**: Prometheus metrics (`/metrics`) for production monitoring.
 
+### Architecture
+
+```mermaid
+flowchart LR
+    A[Raw Data CSV] --> B[Data Processing]
+    B --> C[Training Pipeline]
+    C --> D[Model Registry]
+    D --> E[Inference API]
+    E --> F[Metrics]
+```
+
 ## Quickstart
 
 ### Prerequisites

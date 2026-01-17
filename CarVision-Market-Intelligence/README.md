@@ -41,6 +41,17 @@ This project implements a robust Machine Learning solution designed for producti
 - **Scalable Serving**: FastAPI with Prometheus metrics and Streamlit for interactive dashboards.
 - **Observability**: Prometheus metrics endpoint (`/metrics`) for production monitoring.
 
+### Architecture
+
+```mermaid
+flowchart LR
+    A[Raw Data CSV] --> B[Feature Engineering]
+    B --> C[Training Pipeline]
+    C --> D[Model Registry]
+    D --> E[Inference API]
+    E --> F[Dashboard]
+```
+
 ## 🚀 Quickstart
 
 ### Prerequisites
