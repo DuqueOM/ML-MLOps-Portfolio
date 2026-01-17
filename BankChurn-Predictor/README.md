@@ -40,7 +40,7 @@ BankChurn-Predictor is a production-grade Machine Learning service designed to i
 ### Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[Raw Data CSV] --> B[Preprocessing]
     B --> C[Training Pipeline]
     C --> D[Model Registry]
