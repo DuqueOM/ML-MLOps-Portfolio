@@ -78,13 +78,14 @@ The serving layer is built with **FastAPI**.
 ```mermaid
 sequenceDiagram
     participant Raw as Raw Data
-    participant DVC as DVC Pipeline
+    participant Preprocess as Preprocessing
     participant Train as Trainer
     participant MLflow as MLflow Registry
     participant API as Serving API
 
-    Raw->>DVC: Ingest CSV
-    DVC->>Train: Preprocess & Split
+    Raw->>Preprocess: Load CSV
+    Preprocess->>Preprocess: Clean & Feature Engineering
+    Preprocess->>Train: Split Data
     Train->>Train: Cross-Validation (5-Fold)
     Train->>MLflow: Log Metrics & Params
     Train->>MLflow: Register Model Artifacts
@@ -94,8 +95,8 @@ sequenceDiagram
 
 ### 3.1 Versioning Strategy
 -   **Code**: Git (GitHub).
--   **Data**: DVC (referencing S3/Local storage).
--   **Models**: MLflow (Model Registry) + DVC tracking of `.pkl` files.
+-   **Data**: Local files (data/raw/).
+-   **Models**: MLflow Registry.
 -   **Containers**: Docker (GHCR) tagged with Git SHA.
 
 ---
