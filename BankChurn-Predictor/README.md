@@ -34,18 +34,18 @@ BankChurn-Predictor is a production-grade Machine Learning service designed to i
 - **Robust Modeling**: VotingClassifier ensemble combining linear and non-linear baselines with custom resampling for class imbalance.
 - **Production API**: Fast, typed, and documented REST API using FastAPI with Prometheus metrics endpoint.
 - **Explainability**: SHAP-based model explanations with feature importance and individual prediction insights.
-- **Reproducibility**: Full data and pipeline versioning with DVC and Git.
+- **Reproducibility**: Full data and pipeline versioning with MLflow and Git.
 - **Observability**: Integrated MLflow tracking, Prometheus metrics, and drift monitoring.
 
 ### Architecture
 
 ```mermaid
 graph LR
-    A[Raw Data (CSV)] --> B[Preprocessing (StandardScaler/OneHot)]
-    B --> C[Training Pipeline (Ensemble)]
-    C --> D[Model Registry (MLflow/Local)]
-    D --> E[Inference API (FastAPI)]
-    E --> F[Monitoring (Prometheus/Logs)]
+    A[Raw Data CSV] --> B[Preprocessing]
+    B --> C[Training Pipeline]
+    C --> D[Model Registry]
+    D --> E[Inference API]
+    E --> F[Monitoring]
 ```
 
 ---
