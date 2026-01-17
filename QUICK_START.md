@@ -6,8 +6,6 @@ This guide provides the fastest way to run the portfolio projects locally using 
 
 [![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
-Watch the full end-to-end demo before diving in: [https://youtu.be/qmw9VlgUcn8](https://youtu.be/qmw9VlgUcn8)
-
 ---
 
 ## ⚡ One-Line Demo (Recommended)
@@ -25,11 +23,11 @@ This command will:
 4. Run automated smoke tests to verify everything is working.
 
 **Access Points:**
-- **BankChurn API**: [http://localhost:8001/docs](http://localhost:8001/docs)
-- **CarVision Dashboard**: [http://localhost:8501](http://localhost:8501)
-- **CarVision API**: [http://localhost:8002/docs](http://localhost:8002/docs)
-- **TelecomAI API**: [http://localhost:8003/docs](http://localhost:8003/docs)
-- **MLflow UI**: [http://localhost:5000](http://localhost:5000)
+- **BankChurn API**: [http://localhost:8001/docs](http://localhost:8001/docs) (after running demo stack)
+- **CarVision Dashboard**: [http://localhost:8501](http://localhost:8501) (after running demo stack)
+- **CarVision API**: [http://localhost:8002/docs](http://localhost:8002/docs) (after running demo stack)
+- **TelecomAI API**: [http://localhost:8003/docs](http://localhost:8003/docs) (after running demo stack)
+- **MLflow UI**: [http://localhost:5000](http://localhost:5000) (after running demo stack)
 
 ---
 
@@ -70,7 +68,7 @@ All 3 projects are integrated with MLflow for unified experiment tracking. After
 
 ```bash
 # Set the tracking URI to the central MLflow server
-export MLFLOW_TRACKING_URI=http://localhost:5000
+export MLFLOW_TRACKING_URI=http://localhost:5000 (after running demo stack)
 
 # Log experiments from each project
 cd BankChurn-Predictor && make mlflow-demo && cd ..
