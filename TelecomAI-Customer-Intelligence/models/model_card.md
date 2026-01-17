@@ -214,6 +214,6 @@ curl http://localhost:8000/health
 
 ## References
 
-- [Architecture Documentation](../docs/ARCHITECTURE.md)
+- [Architecture Documentation](../ARCHITECTURE.md)
 - [API Documentation](http://localhost:8000/docs) (after running demo stack)
 - [Experiment Tracking (MLflow)](http://localhost:5000) (after running demo stack)

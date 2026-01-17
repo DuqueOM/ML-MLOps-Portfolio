@@ -256,7 +256,7 @@ The Streamlit dashboard (`app/streamlit_app.py`) provides:
 
 ## References
 
-- [Architecture Documentation](../docs/ARCHITECTURE.md)
+- [Architecture Documentation](../ARCHITECTURE.md)
 - [API Documentation](http://localhost:8000/docs) (after running demo stack)
 - [Dashboard](http://localhost:8501) (after running demo stack)
 - [Experiment Tracking (MLflow)](http://localhost:5000) (after running demo stack)
