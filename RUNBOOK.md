@@ -1,6 +1,6 @@
 # Runbook — ML/MLOps Portfolio
 
-Quick reference for common operations. For detailed procedures, see [docs/ARCHITECTURE_PORTFOLIO.md](docs/ARCHITECTURE_PORTFOLIO.md).
+Quick reference for common operations. For detailed procedures, see [docs/OPERATIONS_PORTFOLIO.md](docs/OPERATIONS_PORTFOLIO.md).
 
 ---
 
@@ -18,282 +18,281 @@ Quick reference for common operations. For detailed procedures, see [docs/ARCHIT
 
 ---
 
-## 🚀 Quick Commands
+## Quick Commands
 
-### Start Full Demo Stack
+### 🚀 Start Full Demo (Recommended)
+
 ```bash
+# 1. Generate demo models (first-time only)
+bash scripts/setup_demo_models.sh
+
+# 2. Start all services
 make docker-demo
-```
-Starts all 3 APIs + MLflow + monitoring dashboards
+# or: docker-compose -f docker-compose.demo.yml up -d --build
 
-### Stop All Services
-```bash
-make docker-demo-down
+# 3. Verify everything is running
+make health-check
 ```
 
-### Individual Project Demos
-```bash
-# BankChurn Predictor
-cd BankChurn-Predictor && make docker-demo
+**Access Points:**
+- 🏦 BankChurn API: http://localhost:8001/docs
+- 🚗 CarVision API: http://localhost:8002/docs
+- 🚗 CarVision Dashboard: http://localhost:8501
+- 📱 TelecomAI API: http://localhost:8003/docs
+- 📊 MLflow UI: http://localhost:5000
 
-# CarVision Market Intelligence  
-cd CarVision-Market-Intelligence && make docker-demo
+### 🛑 Stop Services
 
-# TelecomAI Customer Intelligence
-cd TelecomAI-Customer-Intelligence && make docker-demo
-```
-
----
-
-## 📊 Access Points
-
-| Service | URL | Description |
-|---------|-----|-------------|
-| **BankChurn API** | http://localhost:8001 | Customer churn prediction |
-| **CarVision API** | http://localhost:8002 | Vehicle price prediction |
-| **TelecomAI API** | http://localhost:8003 | Plan recommendation |
-| **MLflow Tracking** | http://localhost:5000 | Experiment tracking |
-| **CarVision Dashboard** | http://localhost:8501 | Streamlit dashboard |
-
----
-
-## 🔧 Development Commands
-
-### Environment Setup
-```bash
-# Install dependencies for all projects
-make install
-
-# Individual project setup
-cd BankChurn-Predictor && make install
-```
-
-### Training Models
-```bash
-# Reproduce DVC pipelines for all projects
-make dvc-repro
-
-# Individual training
-cd BankChurn-Predictor && make train
-cd CarVision-Market-Intelligence && make train
-cd TelecomAI-Customer-Intelligence && make train
-```
-
-### Testing
-```bash
-# Run all tests
-make test
-
-# Project-specific tests
-cd BankChurn-Predictor && make test
-```
-
-### Code Quality
-```bash
-# Linting and formatting
-make lint
-make format
-
-# Type checking
-make type-check
-```
-
----
-
-## 🐳 Docker Operations
-
-### Build Images
-```bash
-# Build all project images
-make docker-build
-
-# Individual image
-cd BankChurn-Predictor && make docker-build
-```
-
-### Run Services
-```bash
-# Full stack with monitoring
-docker-compose -f docker-compose.demo.yml up -d
-
-# Individual service
-docker run -p 8001:8000 ghcr.io/duqueom/bankchurn-api:latest
-```
-
-### Clean Docker Resources
 ```bash
 docker-compose -f docker-compose.demo.yml down
-docker system prune -f
+
+# With volume cleanup:
+docker-compose -f docker-compose.demo.yml down -v
 ```
 
 ---
 
-## 📈 Monitoring & Logs
+## Per-Project Commands
 
-### View Logs
+### BankChurn-Predictor
+
+```bash
+cd BankChurn-Predictor
+
+# Install
+pip install -r requirements.txt
+
+# Train
+python main.py --mode train --config configs/config.yaml
+
+# Run API
+uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000
+
+# Test prediction
+curl -X POST "http://localhost:8000/predict" \
+     -H "Content-Type: application/json" \
+     -d '{"CreditScore":650,"Geography":"France","Gender":"Female","Age":40,"Tenure":3,"Balance":60000,"NumOfProducts":2,"HasCrCard":1,"IsActiveMember":1,"EstimatedSalary":50000}'
+```
+
+### CarVision-Market-Intelligence
+
+```bash
+cd CarVision-Market-Intelligence
+
+# Install
+pip install -r requirements.txt
+
+# Train
+python main.py --mode train --config configs/config.yaml
+
+# Run API
+uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000
+
+# Run Dashboard
+streamlit run app/streamlit_app.py --server.port 8501
+
+# Test prediction
+curl -X POST "http://localhost:8000/predict" \
+     -H "Content-Type: application/json" \
+     -d '{"model_year":2018,"odometer":45000,"model":"ford f-150","fuel":"gas","transmission":"automatic"}'
+```
+
+### TelecomAI-Customer-Intelligence
+
+```bash
+cd TelecomAI-Customer-Intelligence
+
+# Install
+pip install -r requirements.txt
+
+# Train
+python main.py --mode train
+
+# Run API
+uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000
+
+# Test prediction
+curl -X POST "http://localhost:8000/predict" \
+     -H "Content-Type: application/json" \
+     -d '{"calls":40.0,"minutes":311.9,"messages":83.0,"mb_used":19915.42}'
+```
+
+---
+
+## Testing
+
+### Run All Tests
+
+```bash
+# From project root
+make test
+
+# With coverage
+pytest --cov=. --cov-report=html
+
+# View coverage report
+open htmlcov/index.html
+```
+
+### Integration Tests
+
+```bash
+# Start demo stack first
+docker-compose -f docker-compose.demo.yml up -d --build
+
+# Run integration tests
+pytest tests/integration/test_demo.py -v
+
+# Cleanup
+docker-compose -f docker-compose.demo.yml down
+```
+
+---
+
+## MLflow
+
+### Start MLflow Server
+
+```bash
+# Local file-based tracking
+mlflow ui --backend-store-uri file:./mlruns --port 5000
+
+# Or use Docker Compose stack
+docker-compose -f docker-compose.mlflow.yml up -d
+```
+
+### View Experiments
+
+```bash
+# List experiments
+mlflow experiments list
+
+# View runs
+mlflow runs list --experiment-id 0
+```
+
+---
+
+## Docker Operations
+
+### Build Individual Images
+
+```bash
+# BankChurn
+docker build -t bankchurn:latest ./BankChurn-Predictor
+
+# CarVision
+docker build -t carvision:latest ./CarVision-Market-Intelligence
+
+# TelecomAI
+docker build -t telecomai:latest ./TelecomAI-Customer-Intelligence
+```
+
+### Push to GHCR
+
+```bash
+# Login
+echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+
+# Tag and push
+docker tag bankchurn:latest ghcr.io/duqueom/bankchurn-api:latest
+docker push ghcr.io/duqueom/bankchurn-api:latest
+```
+
+### Pull from GHCR
+
+```bash
+docker pull ghcr.io/duqueom/bankchurn-api:latest
+docker run -p 8000:8000 ghcr.io/duqueom/bankchurn-api:latest
+```
+
+---
+
+## Security Scans
+
+```bash
+# Python security (Bandit)
+bandit -r . -f json -o bandit-report.json
+
+# Docker image scan (Trivy)
+docker run --rm aquasec/trivy image bankchurn:latest
+
+# Secrets detection (Gitleaks)
+gitleaks detect --source . --report-path gitleaks-report.json
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| `ModuleNotFoundError` | PYTHONPATH not set | Run via `python -m` or use Makefile |
+| `Connection Refused` | Container not running | `docker ps` and check logs |
+| `Model not found` | Missing artifact | Run training first: `make train` |
+| `Port already in use` | Another service running | `lsof -i :8000` and kill process |
+| Docker build fails | Cache corruption | `docker system prune -a` |
+
+### View Container Logs
+
 ```bash
 # All services
 docker-compose -f docker-compose.demo.yml logs -f
 
 # Specific service
-docker-compose -f docker-compose.demo.yml logs -f bankchurn-api
+docker-compose -f docker-compose.demo.yml logs -f bankchurn
 ```
 
-### Health Checks
+### Reset Everything
+
 ```bash
-# All APIs
-curl http://localhost:8001/health
-curl http://localhost:8002/health  
-curl http://localhost:8003/health
+# Stop and remove all containers, networks, volumes
+docker-compose -f docker-compose.demo.yml down -v --rmi all
 
-# MLflow
-curl http://localhost:5000
+# Remove Python caches
+find . -type d -name __pycache__ -exec rm -rf {} +
+find . -type d -name .pytest_cache -exec rm -rf {} +
+
+# Re-install dependencies
+make install
 ```
 
-### Metrics
-```bash
-# Prometheus metrics
-curl http://localhost:8001/metrics
-curl http://localhost:8002/metrics
-curl http://localhost:8003/metrics
-```
+### CI Pipeline Debug
+
+- **Workflow file**: `.github/workflows/ci-mlops.yml`
+- **Jobs**: `tests` → `coverage` → `docker-build` → `e2e`
+- **If tests fail**: Check job logs, expand `coverage-report` artifact
+- **If Docker fails**: Check if base image is available, review build cache
 
 ---
 
-## 🔄 DVC Operations
+## Environment Variables
 
-### Data Versioning
+Copy `.env.example` to `.env` and customize:
+
 ```bash
-# Pull datasets
-dvc pull
-
-# Push changes
-dvc push
-
-# Reproduce pipeline
-dvc repro
+cp .env.example .env
 ```
 
-### Status Check
-```bash
-# Check data status
-dvc status
+Key variables:
 
-# List tracked files
-dvc list
-```
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `SEED` | Reproducibility seed | `42` |
+| `MLFLOW_TRACKING_URI` | MLflow server URL | `file:./mlruns` |
+| `API_HOST` | API bind address | `0.0.0.0` |
+| `API_PORT` | API port | `8000` |
+| `LOG_LEVEL` | Logging verbosity | `INFO` |
 
 ---
 
-## 🚨 Troubleshooting
+## Useful Links
 
-### Common Issues
-
-**Port Conflicts**
-```bash
-# Check what's using ports
-netstat -tulpn | grep :800
-# Or use different ports in docker-compose.yml
-```
-
-**Memory Issues**
-```bash
-# Check Docker memory
-docker system df
-# Clean up unused images
-docker system prune -a
-```
-
-**Permission Issues**
-```bash
-# Fix Docker permissions
-sudo usermod -aG docker $USER
-# Restart Docker service
-sudo systemctl restart docker
-```
-
-**MLflow Connection**
-```bash
-# Check MLflow server
-curl http://localhost:5000
-# Restart MLflow
-docker-compose restart mlflow
-```
-
-### Service Recovery
-```bash
-# Restart all services
-docker-compose -f docker-compose.demo.yml restart
-
-# Reset environment
-docker-compose -f docker-compose.demo.yml down
-docker system prune -f
-make docker-demo
-```
-
----
-
-## 📝 Quick Reference
-
-### Make Targets
-```bash
-make help           # Show all available targets
-make docker-demo    # Start full stack
-make docker-demo-down    # Stop all services  
-make install        # Install dependencies
-make test          # Run tests
-make lint          # Code quality checks
-make dvc-repro     # Reproduce DVC pipelines
-```
-
-### Environment Variables
-```bash
-export MLFLOW_TRACKING_URI=http://localhost:5000
-export LOG_LEVEL=INFO
-```
-
-### Useful Paths
-```
-./logs/              # Application logs
-./mlruns/            # MLflow experiments
-./data/*/raw/        # Raw datasets
-./models/            # Trained models
-./artifacts/         # Training outputs
-```
-
----
-
-## 🆘 Emergency Procedures
-
-### Full Reset
-```bash
-# Stop everything
-docker-compose -f docker-compose.demo.yml down
-
-# Clean all resources
-docker system prune -a --volumes
-
-# Restart from scratch
-make docker-demo
-```
-
-### Data Recovery
-```bash
-# Restore datasets from DVC
-dvc checkout
-
-# Pull from remote if available
-dvc pull -r origin
-```
-
-### Model Rollback
-```bash
-# Use previous model version
-cd BankChurn-Predictor
-git checkout HEAD~1 -- models/best_model.pkl
-make docker-build
-```
-
----
-
-*For detailed architecture and procedures, refer to [docs/ARCHITECTURE_PORTFOLIO.md](docs/ARCHITECTURE_PORTFOLIO.md)*
+- **Architecture**: [docs/ARCHITECTURE_PORTFOLIO.md](docs/ARCHITECTURE_PORTFOLIO.md)
+- **Operations**: [docs/OPERATIONS_PORTFOLIO.md](docs/OPERATIONS_PORTFOLIO.md)
+- **Releases**: [docs/RELEASE.md](docs/RELEASE.md)
+- **Dependencies**: [docs/DEPENDENCY_CONFLICTS.md](docs/DEPENDENCY_CONFLICTS.md)
+- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Changelog**: [CHANGELOG.md](CHANGELOG.md)
