@@ -22,7 +22,6 @@ Before contributing, please review:
 - **[Architecture Documentation](../ARCHITECTURE_PORTFOLIO.md)**: Understand the system design
 - **[Operations Runbook](../OPERATIONS_PORTFOLIO.md)**: Learn deployment and monitoring procedures
 - **[Dependency Management](../DEPENDENCY_CONFLICTS.md)**: Understand dependency strategy
-- **[PR Plan](../PR_PLAN.md)**: See planned improvements and priorities
 
 ### Setup
 1. **Clone the repository**
