@@ -44,7 +44,7 @@ This project implements a robust Machine Learning solution designed for producti
 ### Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[Raw Data CSV] --> B[Feature Engineering]
     B --> C[Training Pipeline]
     C --> D[Model Registry]

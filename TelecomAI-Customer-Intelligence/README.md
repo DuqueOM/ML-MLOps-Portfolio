@@ -34,7 +34,7 @@ A production-ready ML system for predicting telecom customer plan preferences us
 ### Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[Raw Data CSV] --> B[Data Processing]
     B --> C[Training Pipeline]
     C --> D[Model Registry]
