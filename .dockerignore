@@ -80,11 +80,6 @@ data/external/
 mlruns/
 mlartifacts/
 
-# DVC
-.dvc/
-.dvc-storage/
-*.dvc
-
 # Logs
 logs/
 *.log
