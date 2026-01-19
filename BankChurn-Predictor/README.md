@@ -679,7 +679,7 @@ mlflow.log_metrics({
 ### Observability Stack
 
 ```mermaid
-graph LR
+graph TD
     A[FastAPI Service] --> B[Prometheus]
     B --> C[Grafana]
     A --> D[Structured Logs]
