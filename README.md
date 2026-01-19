@@ -41,7 +41,32 @@
 
 ---
 
-> **A professional portfolio demonstrating the complete Machine Learning lifecycle: from exploratory analysis and model training, to CI/CD pipelines, REST APIs, and containerized deployment.**
+## 📑 Table of Contents
+
+- [💡 Why This Portfolio Exists](#-why-this-portfolio-exists)
+- [👨‍💻 About This Portfolio](#-about-this-portfolio)
+- [🌟 TOP-3 Projects](#-top-3-production-ready-projects)
+  - [🏦 BankChurn Predictor](#-1-bankchurn-predictor--customer-churn-prediction)
+  - [🚗 CarVision Market Intelligence](#-2-carvision-market-intelligence--vehicle-price-prediction)
+  - [📱 TelecomAI Customer Intelligence](#-3-telecomai-customer-intelligence--plan-recommendation)
+- [🛠️ Tech Stack & MLOps](#️-tech-stack--mlops)
+- [📚 Documentation](#-documentation)
+- [🚀 Quick Start](#-quick-start)
+- [👤 Author](#-author)
+
+---
+
+> **A production-grade MLOps portfolio by a career switcher who brings 14 years of operational discipline to machine learning engineering. Every project demonstrates the complete ML lifecycle: from experimentation (MLflow) to deployment (K8s), with the reliability mindset of someone who's managed high-pressure operations for over a decade.**
+
+---
+
+## 💡 Why This Portfolio Exists
+
+After 14 years managing high-pressure operations in hospitality and logistics, I discovered that the principles that make great operational systems—reliability, monitoring, reproducibility—are the same ones that make great ML systems.
+
+This portfolio demonstrates that transition: not just ML models that achieve good metrics, but **production-ready systems** built with the discipline of someone who understands that downtime costs real money and poor monitoring creates real problems.
+
+Every project here answers the question: "Would I trust this in production at 2am?"
 
 ---
 
@@ -148,16 +173,16 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 The entire portfolio is validated by a single master workflow (`ci-mlops.yml`) that orchestrates:
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  CI/CD Pipeline: .github/workflows/ci-mlops.yml                 │
-├─────────────────────────────────────────────────────────────────┤
-│  1. Build & Env    → Python 3.11/3.12 matrix, pip cache         │
-│  2. Data Quality   → Validate data before tests                 │
-│  3. Code Quality   → flake8, black, mypy, bandit                │
-│  4. Testing        → pytest with coverage reports               │
-│  5. Docker Build   → Multi-stage, push to GHCR                  │
-│  6. Security       → Trivy container scanning                   │
-└─────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│  CI/CD Pipeline: .github/workflows/ci-mlops.yml           │
+├───────────────────────────────────────────────────────────┤
+│  1. Build & Env    → Python 3.11/3.12 matrix, pip cache   │
+│  2. Data Quality   → Validate data before tests           │
+│  3. Code Quality   → flake8, black, mypy, bandit          │
+│  4. Testing        → pytest with coverage reports         │
+│  5. Docker Build   → Multi-stage, push to GHCR            │
+│  6. Security       → Trivy container scanning             │
+└───────────────────────────────────────────────────────────┘
 ```
 
 ### CI Notes
@@ -185,15 +210,11 @@ The entire portfolio is validated by a single master workflow (`ci-mlops.yml`) t
 
 ### Key Technologies
 
-| Category | Technologies |
-|----------|--------------|
-| **Core** | Python 3.11+, Pandas, NumPy, Scikit-learn, XGBoost |
-| **Web** | FastAPI, Streamlit, Uvicorn |
-| **Ops** | Docker (Multi-Stage), GitHub Actions, Kubernetes, Make |
-| **Tracking** | MLflow, DVC |
-| **Monitoring** | Prometheus, Grafana |
-| **Security** | Trivy, Bandit, Gitleaks |
-| **Registry** | GitHub Container Registry (GHCR) |
+| Category | Advanced | Proficient | Familiar |
+|----------|----------|------------|----------|
+| **MLOps** | Docker, GitHub Actions, MLflow | Kubernetes, Terraform | DVC |
+| **Cloud** | AWS (EKS, S3, ECR) | Prometheus, Grafana | GCP basics |
+| **ML** | Scikit-learn, XGBoost | Pandas, NumPy | TensorFlow, PyTorch |
 
 ### MLflow Experiment Tracking
 
@@ -214,7 +235,7 @@ docker compose -f docker-compose.demo.yml up -d
 python scripts/run_experiments.py
 ```
 
-**View experiments at [http://localhost:5000](http://localhost:5000) *(after running demo stack)*
+**View experiments at [http://localhost:5000](http://localhost:5000)** *(after running demo stack)*
 
 | Experiment | Runs | Best Metric | Comparison |
 |------------|------|-------------|------------|
@@ -280,13 +301,16 @@ ML-MLOps-Portfolio/
 
 ## 📈 Quality Metrics
 
-| Metric | Status | Target |
-|--------|--------|--------|
-| **CI Pipeline** | 🟢 **Passing** | 100% Green |
-| **Test Coverage** | 🟢 **79%–97%** | ≥79% BankChurn, ≥80% others |
-| **Security** | 🛡️ **Scanned** | 0 Critical CVEs |
-| **Docker Builds** | 🐳 **Multi-Stage** | 50% Size Reduction |
-| **Python Support** | ✅ **3.11 & 3.12** | Matrix Testing |
+| Metric | Status | Target | Achievement |
+|--------|--------|--------|-------------|
+| **CI Pipeline** | 🟢 **Passing** | 100% Green | ✅ 100% |
+| **Test Coverage** | 🟢 **79%–97%** | ≥79% BankChurn, ≥97% others | ✅ Met |
+| **Security** | 🛡️ **Scanned** | 0 Critical CVEs | ✅ 0 Critical |
+| **Docker Builds** | 🐳 **Multi-Stage** | <500MB images | ✅ Optimized |
+| **Python Support** | ✅ **3.11 & 3.12** | Matrix Testing | ✅ Both versions |
+| **Deployment Time** | ⚡ **<2 min** | Quick evaluation | ✅ 5 commands |
+
+*BankChurn's 79% coverage includes integration tests with external MLflow server and API testing, which are harder to mock. CarVision/TelecomAI (97%) focus on pure unit tests.*
 
 ---
 
@@ -400,7 +424,7 @@ docker run --rm aquasec/trivy image <image-name>
 
 - **Issues**: [GitHub Issues](https://github.com/DuqueOM/ML-MLOps-Portfolio/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/DuqueOM/ML-MLOps-Portfolio/discussions)
-- **Contributing**: See [Contributing Guidelines](docs/contributing/guidelines.md)
+- **Contributing**: See [Contributing Guidelines](docs/contributing/guidelines.md) I welcome suggestions and discussions about the architecture and approaches used in this portfolio
 
 ---
 
