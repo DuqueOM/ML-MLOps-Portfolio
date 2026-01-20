@@ -1073,7 +1073,7 @@ pre-commit run --all-files
 | **Unit** | 65% | Individual function logic | `test_config.py`, `test_prediction.py` |
 | **Integration** | 10% | Component interaction | `test_api_coverage.py` |
 | **E2E** | 4% | Full workflow (train → predict) | `test_integration.py` |
-| **Total** | **79%** | Comprehensive validation | All test files |
+| **Total** | **86%** | Comprehensive validation | All test files |
 
 ---
 

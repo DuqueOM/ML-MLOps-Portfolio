@@ -189,7 +189,7 @@ The used vehicle market ($1.2T annually in the US) suffers from pricing opacity.
 | **RMSE** | **$4,396** | Accurate within $4.4K |
 | **MAE** | **$3,124** | Mean absolute error |
 | **MAPE** | **18.2%** | Mean absolute % error |
-| **Coverage** | 97% | Comprehensive test suite |
+| **Coverage** | 94% | Comprehensive test suite |
 | **Dashboard Load** | <2s | Fast user experience |
 
 **Key Features**:
@@ -229,7 +229,7 @@ The used vehicle market ($1.2T annually in the US) suffers from pricing opacity.
 | **AUC-ROC** | **0.84** | Excellent discrimination |
 | **F1-Score** | **0.63** | Balanced performance |
 | **Precision** | **0.72** | 72% correct recommendations |
-| **Coverage** | 97% | Full test suite |
+| **Coverage** | 96% | Full test suite |
 | **Throughput** | 1,200 RPS | High-volume capable |
 
 **Key Features**:
@@ -314,7 +314,7 @@ The entire portfolio is validated by a single master workflow (`ci-mlops.yml`) t
 | **ghcr-publish** | Image publishing (main only) | GHCR, semantic tags |
 
 **Coverage Enforcement**:
-- BankChurn: ≥79% (includes integration tests with MLflow)
+- BankChurn: ≥79% (current: 86%, includes integration tests with MLflow)
 - CarVision: ≥80%
 - TelecomAI: ≥80%
 
