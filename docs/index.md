@@ -1,14 +1,17 @@
 # ML-MLOps Portfolio Documentation
-
 **Production-Ready Machine Learning Projects with Enterprise MLOps**
-
 ![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)
 ![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2?style=for-the-badge)
-
 [![GitHub Repository](https://img.shields.io/badge/📁_Full_Code-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/DuqueOM/ML-MLOps-Portfolio)
 [![YouTube Demo](https://img.shields.io/badge/📺_Video-Watch_Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+
+---
+
+## 🎬 Portfolio Demo
+![Portfolio Demo](../media/gifs/portfolio-demo.gif)
+**End-to-end demonstration** of the complete ML/MLOps stack: MLflow experiments, Docker Compose orchestration, FastAPI services, Streamlit dashboard, and Prometheus monitoring.
 
 ---
 
