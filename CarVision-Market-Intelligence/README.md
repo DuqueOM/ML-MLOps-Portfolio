@@ -1136,7 +1136,7 @@ make lint
 | **Unit** | 85% | Individual functions | 15s |
 | **Integration** | 10% | Component interaction | 30s |
 | **E2E** | 2% | Full workflow | 60s |
-| **Total** | **97%** | Comprehensive validation | 105s |
+| **Total** | **94%** | Comprehensive validation | 105s |
 
 ---
 

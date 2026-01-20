@@ -161,7 +161,7 @@ Pipeline([
 - ✅ SHAP explainability for feature importance
 - ✅ Drift detection with Evidently AI (PSI monitoring)
 - ✅ Fairness analysis by geography and age
-- ✅ 79% test coverage
+- ✅ 86% test coverage
 
 ### CarVision-Market-Intelligence
 **Domain**: Vehicle Price Prediction (Automotive)  
@@ -199,7 +199,7 @@ Pipeline([
 - ✅ Data leakage prevention (exclude price_per_mile from inference)
 - ✅ Streamlit dashboard with 4 tabs (Portfolio, Market, Metrics, Predictor)
 - ✅ Advanced validation (CV, bootstrap CI, temporal backtest)
-- ✅ 97% test coverage
+- ✅ 94% test coverage
 
 ### TelecomAI-Customer-Intelligence
 **Domain**: Telecom Plan Recommendation (Plan Optimization)  
@@ -235,7 +235,7 @@ Pipeline([
 - ✅ Business impact analysis ($5.4M annual ROI)
 - ✅ Simple 4-feature model (high interpretability)
 - ✅ Usage pattern segmentation (light vs heavy users)
-- ✅ 97% test coverage
+- ✅ 96% test coverage
 
 ## Infrastructure Architecture
 

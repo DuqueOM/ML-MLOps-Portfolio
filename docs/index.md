@@ -124,9 +124,9 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
 
 | Project | Domain | Type | Best Metrics | Key Features |
 |---------|--------|------|--------------|--------------|
-| **[BankChurn Predictor](projects/bankchurn.md)** | Banking | Classification | AUC=0.853, F1=0.604 | SHAP explainability, drift detection, 79% test coverage |
-| **[CarVision Market Intelligence](projects/carvision.md)** | Automotive | Regression | R²=0.766, RMSE=$4,794 | Interactive dashboard, 4 tabs, 97% test coverage |
-| **[TelecomAI Customer Intelligence](projects/telecom.md)** | Telecom | Classification | AUC=0.84, Acc=82% | Plan optimization, threshold tuning, 97% coverage |
+| **[BankChurn Predictor](projects/bankchurn.md)** | Banking | Classification | AUC=0.853, F1=0.604 | SHAP explainability, drift detection, 86% test coverage |
+| **[CarVision Market Intelligence](projects/carvision.md)** | Automotive | Regression | R²=0.766, RMSE=$4,794 | Interactive dashboard, 4 tabs, 94% test coverage |
+| **[TelecomAI Customer Intelligence](projects/telecom.md)** | Telecom | Classification | AUC=0.84, Acc=82% | Plan optimization, threshold tuning, 96% coverage |
 
 ---
 
@@ -155,7 +155,7 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
 ### Software Engineering
 
 - ✅ **Modern Python**: `src/` layout, Pydantic config, type hints
-- ✅ **Testing**: Comprehensive suites (unit, integration, e2e) with 79-97% coverage
+- ✅ **Testing**: Comprehensive suites (unit, integration, e2e) with 86-96% coverage
 - ✅ **Code Quality**: Pre-commit hooks, automated linting, security scanning
 - ✅ **Documentation**: Model cards, data cards, API docs, operations runbooks
 
@@ -228,7 +228,7 @@ docker-compose -f docker-compose.demo.yml ps
 |-----------|-----------|
 | **Code Quality** | Black, Flake8, Mypy, isort |
 | **Security Scanning** | Bandit, Gitleaks, pip-audit, Trivy |
-| **Testing** | pytest, pytest-cov (79-97% coverage) |
+| **Testing** | pytest, pytest-cov (86-96% coverage) |
 | **Pre-commit** | Automated hooks for quality gates |
 
 ---
@@ -265,7 +265,7 @@ ML-MLOps-Portfolio/
 ├── BankChurn-Predictor/           # 🏦 Customer Churn Prediction
 │   ├── src/bankchurn/             # Core package
 │   ├── app/fastapi_app.py         # REST API
-│   ├── tests/                     # 79% coverage
+│   ├── tests/                     # 86% coverage
 │   ├── models/model_card.md       # Model documentation v2.0
 │   └── data_card.md               # Dataset documentation v2.0
 │
@@ -274,14 +274,14 @@ ML-MLOps-Portfolio/
 │   ├── app/
 │   │   ├── fastapi_app.py         # REST API
 │   │   └── streamlit_app.py       # Dashboard (4 tabs)
-│   ├── tests/                     # 97% coverage
+│   ├── tests/                     # 94% coverage
 │   ├── models/model_card.md       # Model documentation v2.0
 │   └── data_card.md               # Dataset documentation v2.0
 │
 ├── TelecomAI-Customer-Intelligence/ # 📱 Plan Recommendation
 │   ├── src/telecomai/             # Core package
 │   ├── app/fastapi_app.py         # REST API
-│   ├── tests/                     # 97% coverage
+│   ├── tests/                     # 96% coverage
 │   ├── models/model_card.md       # Model documentation v2.0
 │   └── data_card.md               # Dataset documentation v2.0
 │
