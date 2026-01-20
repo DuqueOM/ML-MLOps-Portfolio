@@ -19,14 +19,33 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
 def load_data(csv_path: str) -> pd.DataFrame:
-    """Load dataset from CSV path.
+    """Load vehicle dataset from CSV with optimized dtypes.
 
     Args:
-        csv_path: Path to CSV file.
+        csv_path: Path to CSV file
+
     Returns:
-        pandas DataFrame
+        pandas DataFrame with optimized memory usage
     """
-    df = pd.read_csv(csv_path)
+    # Define dtypes for better memory efficiency
+    dtypes = {
+        "price": "float32",
+        "model_year": "int16",
+        "cylinders": "int8",
+        "odometer": "float32",
+        "condition": "category",
+        "fuel": "category",
+        "title_status": "category",
+        "transmission": "category",
+        "drive": "category",
+        "size": "category",
+        "type": "category",
+        "paint_color": "category",
+        "state": "category",
+    }
+
+    # Read with specified dtypes (only for columns that exist)
+    df = pd.read_csv(csv_path, dtype=dtypes, low_memory=False)
     return df
 
 

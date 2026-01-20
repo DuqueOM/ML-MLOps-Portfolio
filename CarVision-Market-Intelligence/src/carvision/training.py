@@ -122,10 +122,11 @@ def train_model(cfg: Dict[str, Any]) -> Dict[str, Any]:
 
     # Validation metrics
     yv = pipe.predict(X_val)
+    y_val_arr = np.asarray(y_val)
     val_metrics = {
         "rmse": rmse(y_val, yv),
         "mae": float(mean_absolute_error(y_val, yv)),
-        "mape": float(np.mean(np.abs((np.array(y_val) - yv) / (np.array(y_val) + 1e-8))) * 100),
+        "mape": float(np.mean(np.abs((y_val_arr - yv) / np.maximum(y_val_arr, 1e-8))) * 100),
         "r2": float(r2_score(y_val, yv)),
     }
     logger.info(f"Métricas de validación: {val_metrics}")
