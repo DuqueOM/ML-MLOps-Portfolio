@@ -204,7 +204,12 @@ class ChurnTrainer:
         if num_features:
             transformers.append(("num", self._build_numerical_pipeline(), num_features))
 
-        return ColumnTransformer(transformers=transformers, remainder="drop")
+        return ColumnTransformer(
+            transformers=transformers,
+            remainder="drop",
+            n_jobs=-1,  # Parallel processing for better performance
+            verbose_feature_names_out=False,  # Cleaner feature names
+        )
 
     def build_model(self) -> Pipeline:
         """Build ensemble model pipeline.
@@ -239,6 +244,7 @@ class ChurnTrainer:
             estimators=[("lr", lr), ("rf", rf)],
             voting=self.config.model.ensemble.voting,
             weights=self.config.model.ensemble.weights,
+            n_jobs=-1,  # Parallel training of base estimators
         )
 
         # Wrap in resample classifier if needed

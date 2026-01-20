@@ -173,7 +173,10 @@ def build_preprocessor(
         transformers=[
             ("num", numeric_pipeline, numeric_features),
             ("cat", categorical_pipeline, categorical_features),
-        ]
+        ],
+        remainder="drop",
+        n_jobs=-1,  # Parallel processing for better performance
+        verbose_feature_names_out=False,  # Cleaner feature names
     )
     return preprocessor
 
