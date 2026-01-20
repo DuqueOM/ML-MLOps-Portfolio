@@ -15,6 +15,56 @@
 
 ---
 
+## 📖 What Is This Portfolio?
+
+This is a **production-grade MLOps platform** showcasing enterprise best practices for deploying machine learning systems at scale. Unlike typical data science portfolios that stop at model training, this repository demonstrates the complete ML lifecycle: from data versioning and experiment tracking to containerized deployment, monitoring, and CI/CD automation.
+
+**Built for:** Recruiters, hiring managers, ML engineers, and data scientists evaluating production ML capabilities.
+
+### 💡 What You'll Find Here
+
+<div class="grid cards" markdown>
+
+-   🤖 **3 Production ML Projects**
+
+    ---
+
+    Complete end-to-end systems with APIs, dashboards, and monitoring
+
+-   🏗️ **Enterprise Infrastructure**
+
+    ---
+
+    Terraform (AWS), Kubernetes manifests, Docker multi-stage builds
+
+-   🔄 **Full CI/CD Pipeline**
+
+    ---
+
+    GitHub Actions with matrix testing, security scanning, automated deployment
+
+-   📊 **MLOps Best Practices**
+
+    ---
+
+    MLflow tracking, DVC versioning, Prometheus + Grafana observability
+
+-   🧪 **High Test Coverage**
+
+    ---
+
+    79-97% coverage with Pytest, integration tests, security scans
+
+-   📚 **Comprehensive Docs**
+
+    ---
+
+    Model Cards v2.0, Data Cards, Architecture diagrams, Runbooks
+
+</div>
+
+---
+
 ## 🚀 Quick Navigation
 
 <div class="grid cards" markdown>
