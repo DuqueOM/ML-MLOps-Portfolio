@@ -22,10 +22,25 @@ def rmse(y_true, y_pred) -> float:
 
 
 def mape(y_true, y_pred) -> float:
-    y_true = np.array(y_true)
-    y_pred = np.array(y_pred)
-    # Avoid division by zero
-    return float(np.mean(np.abs((y_true - y_pred) / (y_true + 1e-8))) * 100)
+    """Calculate Mean Absolute Percentage Error.
+
+    Parameters
+    ----------
+    y_true : array-like
+        True values
+    y_pred : array-like
+        Predicted values
+
+    Returns
+    -------
+    float
+        MAPE as percentage
+    """
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+    # Avoid division by zero with epsilon
+    epsilon = 1e-8
+    return float(np.mean(np.abs((y_true - y_pred) / np.maximum(y_true, epsilon))) * 100)
 
 
 def evaluate_model(cfg: Dict[str, Any]) -> Dict[str, Any]:

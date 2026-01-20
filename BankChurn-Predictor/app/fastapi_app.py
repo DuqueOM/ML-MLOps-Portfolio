@@ -358,21 +358,19 @@ async def predict_batch(batch_data: BatchCustomerData, background_tasks: Backgro
 
         results = predictor.predict(df, include_proba=True)
 
-        predictions = []
-        for i, row in results.iterrows():
-            prob = float(row["probability"])
-            pred = int(row["prediction"])
-            predictions.append(
-                PredictionResponse(
-                    churn_probability=prob,
-                    churn_prediction=pred,
-                    risk_level=determine_risk_level(prob),
-                    confidence=calculate_confidence(prob),
-                    feature_contributions=calculate_feature_contributions(customers_list[i]),
-                    model_version=model_metadata.get("version", "1.0.0"),
-                    prediction_timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                )
+        # Vectorized operations instead of iterrows for better performance
+        predictions = [
+            PredictionResponse(
+                churn_probability=float(results.iloc[i]["probability"]),
+                churn_prediction=int(results.iloc[i]["prediction"]),
+                risk_level=determine_risk_level(float(results.iloc[i]["probability"])),
+                confidence=calculate_confidence(float(results.iloc[i]["probability"])),
+                feature_contributions=calculate_feature_contributions(customers_list[i]),
+                model_version=model_metadata.get("version", "1.0.0"),
+                prediction_timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ"),
             )
+            for i in range(len(results))
+        ]
 
         processing_time = time.time() - start_batch
 
