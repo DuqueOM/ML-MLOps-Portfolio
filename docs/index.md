@@ -1,7 +1,5 @@
 # ML-MLOps Portfolio Documentation
 
-<div align="center">
-
 **Production-Ready Machine Learning Projects with Enterprise MLOps**
 
 ![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)
@@ -11,8 +9,6 @@
 
 [![GitHub Repository](https://img.shields.io/badge/📁_Full_Code-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/DuqueOM/ML-MLOps-Portfolio)
 [![YouTube Demo](https://img.shields.io/badge/📺_Video-Watch_Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
-
-</div>
 
 ---
 
