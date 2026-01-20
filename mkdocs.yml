@@ -92,9 +92,9 @@ nav:
     - Model Catalog: models/catalog.md
     - Reproducibility: models/reproducibility.md
   - Reference:
-    - Portfolio Landing: portfolio_landing.md
     - Release Process: RELEASE.md
     - Dependency Conflicts: DEPENDENCY_CONFLICTS.md
+    - Security Policy: ../SECURITY.md
   - Contributing:
     - Guidelines: contributing/guidelines.md
 
@@ -108,4 +108,4 @@ extra:
 watch:
   - docs
 
-copyright: Copyright &copy; 2025 Duque Ortega Mutis
+copyright: Copyright &copy; 2024-2026 Duque Ortega Mutis
