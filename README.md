@@ -794,15 +794,23 @@ docker-compose -f docker-compose.demo.yml down
 - ✅ Parallel training in `VotingClassifier`
 - ✅ `verbose_feature_names_out=False` for cleaner features
 
-### 📦 Commits
+### 📦 **Latest Features (v6.1.0)**:
+- 🐳 **Docker Optimization**: Multi-stage builds optimizados, mejor cache de layers
+- 📊 **Evidently Advanced**: Sistema de alertas automáticas, métricas avanzadas
+- 🔄 **CI/CD Benchmarks**: Benchmarks automáticos en pipeline, resultados históricos
+- ✅ **Redis Caching**: Módulo de caching para FastAPI
+- 🤖 **MLflow Automation**: Script de model registry automation
+- 📈 **Grafana Dashboards**: Dashboards de monitoreo ML
 
-```bash
+**Commits**:
+```
 ✅ v6.0.0: feat: Optimizar PyYAML y Joblib
 ✅ feat: Optimizar NumPy y Pandas - Performance y Memory
 ✅ feat: Optimizar scikit-learn - Paralelización y Performance
+✅ v6.1.0: feat: Optimizaciones finales - Docker, Evidently y CI/CD Benchmarks
 ```
 
-**Total**: 16 files modified, 733 additions, 74 deletions
+**Total**: 22 files modified, 1265 additions, 87 deletions
 
 ---
 
