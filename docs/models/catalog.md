@@ -8,9 +8,9 @@
 
 | Project | Model ID | Algorithm | Version | Status | Primary Metric | Last Updated |
 |---------|----------|-----------|---------|--------|----------------|--------------|
-| **BankChurn** | `bankchurn-voting-v1.5.0` | VotingClassifier (LR + RF) | 1.5.0 | ✅ Production | AUC-ROC: 0.853 | March 2026 |
-| **CarVision** | `carvision-rf-v1.5.0` | RandomForestRegressor | 1.5.0 | ✅ Production | R²: 0.766 | March 2026 |
-| **TelecomAI** | `telecomai-voting-v1.5.0` | VotingClassifier (3 models) | 1.5.0 | ✅ Production | AUC-ROC: 0.84 | March 2026 |
+| **BankChurn** | `bankchurn-voting-v1.5.0` | VotingClassifier (LR + RF) | 1.5.0 | ✅ Production | AUC-ROC: 0.853 | January 2026 |
+| **CarVision** | `carvision-rf-v1.5.0` | RandomForestRegressor | 1.5.0 | ✅ Production | R²: 0.766 | January 2026 |
+| **TelecomAI** | `telecomai-voting-v1.5.0` | VotingClassifier (3 models) | 1.5.0 | ✅ Production | AUC-ROC: 0.84 | January 2026 |
 
 ---
 
@@ -28,8 +28,8 @@
 | **Status** | ✅ **Production** |
 | **Artifact Path** | `artifacts/model.joblib` (unified pipeline) |
 | **Model Size** | 4.0 MB |
-| **Created** | March 2026 |
-| **Last Updated** | March 2026 |
+| **Created** | January 2026 |
+| **Last Updated** | January 2026 |
 
 ### Performance Metrics (Test Set, n=2,000)
 
@@ -86,8 +86,8 @@ Full documentation: [BankChurn Model Card](https://github.com/DuqueOM/ML-MLOps-P
 | **Status** | ✅ **Production** |
 | **Artifact Path** | `artifacts/model.joblib` (full pipeline) |
 | **Model Size** | 6 KB |
-| **Created** | March 2026 |
-| **Last Updated** | March 2026 |
+| **Created** | January 2026 |
+| **Last Updated** | January 2026 |
 
 ### Performance Metrics (Test Set, n=9,566)
 
@@ -149,8 +149,8 @@ Full documentation: [CarVision Model Card](https://github.com/DuqueOM/ML-MLOps-P
 | **Status** | ✅ **Production** |
 | **Artifact Path** | `artifacts/model.joblib` (unified pipeline) |
 | **Model Size** | 156 KB |
-| **Created** | March 2026 |
-| **Last Updated** | March 2026 |
+| **Created** | January 2026 |
+| **Last Updated** | January 2026 |
 
 ### Performance Metrics (Test Set, n=643)
 
@@ -200,9 +200,9 @@ Full documentation: [TelecomAI Model Card](https://github.com/DuqueOM/ML-MLOps-P
 
 | Project | v1.0.0 | v1.5.0 (Current) | Changes |
 |---------|--------|------------------|---------|
-| **BankChurn** | Sep 2025 (AUC=0.78) | **March 2026** (AUC=0.853) | Ensemble weights tuning, SHAP integration |
-| **CarVision** | Sep 2025 (R²=0.72) | **March 2026** (R²=0.766) | FeatureEngineer centralization, bootstrap CI |
-| **TelecomAI** | Sep 2025 (Acc=0.78) | **March 2026** (Acc=82%) | Added GradientBoosting, threshold optimization |
+| **BankChurn** | Sep 2025 (AUC=0.78) | **January 2026** (AUC=0.853) | Ensemble weights tuning, SHAP integration |
+| **CarVision** | Sep 2025 (R²=0.72) | **January 2026** (R²=0.766) | FeatureEngineer centralization, bootstrap CI |
+| **TelecomAI** | Sep 2025 (Acc=0.78) | **January 2026** (Acc=82%) | Added GradientBoosting, threshold optimization |
 
 ### Promotion Criteria (Staging → Production)
 
@@ -297,7 +297,7 @@ For each run, MLflow tracks:
 
 !!! info "Model Registry Status"
     All production models are **actively maintained** and monitored.  
-    **Last Catalog Update**: March 2026  
+    **Last Catalog Update**: January 2026  
     **Total Models in Production**: 3
 
 !!! tip "Accessing Models"
@@ -310,4 +310,4 @@ For each run, MLflow tracks:
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: January 2026
