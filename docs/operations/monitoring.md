@@ -119,11 +119,25 @@ open http://localhost:3000
 # Default credentials: admin / admin
 ```
 
-### Dashboard Panels
+### Pre-built Dashboard
 
-<!-- MEDIA PLACEHOLDER: Grafana dashboard screenshot -->
-<!-- To add: Screenshot of the ML Portfolio monitoring dashboard -->
-<!-- Path: media/screenshots/grafana-dashboard.png -->
+The portfolio includes a **production-ready Grafana dashboard** with the following panels:
+
+| Section | Panels | Description |
+|---------|--------|-------------|
+| **🎯 Service Health** | 4 stat panels | UP/DOWN status for BankChurn, CarVision, TelecomAI, MLflow |
+| **📈 Request Metrics** | 2 timeseries | Request rate (req/s), Latency percentiles (P50, P95) |
+| **🤖 ML Predictions** | 3 bar charts | Predictions/hour per project, price distribution |
+| **⚠️ Model Drift** | 3 gauges | Drift score per model (green/yellow/red thresholds) |
+| **💻 Resources** | 2 timeseries | CPU utilization (%), Memory usage (bytes) |
+
+**Dashboard Location**: `infra/grafana/dashboards/ml-portfolio-dashboard.json`
+
+**Provisioning Config**: `infra/grafana/provisioning/`
+- `dashboards/dashboards.yaml` — Dashboard auto-provisioning
+- `datasources/prometheus.yaml` — Prometheus datasource config
+
+### Dashboard Panels
 
 #### 1. Request Rate Panel
 
