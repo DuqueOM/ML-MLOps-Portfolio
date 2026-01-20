@@ -13,47 +13,46 @@ from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-
 from src.telecom.data import build_preprocessor, get_features_target, load_dataset
 
 logger = logging.getLogger(__name__)
 
 
-def ensure_dirs(paths: Dict[str, str]) -> None:
-    Path(paths["artifacts_dir"]).mkdir(parents=True, exist_ok=True)
-    model_export_path = paths.get("model_export_path")
-    if model_export_path:
-        Path(model_export_path).parent.mkdir(parents=True, exist_ok=True)
+def ensure_dirs(paths) -> None:
+    """Create necessary directories from PathsConfig."""
+    Path(paths.artifacts_dir).mkdir(parents=True, exist_ok=True)
+    if paths.model_export_path:
+        Path(paths.model_export_path).parent.mkdir(parents=True, exist_ok=True)
 
 
-def build_model(model_cfg: Dict[str, Any], seed: int) -> Any:
-    """Build a sklearn classifier from a simple config dict."""
-    name = model_cfg.get("name", "logreg").lower()
-    params: Dict[str, Any] = model_cfg.get("params", {})
+def build_model(model_cfg, seed: int) -> Any:
+    """Build a sklearn classifier from ModelConfig."""
+    name = model_cfg.name.lower()
+    params: Dict[str, Any] = model_cfg.params
 
     # Ensure seed is passed if supported
-    if name == "logreg":
+    if name == "logreg" or name == "logistic_regression":
         return LogisticRegression(**params, random_state=seed)
     if name == "random_forest":
         return RandomForestClassifier(**params, random_state=seed)
     if name == "gradient_boosting":
         return GradientBoostingClassifier(**params, random_state=seed)
 
-    raise ValueError(f"Unsupported model: {model_cfg.get('name')}")
+    raise ValueError(f"Unsupported model: {model_cfg.name}")
 
 
 def train_model(cfg: Any) -> Dict[str, float]:
     logger.info("Starting training...")
     ensure_dirs(cfg.paths)
 
-    df = load_dataset(cfg.paths["data_csv"])
+    df = load_dataset(cfg.paths.data_csv)
     X, y = get_features_target(df, cfg.features, cfg.target)
 
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
-        test_size=float(cfg.split.get("test_size", 0.2)),
-        stratify=y if cfg.split.get("stratify", True) else None,
+        test_size=float(cfg.split.test_size),
+        stratify=y if cfg.split.stratify else None,
         random_state=int(cfg.random_seed),
     )
 
@@ -74,7 +73,7 @@ def train_model(cfg: Any) -> Dict[str, float]:
 
     # Save artifacts with compression
     # Saving the FULL pipeline is preferred over saving parts separately for serving
-    model_path = Path(cfg.paths["model_path"])
+    model_path = Path(cfg.paths.model_path)
     joblib.dump(pipeline, model_path, compress=3)
     size_mb = model_path.stat().st_size / (1024 * 1024)
     logger.info(f"Pipeline saved to {model_path} ({size_mb:.2f} MB)")
@@ -82,4 +81,4 @@ def train_model(cfg: Any) -> Dict[str, float]:
     # Also save parts if specifically requested by legacy code (e.g. evaluate.py might expect them separate)
     # Actually, better to update evaluate.py to use the pipeline.
 
-    return {"accuracy": score, "model_path": cfg.paths["model_path"]}
+    return {"accuracy": score, "model_path": cfg.paths.model_path}
