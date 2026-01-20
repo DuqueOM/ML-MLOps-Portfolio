@@ -74,5 +74,7 @@ def build_preprocessor(numeric_features: List[str]) -> ColumnTransformer:
             ("num", numeric_pipeline, numeric_features),
         ],
         remainder="drop",
+        n_jobs=-1,  # Parallel processing for better performance
+        verbose_feature_names_out=False,  # Cleaner feature names
     )
     return preprocessor
