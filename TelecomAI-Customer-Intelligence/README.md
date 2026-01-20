@@ -83,7 +83,7 @@ TelecomAI Customer Intelligence is a **sophisticated plan recommendation engine*
 | **Precision** | **0.72** | 0.65-0.75 | ✅ Good |
 | **Recall** | **0.56** | 0.50-0.65 | ✅ Acceptable |
 | **API Latency** | **<25ms p95** | <50ms | ✅ Fast |
-| **Test Coverage** | **93%** | 80%+ | ✅ **Excellent** |
+| **Test Coverage** | **96%** | 80%+ | ✅ Excellent |
 | **Throughput** | **1,200 RPS** | >1,000 RPS | ✅ Scalable |
 
 ---
@@ -209,7 +209,7 @@ TelecomAI provides **proactive, data-driven plan optimization**:
   - Config-driven training (`configs/config.yaml`)
   - Seed control for deterministic results
 - **Quality Assurance**:
-  - 97% test coverage (unit + integration + e2e)
+  - 96% test coverage (unit + integration + e2e)
   - Pre-commit hooks (black, flake8, mypy)
   - Security scanning (bandit, safety)
 
@@ -750,7 +750,7 @@ git push origin feature/improve-features
 
 **Tools**: Black, Flake8, Mypy, Bandit, Pytest (97% coverage target)
 
-**Test Coverage**: 97% (Unit 12 files • Integration 3 files • E2E 1 file)
+**Test Coverage**: 96% (Unit 12 files • Integration 3 files • E2E 1 file)
 
 ---
 
@@ -849,7 +849,7 @@ spec:
 
 <div align="center">
 
-**Status**: ✅ Production-Ready | **Coverage**: 97% | **Last Updated**: March 2026
+**Status**: ✅ Production-Ready | **Coverage**: 96% | **Last Updated**: January 2026
 
 ⭐ **Star this project if you find it useful!** ⭐
 

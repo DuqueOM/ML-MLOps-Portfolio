@@ -50,7 +50,7 @@ This is a **production-grade MLOps platform** showcasing enterprise best practic
 
     ---
 
-    88-94% coverage with Pytest, integration tests, security scans
+    86-96% coverage with Pytest, integration tests, security scans
 
 -   📚 **Comprehensive Docs**
 
@@ -239,7 +239,7 @@ docker-compose -f docker-compose.demo.yml ps
 
 | Metric | BankChurn | CarVision | TelecomAI | Target |
 |--------|-----------|-----------|-----------|--------|
-| **Test Coverage** | 79% | 97% | 97% | >70% ✅ |
+| **Test Coverage** | 86% | 94% | 96% | >70% ✅ |
 | **Linting** | Clean | Clean | Clean | 100% ✅ |
 | **Type Checking** | Strict | Strict | Strict | 100% ✅ |
 | **Security Scan** | 0 HIGH | 0 HIGH | 0 HIGH | 0 ✅ |
