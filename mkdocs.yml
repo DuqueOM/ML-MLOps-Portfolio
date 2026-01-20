@@ -94,7 +94,8 @@ nav:
   - Reference:
     - Release Process: RELEASE.md
     - Dependency Conflicts: DEPENDENCY_CONFLICTS.md
-    - Security Policy: ../SECURITY.md
+    - Security Policy: SECURITY.md
+    - Media Assets: media/README.md
   - Contributing:
     - Guidelines: contributing/guidelines.md
 
