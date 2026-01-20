@@ -57,3 +57,7 @@ bash scripts/run_demo_tests.sh
 ## Troubleshooting
 
 See [Troubleshooting Guide](../operations/troubleshooting.md) for common issues.
+
+---
+
+**Last Updated**: March 2026

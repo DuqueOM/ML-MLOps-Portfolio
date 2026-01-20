@@ -489,3 +489,6 @@ kubectl scale deployment/bankchurn-canary --replicas=0 -n ml-production
 - [ ] Model fairness evaluated
 - [ ] Documentation updated
 - [ ] Stakeholder approval obtained
+---
+
+**Last Updated**: March 2026

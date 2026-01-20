@@ -284,3 +284,7 @@ docker-compose up -d --build bankchurn-api
 - [ ] Rollback procedure tested
 - [ ] Load testing completed
 - [ ] Security scanning passed
+
+---
+
+**Last Updated**: March 2026

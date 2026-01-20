@@ -256,3 +256,7 @@ graph TB
 !!! note "Diagram Source"
     All diagrams are written in Mermaid and can be edited directly in the markdown files.
     Source files are located in `docs/architecture/`.
+
+---
+
+**Last Updated**: March 2026

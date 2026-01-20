@@ -492,3 +492,7 @@ kubectl logs -f deployment/bankchurn-api -n ml-portfolio
 - [ ] Enable audit logging
 - [ ] Use secrets management (AWS Secrets Manager)
 - [ ] Implement least-privilege access
+
+---
+
+**Last Updated**: March 2026

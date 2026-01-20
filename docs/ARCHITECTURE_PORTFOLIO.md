@@ -1,14 +1,30 @@
-# Architecture Portfolio - ML/MLOps Multi-Project
+# 🏗️ Portfolio Architecture — ML/MLOps Multi-Project System
 
-## 📺 Video Demo
+<div align="center">
 
-[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+**Production-Grade Architecture with Unified MLOps Infrastructure**
+
+![Docker](https://img.shields.io/badge/Docker-Multi--Stage-2496ED?style=for-the-badge&logo=docker)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5?style=for-the-badge&logo=kubernetes)
+![GitHub Actions](https://img.shields.io/badge/CI/CD-GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions)
+![Last Updated](https://img.shields.io/badge/Updated-March%202026-blue?style=for-the-badge)
+
+[![YouTube Demo](https://img.shields.io/badge/📺_Video-Watch_Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+
+</div>
 
 ---
 
-## System Overview
+## 📋 System Overview
 
-This portfolio demonstrates a production-grade ML/MLOps architecture integrating three independent machine learning projects under a unified infrastructure and CI/CD pipeline.
+This portfolio demonstrates a **production-grade ML/MLOps architecture** integrating **3 independent machine learning projects** under a unified infrastructure and CI/CD pipeline.
+
+**Key Design Principles**:
+- ✅ **Modularity**: Each project is self-contained with its own pipeline
+- ✅ **Consistency**: Shared patterns across all projects (src/ layout, Pydantic config)
+- ✅ **Observability**: Centralized monitoring (MLflow, Prometheus, Grafana)
+- ✅ **Security**: Multi-layer scanning (Gitleaks, Bandit, Trivy)
+- ✅ **Scalability**: Horizontal scaling via Kubernetes + HPA
 
 ```mermaid
 graph TB
@@ -111,61 +127,115 @@ graph TD
 
 ### BankChurn-Predictor
 **Domain**: Customer Churn Prediction (Banking)  
-**ML Framework**: XGBoost with Optuna hyperparameter optimization  
+**ML Framework**: VotingClassifier (Logistic Regression + RandomForest)  
+**Version**: 1.5.0 (Production)  
+**Performance**: AUC-ROC=0.853, F1=0.604
+
 **Pipeline Architecture**:
 ```
-Raw Data → Feature Engineering → Preprocessing (Pipeline) → XGBoost Model → Predictions
+Raw Data → Preprocessing (SimpleImputer + StandardScaler + OneHotEncoder) → VotingClassifier → Predictions
 ```
 
 **Key Components**:
 - `src/bankchurn/data.py`: Data loading and validation
-- `src/bankchurn/features.py`: Feature engineering
-- `src/bankchurn/preprocessing.py`: Unified sklearn Pipeline
-- `src/bankchurn/training.py`: Training loop with MLflow
-- `app/fastapi_app.py`: REST API
+- `src/bankchurn/training.py`: Training loop with MLflow tracking
+- `src/bankchurn/prediction.py`: ChurnPredictor class for inference
+- `src/bankchurn/explainer.py`: SHAP explainability
+- `app/fastapi_app.py`: REST API (Port 8001)
 
-**Model Pipeline**:
+**Unified Pipeline** (artifacts/model.joblib):
 ```python
 Pipeline([
     ('preprocessor', ColumnTransformer([
-        ('num', StandardScaler(), numeric_features),
-        ('cat', OneHotEncoder(), categorical_features)
+        ('num', SimpleImputer + StandardScaler, numeric_features),
+        ('cat', OneHotEncoder, ['Geography', 'Gender'])
     ])),
-    ('model', XGBClassifier(...))
+    ('model', VotingClassifier([
+        ('lr', LogisticRegression(C=1.0, max_iter=1000)),
+        ('rf', RandomForestClassifier(n_estimators=100, max_depth=10, class_weight='balanced'))
+    ], voting='soft', weights=[1, 2]))
 ])
 ```
 
+**Special Features**:
+- ✅ SHAP explainability for feature importance
+- ✅ Drift detection with Evidently AI (PSI monitoring)
+- ✅ Fairness analysis by geography and age
+- ✅ 79% test coverage
+
 ### CarVision-Market-Intelligence
-**Domain**: Vehicle Price Prediction  
-**ML Framework**: RandomForest Regressor  
+**Domain**: Vehicle Price Prediction (Automotive)  
+**ML Framework**: RandomForestRegressor  
+**Version**: 1.5.0 (Production)  
+**Performance**: R²=0.766, RMSE=$4,794, MAPE=17.8%
+
 **Pipeline Architecture**:
 ```
-Raw Data → Data Cleaning → Feature Engineering → Preprocessing → RF Model → Price Predictions
+Raw Data → FeatureEngineer (vehicle_age, brand) → Preprocessing → RandomForest → Price Predictions
 ```
 
 **Key Components**:
-- `src/carvision/data.py`: Data loading with filtering
-- `src/carvision/features.py`: Centralized `FeatureEngineer` class
-- `src/carvision/training.py`: Model training
-- `src/carvision/analysis.py`: Market analysis
-- `app/streamlit_app.py`: Interactive dashboard
+- `src/carvision/data.py`: Data loading with quality filtering (7.2% removal)
+- `src/carvision/features.py`: **Centralized `FeatureEngineer` class** (prevents training-serving skew)
+- `src/carvision/training.py`: Model training with bootstrap CI
+- `src/carvision/analysis.py`: Market analysis (MarketAnalyzer, VisualizationEngine)
+- `app/fastapi_app.py`: REST API (Port 8002)
+- `app/streamlit_app.py`: **Interactive 4-tab dashboard** (Port 8501)
 
-**Model Pipeline**:
+**Unified Pipeline** (artifacts/model.joblib):
 ```python
 Pipeline([
-    ('features', FeatureEngineer()),
-    ('pre', ColumnTransformer([...])),
-    ('model', RandomForestRegressor(...))
+    ('features', FeatureEngineer()),  # vehicle_age, brand extraction
+    ('pre', ColumnTransformer([
+        ('num', SimpleImputer + StandardScaler, numerical),
+        ('cat', OneHotEncoder, categorical)
+    ])),
+    ('model', RandomForestRegressor(n_estimators=100, max_depth=15, random_state=42))
 ])
 ```
 
+**Special Features**:
+- ✅ Centralized feature engineering (FeatureEngineer class)
+- ✅ Data leakage prevention (exclude price_per_mile from inference)
+- ✅ Streamlit dashboard with 4 tabs (Portfolio, Market, Metrics, Predictor)
+- ✅ Advanced validation (CV, bootstrap CI, temporal backtest)
+- ✅ 97% test coverage
+
 ### TelecomAI-Customer-Intelligence
-**Domain**: Telecom Plan Recommendation  
-**ML Framework**: Scikit-Learn  
+**Domain**: Telecom Plan Recommendation (Plan Optimization)  
+**ML Framework**: VotingClassifier (LogisticRegression + GradientBoosting + RandomForest)  
+**Version**: 1.5.0 (Production)  
+**Performance**: AUC-ROC=0.84, Accuracy=82%, F1=0.63
+
 **Pipeline Architecture**:
 ```
-Raw Data → Feature Engineering → Preprocessing → Classifier → Plan Predictions
+Raw Data (4 features) → Preprocessing (StandardScaler) → VotingClassifier → Plan Predictions
 ```
+
+**Key Components**:
+- `src/telecomai/data.py`: Data loading (users_behavior.csv)
+- `src/telecomai/training.py`: Model training with class weights
+- `src/telecomai/prediction.py`: PlanPredictor class
+- `app/fastapi_app.py`: REST API (Port 8003)
+
+**Unified Pipeline** (artifacts/model.joblib):
+```python
+Pipeline([
+    ('preprocessor', StandardScaler()),  # 4 numerical features
+    ('model', VotingClassifier([
+        ('lr', LogisticRegression(C=1.0, class_weight={0: 0.4, 1: 0.6})),
+        ('gb', GradientBoostingClassifier(n_estimators=100, learning_rate=0.1)),
+        ('rf', RandomForestClassifier(n_estimators=100, max_depth=10, class_weight='balanced'))
+    ], voting='soft', weights=[1, 2, 2]))
+])
+```
+
+**Special Features**:
+- ✅ Threshold optimization (Conservative 0.5, Balanced 0.42, Aggressive 0.35)
+- ✅ Business impact analysis ($5.4M annual ROI)
+- ✅ Simple 4-feature model (high interpretability)
+- ✅ Usage pattern segmentation (light vs heavy users)
+- ✅ 97% test coverage
 
 ## Infrastructure Architecture
 
@@ -266,3 +336,23 @@ Unified GitHub Actions workflow with matrix testing:
 CarVision Market Intelligence dashboard with price predictor:
 
 ![Streamlit Dashboard](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/streamlit-dashboard.PNG)
+
+---
+
+## 🔗 Related Documentation
+
+- **[Operations Guide](OPERATIONS_PORTFOLIO.md)** — Deployment, monitoring, troubleshooting
+- **[Model Catalog](models/catalog.md)** — Registry of trained models
+- **[API Reference](api/rest-apis.md)** — Complete REST API documentation
+- **[Quick Start](getting-started/quickstart.md)** — Get running in 5 minutes
+
+---
+
+!!! info "Architecture Status"
+    This architecture is **actively maintained** and reflects the current production state.  
+    **Last Updated**: March 2026  
+    **Portfolio Version**: 1.5.0
+
+---
+
+**Last Updated**: March 2026
