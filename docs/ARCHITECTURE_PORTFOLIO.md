@@ -259,6 +259,26 @@ services:
   grafana:      # Port 3000
 ```
 
+### Observability Stack
+
+The portfolio includes a **production-ready observability stack**:
+
+| Component | Purpose | Configuration |
+|-----------|---------|---------------|
+| **Prometheus** | Metrics collection (15s scrape) | `infra/prometheus-config.yaml` |
+| **Grafana** | Visualization & dashboards | `infra/grafana/dashboards/ml-portfolio-dashboard.json` |
+| **Alertmanager** | Alert routing & notifications | `infra/prometheus-rules.yaml` |
+| **Evidently** | ML drift detection | Integrated in BankChurn monitoring |
+
+**Pre-built Dashboard Panels**:
+- 🎯 **Service Health**: UP/DOWN status for all 4 services
+- 📈 **Request Metrics**: Rate (req/s), Latency (P50, P95)
+- 🤖 **ML Predictions**: Predictions/hour, price distribution
+- ⚠️ **Model Drift**: Drift score gauges (green/yellow/red)
+- 💻 **Resources**: CPU utilization, memory usage
+
+**Metrics Endpoints**: All APIs expose `/metrics` (Prometheus format)
+
 ## CI/CD Pipeline Architecture
 
 ### GitHub Actions Workflows
