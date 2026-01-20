@@ -1,6 +1,19 @@
-# Operations Portfolio - ML/MLOps Multi-Project
+# ⚙️ Operations Guide — ML/MLOps Portfolio
 
-## Quick Start Guide
+<div align="center">
+
+**Production Deployment, Monitoring & Troubleshooting Guide**
+
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker)
+![Kubernetes](https://img.shields.io/badge/K8s-Deployments-326CE5?style=for-the-badge&logo=kubernetes)
+![Prometheus](https://img.shields.io/badge/Monitoring-Prometheus-E6522C?style=for-the-badge&logo=prometheus)
+![Last Updated](https://img.shields.io/badge/Updated-March%202026-blue?style=for-the-badge)
+
+</div>
+
+---
+
+## 🚀 Quick Start Guide
 
 ### Prerequisites
 - Python 3.11 or 3.12
@@ -482,3 +495,6 @@ tar -xzf models-backup-YYYYMMDD.tar.gz
 2. **Multi-region deployment**: Deploy to multiple cloud regions
 3. **Failover strategy**: Use load balancers with health checks
 4. **Incident response**: Document runbooks for common issues
+---
+
+**Last Updated**: March 2026

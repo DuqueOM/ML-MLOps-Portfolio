@@ -328,3 +328,7 @@ report.run(reference_data=train_df, current_data=prod_df)
 | Model artifacts | 90 days | Keep last 5 versions |
 | Prediction logs | 30 days | For monitoring |
 | MLflow experiments | Permanent | Historical record |
+
+---
+
+**Last Updated**: March 2026

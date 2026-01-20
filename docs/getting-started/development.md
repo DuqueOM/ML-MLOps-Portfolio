@@ -87,3 +87,7 @@ docker-compose -f docker-compose.mlflow.yml up -d
 # Start full demo stack
 docker-compose -f docker-compose.demo.yml up -d --build
 ```
+
+---
+
+**Last Updated**: March 2026

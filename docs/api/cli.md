@@ -341,3 +341,7 @@ make all-test       # Test all projects
 | 3 | File not found |
 | 4 | Model loading error |
 | 5 | Data validation error |
+
+---
+
+**Last Updated**: March 2026

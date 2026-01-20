@@ -482,3 +482,7 @@ docker-compose logs > docker_logs.txt
 - [ ] Environment details
 - [ ] Relevant logs
 - [ ] What you've already tried
+
+---
+
+**Last Updated**: March 2026

@@ -368,3 +368,7 @@ If you cannot reproduce results:
    - `pip freeze` output
    - Full error log
 2. Tag with `reproducibility` label
+
+---
+
+**Last Updated**: March 2026

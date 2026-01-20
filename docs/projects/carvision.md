@@ -189,3 +189,7 @@ CarVision-Market-Intelligence/
 - [API Reference](../api/rest-apis.md)
 - [Architecture Overview](../architecture/overview.md)
 - [Deployment Guide](../operations/deployment.md)
+
+---
+
+**Last Updated**: March 2026

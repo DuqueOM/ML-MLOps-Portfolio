@@ -397,3 +397,7 @@ Each API provides a complete OpenAPI 3.0 specification:
 - **TelecomAI**: http://localhost:8003/openapi.json
 
 Download and import into Postman, Insomnia, or other API clients for interactive testing
+
+---
+
+**Last Updated**: March 2026
