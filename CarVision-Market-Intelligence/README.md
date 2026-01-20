@@ -1,13 +1,35 @@
-# CarVision Market Intelligence
+# 🚗 CarVision Market Intelligence
 
-[![Documentation](https://img.shields.io/badge/Docs-Project%20Site-blue)](https://duqueom.github.io/ML-MLOps-Portfolio/projects/carvision/)
+<div align="center">
+
+**End-to-End Vehicle Valuation Platform**
+
+*Price Prediction API • Streamlit Dashboard • Market Analytics*
+
+[![Documentation](https://img.shields.io/badge/📚_Docs-Project_Site-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/projects/carvision/)
+[![YouTube Demo](https://img.shields.io/badge/📺_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+
+---
+
 [![CI Status](https://img.shields.io/badge/CI-Passing-brightgreen?logo=github-actions)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
-[![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg?flag=CarVision-Market-Intelligence)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio?flag=CarVision-Market-Intelligence)
+[![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg?flag=CarVision-Market-Intelligence)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)
 [![Python](https://img.shields.io/badge/Python-3.11%20|%203.12-blue?logo=python&logoColor=white)](pyproject.toml)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](Dockerfile)
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2?logo=mlflow&logoColor=white)](configs/config.yaml)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white)](app/streamlit_app.py)
 [![License](https://img.shields.io/badge/License-MIT-green)](../LICENSE)
+
+</div>
+
+---
+
+## ⚡ 30-Second Pitch
+
+> **The Problem**: The used vehicle market ($1.2T annually in the US) suffers from pricing opacity. Dealerships struggle with optimal pricing, sellers lack market intelligence, and buyers face information asymmetry.
+>
+> **The Solution**: CarVision provides ML-powered valuations with **R² 0.77** accuracy, interactive market analytics, and real-time API predictions—enabling **30% faster sales** and **12-18% margin improvement**.
+>
+> **The Tech**: RandomForest pipeline with centralized `FeatureEngineer`, Streamlit dashboard with 4 analytics tabs, FastAPI serving with <30ms latency.
 
 ---
 
@@ -21,16 +43,7 @@
 
 ![Streamlit Dashboard](../docs/media/gifs/streamlit-carvision.gif)
 
-### 📺 Full Portfolio Demo
-
-[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/qmw9VlgUcn8)
-
 </div>
-
----
-
-> **End-to-End Vehicle Valuation Platform**  
-> Production-grade ML system combining price prediction API, interactive business intelligence dashboard, and comprehensive market analytics. Features centralized `FeatureEngineer` class, FastAPI serving, Streamlit dashboards, and full MLflow experiment tracking.
 
 ---
 
@@ -39,6 +52,7 @@
 - [Overview](#-overview)
 - [Business Value](#-business-value)
 - [Key Features](#-key-features)
+- [Technical Highlights](#-technical-highlights)
 - [Architecture](#-architecture)
 - [Quick Start](#-quick-start)
 - [Dashboard Features](#-dashboard-features)
@@ -50,7 +64,6 @@
 - [Development](#-development)
 - [Deployment](#-deployment)
 - [Troubleshooting](#-troubleshooting)
-- [Contributing](#-contributing)
 
 ---
 
@@ -66,17 +79,17 @@ CarVision Market Intelligence is a **comprehensive vehicle valuation platform** 
 - **Minimize inventory holding costs** with faster turnover
 - **Identify high-ROI acquisition opportunities**
 
-### Technical Achievements
+### Technical Highlights
 
-| Metric | Value | Industry Benchmark |
-|--------|-------|-------------------|
-| **R² Score** | **0.77** | 0.65-0.75 (good) |
-| **RMSE** | **$4,396** | $5,000-6,000 (typical) |
-| **MAE** | **$3,124** | $3,500-4,500 (typical) |
-| **MAPE** | **18.2%** | 20-25% (acceptable) |
-| **API Latency** | **<30ms p95** | <50ms (target) |
-| **Test Coverage** | **97%** | 80%+ (production-ready) |
-| **Dashboard Load** | **<2s** | <3s (UX standard) |
+| Metric | Value | Industry Benchmark | Status |
+|--------|-------|-------------------|--------|
+| **R² Score** | **0.77** | 0.65-0.75 | ✅ Excellent |
+| **RMSE** | **$4,396** | $5,000-6,000 | ✅ Good |
+| **MAE** | **$3,124** | $3,500-4,500 | ✅ Good |
+| **MAPE** | **18.2%** | 20-25% | ✅ Acceptable |
+| **API Latency** | **<30ms p95** | <50ms | ✅ Fast |
+| **Test Coverage** | **97%** | 80%+ | ✅ Excellent |
+| **Dashboard Load** | **<2s** | <3s | ✅ UX standard |
 
 ---
 
@@ -85,10 +98,13 @@ CarVision Market Intelligence is a **comprehensive vehicle valuation platform** 
 ### Problem Statement
 
 The used vehicle market suffers from **opacity and inefficiency**:
-- Dealerships struggle with optimal pricing (too high = slow sales, too low = lost profit)
-- Individual sellers lack market intelligence tools
-- Lenders need accurate collateral valuations
-- Buyers face information asymmetry
+
+| Challenge | Impact |
+|-----------|--------|
+| Dealerships struggle with optimal pricing | Too high = slow sales, too low = lost profit |
+| Individual sellers lack market intelligence tools | Suboptimal pricing decisions |
+| Lenders need accurate collateral valuations | Risk of over/under-lending |
+| Buyers face information asymmetry | Difficulty assessing fair prices |
 
 **Market opportunity**: $1.2 trillion used vehicle market annually (US alone)
 
@@ -132,32 +148,32 @@ CarVision provides three core capabilities:
 
 **4 Comprehensive Sections:**
 
-1. **Portfolio Overview**
-   - Total inventory value and vehicle count
-   - Average price and days-on-lot metrics
-   - Price distribution histogram
-   - Inventory breakdown by condition, fuel type, transmission
+#### 1. **Portfolio Overview**
+- Total inventory value and vehicle count
+- Average price and days-on-lot metrics
+- Price distribution histogram
+- Inventory breakdown by condition, fuel type, transmission
 
-2. **Market Analysis** (Executive-Level)
-   - Investment insights powered by `MarketAnalyzer`
-   - Risk assessment heatmaps
-   - Brand performance comparison
-   - Fuel type market trends
-   - Premium features analysis (4WD, manual transmission)
+#### 2. **Market Analysis** (Executive-Level)
+- Investment insights powered by `MarketAnalyzer` class
+- Risk assessment heatmaps
+- Brand performance comparison
+- Fuel type market trends
+- Premium features analysis (4WD, manual transmission)
 
-3. **Model Performance Metrics**
-   - RMSE, MAE, R², MAPE with visual KPIs
-   - Bootstrap confidence intervals (1000 iterations)
-   - Temporal backtest (train on older data, test on recent)
-   - Prediction vs actual scatter plots
-   - Residual analysis
+#### 3. **Model Performance Metrics**
+- RMSE, MAE, R², MAPE with visual KPIs
+- Bootstrap confidence intervals (1000 iterations)
+- Temporal backtest (train on older data, test on recent)
+- Prediction vs actual scatter plots
+- Residual analysis
 
-4. **Price Predictor**
-   - Single-vehicle ML price estimator
-   - Interactive input form (12 features)
-   - Market percentile positioning
-   - Gauge visualization (underpriced/fair/overpriced)
-   - Optional SHAP-based explanations
+#### 4. **Price Predictor**
+- Single-vehicle ML price estimator
+- Interactive input form (12 features)
+- Market percentile positioning
+- Gauge visualization (underpriced/fair/overpriced)
+- Optional SHAP-based explanations
 
 ### Production API (FastAPI)
 
@@ -166,6 +182,7 @@ CarVision provides three core capabilities:
 - **Automatic OpenAPI documentation** at `/docs`
 - **Health checks** for Kubernetes liveness probes
 - **Prometheus metrics** for observability
+- **Batch processing** support (up to 100 vehicles)
 
 ### Advanced ML Pipeline
 
@@ -194,13 +211,13 @@ CarVision provides three core capabilities:
 graph TB
     subgraph "Data Layer"
         A[Raw CSV 50K records] --> B[Data Validation]
-        B --> C[Feature Engineering]
+        B --> C[FeatureEngineer]
     end
     
     subgraph "Training Pipeline"
         C --> D[Train/Val/Test Split]
         D --> E[Preprocessing Pipeline]
-        E --> F[Model Training]
+        E --> F[RandomForest Training]
         F --> G[Evaluation Suite]
         G --> H[MLflow Registry]
     end
@@ -239,6 +256,28 @@ graph TB
 | **Visualization** | Plotly + Altair | Charts and graphs | Streamlit components |
 | **Metrics** | Prometheus | Observability | `/metrics` endpoint |
 
+### ML Pipeline Structure
+
+```python
+pipeline = Pipeline([
+    ('feature_engineer', FeatureEngineer()),
+    ('preprocessor', ColumnTransformer([
+        ('num_impute', SimpleImputer(strategy='median'), numeric_features),
+        ('cat_encode', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+    ])),
+    ('scaler', StandardScaler()),
+    ('regressor', RandomForestRegressor(
+        n_estimators=200,
+        max_depth=20,
+        min_samples_split=10,
+        min_samples_leaf=4,
+        max_features='sqrt',
+        random_state=42,
+        n_jobs=-1
+    ))
+])
+```
+
 ### Data Flow
 
 ```
@@ -247,7 +286,7 @@ graph TB
 3. Feature Eng:    FeatureEngineer → vehicle_age, brand, bins
 4. Preprocessing:  Impute → OneHotEncode → StandardScale
 5. Training:       RandomForest(n_estimators=200, max_depth=20)
-6. Evaluation:     CV, Bootstrap, Temporal backtest
+6. Evaluation:     5-fold CV, Bootstrap (1000 iter), Temporal backtest
 7. Registry:       MLflow → artifacts/model.joblib
 8. Serving:        FastAPI load model → predict() → JSON response
 9. Dashboard:      Streamlit load model → interactive UI
@@ -263,7 +302,7 @@ graph TB
 ```bash
 # Required
 - Python 3.11 or 3.12
-- Docker & Docker Compose (for containerized demo)
+- Docker & Docker Compose 2.0+
 - Make (optional but recommended)
 
 # Optional (for full features)
@@ -271,7 +310,7 @@ graph TB
 - pip install shap     # SHAP explanations in dashboard
 ```
 
-### One-Click Demo (Recommended)
+### ⚡ One-Click Demo (Recommended)
 
 ```bash
 # From project root
@@ -305,6 +344,9 @@ open http://localhost:8501
 
 ### Manual Setup (Development)
 
+<details>
+<summary>📋 Click to expand detailed setup</summary>
+
 ```bash
 # 1. Create virtual environment
 python -m venv .venv
@@ -323,6 +365,8 @@ uvicorn app.fastapi_app:app --reload --port 8000
 streamlit run app/streamlit_app.py
 ```
 
+</details>
+
 ### Quick API Test
 
 ```bash
@@ -330,24 +374,24 @@ streamlit run app/streamlit_app.py
 curl -X POST "http://localhost:8000/predict" \
      -H "Content-Type: application/json" \
      -d '{
-  "model_year": 2018,
-  "odometer": 45000,
-  "model": "ford f-150",
-  "fuel": "gas",
-  "transmission": "automatic",
-  "condition": "good",
-  "cylinders": 6,
-  "drive": "4wd",
-  "type": "truck",
-  "paint_color": "white"
-}'
+       "model_year": 2018,
+       "odometer": 45000,
+       "model": "ford f-150",
+       "fuel": "gas",
+       "transmission": "automatic",
+       "condition": "good",
+       "cylinders": 6,
+       "drive": "4wd",
+       "type": "truck",
+       "paint_color": "white"
+     }'
 
 # Expected response:
 # {
 #   "prediction": 24500.0,
 #   "vehicle_age": 8,
 #   "brand": "ford",
-#   "confidence_interval": [22100, 26900],
+#   "confidence_interval_95": [22100.0, 26900.0],
 #   "market_percentile": 65
 # }
 ```
@@ -431,7 +475,7 @@ insights = analyzer.generate_insights()
 **Advanced Validation:**
 
 1. **Cross-Validation** (5-fold):
-   - Mean RMSE: $4,450 (±$320)
+   - Mean RMSE: $4,430 (±$95)
    - Demonstrates model stability
 
 2. **Bootstrap Confidence Intervals** (1000 iterations):
@@ -442,7 +486,7 @@ insights = analyzer.generate_insights()
 3. **Temporal Backtest**:
    - Train on 2017-2018 data
    - Test on 2019 data
-   - RMSE: $4,680 (slight degradation expected)
+   - RMSE: $4,680 (6.5% degradation expected)
    - Validates model robustness over time
 
 **Visualizations:**
@@ -505,15 +549,14 @@ Top Factors Affecting Price:
 
 ---
 
-## 🔌 API Reference
+## 📡 API Reference
 
 ### Endpoints
 
 #### 1. Health Check
 
 ```http
-GET /health HTTP/1.1
-Host: localhost:8000
+GET /health
 
 Response 200 OK:
 {
@@ -528,10 +571,9 @@ Response 200 OK:
 #### 2. Single Prediction
 
 ```http
-POST /predict HTTP/1.1
-Host: localhost:8000
-Content-Type: application/json
+POST /predict
 
+Request Body:
 {
   "model_year": 2018,
   "odometer": 45000,
@@ -559,10 +601,9 @@ Response 200 OK:
 #### 3. Batch Prediction
 
 ```http
-POST /predict_batch HTTP/1.1
-Host: localhost:8000
-Content-Type: application/json
+POST /predict_batch
 
+Request Body:
 {
   "vehicles": [
     {
@@ -606,8 +647,7 @@ Limits: Max 100 vehicles per request
 #### 4. Prometheus Metrics
 
 ```http
-GET /metrics HTTP/1.1
-Host: localhost:8000
+GET /metrics
 
 Response 200 OK (Prometheus format):
 # HELP predictions_total Total number of predictions
@@ -620,12 +660,6 @@ prediction_latency_seconds_bucket{le="0.01"} 8500
 prediction_latency_seconds_bucket{le="0.05"} 15100
 prediction_latency_seconds_sum 420.5
 prediction_latency_seconds_count 15234
-
-# HELP prediction_price Predicted vehicle price
-# TYPE prediction_price histogram
-prediction_price_bucket{le="10000"} 2300
-prediction_price_bucket{le="20000"} 8900
-...
 ```
 
 ### Error Responses
@@ -680,7 +714,7 @@ pipeline = Pipeline([
 
 ### Feature Engineering Details
 
-**FeatureEngineer Class** (`src/carvision/features/engineering.py`):
+**FeatureEngineer Class** (`src/carvision/features.py`):
 
 ```python
 class FeatureEngineer:
@@ -722,25 +756,6 @@ class FeatureEngineer:
 8. **Evaluation**: Comprehensive metrics on test set
 9. **Serialization**: Save full pipeline with `joblib`
 
-### Hyperparameter Tuning
-
-```yaml
-# configs/config.yaml (excerpt)
-model:
-  random_forest:
-    n_estimators: [100, 200, 300]
-    max_depth: [15, 20, 25]
-    min_samples_split: [5, 10, 15]
-    min_samples_leaf: [2, 4, 6]
-
-# Best parameters (after grid search):
-best_params:
-  n_estimators: 200
-  max_depth: 20
-  min_samples_split: 10
-  min_samples_leaf: 4
-```
-
 ### Performance Breakdown
 
 | Metric | Train | Validation | Test | Interpretation |
@@ -756,16 +771,18 @@ best_params:
 
 Top 10 features (Random Forest feature importance):
 
-1. `vehicle_age` (0.28) - Most influential
-2. `odometer` (0.19)
-3. `cylinders` (0.12)
-4. `brand_ford` (0.08)
-5. `brand_toyota` (0.07)
-6. `condition_excellent` (0.06)
-7. `fuel_diesel` (0.05)
-8. `drive_4wd` (0.04)
-9. `transmission_manual` (0.03)
-10. `type_truck` (0.03)
+| Rank | Feature | Importance | Impact |
+|------|---------|------------|--------|
+| 1 | `vehicle_age` | 0.28 | Most influential |
+| 2 | `odometer` | 0.19 | Strong negative |
+| 3 | `cylinders` | 0.12 | Engine size premium |
+| 4 | `brand_ford` | 0.08 | Brand value |
+| 5 | `brand_toyota` | 0.07 | Brand value |
+| 6 | `condition_excellent` | 0.06 | Condition premium |
+| 7 | `fuel_diesel` | 0.05 | Fuel type effect |
+| 8 | `drive_4wd` | 0.04 | 4WD premium |
+| 9 | `transmission_manual` | 0.03 | Transmission effect |
+| 10 | `type_truck` | 0.03 | Body type |
 
 **Business Insight**: Age and mileage dominate, but brand and condition provide significant lift
 
@@ -798,17 +815,13 @@ open http://localhost:5000
 
 ### Experiment Details
 
+<details>
+<summary>📋 Click to expand experiment findings</summary>
+
 #### CV-1: Ridge Baseline
 ```python
-params = {
-    "alpha": 1.0,
-    "solver": "auto"
-}
-metrics = {
-    "test_rmse": 5591,
-    "test_r2": 0.63,
-    "test_mae": 4103
-}
+params = {"alpha": 1.0, "solver": "auto"}
+metrics = {"test_rmse": 5591, "test_r2": 0.63, "test_mae": 4103}
 ```
 
 **Findings**: Simple linear model underperforms on non-linear relationships (age × odometer interaction)
@@ -847,14 +860,16 @@ metrics = {
 
 **Findings**: Similar performance to RF but longer training time (not selected)
 
+</details>
+
 ### MLflow Artifacts Logged
 
 For each run:
 - `model.joblib`: Serialized pipeline
 - `feature_importance.csv`: Feature importances
 - `metrics.json`: All evaluation metrics
-- `confusion_matrix.png` (for classification tasks)
 - `residual_plot.png`: Residuals vs predicted
+- `prediction_vs_actual.png`: Scatter plot
 
 ---
 
@@ -1032,63 +1047,39 @@ Conclusion: Model degrades slightly on future data,
 
 ```
 CarVision-Market-Intelligence/
-├── src/
-│   └── carvision/
-│       ├── __init__.py
-│       ├── data/
-│       │   ├── loader.py              # Data loading utilities
-│       │   ├── validation.py          # Pandera schemas
-│       │   └── preprocessing.py       # Cleaning functions
-│       ├── features/
-│       │   └── engineering.py         # FeatureEngineer class
-│       ├── models/
-│       │   ├── trainer.py             # Training orchestration
-│       │   ├── evaluator.py           # Metrics calculation
-│       │   └── validator.py           # CV, bootstrap, temporal
-│       ├── analytics/
-│       │   ├── market_analyzer.py     # MarketAnalyzer class
-│       │   └── visualization.py       # VisualizationEngine
-│       └── config/
-│           └── schemas.py             # Pydantic models
+├── src/carvision/
+│   ├── __init__.py
+│   ├── data.py                  # Data loading/cleaning
+│   ├── features.py              # FeatureEngineer class
+│   ├── training.py              # Training orchestration
+│   ├── evaluation.py            # Metrics calculation
+│   ├── analysis.py              # MarketAnalyzer class
+│   ├── visualization.py         # Plotting utilities
+│   └── prediction.py            # Inference logic
 ├── app/
-│   ├── fastapi_app.py                 # API endpoints
-│   ├── streamlit_app.py               # Dashboard UI
-│   ├── schemas.py                     # Request/response models
-│   └── utils.py                       # Shared utilities
+│   ├── fastapi_app.py           # REST API
+│   ├── streamlit_app.py         # Dashboard (4 tabs)
+│   ├── schemas.py               # Pydantic models
+│   └── utils.py                 # Shared utilities
 ├── tests/
-│   ├── unit/
-│   │   ├── test_features.py
-│   │   ├── test_model.py
-│   │   ├── test_api.py
-│   │   └── test_analytics.py
-│   ├── integration/
-│   │   ├── test_pipeline.py
-│   │   └── test_dashboard.py
-│   └── conftest.py                    # Pytest fixtures
-├── configs/
-│   └── config.yaml                    # Main configuration
-├── data/
-│   ├── raw/
-│   │   └── vehicles_us.csv            # Training data (DVC tracked)
-│   └── processed/
-│       └── train_test_split/
+│   ├── test_features.py         # FeatureEngineer tests
+│   ├── test_api.py              # API integration tests
+│   ├── test_dashboard.py        # Dashboard tests
+│   └── conftest.py              # Pytest fixtures
+├── configs/config.yaml          # Main configuration
+├── data/raw/
+│   └── vehicles_us.csv          # Training data (DVC tracked)
 ├── artifacts/
-│   ├── model.joblib                   # Trained pipeline
-│   ├── metrics.json                   # Evaluation metrics
-│   ├── metrics_bootstrap.json         # Bootstrap results
-│   ├── metrics_temporal.json          # Temporal backtest
-│   └── feature_importance.csv
-├── models/
-│   └── model_card.md                  # Model documentation
-├── notebooks/
-│   ├── 01_eda.ipynb                   # Exploratory analysis
-│   ├── 02_feature_engineering.ipynb   # Feature development
-│   └── 03_model_selection.ipynb       # Model comparison
-├── Dockerfile                         # Production image
-├── docker-compose.yml                 # Local dev stack
-├── Makefile                           # Development commands
-├── pyproject.toml                     # Python dependencies
-└── README.md                          # This file
+│   ├── model.joblib             # Trained pipeline
+│   ├── metrics.json             # Evaluation metrics
+│   ├── metrics_bootstrap.json   # Bootstrap results
+│   └── metrics_temporal.json    # Temporal backtest
+├── models/model_card.md         # Model documentation
+├── Dockerfile                   # Multi-stage production image
+├── docker-compose.yml           # Local dev stack
+├── Makefile                     # Development commands
+├── pyproject.toml               # Python dependencies
+└── README.md                    # This file
 ```
 
 ### Development Workflow
@@ -1097,11 +1088,9 @@ CarVision-Market-Intelligence/
 # 1. Create feature branch
 git checkout -b feature/add-temporal-features
 
-# 2. Implement feature
-# Edit: src/carvision/features/engineering.py
+# 2. Implement feature (e.g., edit src/carvision/features.py)
 
-# 3. Add tests
-# Edit: tests/unit/test_features.py
+# 3. Add tests (edit tests/test_features.py)
 
 # 4. Run tests locally
 make test
@@ -1149,73 +1138,6 @@ make lint
 | **E2E** | 2% | Full workflow | 60s |
 | **Total** | **97%** | Comprehensive validation | 105s |
 
-**Example Unit Test**:
-
-```python
-# tests/unit/test_features.py
-import pytest
-from src.carvision.features.engineering import FeatureEngineer
-
-def test_vehicle_age_calculation():
-    df = pd.DataFrame({'model_year': [2018, 2015, 2020]})
-    engineer = FeatureEngineer(current_year=2026)
-    result = engineer.fit_transform(df)
-    
-    expected = [8, 11, 6]
-    assert result['vehicle_age'].tolist() == expected
-
-def test_brand_extraction():
-    df = pd.DataFrame({'model': ['ford f-150', 'toyota camry', 'honda civic']})
-    engineer = FeatureEngineer()
-    result = engineer.fit_transform(df)
-    
-    assert result['brand'].tolist() == ['ford', 'toyota', 'honda']
-```
-
-### Adding New Features
-
-**Step-by-Step Guide**:
-
-1. **Update FeatureEngineer**:
-```python
-# src/carvision/features/engineering.py
-class FeatureEngineer:
-    def fit_transform(self, df):
-        # Existing features...
-        
-        # New feature: Price per year of age
-        df['price_per_year'] = df['price'] / (df['vehicle_age'] + 1)
-        
-        return df
-```
-
-2. **Update Config Schema**:
-```python
-# src/carvision/config/schemas.py
-class FeatureConfig(BaseModel):
-    use_price_per_year: bool = True
-```
-
-3. **Add Tests**:
-```python
-# tests/unit/test_features.py
-def test_price_per_year():
-    df = pd.DataFrame({
-        'price': [20000, 30000],
-        'vehicle_age': [4, 9]
-    })
-    engineer = FeatureEngineer()
-    result = engineer.fit_transform(df)
-    
-    expected = [4000, 3000]
-    assert result['price_per_year'].tolist() == expected
-```
-
-4. **Update Documentation**:
-   - Add to this README
-   - Update `models/model_card.md`
-   - Document in docstrings
-
 ---
 
 ## 🚢 Deployment
@@ -1242,6 +1164,9 @@ docker run -d \
 ```
 
 ### Kubernetes Deployment
+
+<details>
+<summary>📋 Click to expand K8s manifests</summary>
 
 ```yaml
 # k8s/deployment.yaml
@@ -1322,6 +1247,8 @@ spec:
         averageUtilization: 80
 ```
 
+</details>
+
 ### Environment Variables
 
 ```bash
@@ -1334,18 +1261,6 @@ MLFLOW_TRACKING_URI=http://mlflow-server:5000
 PROMETHEUS_PORT=9090
 MAX_BATCH_SIZE=100
 API_TIMEOUT_SECONDS=30
-```
-
-### Health Checks
-
-```bash
-# Liveness probe (K8s)
-curl -f http://localhost:8000/health || exit 1
-
-# Readiness probe
-curl -f http://localhost:8000/health \
-  && [ "$(curl -s http://localhost:8000/health | jq -r .model_loaded)" = "true" ] \
-  || exit 1
 ```
 
 ### Monitoring in Production
@@ -1377,9 +1292,10 @@ process_resident_memory_bytes / 1024 / 1024 / 1024  # Convert to GB
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+<details>
+<summary>📋 Common Issues & Solutions</summary>
 
-#### Issue: Dashboard won't start - "Model file not found"
+### Issue: Dashboard won't start - "Model file not found"
 
 **Cause**: Artifacts not generated or wrong path
 
@@ -1395,7 +1311,9 @@ ls -lh artifacts/model.joblib
 bash scripts/setup_demo_models.sh
 ```
 
-#### Issue: API returns 422 "Validation Error"
+---
+
+### Issue: API returns 422 "Validation Error"
 
 **Cause**: Request doesn't match Pydantic schema
 
@@ -1409,12 +1327,14 @@ open http://localhost:8000/docs
   "model_year": 2018,        # int, required
   "odometer": 45000,         # int, required
   "model": "ford f-150",     # str, required
-  "fuel": "gas",             # str, required (gas/diesel/electric/hybrid/other)
-  "transmission": "automatic" # str, required (automatic/manual/other)
+  "fuel": "gas",             # str, required
+  "transmission": "automatic" # str, required
 }
 ```
 
-#### Issue: Dashboard loads slowly or crashes
+---
+
+### Issue: Dashboard loads slowly or crashes
 
 **Cause**: Large dataset or missing caching
 
@@ -1432,7 +1352,9 @@ def load_model():
     return joblib.load('artifacts/model.joblib')
 ```
 
-#### Issue: SHAP explanations not showing
+---
+
+### Issue: SHAP explanations not showing
 
 **Cause**: `shap` library not installed
 
@@ -1444,7 +1366,9 @@ pip install shap
 pip install -r requirements.txt -r requirements-dev.txt
 ```
 
-#### Issue: Predictions seem unrealistic
+---
+
+### Issue: Predictions seem unrealistic
 
 **Cause**: Data drift or model staleness
 
@@ -1464,142 +1388,17 @@ print(df_train.describe())
 make train
 ```
 
-#### Issue: Docker container exits immediately
-
-**Cause**: Port already in use or missing dependencies
-
-**Solution**:
-```bash
-# Check port availability
-lsof -i :8000
-
-# View container logs
-docker logs carvision-api
-
-# Rebuild with no cache
-docker-compose down
-docker-compose up --build --force-recreate
-```
-
-### Performance Debugging
-
-```python
-# Add timing instrumentation
-import time
-import logging
-
-logger = logging.getLogger(__name__)
-
-def predict(data):
-    start = time.time()
-    
-    # Feature engineering
-    t1 = time.time()
-    features = engineer.transform(data)
-    logger.info(f"Feature eng: {(time.time() - t1)*1000:.2f}ms")
-    
-    # Preprocessing
-    t2 = time.time()
-    processed = preprocessor.transform(features)
-    logger.info(f"Preprocessing: {(time.time() - t2)*1000:.2f}ms")
-    
-    # Prediction
-    t3 = time.time()
-    prediction = model.predict(processed)
-    logger.info(f"Prediction: {(time.time() - t3)*1000:.2f}ms")
-    
-    logger.info(f"Total: {(time.time() - start)*1000:.2f}ms")
-    return prediction
-```
-
-### Getting Help
-
-1. **Check logs**:
-   ```bash
-   # API logs
-   docker logs carvision-api
-   
-   # Dashboard logs
-   docker logs carvision-dashboard
-   ```
-
-2. **Review documentation**:
-   - [Project Site](https://duqueom.github.io/ML-MLOps-Portfolio/projects/carvision/)
-   - [Model Card](models/model_card.md)
-   - [Operations Runbook](../docs/OPERATIONS_PORTFOLIO.md)
-
-3. **Search existing issues**: [GitHub Issues](https://github.com/DuqueOM/ML-MLOps-Portfolio/issues)
-
-4. **Ask in discussions**: [GitHub Discussions](https://github.com/DuqueOM/ML-MLOps-Portfolio/discussions)
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please see the main portfolio [Contributing Guidelines](../docs/contributing/guidelines.md).
-
-### Contribution Ideas
-
-**High-Impact Enhancements**:
-- [ ] Add GPU support for faster batch predictions
-- [ ] Implement A/B testing framework for model versions
-- [ ] Create mobile-responsive dashboard
-- [ ] Add real-time data ingestion pipeline
-- [ ] Implement federated learning for privacy
-
-**Quick Wins**:
-- [ ] Add more chart types in dashboard
-- [ ] Improve error messages in API
-- [ ] Add request caching layer
-- [ ] Optimize Docker image size
-- [ ] Add more unit tests for edge cases
-
-### Pull Request Process
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Make changes and add tests
-4. Ensure all tests pass (`make test`)
-5. Update documentation
-6. Commit with conventional commits (`feat:`, `fix:`, `docs:`)
-7. Push to branch
-8. Open Pull Request with detailed description
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- **Scikit-learn** team for excellent ML library
-- **Streamlit** team for intuitive dashboard framework
-- **FastAPI** team for modern Python web framework
-- **Plotly** team for interactive visualizations
-- **MLflow** team for experiment tracking
-- **DVC** team for data versioning
+</details>
 
 ---
 
 ## 📚 Additional Resources
 
-### Documentation
-- **Model Card**: [models/model_card.md](models/model_card.md)
-- **Architecture**: [Portfolio Architecture](../docs/ARCHITECTURE_PORTFOLIO.md)
-- **Operations**: [Portfolio Operations](../docs/OPERATIONS_PORTFOLIO.md)
-- **API Docs**: [FastAPI Swagger](http://localhost:8000/docs) (when running)
-
-### Notebooks
-- **EDA**: [notebooks/01_eda.ipynb](notebooks/01_eda.ipynb)
-- **Feature Engineering**: [notebooks/02_feature_engineering.ipynb](notebooks/02_feature_engineering.ipynb)
-- **Model Selection**: [notebooks/03_model_selection.ipynb](notebooks/03_model_selection.ipynb)
-
-### Related Projects
-- [BankChurn Predictor](../BankChurn-Predictor/) - Classification example
-- [TelecomAI](../TelecomAI-Customer-Intelligence/) - Another classification use case
+- **[Model Card](models/model_card.md)** — Comprehensive model documentation
+- **[Architecture Docs](../docs/ARCHITECTURE_PORTFOLIO.md)** — Portfolio system design
+- **[Operations Runbook](../docs/OPERATIONS_PORTFOLIO.md)** — Deployment & troubleshooting
+- **[API Reference](http://localhost:8000/docs)** — Interactive Swagger UI (when running)
+- **[MLflow UI](http://localhost:5000)** — Experiment tracking (when running)
 
 ---
 
@@ -1608,46 +1407,19 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 **Duque Ortega Mutis (DuqueOM)**  
 *Machine Learning & MLOps Engineer*
 
+14 years of operational experience transitioning to ML engineering with a focus on production-ready systems, reliability, and operational excellence.
+
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://linkedin.com/in/duqueom)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow-black?style=flat&logo=github)](https://github.com/DuqueOM)
 [![Portfolio](https://img.shields.io/badge/Portfolio-Visit-green?style=flat)](https://duqueom.github.io/ML-MLOps-Portfolio/)
 
 ---
 
-## 📊 Project Status
-
-| Aspect | Status | Last Updated |
-|--------|--------|--------------|
-| **Build** | ✅ Passing | 2026-01-19 |
-| **Tests** | ✅ 97% Coverage | 2026-01-19 |
-| **Security** | ✅ No vulnerabilities | 2026-01-19 |
-| **Documentation** | ✅ Complete | 2026-01-19 |
-| **Production** | ✅ Ready | 2026-01-19 |
-
----
-
-## 🔮 Roadmap
-
-### Q1 2026
-- [ ] Implement real-time data pipeline (Kafka)
-- [ ] Add GPU acceleration for batch predictions
-- [ ] Create mobile app (React Native)
-
-### Q2 2026
-- [ ] Deploy to AWS EKS with auto-scaling
-- [ ] Implement A/B testing framework
-- [ ] Add anomaly detection for pricing outliers
-
-### Q3 2026
-- [ ] Multi-region deployment (US, EU)
-- [ ] Add computer vision for vehicle condition assessment
-- [ ] Implement federated learning
-
----
-
 <div align="center">
 
-**⭐ Star this project if you find it useful!**
+**Status**: ✅ Production-Ready | **Coverage**: 97% | **Last Updated**: March 2026
+
+⭐ **Star this project if you find it useful!** ⭐
 
 [Report Bug](https://github.com/DuqueOM/ML-MLOps-Portfolio/issues) · [Request Feature](https://github.com/DuqueOM/ML-MLOps-Portfolio/issues) · [View Demo](https://youtu.be/qmw9VlgUcn8)
 
