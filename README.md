@@ -450,7 +450,6 @@ python scripts/run_experiments.py
 | **[Runbook (Quick Reference)](RUNBOOK.md)** | Copy-paste commands for common operations (health checks, logs, scaling) |
 | **[Release Process](docs/RELEASE.md)** | Release workflow, GHCR publishing, blue/green deployments, rollback procedures |
 | **[Dependencies](docs/DEPENDENCY_CONFLICTS.md)** | Conflict analysis (PyArrow, Pydantic v1/v2), remediation plan |
-| **[Release Checklist](CHECKLIST_RELEASE.md)** | Pre-launch verification checklist (tests, security, docs, performance) |
 | **[Quick Start](QUICK_START.md)** | One-command demo for quick evaluation by recruiters/reviewers |
 
 ---
@@ -543,7 +542,9 @@ ML-MLOps-Portfolio/
 │
 ├── docker-compose.demo.yml        # Demo stack (all services)
 ├── RUNBOOK.md                     # Quick command reference
-├── CHECKLIST_RELEASE.md           # Pre-launch checklist
+├── QUICK_START.md                 # 5-minute setup guide
+├── SECURITY.md                    # Security policy
+├── CODE_OF_CONDUCT.md             # Contributor covenant
 ├── CONTRIBUTING.md                # Contribution guidelines
 ├── CHANGELOG.md                   # Version history
 └── README.md                      # This file
