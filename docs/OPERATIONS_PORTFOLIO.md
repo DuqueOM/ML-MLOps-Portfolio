@@ -497,4 +497,4 @@ tar -xzf models-backup-YYYYMMDD.tar.gz
 4. **Incident response**: Document runbooks for common issues
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: January 2026

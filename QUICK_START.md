@@ -237,7 +237,7 @@ For detailed development instructions, see:
 
 <div align="center">
 
-**Quick Start Version**: 2.0 | **Last Updated**: March 2026
+**Quick Start Version**: 2.0 | **Last Updated**: January 2026
 
 ⭐ **Production-Ready ML Portfolio** ⭐
 

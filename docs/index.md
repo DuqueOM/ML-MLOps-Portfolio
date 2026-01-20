@@ -361,7 +361,7 @@ This portfolio is designed for:
 
 !!! info "Documentation Status"
     This documentation is actively maintained.  
-    **Last Updated**: March 2026  
+    **Last Updated**: January 2026  
     **Portfolio Version**: 1.5.0
 
 !!! tip "Quick Evaluation"

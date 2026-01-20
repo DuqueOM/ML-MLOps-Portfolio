@@ -370,9 +370,9 @@ CarVision Market Intelligence dashboard with price predictor:
 
 !!! info "Architecture Status"
     This architecture is **actively maintained** and reflects the current production state.  
-    **Last Updated**: March 2026  
+    **Last Updated**: January 2026  
     **Portfolio Version**: 1.5.0
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: January 2026
