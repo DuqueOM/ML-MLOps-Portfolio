@@ -321,11 +321,7 @@ This portfolio is designed for:
 
 ---
 
-<div align="center">
-
 **ML-MLOps Portfolio** — Production-Ready Machine Learning  
 Built by [Duque Ortega Mutis (DuqueOM)](https://github.com/DuqueOM)
 
 [📖 Full Documentation](https://duqueom.github.io/ML-MLOps-Portfolio/) | [💻 Source Code](https://github.com/DuqueOM/ML-MLOps-Portfolio) | [📺 Video Demo](https://youtu.be/qmw9VlgUcn8)
-
-</div>
