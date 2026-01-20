@@ -10,7 +10,7 @@
 ---
 
 ## 🎬 Portfolio Demo
-![Portfolio Demo](../media/gifs/portfolio-demo.gif)
+![Portfolio Demo](media/gifs/portfolio-demo.gif)
 **End-to-end demonstration** of the complete ML/MLOps stack: MLflow experiments, Docker Compose orchestration, FastAPI services, Streamlit dashboard, and Prometheus monitoring.
 
 ---
