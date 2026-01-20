@@ -22,7 +22,7 @@ Watch the complete portfolio demonstration:
 | **Best Model** | VotingClassifier (LR + RF) | RandomForestRegressor | VotingClassifier (3 models) |
 | **Primary Metric** | **AUC=0.853**, F1=0.604 | **R²=0.766**, RMSE=$4,794 | **AUC=0.84**, Accuracy=82% |
 | **MLflow Experiments** | 3 tracked runs | 3 tracked runs | 3 tracked runs |
-| **Test Coverage** | 79% | 97% | 97% |
+| **Test Coverage** | **88%** (130 tests) | **94%** (95 tests) | **93%** (62 tests) |
 | **Interface** | REST API (FastAPI) | REST API + **Streamlit Dashboard** | REST API (FastAPI) |
 | **Special Features** | SHAP explainability, drift detection | 4-tab dashboard, bootstrap CI | Threshold tuning, ROI analysis |
 
@@ -164,7 +164,7 @@ project/
 
 | Component | Technology |
 |-----------|-----------|
-| **Testing** | pytest, pytest-cov (79-97% coverage) |
+| **Testing** | pytest, pytest-cov (88-94% coverage) |
 | **Linting** | Black, Flake8, isort |
 | **Type Checking** | Mypy (strict mode) |
 | **Security** | Bandit, Gitleaks, pip-audit, Trivy |
@@ -234,4 +234,4 @@ docker-compose -f docker-compose.demo.yml up -d --build
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: January 2026 (v6.2.0)

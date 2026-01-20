@@ -88,7 +88,7 @@ CarVision Market Intelligence is a **comprehensive vehicle valuation platform** 
 | **MAE** | **$3,124** | $3,500-4,500 | ✅ Good |
 | **MAPE** | **18.2%** | 20-25% | ✅ Acceptable |
 | **API Latency** | **<30ms p95** | <50ms | ✅ Fast |
-| **Test Coverage** | **97%** | 80%+ | ✅ Excellent |
+| **Test Coverage** | **94%** | 80%+ | ✅ Excellent |
 | **Dashboard Load** | **<2s** | <3s | ✅ UX standard |
 
 ---

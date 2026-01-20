@@ -50,7 +50,7 @@ This is a **production-grade MLOps platform** showcasing enterprise best practic
 
     ---
 
-    79-97% coverage with Pytest, integration tests, security scans
+    88-94% coverage with Pytest, integration tests, security scans
 
 -   📚 **Comprehensive Docs**
 
