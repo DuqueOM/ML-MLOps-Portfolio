@@ -118,7 +118,7 @@ def test_model_config_learning_rate_validation():
 
 def test_config_validate_features_not_empty():
     """Test Config rejects empty features list."""
-    with pytest.raises(ValidationError, match="Features list cannot be empty"):
+    with pytest.raises(ValidationError, match="at least 1 item"):
         Config(paths=PathsConfig(data_csv="data.csv"), features=[])
 
 
