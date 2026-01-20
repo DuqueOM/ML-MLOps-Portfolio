@@ -1,6 +1,6 @@
 # Multi-stage Dockerfile for CarVision Market Intelligence
 # Stage 1: Builder
-FROM python:3.11-slim AS builder
+FROM python:3.11-slim-bookworm AS builder
 
 # Metadata
 LABEL maintainer="Duque Ortega Mutis (DuqueOM) <DuqueOrtegaMutis@gmail.com>"
@@ -34,7 +34,7 @@ RUN python -m venv /opt/venv && \
     pip install --no-cache-dir -r requirements_clean.txt
 
 # Stage 2: Runtime
-FROM python:3.11-slim AS runtime
+FROM python:3.11-slim-bookworm AS runtime
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -59,8 +59,15 @@ WORKDIR /app
 # Copy venv from builder
 COPY --from=builder --chown=appuser:appuser /opt/venv /opt/venv
 
-# Copy source code
-COPY --chown=appuser:appuser . .
+# Copy configs first (change less frequently, better cache)
+COPY --chown=appuser:appuser configs/ ./configs/
+COPY --chown=appuser:appuser pyproject.toml ./
+
+# Copy source code (changes more frequently)
+COPY --chown=appuser:appuser src/ ./src/
+COPY --chown=appuser:appuser app/ ./app/
+COPY --chown=appuser:appuser monitoring/ ./monitoring/
+COPY --chown=appuser:appuser main.py ./
 
 # Create directories
 RUN mkdir -p logs data/raw data/processed models artifacts && \
