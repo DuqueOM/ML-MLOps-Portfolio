@@ -42,12 +42,12 @@ def test_train_and_evaluate_end_to_end(tmp_path: Path) -> None:
     assert "accuracy" in metrics
 
     paths = cfg.paths
-    assert Path(paths["model_path"]).exists()
+    assert Path(paths.model_path).exists()
     # preprocessor is now inside the model pipeline
 
     metrics_eval = evaluate_model(cfg)
     assert "accuracy" in metrics_eval
-    assert Path(paths["metrics_path"]).exists()
+    assert Path(paths.metrics_path).exists()
 
 
 def test_predict_creates_output_csv(tmp_path: Path) -> None:
@@ -63,7 +63,7 @@ def test_predict_creates_output_csv(tmp_path: Path) -> None:
     input_df.to_csv(input_csv, index=False)
 
     output_csv = tmp_path / "preds.csv"
-    predict_batch(str(input_csv), str(output_csv), cfg.paths["model_path"], cfg.features)
+    predict_batch(str(input_csv), str(output_csv), cfg.paths.model_path, cfg.features)
 
     assert output_csv.exists()
     out_df = pd.read_csv(output_csv)
@@ -85,6 +85,6 @@ def test_predict_raises_for_missing_columns(tmp_path: Path) -> None:
         predict_batch(
             str(bad_input_csv),
             str(tmp_path / "out.csv"),
-            cfg.paths["model_path"],
+            cfg.paths.model_path,
             cfg.features,
         )
