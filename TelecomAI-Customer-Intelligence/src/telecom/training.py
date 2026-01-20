@@ -26,9 +26,28 @@ def ensure_dirs(paths) -> None:
 
 
 def build_model(model_cfg, seed: int) -> Any:
-    """Build a sklearn classifier from ModelConfig."""
-    name = model_cfg.name.lower()
-    params: Dict[str, Any] = model_cfg.params
+    """Build a sklearn classifier from ModelConfig or dict.
+
+    Parameters
+    ----------
+    model_cfg : ModelConfig or dict
+        Model configuration (Pydantic model or dict for backward compatibility)
+    seed : int
+        Random seed
+
+    Returns
+    -------
+    classifier
+        Sklearn classifier instance
+    """
+    # Support both Pydantic ModelConfig and dict for backward compatibility
+    if isinstance(model_cfg, dict):
+        name = model_cfg.get("name", "logreg").lower()
+        params: Dict[str, Any] = model_cfg.get("params", {})
+    else:
+        # Pydantic ModelConfig
+        name = model_cfg.name.lower()
+        params = model_cfg.params
 
     # Ensure seed is passed if supported
     if name == "logreg" or name == "logistic_regression":
@@ -38,7 +57,7 @@ def build_model(model_cfg, seed: int) -> Any:
     if name == "gradient_boosting":
         return GradientBoostingClassifier(**params, random_state=seed)
 
-    raise ValueError(f"Unsupported model: {model_cfg.name}")
+    raise ValueError(f"Unsupported model: {name}")
 
 
 def train_model(cfg: Any) -> Dict[str, float]:
