@@ -14,20 +14,23 @@ def make_isolated_config(tmp_path: Path) -> Config:
     project_root = Path(__file__).resolve().parents[1]
     cfg = Config.from_yaml(str(project_root / "configs" / "config.yaml"))
 
-    data_csv_abs = project_root / cfg.paths["data_csv"]
+    data_csv_abs = project_root / cfg.paths.data_csv
     artifacts_dir = tmp_path / "artifacts"
     models_dir = tmp_path / "models"
 
-    cfg.paths = {
-        **cfg.paths,
-        "data_csv": str(data_csv_abs),
-        "artifacts_dir": str(artifacts_dir),
-        "model_path": str(artifacts_dir / "model.joblib"),
-        "metrics_path": str(artifacts_dir / "metrics.json"),
-        "confusion_matrix_path": str(artifacts_dir / "confusion_matrix.png"),
-        "roc_curve_path": str(artifacts_dir / "roc_curve.png"),
-        "model_export_path": str(models_dir / "model_v1.0.0.pkl"),
-    }
+    # Update paths using Pydantic model
+    from src.telecom.config import PathsConfig
+
+    cfg.paths = PathsConfig(
+        data_csv=str(data_csv_abs),
+        artifacts_dir=str(artifacts_dir),
+        model_path=str(artifacts_dir / "model.joblib"),
+        preprocessor_path=str(artifacts_dir / "preprocessor.joblib"),
+        metrics_path=str(artifacts_dir / "metrics.json"),
+        confusion_matrix_path=str(artifacts_dir / "confusion_matrix.png"),
+        roc_curve_path=str(artifacts_dir / "roc_curve.png"),
+        model_export_path=str(models_dir / "model_v1.0.0.pkl"),
+    )
     cfg.mlflow = None
     return cfg
 

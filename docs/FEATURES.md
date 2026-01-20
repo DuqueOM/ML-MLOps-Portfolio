@@ -192,10 +192,10 @@ python scripts/mlflow_registry_automation.py latest \
 
 ## 📚 Documentation
 
-- [Performance Optimizations](../README.md#-performance-optimizations-v600)
-- [Benchmarking Guide](../scripts/benchmark_optimizations.py)
-- [MLflow Automation](../scripts/mlflow_registry_automation.py)
-- [Grafana Setup](../infra/grafana/)
+- Performance Optimizations: See main README
+- Benchmarking Guide: `scripts/benchmark_optimizations.py`
+- MLflow Automation: `scripts/mlflow_registry_automation.py`
+- Grafana Setup: `infra/grafana/`
 
 ---
 
