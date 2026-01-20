@@ -234,4 +234,4 @@ docker-compose -f docker-compose.demo.yml up -d --build
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: January 2026

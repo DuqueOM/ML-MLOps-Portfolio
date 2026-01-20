@@ -1,6 +1,6 @@
 # Models Directory
 
-**Last Updated**: March 2026
+**Last Updated**: January 2026
 
 ## Current Files
 
@@ -14,7 +14,7 @@ Comprehensive model card following MLOps Staff best practices:
 - Deployment instructions (API + Streamlit Dashboard)
 - Monitoring and drift detection
 
-**Updated**: March 2026 with hybrid professional format
+**Updated**: January 2026 with hybrid professional format
 
 ---
 

@@ -25,7 +25,7 @@
 | **Class Distribution** | Smart: 69.4%, Ultra: 30.6% |
 | **Time Period** | Monthly aggregated data (Jan-Dec 2018) |
 | **Data Version** | v1.0.0 |
-| **Last Updated** | March 2026 |
+| **Last Updated** | January 2026 |
 
 ---
 
@@ -306,7 +306,7 @@ if drift_score > 0.3:
 
 <div align="center">
 
-**Data Card Version**: 2.0 | **Last Updated**: March 2026  
+**Data Card Version**: 2.0 | **Last Updated**: January 2026  
 **Dataset Version**: 1.0.0 | **Records**: 3,214
 
 ⭐ **Production-Ready Plan Recommendation Data** ⭐

@@ -25,7 +25,7 @@
 | **Class Distribution** | Churned: 20.4%, Retained: 79.6% |
 | **Time Period** | Historical (3-year customer data) |
 | **Data Version** | v1.0.0 (tracked via DVC) |
-| **Last Updated** | March 2026 |
+| **Last Updated** | January 2026 |
 
 ---
 
@@ -192,7 +192,7 @@ dvc add data/raw/Churn_Modelling.csv
 dvc push  # To remote storage (S3/GCS)
 
 # Current version
-DVC SHA: a3f7b9c (committed March 2026)
+DVC SHA: a3f7b9c (committed January 2026)
 ```
 
 **Processed Data**:
@@ -286,7 +286,7 @@ graph LR
 
 <div align="center">
 
-**Data Card Version**: 2.0 | **Last Updated**: March 2026  
+**Data Card Version**: 2.0 | **Last Updated**: January 2026  
 **Dataset Version**: 1.0.0 | **Records**: 10,000
 
 ⭐ **Production-Ready ML Data** ⭐
