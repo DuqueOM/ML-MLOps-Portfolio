@@ -68,7 +68,7 @@ VotingClassifier (soft voting, weights=[1, 2]):
 
 ### Model Card
 
-Full documentation: [BankChurn Model Card](../../BankChurn-Predictor/models/model_card.md)
+Full documentation: [BankChurn Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/BankChurn-Predictor/models/model_card.md)
 
 ---
 
@@ -131,7 +131,7 @@ RandomForestRegressor:
 
 ### Model Card
 
-Full documentation: [CarVision Model Card](../../CarVision-Market-Intelligence/models/model_card.md)
+Full documentation: [CarVision Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/CarVision-Market-Intelligence/models/model_card.md)
 
 ---
 
@@ -190,7 +190,7 @@ VotingClassifier (soft voting, weights=[1, 2, 2]):
 
 ### Model Card
 
-Full documentation: [TelecomAI Model Card](../../TelecomAI-Customer-Intelligence/models/model_card.md)
+Full documentation: [TelecomAI Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/TelecomAI-Customer-Intelligence/models/model_card.md)
 
 ---
 
@@ -289,9 +289,9 @@ For each run, MLflow tracks:
 
 ### Per-Project Model Cards
 
-- **[BankChurn Model Card](../../BankChurn-Predictor/models/model_card.md)** — Comprehensive documentation
-- **[CarVision Model Card](../../CarVision-Market-Intelligence/models/model_card.md)** — Comprehensive documentation
-- **[TelecomAI Model Card](../../TelecomAI-Customer-Intelligence/models/model_card.md)** — Comprehensive documentation
+- **[BankChurn Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/BankChurn-Predictor/models/model_card.md)** — Comprehensive documentation
+- **[CarVision Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/CarVision-Market-Intelligence/models/model_card.md)** — Comprehensive documentation
+- **[TelecomAI Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/TelecomAI-Customer-Intelligence/models/model_card.md)** — Comprehensive documentation
 
 ---
 
