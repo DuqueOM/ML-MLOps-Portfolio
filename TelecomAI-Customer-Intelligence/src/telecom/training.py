@@ -72,15 +72,12 @@ def train_model(cfg: Any) -> Dict[str, float]:
     score = pipeline.score(X_test, y_test)
     logger.info(f"Model accuracy: {score:.4f}")
 
-    # Save artifacts
+    # Save artifacts with compression
     # Saving the FULL pipeline is preferred over saving parts separately for serving
-    # But we keep legacy support if needed.
-    joblib.dump(
-        pipeline, cfg.paths["model_path"]
-    )  # Overwriting separate parts model with full pipeline is a breaking change?
-    # Wait, original code saved preprocessor and model separately AND pipeline separately.
-    # Let's simplify: Save full pipeline as the main artifact.
-    joblib.dump(pipeline, cfg.paths["model_path"])
+    model_path = Path(cfg.paths["model_path"])
+    joblib.dump(pipeline, model_path, compress=3)
+    size_mb = model_path.stat().st_size / (1024 * 1024)
+    logger.info(f"Pipeline saved to {model_path} ({size_mb:.2f} MB)")
 
     # Also save parts if specifically requested by legacy code (e.g. evaluate.py might expect them separate)
     # Actually, better to update evaluate.py to use the pipeline.

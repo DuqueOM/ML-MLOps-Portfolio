@@ -112,9 +112,18 @@ class BankChurnConfig(BaseModel):
         if not config_path.exists():
             raise FileNotFoundError(f"Config file not found: {config_path}")
 
-        with open(config_path, "r") as f:
-            # yaml.safe_load can return None for empty files
-            config_dict = yaml.safe_load(f) or {}
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                config_dict = yaml.safe_load(f)
+        except yaml.YAMLError as e:
+            logger.error(f"Failed to parse YAML file {config_path}: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Error reading config file {config_path}: {e}")
+            raise
+
+        if config_dict is None:
+            config_dict = {}
 
         # Provide sensible defaults for missing sections so that
         # older/focused configs without an explicit mlflow block

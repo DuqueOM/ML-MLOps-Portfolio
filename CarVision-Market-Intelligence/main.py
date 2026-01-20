@@ -20,12 +20,10 @@ import subprocess
 import sys
 import warnings
 from pathlib import Path
-from typing import Any, Dict
-
-import yaml
 
 # Core imports
 from src.carvision.analysis import MarketAnalyzer
+from src.carvision.config import CarVisionConfig
 from src.carvision.data import clean_data, load_data
 from src.carvision.evaluation import evaluate_model
 from src.carvision.features import FeatureEngineer
@@ -52,11 +50,6 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger(__name__)
-
-
-def load_config(path: str) -> Dict[str, Any]:
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
 
 
 def main():
@@ -206,16 +199,18 @@ def main():
 
         elif args.mode == "train":
             logger.info("=== MODO TRAIN ===")
-            cfg = load_config(args.config)
-            cfg["seed"] = int(seed_used)
+            config = CarVisionConfig.from_yaml(args.config)
+            config.seed = int(seed_used)
+            cfg = config.to_dict()
             result = train_model(cfg)
             logger.info(f"Modelo guardado en: {result['model_path']}")
             print(json.dumps(result["val_metrics"], indent=2))
 
         elif args.mode == "eval":
             logger.info("=== MODO EVAL ===")
-            cfg = load_config(args.config)
-            cfg["seed"] = int(seed_used)
+            config = CarVisionConfig.from_yaml(args.config)
+            config.seed = int(seed_used)
+            cfg = config.to_dict()
             results = evaluate_model(cfg)
             print(json.dumps(results, indent=2))
 
@@ -224,8 +219,9 @@ def main():
             if not args.input_json or not Path(args.input_json).exists():
                 raise FileNotFoundError("Debe especificar --input_json con ruta válida")
 
-            cfg = load_config(args.config)
-            cfg["seed"] = int(seed_used)
+            config = CarVisionConfig.from_yaml(args.config)
+            config.seed = int(seed_used)
+            cfg = config.to_dict()
             payload = json.loads(Path(args.input_json).read_text())
 
             result = predict_price(payload, cfg)
