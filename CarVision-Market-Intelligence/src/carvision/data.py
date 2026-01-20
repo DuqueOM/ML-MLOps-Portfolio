@@ -28,10 +28,10 @@ def load_data(csv_path: str) -> pd.DataFrame:
         pandas DataFrame with optimized memory usage
     """
     # Define dtypes for better memory efficiency
+    # Note: cylinders is not specified as it may contain strings like '6 cylinders'
     dtypes = {
         "price": "float32",
         "model_year": "int16",
-        "cylinders": "int8",
         "odometer": "float32",
         "condition": "category",
         "fuel": "category",
