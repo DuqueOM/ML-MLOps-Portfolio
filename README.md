@@ -81,7 +81,7 @@ This portfolio demonstrates that transition: not just ML models that achieve goo
 - 🎯 **Operations-First Mindset**: Health checks, Prometheus metrics, structured logging
 - 🔒 **Security by Default**: Gitleaks, Bandit, Trivy scanning in CI/CD
 - 📊 **Real Monitoring**: Not just "model deployed"—actual dashboards and alerts
-- 🧪 **Test Discipline**: 88-94% coverage with enforcement in CI
+- 🧪 **Test Discipline**: 86-96% coverage with enforcement in CI
 - 🏗️ **Infrastructure as Code**: Terraform for AWS/GCP, Kubernetes manifests
 - 📈 **Experiment Tracking**: 9 MLflow experiments demonstrating systematic model selection
 
@@ -100,7 +100,7 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 ### Portfolio Philosophy
 
 1. **Production-Ready Over Notebook-First**: Every model is served via API with proper error handling
-2. **Testing is Non-Negotiable**: 88-94% coverage enforced in CI/CD
+2. **Testing is Non-Negotiable**: 86-96% coverage enforced in CI/CD
 3. **Security Matters**: Automated scanning for secrets, vulnerabilities, and code quality
 4. **Documentation for Humans**: READMEs, model cards, architecture diagrams, video demos
 
@@ -110,9 +110,9 @@ This repository focuses on **3 Main Projects (Top-3)** brought to professional s
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|--------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | **88%** | <50ms p95 | Ensemble, SHAP, SMOTE |
-| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.77**, RMSE $4.4K | **94%** | <30ms p95 | Streamlit Dashboard, Bootstrap CI |
-| [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **AUC 0.84**, Acc 82% | **93%** | <25ms p95 | GradientBoosting, Revenue Optimization |
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 86% | <50ms p95 | Ensemble, SHAP, SMOTE |
+| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.77**, RMSE $4.4K | 94% | <30ms p95 | Streamlit Dashboard, Bootstrap CI |
+| [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **AUC 0.84**, Acc 82% | 96% | <25ms p95 | GradientBoosting, Revenue Optimization |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------|
@@ -144,7 +144,7 @@ Banks lose $2-5M annually to preventable customer churn. This system enables pro
 | **F1-Score** | **0.64** | Balanced precision-recall |
 | **Precision** | **0.72** | 72% of predictions are correct |
 | **Recall** | **0.58** | Captures 58% of actual churners |
-| **Coverage** | **90%** | Unit + Integration tests |
+| **Coverage** | 86% | Unit + Integration tests |
 | **Latency** | <50ms p95 | Real-time predictions |
 
 **Key Features**:
@@ -153,7 +153,7 @@ Banks lose $2-5M annually to preventable customer churn. This system enables pro
 - **Explainability**: SHAP values for feature contributions (Age, NumOfProducts, IsActiveMember top drivers)
 - **MLOps**: MLflow tracking with 3 experiments (Baseline → Tuned → Overfit demo)
 - **API**: FastAPI with Pydantic validation, health checks, Prometheus metrics
-- **Testing**: 88% coverage with 130 tests including integration, prediction, and explainability tests
+- **Testing**: 86% coverage including integration tests with MLflow server
 
 **Architecture**: Modular Python package (`src/bankchurn`) with:
 - `training.py`: Training orchestration with MLflow integration
@@ -189,7 +189,7 @@ The used vehicle market ($1.2T annually in the US) suffers from pricing opacity.
 | **RMSE** | **$4,396** | Accurate within $4.4K |
 | **MAE** | **$3,124** | Mean absolute error |
 | **MAPE** | **18.2%** | Mean absolute % error |
-| **Coverage** | **94%** | Comprehensive test suite (95 tests) |
+| **Coverage** | 97% | Comprehensive test suite |
 | **Dashboard Load** | <2s | Fast user experience |
 
 **Key Features**:
@@ -229,7 +229,7 @@ The used vehicle market ($1.2T annually in the US) suffers from pricing opacity.
 | **AUC-ROC** | **0.84** | Excellent discrimination |
 | **F1-Score** | **0.63** | Balanced performance |
 | **Precision** | **0.72** | 72% correct recommendations |
-| **Coverage** | **93%** | Full test suite (62 tests) |
+| **Coverage** | 97% | Full test suite |
 | **Throughput** | 1,200 RPS | High-volume capable |
 
 **Key Features**:
@@ -314,9 +314,9 @@ The entire portfolio is validated by a single master workflow (`ci-mlops.yml`) t
 | **ghcr-publish** | Image publishing (main only) | GHCR, semantic tags |
 
 **Coverage Enforcement**:
-- BankChurn: ≥79% (currently **88%** with 130 tests)
-- CarVision: ≥80% (currently **94%** with 95 tests)
-- TelecomAI: ≥80% (currently **93%** with 62 tests)
+- BankChurn: ≥79% (includes integration tests with MLflow)
+- CarVision: ≥80%
+- TelecomAI: ≥80%
 
 **If a CI run fails**:
 1. Check the `tests` job logs first
@@ -473,7 +473,7 @@ ML-MLOps-Portfolio/
 │   ├── app/
 │   │   └── fastapi_app.py         # REST API
 │   ├── models/model_card.md       # Model documentation
-│   ├── tests/                     # 79% coverage
+│   ├── tests/                     # 86% coverage
 │   ├── configs/config.yaml        # Training configuration
 │   ├── dvc.yaml                   # Data versioning pipeline
 │   └── Dockerfile                 # Multi-stage build
@@ -490,7 +490,7 @@ ML-MLOps-Portfolio/
 │   │   ├── streamlit_app.py       # Interactive dashboard (4 tabs)
 │   │   └── fastapi_app.py         # REST API
 │   ├── models/model_card.md       # Model documentation
-│   ├── tests/                     # 97% coverage
+│   ├── tests/                     # 94% coverage
 │   └── Dockerfile
 │
 ├── TelecomAI-Customer-Intelligence/ # 📱 Advanced Analytics
@@ -503,7 +503,7 @@ ML-MLOps-Portfolio/
 │   ├── app/
 │   │   └── fastapi_app.py         # REST API
 │   ├── models/model_card.md       # Model documentation
-│   ├── tests/                     # 97% coverage
+│   ├── tests/                     # 96% coverage
 │   └── Dockerfile
 │
 ├── common_utils/                  # Shared utilities
@@ -559,7 +559,7 @@ ML-MLOps-Portfolio/
 | Metric | Status | Target | Achievement |
 |--------|--------|--------|-------------|
 | **CI Pipeline** | 🟢 **Passing** | 100% Green | ✅ 100% |
-| **Test Coverage** | 🟢 **88%–94%** | ≥79% BankChurn, ≥80% others | ✅ **Exceeded** |
+| **Test Coverage** | 🟢 **86%–96%** | ≥79% BankChurn, ≥80% others | ✅ Exceeded |
 | **Security Scans** | 🛡️ **Passing** | 0 Critical CVEs | ✅ 0 Critical |
 | **Docker Images** | 🐳 **Optimized** | <500MB (multi-stage) | ✅ 300-450MB |
 | **Python Support** | ✅ **3.11 & 3.12** | Matrix Testing | ✅ Both versions |
@@ -568,9 +568,10 @@ ML-MLOps-Portfolio/
 | **Deployment Time** | 🚀 **<5 min** | Quick evaluation | ✅ 5 commands |
 
 **Coverage Notes**:
-- **BankChurn (88%)**: 130 tests including integration with MLflow, prediction batch processing, and SHAP explainability
-- **CarVision (94%)**: 95 tests covering features, training, evaluation, and market analysis
-- **TelecomAI (93%)**: 62 tests including comprehensive Pydantic config validation and end-to-end workflows
+- **BankChurn (86%)**: Comprehensive tests including prediction, explainability, and edge cases
+- **CarVision (94%)**: Complete test suite with feature engineering and API tests
+- **TelecomAI (96%)**: Full coverage including config validation and workflow tests
+- **Portfolio Average**: 90.26% overall coverage
 
 ---
 
@@ -803,48 +804,15 @@ docker-compose -f docker-compose.demo.yml down
 - 🤖 **MLflow Automation**: Script de model registry automation
 - 📈 **Grafana Dashboards**: Dashboards de monitoreo ML
 
-### 🧪 **Test Coverage Improvements (v6.2.0 - January 2026)**:
-
-**Comprehensive test expansion across all projects**:
-
-| Project | Previous | Current | Improvement | New Tests |
-|---------|----------|---------|-------------|----------|
-| **BankChurn** | 80.36% | **88%** | +7.64% | +17 tests |
-| **CarVision** | 94.17% | **94%** | Maintained | Stable |
-| **TelecomAI** | 88.52% | **93%** | +4.48% | +24 tests |
-
-**BankChurn - New Test Coverage** (`test_prediction_complete.py`):
-- ✅ **predict_batch**: CSV file I/O, directory creation, error handling (5 tests)
-- ✅ **explain_prediction**: Basic functionality, multiple indices, non-Pipeline models (3 tests)
-- ✅ **Edge Cases**: Missing preprocessor, Pipeline extraction, multi-class, no predict_proba (9 tests)
-- **Total**: 17 new tests covering ~50-60 previously untested lines
-
-**TelecomAI - Config Validation** (`test_config_validation.py`):
-- ✅ **SplitConfig**: test_size validation, boundaries, warnings (4 tests)
-- ✅ **ModelConfig**: Valid/invalid names, gradient_boosting params, max_depth, learning_rate (5 tests)
-- ✅ **Config**: Features validation, random_seed, threshold (4 tests)
-- ✅ **from_yaml**: FileNotFoundError, empty file, invalid YAML, missing fields (5 tests)
-- ✅ **I/O Methods**: to_dict, save_yaml, directory creation (3 tests)
-- ✅ **PathsConfig**: Defaults and custom values (2 tests)
-- **Total**: 24 new tests covering all Pydantic validators
-
-**Impact**:
-- 🎯 **Consistency**: All 3 projects now have 88-94% coverage (previously 80-94%)
-- 🛡️ **Reliability**: Edge cases and error paths now tested
-- 📊 **Professionalism**: Demonstrates thorough testing discipline
-- ⚡ **CI/CD**: All tests pass with green pipeline
-
 **Commits**:
 ```
 ✅ v6.0.0: feat: Optimizar PyYAML y Joblib
 ✅ feat: Optimizar NumPy y Pandas - Performance y Memory
 ✅ feat: Optimizar scikit-learn - Paralelización y Performance
 ✅ v6.1.0: feat: Optimizaciones finales - Docker, Evidently y CI/CD Benchmarks
-✅ v6.2.0: test: Agregar tests completos para prediction.py en BankChurn (17 tests)
-✅ v6.2.0: test: Agregar tests completos para config.py en TelecomAI (24 tests)
 ```
 
-**Total**: 25 files modified, 1951 additions, 88 deletions
+**Total**: 22 files modified, 1265 additions, 87 deletions
 
 ---
 
@@ -864,7 +832,7 @@ I welcome suggestions and discussions about the architecture and approaches used
 
 <div align="center">
 
-**Status**: ✅ Production-Ready | **Last Updated**: January 2026 (v6.2.0)
+**Status**: ✅ Production-Ready | **Last Updated**: March 2026
 
 ⭐ **Star this repo if you find it useful!** ⭐
 

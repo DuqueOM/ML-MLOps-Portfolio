@@ -197,7 +197,7 @@ CarVision provides three core capabilities:
 
 - **Experiment tracking**: 3 MLflow runs (Ridge, RandomForest, GradientBoosting)
 - **Reproducible pipelines**: DVC for data versioning
-- **Automated testing**: 97% coverage with unit, integration, e2e tests
+- **Automated testing**: 94% coverage with unit, integration, e2e tests
 - **CI/CD integration**: GitHub Actions for quality gates
 - **Model cards**: Complete documentation of provenance and limitations
 
