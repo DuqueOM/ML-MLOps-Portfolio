@@ -68,14 +68,6 @@
 
 ---
 
-## 💡 Why This Portfolio Exists
-
-After 14 years managing high-pressure operations in hospitality and logistics, I discovered that the principles that make great operational systems—**reliability, monitoring, reproducibility**—are the same ones that make great ML systems.
-
-This portfolio demonstrates that transition: not just ML models that achieve good metrics, but **production-ready systems** built with the discipline of someone who understands that downtime costs real money and poor monitoring creates real problems.
-
-**Every project here answers the question: "Would I trust this in production at 2am?"**
-
 ### What Makes This Portfolio Different
 
 - 🎯 **Operations-First Mindset**: Health checks, Prometheus metrics, structured logging
@@ -89,7 +81,7 @@ This portfolio demonstrates that transition: not just ML models that achieve goo
 
 ## 👨‍💻 About This Portfolio
 
-This repository focuses on **3 Main Projects (Top-3)** brought to professional software engineering standards, demonstrating Senior/Enterprise capabilities in:
+This repository focuses on **3 Main Projects (Top-3)** brought to professional software engineering standards, demonstrating my capabilities in:
 
 - ✅ **Advanced Machine Learning**: Ensembles, Regression, Classification with imbalance handling (SMOTE, class weights)
 - ✅ **MLOps & CI/CD**: Unified automated pipelines (`ci-mlops.yml`), rigorous testing, and security scanning
