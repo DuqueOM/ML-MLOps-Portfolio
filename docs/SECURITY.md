@@ -10,4 +10,4 @@ This documentation site references the root security policy for the full project
 
 - **Reporting**: Use the contact details in the main security policy.
 - **Scope**: All services in the ML-MLOps portfolio.
-- **Last Updated**: January 2026
+- **Last Updated**: March 2026

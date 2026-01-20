@@ -485,4 +485,4 @@ docker-compose logs > docker_logs.txt
 
 ---
 
-**Last Updated**: January 2026
+**Last Updated**: March 2026
