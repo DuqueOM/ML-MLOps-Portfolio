@@ -7,7 +7,7 @@
 ![Version](https://img.shields.io/badge/version-1.5.0-blue)
 ![Framework](https://img.shields.io/badge/scikit--learn-1.3+-orange)
 ![Status](https://img.shields.io/badge/status-Production-brightgreen)
-![Last Updated](https://img.shields.io/badge/updated-January%202026-blue)
+![Last Updated](https://img.shields.io/badge/updated-March%202026-blue)
 
 </div>
 
@@ -24,7 +24,7 @@
 | **Primary Metric** | R²: **0.766**, RMSE: **$4,794** |
 | **Business Impact** | 18% improvement in pricing accuracy vs manual valuation |
 | **Production Status** | ✅ Active (API + Streamlit Dashboard) |
-| **Last Updated** | January 2026 |
+| **Last Updated** | March 2026 |
 | **Owner** | Duque Ortega Mutis (DuqueOM) |
 
 ---
@@ -405,7 +405,7 @@ if drift_score > 0.25:
 
 | Version | Date | Key Changes | R² (Test) | Status |
 |---------|------|-------------|-----------|--------|
-| **1.5.0** | Jan 2026 | Production release, centralized FeatureEngineer | 0.766 | ✅ Active |
+| **1.5.0** | Mar 2026 | Production release, centralized FeatureEngineer | 0.766 | ✅ Active |
 | 1.4.0 | Jan 2026 | Temporal backtest validation added | 0.761 | Deprecated |
 | 1.3.0 | Nov 2025 | Bootstrap confidence intervals | 0.758 | Deprecated |
 | 1.0.0 | Sep 2025 | Initial baseline | 0.742 | Deprecated |
@@ -454,7 +454,7 @@ if drift_score > 0.25:
 
 <div align="center">
 
-**Model Card Version**: 2.0 | **Last Updated**: January 2026  
+**Model Card Version**: 2.0 | **Last Updated**: March 2026  
 **Model Version**: 1.5.0 | **Framework**: Scikit-learn 1.3+
 
 ⭐ **Production-Ready Vehicle Valuation** ⭐

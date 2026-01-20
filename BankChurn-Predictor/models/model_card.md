@@ -7,7 +7,7 @@
 ![Version](https://img.shields.io/badge/version-1.5.0-blue)
 ![Framework](https://img.shields.io/badge/scikit--learn-1.3+-orange)
 ![Status](https://img.shields.io/badge/status-Production-brightgreen)
-![Last Updated](https://img.shields.io/badge/updated-January%202026-blue)
+![Last Updated](https://img.shields.io/badge/updated-March%202026-blue)
 
 </div>
 
@@ -24,7 +24,7 @@
 | **Primary Metric** | AUC-ROC: **0.853** |
 | **Business Impact** | $2.1M annual savings (retention optimization) |
 | **Production Status** | ✅ Active |
-| **Last Updated** | January 2026 |
+| **Last Updated** | March 2026 |
 | **Owner** | Duque Ortega Mutis (DuqueOM) |
 
 ---
@@ -477,7 +477,7 @@ rate(prediction_confidence_bucket{le="0.7"}[5m])  # Low confidence predictions
 
 | Version | Date | Changes | AUC (Test) | Status |
 |---------|------|---------|------------|--------|
-| **1.5.0** | Jan 2026 | Production release, SHAP integration | 0.853 | ✅ Active |
+| **1.5.0** | Mar 2026 | Production release, SHAP integration | 0.853 | ✅ Active |
 | 1.4.0 | Jan 2026 | Hyperparameter tuning, class weights optimized | 0.848 | Deprecated |
 | 1.3.0 | Nov 2025 | Added RandomForest to ensemble | 0.841 | Deprecated |
 | 1.0.0 | Sep 2025 | Initial baseline (LogReg only) | 0.812 | Deprecated |
@@ -529,7 +529,7 @@ rate(prediction_confidence_bucket{le="0.7"}[5m])  # Low confidence predictions
 
 <div align="center">
 
-**Model Card Version**: 2.0 | **Last Updated**: January 2026  
+**Model Card Version**: 2.0 | **Last Updated**: March 2026  
 **Model Version**: 1.5.0 | **Framework**: Scikit-learn 1.3+
 
 ⭐ **Production-Ready ML** ⭐

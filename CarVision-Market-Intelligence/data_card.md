@@ -27,7 +27,7 @@
 | **Mean Price** | $28,124 |
 | **Time Period** | Model years 1985-2025, multiple listing dates |
 | **Data Version** | v1.0.0 (tracked via DVC) |
-| **Last Updated** | January 2026 |
+| **Last Updated** | March 2026 |
 
 ---
 
@@ -201,7 +201,7 @@ dvc add data/raw/vehicles_us.csv
 dvc push  # To remote storage
 
 # Current version
-DVC SHA: b8e4f1a (committed January 2026)
+DVC SHA: b8e4f1a (committed March 2026)
 File Size: 28.4 MB (raw CSV)
 ```
 
@@ -281,7 +281,7 @@ def validate_dataset(df):
 
 <div align="center">
 
-**Data Card Version**: 2.0 | **Last Updated**: January 2026  
+**Data Card Version**: 2.0 | **Last Updated**: March 2026  
 **Dataset Version**: 1.0.0 | **Records**: 47,831 (clean)
 
 ⭐ **Production-Ready Vehicle Pricing Data** ⭐
