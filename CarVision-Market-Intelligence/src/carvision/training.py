@@ -130,12 +130,18 @@ def train_model(cfg: Dict[str, Any]) -> Dict[str, Any]:
     }
     logger.info(f"Métricas de validación: {val_metrics}")
 
-    # Persist artifacts
-    joblib.dump(pipe, paths["model_path"])
+    # Persist artifacts with compression
+    model_path = Path(paths["model_path"])
+    joblib.dump(pipe, model_path, compress=3)
+    size_mb = model_path.stat().st_size / (1024 * 1024)
+    logger.info(f"Model saved to {model_path} ({size_mb:.2f} MB)")
 
-    # Export a copy for demo loading (legacy support)
-    Path("models").mkdir(exist_ok=True)
-    joblib.dump(pipe, "models/model_v1.0.0.pkl")
+    # Export a copy for demo loading (legacy support) - only if different path
+    legacy_path = Path("models/model_v1.0.0.pkl")
+    if legacy_path.resolve() != model_path.resolve():
+        legacy_path.parent.mkdir(exist_ok=True)
+        joblib.dump(pipe, legacy_path, compress=3)
+        logger.info(f"Legacy model copy saved to {legacy_path}")
 
     feature_columns = sorted(num_cols + cat_cols)
     with open(Path(paths["artifacts_dir"]) / "feature_columns.json", "w") as f:

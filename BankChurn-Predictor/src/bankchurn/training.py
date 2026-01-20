@@ -386,13 +386,14 @@ class ChurnTrainer:
         # Create directories
         model_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Save full pipeline
-        joblib.dump(full_pipeline, model_path)
-        logger.info(f"Full pipeline saved to {model_path}")
+        # Save full pipeline with compression (compress=3 provides good balance)
+        joblib.dump(full_pipeline, model_path, compress=3)
+        size_mb = model_path.stat().st_size / (1024 * 1024)
+        logger.info(f"Full pipeline saved to {model_path} ({size_mb:.2f} MB)")
 
         # Optionally save preprocessor separately if requested (for backward compat or debugging)
         if preprocessor_path:
             preprocessor_path = Path(preprocessor_path)
             preprocessor_path.parent.mkdir(parents=True, exist_ok=True)
-            joblib.dump(self.preprocessor_, preprocessor_path)
+            joblib.dump(self.preprocessor_, preprocessor_path, compress=3)
             logger.info(f"Preprocessor saved to {preprocessor_path}")
