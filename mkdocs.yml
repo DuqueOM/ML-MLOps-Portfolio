@@ -92,6 +92,7 @@ nav:
     - Model Catalog: models/catalog.md
     - Reproducibility: models/reproducibility.md
   - Reference:
+    - Features & Changelog: FEATURES.md
     - Release Process: RELEASE.md
     - Dependency Conflicts: DEPENDENCY_CONFLICTS.md
     - Security Policy: SECURITY.md

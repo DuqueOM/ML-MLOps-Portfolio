@@ -124,8 +124,8 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
 
 | Project | Domain | Type | Best Metrics | Key Features |
 |---------|--------|------|--------------|--------------|
-| **[BankChurn Predictor](projects/bankchurn.md)** | Banking | Classification | AUC=0.853, F1=0.604 | SHAP explainability, drift detection, 86% test coverage |
-| **[CarVision Market Intelligence](projects/carvision.md)** | Automotive | Regression | R²=0.766, RMSE=$4,794 | Interactive dashboard, 4 tabs, 94% test coverage |
+| **[BankChurn Predictor](projects/bankchurn.md)** | Banking | Classification | AUC=0.87, F1=0.64 | SHAP explainability, drift detection, 86% test coverage |
+| **[CarVision Market Intelligence](projects/carvision.md)** | Automotive | Regression | R²=0.77, RMSE=$4,396 | Interactive dashboard, 4 tabs, 94% test coverage |
 | **[TelecomAI Customer Intelligence](projects/telecom.md)** | Telecom | Classification | AUC=0.84, Acc=82% | Plan optimization, threshold tuning, 96% coverage |
 
 ---
@@ -248,7 +248,7 @@ docker-compose -f docker-compose.demo.yml ps
 
 | Metric | BankChurn | CarVision | TelecomAI | Target |
 |--------|-----------|-----------|-----------|--------|
-| **P95 Latency** | <50ms | <100ms | <25ms | <200ms ✅ |
+| **P95 Latency** | <50ms | <30ms | <25ms | <200ms ✅ |
 | **Throughput** | 500 RPS | 300 RPS | 1,200 RPS | >100 ✅ |
 | **Memory Usage** | 1.2 GB | 1.8 GB | 1.0 GB | <2GB ✅ |
 | **Model Size** | 4 MB | 6 KB | 156 KB | — |
@@ -323,6 +323,7 @@ ML-MLOps-Portfolio/
 | **[API Reference](api/rest-apis.md)** | Complete REST API documentation |
 | **[Model Catalog](models/catalog.md)** | Trained models registry |
 | **[Troubleshooting](operations/troubleshooting.md)** | Common issues and solutions |
+| **[Features & Changelog](FEATURES.md)** | Performance optimizations v6.0–v6.1, new features |
 
 ### Project-Specific Docs
 
@@ -359,10 +360,18 @@ This portfolio is designed for:
 
 ---
 
+## 🔧 Development Process & AI Transparency
+
+This portfolio was developed using **AI-assisted tools** (Cursor / Cascade) for code generation and boilerplate acceleration. All architectural decisions, project selection, MLOps pipeline design, infrastructure choices, and system integration were made by the author.
+
+AI tools were used as **accelerators, not replacements** for understanding — the same way senior engineers use code completion and documentation generators to increase throughput while retaining full ownership of design decisions.
+
+For full details, see [Contributing Guidelines](contributing/guidelines.md#development-process--ai-transparency).
+
 !!! info "Documentation Status"
     This documentation is actively maintained.  
     **Last Updated**: March 2026  
-    **Portfolio Version**: 1.5.0
+    **Portfolio Version**: 6.1.0
 
 !!! tip "Quick Evaluation"
     **For recruiters**: Start with the [5-minute Quick Start](getting-started/quickstart.md) and explore the [Streamlit Dashboard](http://localhost:8501) (after starting demo stack)
