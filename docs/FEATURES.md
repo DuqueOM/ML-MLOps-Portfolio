@@ -171,22 +171,20 @@ python scripts/mlflow_registry_automation.py latest \
 
 ## 🔜 Upcoming Features
 
-### Mediano Plazo (Next 3 Months)
+### Planned (Next Quarter)
 
-1. **Docker Optimization**
-   - Multi-stage builds
-   - Layer caching optimization
-   - Smaller image sizes
+1. **Cloud Deployment Evidence**
+   - GCP deployment with Terraform apply recordings
+   - Grafana dashboards with live cloud metrics
+   - Cost analysis and FinOps documentation
 
-2. **CI/CD Benchmarks**
-   - Automated performance regression detection
-   - Benchmark results in PR comments
-   - Historical performance tracking
+2. **Feature Store Integration**
+   - Centralized feature serving (e.g., Feast)
+   - Consistent versioned features across all 3 projects
 
-3. **Evidently Expansion**
-   - More features in drift detection
-   - Custom metrics
-   - Automated alerts
+3. **Drift-Based Auto-Retraining**
+   - Automated retraining triggered by Evidently PSI/KS thresholds
+   - Controlled opt-in workflow via GitHub Actions
 
 ---
 

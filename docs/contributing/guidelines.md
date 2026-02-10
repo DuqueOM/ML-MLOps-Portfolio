@@ -113,6 +113,25 @@ feat(bankchurn): add probability calibration to XGBoost model
 4. Ensure the CI pipeline (Tests, Lint, Docker Build) is green.
 5. Request review.
 
+## Development Process & AI Transparency
+
+This portfolio was developed using **AI-assisted tools** (Cursor / Cascade) for code generation and boilerplate acceleration. All architectural decisions, project selection, MLOps pipeline design, infrastructure choices, and system integration were made by the author.
+
+**What AI tools were used for:**
+- Boilerplate code generation (FastAPI endpoints, test scaffolding, Dockerfile templates)
+- Documentation drafting and formatting
+- Code refactoring suggestions and performance optimization patterns
+
+**What the author owns and maintains independently:**
+- All architectural and design decisions
+- MLOps pipeline design (CI/CD workflow, security scanning strategy, coverage enforcement)
+- Infrastructure choices (Terraform modules, Kubernetes manifests, monitoring stack)
+- Model selection, experiment design, and hyperparameter tuning strategy
+- System integration, debugging, and production operations
+- Docker optimization and multi-stage build design
+
+This transparency reflects the industry-standard practice of leveraging AI tools as productivity accelerators while retaining full engineering ownership.
+
 ## License
 By contributing, you agree that your contributions will be licensed under the MIT License.
 
