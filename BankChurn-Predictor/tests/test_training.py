@@ -319,3 +319,130 @@ def test_trainer_model_has_required_methods(config):
     assert callable(model.fit)
     assert callable(model.predict)
     assert callable(model.predict_proba)
+
+
+def test_train_end_to_end_with_cv(config, full_sample_data, tmp_path):
+    """Test ChurnTrainer.train() end-to-end with cross-validation."""
+    data_path = tmp_path / "data.csv"
+    full_sample_data.to_csv(data_path, index=False)
+
+    # Disable MLflow for test isolation
+    config.mlflow.enabled = False
+    # Use small CV to speed up
+    config.model.cv_folds = 2
+    # Clear compare_models to keep test fast
+    config.model.advanced.compare_models = []
+
+    trainer = ChurnTrainer(config, random_state=42)
+    data = trainer.load_data(data_path)
+    X, y = trainer.prepare_features(data)
+
+    model, metrics = trainer.train(X, y, use_cv=True)
+
+    assert model is not None
+    assert "train_f1" in metrics
+    assert "test_f1" in metrics
+    assert "test_auc" in metrics
+    assert metrics["train_f1"] > 0
+    assert metrics["test_f1"] > 0
+
+
+def test_train_end_to_end_no_cv(config, full_sample_data, tmp_path):
+    """Test ChurnTrainer.train() without cross-validation."""
+    data_path = tmp_path / "data.csv"
+    full_sample_data.to_csv(data_path, index=False)
+
+    config.mlflow.enabled = False
+    config.model.advanced.compare_models = []
+
+    trainer = ChurnTrainer(config, random_state=42)
+    data = trainer.load_data(data_path)
+    X, y = trainer.prepare_features(data)
+
+    model, metrics = trainer.train(X, y, use_cv=False)
+
+    assert model is not None
+    assert "train_f1" in metrics
+    assert "test_f1" in metrics
+
+
+def test_train_with_model_comparison(config, full_sample_data, tmp_path):
+    """Test ChurnTrainer.train() with model comparison."""
+    data_path = tmp_path / "data.csv"
+    full_sample_data.to_csv(data_path, index=False)
+
+    config.mlflow.enabled = False
+    config.model.cv_folds = 2
+    # Compare with sklearn-only models (always available)
+    config.model.advanced.compare_models = ["logistic_regression", "random_forest"]
+
+    trainer = ChurnTrainer(config, random_state=42)
+    data = trainer.load_data(data_path)
+    X, y = trainer.prepare_features(data)
+
+    model, metrics = trainer.train(X, y, use_cv=False)
+
+    assert "model_comparison" in metrics
+    comparison = metrics["model_comparison"]
+    assert "logistic_regression" in comparison
+    assert "random_forest" in comparison
+    assert "f1" in comparison["logistic_regression"]
+    assert "accuracy" in comparison["random_forest"]
+
+
+def test_build_model_advanced_types(config):
+    """Test building advanced model types via factory."""
+    trainer = ChurnTrainer(config, random_state=42)
+
+    # Test logistic_regression
+    model_lr = trainer.build_model(model_type="logistic_regression")
+    assert hasattr(model_lr, "fit")
+
+    # Test random_forest
+    model_rf = trainer.build_model(model_type="random_forest")
+    assert hasattr(model_rf, "fit")
+
+    # Test mlp
+    model_mlp = trainer.build_model(model_type="mlp")
+    assert hasattr(model_mlp, "fit")
+
+
+def test_compare_models_with_unavailable_skips(config, full_sample_data):
+    """Test that compare_models skips unavailable models gracefully."""
+    config.mlflow.enabled = False
+    # Include a model that may not be installed
+    config.model.advanced.compare_models = ["logistic_regression", "xgboost", "lightgbm"]
+
+    trainer = ChurnTrainer(config, random_state=42)
+    X, y = trainer.prepare_features(full_sample_data)
+
+    preprocessor = trainer.build_preprocessor(X)
+    X_transformed = preprocessor.fit_transform(X)
+
+    from sklearn.model_selection import train_test_split
+
+    X_train, X_test, y_train, y_test = train_test_split(X_transformed, y, test_size=0.2, random_state=42, stratify=y)
+
+    results = trainer.compare_models(X_train, y_train, X_test, y_test)
+
+    # logistic_regression should always succeed
+    assert "logistic_regression" in results
+    assert "f1" in results["logistic_regression"]
+
+
+def test_compare_models_empty_list(config, full_sample_data):
+    """Test that compare_models returns empty dict when no models configured."""
+    config.model.advanced.compare_models = []
+
+    trainer = ChurnTrainer(config, random_state=42)
+    X, y = trainer.prepare_features(full_sample_data)
+
+    preprocessor = trainer.build_preprocessor(X)
+    X_transformed = preprocessor.fit_transform(X)
+
+    from sklearn.model_selection import train_test_split
+
+    X_train, X_test, y_train, y_test = train_test_split(X_transformed, y, test_size=0.2, random_state=42, stratify=y)
+
+    results = trainer.compare_models(X_train, y_train, X_test, y_test)
+    assert results == {}
