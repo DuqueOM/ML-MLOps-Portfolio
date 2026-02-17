@@ -51,6 +51,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
+from src.bankchurn.explainability import ModelExplainer  # noqa: E402
 from src.bankchurn.prediction import ChurnPredictor  # noqa: E402
 
 # Configure logging
@@ -59,6 +60,7 @@ logger = logging.getLogger(__name__)
 
 # Global state
 predictor: Optional[ChurnPredictor] = None
+model_explainer: Optional[ModelExplainer] = None
 model_metadata: Dict[str, Any] = {}
 request_count: int = 0
 total_prediction_time: float = 0.0
@@ -67,7 +69,7 @@ start_time = time.time()
 
 def load_model_logic() -> bool:
     """Internal logic to load model."""
-    global predictor, model_metadata
+    global predictor, model_explainer, model_metadata
     try:
         model_path = BASE_DIR / "models" / "best_model.pkl"
         preprocessor_path = BASE_DIR / "models" / "preprocessor.pkl"
@@ -81,6 +83,14 @@ def load_model_logic() -> bool:
         prep_arg = preprocessor_path if preprocessor_path.exists() else None
 
         predictor = ChurnPredictor.from_files(model_path, prep_arg)
+
+        # Initialize SHAP-based explainer for real feature contributions
+        try:
+            model_explainer = ModelExplainer(predictor.model)
+            logger.info("ModelExplainer initialized for feature contributions")
+        except Exception as e:
+            logger.warning(f"ModelExplainer init failed (contributions will be empty): {e}")
+            model_explainer = None
 
         # Try to load metadata
         metadata_path = BASE_DIR / "models" / "best_model_metadata.json"
@@ -210,41 +220,23 @@ class ModelMetrics(BaseModel):
 
 def calculate_feature_contributions(customer_data: Dict[str, Any]) -> Dict[str, float]:
     """
-    Calcula contribuciones aproximadas de features usando valores promedio.
-    En producción, se usaría SHAP o LIME para explicaciones precisas.
+    Calculate feature contributions using the ModelExplainer.
+
+    Uses SHAP values when available, otherwise falls back to model-introspected
+    feature importances (coefficients or tree importances).  Returns an empty
+    dict only when no model is loaded.
     """
-    # Contribuciones simuladas basadas en importancia conocida
-    base = {
-        k: 0.0
-        for k in customer_data.keys()
-        if k
-        in [
-            "Age",
-            "NumOfProducts",
-            "IsActiveMember",
-            "Geography",
-            "Balance",
-            "CreditScore",
-            "EstimatedSalary",
-        ]
-    }
+    if model_explainer is None:
+        return {k: 0.0 for k in customer_data}
 
-    # Lógica simplificada (legacy)
-    if customer_data.get("Age", 0) > 50:
-        base["Age"] = 0.15
-    elif customer_data.get("Age", 0) < 30:
-        base["Age"] = -0.05
-
-    if customer_data.get("NumOfProducts", 1) == 1:
-        base["NumOfProducts"] = 0.12
-
-    if customer_data.get("IsActiveMember", 0) == 0:
-        base["IsActiveMember"] = 0.18
-
-    if customer_data.get("Geography") == "Germany":
-        base["Geography"] = 0.14
-
-    return base
+    try:
+        explanation = model_explainer.explain_prediction(customer_data)
+        contributions = explanation.get("feature_contributions", {})
+        # Round for cleaner API responses
+        return {k: round(float(v), 4) for k, v in contributions.items()}
+    except Exception as e:
+        logger.warning(f"Feature contribution calculation failed: {e}")
+        return {k: 0.0 for k in customer_data}
 
 
 def determine_risk_level(probability: float) -> str:
