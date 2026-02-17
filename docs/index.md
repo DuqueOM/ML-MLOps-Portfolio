@@ -32,7 +32,7 @@ This is a **production-grade MLOps platform** showcasing enterprise best practic
 
     ---
 
-    Terraform (AWS), Kubernetes manifests, Docker multi-stage builds
+    Terraform (AWS/GCP), Kubernetes manifests, Docker multi-stage builds
 
 -   🔄 **Full CI/CD Pipeline**
 
@@ -50,7 +50,7 @@ This is a **production-grade MLOps platform** showcasing enterprise best practic
 
     ---
 
-    86-96% coverage with Pytest, integration tests, security scans
+    87-96% coverage with Pytest, integration tests, security scans
 
 -   📚 **Comprehensive Docs**
 
@@ -150,12 +150,12 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
   - Security scans (Trivy, Gitleaks, pip-audit)
   - E2E tests with full stack validation
 - ✅ **Containerization**: Multi-stage Docker builds, GHCR registry
-- ✅ **Orchestration**: Kubernetes manifests, Terraform (AWS EKS)
+- ✅ **Orchestration**: Kubernetes manifests, Terraform (AWS EKS / GCP GKE)
 
 ### Software Engineering
 
 - ✅ **Modern Python**: `src/` layout, Pydantic config, type hints
-- ✅ **Testing**: Comprehensive suites (unit, integration, e2e) with 86-96% coverage
+- ✅ **Testing**: Comprehensive suites (unit, integration, e2e) with 87-96% coverage
 - ✅ **Code Quality**: Pre-commit hooks, automated linting, security scanning
 - ✅ **Documentation**: Model cards, data cards, API docs, operations runbooks
 
@@ -180,10 +180,10 @@ cd ML-MLOps-Portfolio
 bash scripts/setup_demo_models.sh
 
 # Start full stack (3 APIs + Dashboard + MLflow)
-docker-compose -f docker-compose.demo.yml up -d --build
+docker compose -f docker-compose.demo.yml up -d --build
 
 # Verify services (wait 30s for startup)
-docker-compose -f docker-compose.demo.yml ps
+docker compose -f docker-compose.demo.yml ps
 ```
 
 ### Access Points
@@ -220,7 +220,7 @@ docker-compose -f docker-compose.demo.yml ps
 | **Containerization** | Docker (multi-stage builds) |
 | **Orchestration** | Docker Compose, Kubernetes |
 | **CI/CD** | GitHub Actions (6-stage pipeline) |
-| **IaC** | Terraform (AWS EKS, RDS, S3, ECR) |
+| **IaC** | Terraform (AWS EKS / GCP GKE, RDS, S3, ECR) |
 
 ### Security & Quality
 
@@ -228,7 +228,7 @@ docker-compose -f docker-compose.demo.yml ps
 |-----------|-----------|
 | **Code Quality** | Black, Flake8, Mypy, isort |
 | **Security Scanning** | Bandit, Gitleaks, pip-audit, Trivy |
-| **Testing** | pytest, pytest-cov (86-96% coverage) |
+| **Testing** | pytest, pytest-cov (87-96% coverage) |
 | **Pre-commit** | Automated hooks for quality gates |
 
 ---
@@ -239,7 +239,7 @@ docker-compose -f docker-compose.demo.yml ps
 
 | Metric | BankChurn | CarVision | TelecomAI | Target |
 |--------|-----------|-----------|-----------|--------|
-| **Test Coverage** | 86% | 94% | 96% | >70% ✅ |
+| **Test Coverage** | 87% | 94% | 96% | >70% ✅ |
 | **Linting** | Clean | Clean | Clean | 100% ✅ |
 | **Type Checking** | Strict | Strict | Strict | 100% ✅ |
 | **Security Scan** | 0 HIGH | 0 HIGH | 0 HIGH | 0 ✅ |
@@ -279,16 +279,16 @@ ML-MLOps-Portfolio/
 │   └── data_card.md               # Dataset documentation v2.0
 │
 ├── TelecomAI-Customer-Intelligence/ # 📱 Plan Recommendation
-│   ├── src/telecomai/             # Core package
+│   ├── src/telecom/              # Core package
 │   ├── app/fastapi_app.py         # REST API
 │   ├── tests/                     # 96% coverage
 │   ├── models/model_card.md       # Model documentation v2.0
 │   └── data_card.md               # Dataset documentation v2.0
 │
 ├── infra/
-│   ├── docker/                    # Dockerfiles (multi-stage)
 │   ├── terraform/aws/             # AWS infrastructure (EKS, RDS, S3)
-│   └── k8s/                       # Kubernetes manifests (HPA, services)
+│   ├── terraform/gcp/             # GCP infrastructure (GKE, Cloud SQL, GCS)
+│   └── prometheus/grafana/        # Monitoring configuration
 │
 ├── docs/                          # 📚 GitHub Pages documentation site
 │   ├── getting-started/           # Quick start, installation, development
@@ -370,8 +370,8 @@ For full details, see [Contributing Guidelines](contributing/guidelines.md#devel
 
 !!! info "Documentation Status"
     This documentation is actively maintained.  
-    **Last Updated**: March 2026  
-    **Portfolio Version**: 6.1.0
+    **Last Updated**: February 2026  
+    **Portfolio Version**: 6.2.0
 
 !!! tip "Quick Evaluation"
     **For recruiters**: Start with the [5-minute Quick Start](getting-started/quickstart.md) and explore the [Streamlit Dashboard](http://localhost:8501) (after starting demo stack)

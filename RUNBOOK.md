@@ -20,8 +20,8 @@
 | **Start Demo Stack** | `make docker-demo` | ~2 min |
 | **Health Check** | `make health-check` | ~5 sec |
 | **Run Tests** | `make test` | ~30 sec |
-| **Stop Services** | `docker-compose -f docker-compose.demo.yml down` | ~10 sec |
-| **View Logs** | `docker-compose logs -f <service>` | Real-time |
+| **Stop Services** | `docker compose -f docker-compose.demo.yml down` | ~10 sec |
+| **View Logs** | `docker compose logs -f <service>` | Real-time |
 
 ---
 
@@ -66,7 +66,7 @@ python --version
 make docker-demo
 
 # Method 2: Direct Docker Compose
-docker-compose -f docker-compose.demo.yml up -d --build
+docker compose -f docker-compose.demo.yml up -d --build
 
 # Verify all services started
 make health-check
@@ -106,13 +106,13 @@ curl http://localhost:5000          # MLflow (returns HTML)
 
 ```bash
 # Stop containers (keep volumes)
-docker-compose -f docker-compose.demo.yml down
+docker compose -f docker-compose.demo.yml down
 
 # Stop + remove volumes (clean slate)
-docker-compose -f docker-compose.demo.yml down -v
+docker compose -f docker-compose.demo.yml down -v
 
 # Nuclear option (remove images too)
-docker-compose -f docker-compose.demo.yml down -v --rmi all
+docker compose -f docker-compose.demo.yml down -v --rmi all
 ```
 
 ---
@@ -136,7 +136,7 @@ pytest tests/ -v --cov=src --cov-report=html
 
 ```bash
 # 1. Start demo stack
-docker-compose -f docker-compose.demo.yml up -d
+docker compose -f docker-compose.demo.yml up -d
 
 # 2. Wait for services to be ready (30s)
 sleep 30
@@ -145,7 +145,7 @@ sleep 30
 pytest tests/integration/test_demo.py -v
 
 # 4. Cleanup
-docker-compose -f docker-compose.demo.yml down
+docker compose -f docker-compose.demo.yml down
 ```
 
 **Tests Included**:
@@ -253,7 +253,7 @@ curl -X POST "http://localhost:8000/predict" \
 
 ```bash
 # Option 1: Docker Compose (recommended)
-docker-compose -f docker-compose.mlflow.yml up -d
+docker compose -f docker-compose.mlflow.yml up -d
 
 # Option 2: Local file-based
 mlflow ui --backend-store-uri file:./mlruns --port 5000
@@ -386,30 +386,30 @@ gitleaks detect --source . --report-path gitleaks-report.json
 
 ```bash
 # All services (real-time)
-docker-compose -f docker-compose.demo.yml logs -f
+docker compose -f docker-compose.demo.yml logs -f
 
 # Specific service
-docker-compose -f docker-compose.demo.yml logs -f bankchurn
+docker compose -f docker-compose.demo.yml logs -f bankchurn
 
 # Last 100 lines
-docker-compose -f docker-compose.demo.yml logs --tail=100 carvision-api
+docker compose -f docker-compose.demo.yml logs --tail=100 carvision-api
 ```
 
 ### Restart Services
 
 ```bash
 # Restart specific service
-docker-compose -f docker-compose.demo.yml restart bankchurn
+docker compose -f docker-compose.demo.yml restart bankchurn
 
 # Restart all services
-docker-compose -f docker-compose.demo.yml restart
+docker compose -f docker-compose.demo.yml restart
 ```
 
 ### Reset Everything
 
 ```bash
 # 1. Stop and remove all containers, networks, volumes
-docker-compose -f docker-compose.demo.yml down -v --rmi all
+docker compose -f docker-compose.demo.yml down -v --rmi all
 
 # 2. Remove Python caches
 find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null
@@ -591,7 +591,7 @@ For **critical production issues**:
 
 <div align="center">
 
-**Runbook Version**: 2.0 | **Last Updated**: March 2026
+**Runbook Version**: 2.0 | **Last Updated**: February 2026
 
 ⭐ **Production-Ready Operations** ⭐
 

@@ -9,7 +9,7 @@ Performance and load testing for the ML-MLOps Portfolio APIs using [Locust](http
 pip install locust
 
 # 2. Start the demo services
-docker-compose -f docker-compose.demo.yml up -d
+docker compose -f docker-compose.demo.yml up -d
 
 # 3. Run load test with web UI
 locust -f tests/load/locustfile.py

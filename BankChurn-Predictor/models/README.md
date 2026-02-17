@@ -1,6 +1,6 @@
 # Models Directory
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026
 
 ## Current Files
 
@@ -13,7 +13,7 @@ Comprehensive model card following MLOps Staff best practices:
 - Deployment instructions and monitoring
 - Limitations, bias analysis, and governance
 
-**Updated**: March 2026 with hybrid professional format
+**Updated**: February 2026 with hybrid professional format
 
 ---
 

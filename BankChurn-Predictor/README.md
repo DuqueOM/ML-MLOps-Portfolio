@@ -80,7 +80,7 @@ BankChurn-Predictor is a **production-grade Machine Learning service** designed 
 | **Precision** | **0.72** | 0.60-0.70 | ✅ Good |
 | **Recall** | **0.58** | 0.50-0.60 | ✅ Acceptable |
 | **API Latency** | **<50ms p95** | <100ms | ✅ Fast |
-| **Test Coverage** | **86%** | 70%+ | ✅ Excellent |
+| **Test Coverage** | **87%** | 70%+ | ✅ Excellent |
 | **Uptime SLA** | **99.9%** | 99.5% | ✅ Enterprise-grade |
 
 ---
@@ -288,7 +288,7 @@ cd ML-MLOps-Portfolio/BankChurn-Predictor
 
 # 2. Start services with Docker Compose
 make docker-demo
-# OR: docker-compose -f docker-compose.yml up -d --build
+# OR: docker compose -f docker-compose.yml up -d --build
 
 # 3. Wait for health check (30-60 seconds)
 sleep 45 && curl http://localhost:8000/health
@@ -1059,7 +1059,7 @@ make lint
 
 # Testing
 make test
-# Runs: pytest with coverage report (minimum 79%, current 86%)
+# Runs: pytest with coverage report (minimum 79%, current 87%)
 
 # Pre-commit hooks
 pre-commit install
@@ -1113,8 +1113,8 @@ docker ps | grep bankchurn
 docker logs bankchurn-demo
 
 # Restart service
-docker-compose down
-docker-compose up -d --build
+docker compose down
+docker compose up -d --build
 
 # Verify health
 curl http://localhost:8000/health
@@ -1182,7 +1182,7 @@ async def predict_batch_stream(file: UploadFile):
 
 <div align="center">
 
-**Status**: ✅ Production-Ready | **Coverage**: 86% | **Last Updated**: March 2026
+**Status**: ✅ Production-Ready | **Coverage**: 86% | **Last Updated**: February 2026
 
 ⭐ **Star this project if you find it useful!** ⭐
 

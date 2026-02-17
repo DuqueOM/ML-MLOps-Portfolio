@@ -21,7 +21,7 @@ git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git
 cd ML-MLOps-Portfolio
 
 # Start all services
-docker-compose -f docker-compose.demo.yml up -d --build
+docker compose -f docker-compose.demo.yml up -d --build
 ```
 
 ### Method 2: Local Python
@@ -48,7 +48,7 @@ See [Development Setup](development.md) for full developer environment configura
 
 ```bash
 # Check Docker services
-docker-compose -f docker-compose.demo.yml ps
+docker compose -f docker-compose.demo.yml ps
 
 # Run integration tests
 bash scripts/run_demo_tests.sh
@@ -60,4 +60,4 @@ See [Troubleshooting Guide](../operations/troubleshooting.md) for common issues.
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026

@@ -82,12 +82,12 @@ mypy src/
 
 ```bash
 # Start MLflow
-docker-compose -f docker-compose.mlflow.yml up -d
+docker compose -f docker-compose.mlflow.yml up -d
 
 # Start full demo stack
-docker-compose -f docker-compose.demo.yml up -d --build
+docker compose -f docker-compose.demo.yml up -d --build
 ```
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026

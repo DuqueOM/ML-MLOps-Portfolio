@@ -7,7 +7,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker)
 ![Kubernetes](https://img.shields.io/badge/K8s-Deployments-326CE5?style=for-the-badge&logo=kubernetes)
 ![Prometheus](https://img.shields.io/badge/Monitoring-Prometheus-E6522C?style=for-the-badge&logo=prometheus)
-![Last Updated](https://img.shields.io/badge/Updated-March%202026-blue?style=for-the-badge)
+![Last Updated](https://img.shields.io/badge/Updated-February%202026-blue?style=for-the-badge)
 
 </div>
 
@@ -29,7 +29,7 @@ git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git
 cd ML-MLOps-Portfolio
 
 # Start full demo stack (all 3 projects + MLflow)
-docker-compose -f docker-compose.demo.yml up --build
+docker compose -f docker-compose.demo.yml up --build
 
 # Access services:
 # - MLflow UI: http://localhost:5000
@@ -41,7 +41,7 @@ docker-compose -f docker-compose.demo.yml up --build
 
 **Stop services**:
 ```bash
-docker-compose -f docker-compose.demo.yml down
+docker compose -f docker-compose.demo.yml down
 ```
 
 ### Individual Project Setup
@@ -139,13 +139,13 @@ pytest tests/ -v --cov=src --cov-report=html
 **Integration tests (full stack)**:
 ```bash
 # Start services
-docker-compose -f docker-compose.demo.yml up -d
+docker compose -f docker-compose.demo.yml up -d
 
 # Run integration tests
 pytest tests/integration/test_demo.py -v
 
 # Tear down
-docker-compose -f docker-compose.demo.yml down
+docker compose -f docker-compose.demo.yml down
 ```
 
 **Security scans**:
@@ -201,7 +201,7 @@ docker run -p 8000:8000 bankchurn-api:latest
 #### Build All Projects
 ```bash
 # From repository root
-docker-compose -f docker-compose.demo.yml build
+docker compose -f docker-compose.demo.yml build
 ```
 
 ### Kubernetes Deployment
@@ -234,7 +234,7 @@ kubectl port-forward svc/mlflow-service 5000:5000 -n ml-production
 #### Enable Monitoring (Prometheus + Grafana)
 ```bash
 # Start with monitoring profile
-docker-compose -f docker-compose.demo.yml --profile monitoring up
+docker compose -f docker-compose.demo.yml --profile monitoring up
 ```
 
 ### CI/CD Pipeline
@@ -308,13 +308,13 @@ open http://localhost:3000
 **Docker logs**:
 ```bash
 # View logs for specific service
-docker-compose -f docker-compose.demo.yml logs bankchurn
+docker compose -f docker-compose.demo.yml logs bankchurn
 
 # Follow logs
-docker-compose -f docker-compose.demo.yml logs -f carvision
+docker compose -f docker-compose.demo.yml logs -f carvision
 
 # All services
-docker-compose -f docker-compose.demo.yml logs
+docker compose -f docker-compose.demo.yml logs
 ```
 
 **Kubernetes logs**:
@@ -345,7 +345,7 @@ kill -9 <PID>
 docker system prune -a
 
 # Rebuild without cache
-docker-compose -f docker-compose.demo.yml build --no-cache
+docker compose -f docker-compose.demo.yml build --no-cache
 ```
 
 #### Model Not Found
@@ -397,7 +397,7 @@ pip-compile requirements.in --upgrade
 pip install -r requirements.txt
 
 # Rebuild Docker images
-docker-compose -f docker-compose.demo.yml build
+docker compose -f docker-compose.demo.yml build
 ```
 
 ### Database Migrations (MLflow)
@@ -497,4 +497,4 @@ tar -xzf models-backup-YYYYMMDD.tar.gz
 4. **Incident response**: Document runbooks for common issues
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026

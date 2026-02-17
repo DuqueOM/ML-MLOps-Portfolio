@@ -330,7 +330,7 @@ make start-demo
 
 ```bash
 # Start API + Dashboard + MLflow
-docker-compose -f docker-compose.yml up -d --build
+docker compose -f docker-compose.yml up -d --build
 
 # Verify services
 docker ps | grep carvision
@@ -1417,7 +1417,7 @@ make train
 
 <div align="center">
 
-**Status**: ✅ Production-Ready | **Coverage**: 94% | **Last Updated**: March 2026
+**Status**: ✅ Production-Ready | **Coverage**: 94% | **Last Updated**: February 2026
 
 ⭐ **Star this project if you find it useful!** ⭐
 

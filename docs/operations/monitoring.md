@@ -112,7 +112,7 @@ scrape_configs:
 
 ```bash
 # Start monitoring stack
-docker-compose -f docker-compose.demo.yml --profile monitoring up -d
+docker compose -f docker-compose.demo.yml --profile monitoring up -d
 
 # Access Grafana
 open http://localhost:3000
@@ -431,7 +431,7 @@ done
 
 ### High Error Rate
 
-1. Check logs: `docker-compose logs --tail 100 bankchurn-api`
+1. Check logs: `docker compose logs --tail 100 bankchurn-api`
 2. Verify model loaded: Check `/health` endpoint
 3. Check input validation: Review 422 errors
 4. Check resource usage: `docker stats`
@@ -445,11 +445,11 @@ done
 
 ### Service Down
 
-1. Check container status: `docker-compose ps`
+1. Check container status: `docker compose ps`
 2. Check resource limits: OOM kills
 3. Check dependencies: MLflow, databases
 4. Review restart count: Crash loops
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026
