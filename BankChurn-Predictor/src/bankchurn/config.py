@@ -42,6 +42,19 @@ class EnsembleConfig(BaseModel):
     weights: List[float] = [0.4, 0.6]
 
 
+class AdvancedModelConfig(BaseModel):
+    """Configuration for advanced models (XGBoost, LightGBM, Neural Network)."""
+
+    xgboost_params: dict = Field(default_factory=dict)
+    lightgbm_params: dict = Field(default_factory=dict)
+    neural_network_params: dict = Field(default_factory=dict)
+    mlp_params: dict = Field(default_factory=dict)
+    compare_models: List[str] = Field(
+        default_factory=list,
+        description="List of model names to compare. If empty, only 'type' is trained.",
+    )
+
+
 class ModelConfig(BaseModel):
     """Model training configuration."""
 
@@ -55,6 +68,7 @@ class ModelConfig(BaseModel):
     ensemble: EnsembleConfig = EnsembleConfig()
     logistic_regression: LogisticRegressionConfig = LogisticRegressionConfig()
     random_forest: RandomForestConfig = RandomForestConfig()
+    advanced: AdvancedModelConfig = AdvancedModelConfig()
 
     @property
     def ensemble_voting(self) -> str:
@@ -129,11 +143,11 @@ class BankChurnConfig(BaseModel):
         # older/focused configs without an explicit mlflow block
         # still validate correctly, especially in tests/CI.
         if "model" not in config_dict:
-            config_dict["model"] = ModelConfig().dict()
+            config_dict["model"] = ModelConfig().model_dump()
         if "data" not in config_dict:
-            config_dict["data"] = DataConfig().dict()
+            config_dict["data"] = DataConfig().model_dump()
         if "mlflow" not in config_dict:
-            config_dict["mlflow"] = MLflowConfig().dict()
+            config_dict["mlflow"] = MLflowConfig().model_dump()
 
         logger.info(f"Loaded configuration from {config_path}")
         return cls(**config_dict)
@@ -146,4 +160,4 @@ class BankChurnConfig(BaseModel):
         dict
             Configuration as nested dictionary.
         """
-        return self.dict()
+        return self.model_dump()

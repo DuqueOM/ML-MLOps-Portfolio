@@ -99,6 +99,14 @@ check_results/
 backup_*/
 audit-reports/
 
+# Node.js (not used in this project)
+package.json
+package-lock.json
+node_modules/
+
+# Legacy/orphaned notebooks
+**/notebooks/legacy/
+
 # Documentation temporales (resúmenes de trabajo)
 *SUMMARY*.md
 *IMPLEMENTACION*.md

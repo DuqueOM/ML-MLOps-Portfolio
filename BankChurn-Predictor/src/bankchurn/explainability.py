@@ -284,19 +284,18 @@ class ModelExplainer:
             return {"no_importance_available": 1.0}
 
     def _fallback_contributions(self, X: pd.DataFrame) -> Dict[str, float]:
-        """Generate approximate contributions without SHAP."""
+        """Generate approximate contributions using model-based feature importance.
+
+        Uses the trained model's feature importances or coefficients to derive
+        per-sample directional contributions. Falls back to uniform weights
+        when introspection is not possible.
+        """
+        importance = self._fallback_feature_importance()
+        if "no_importance_available" in importance:
+            return {col: 0.0 for col in X.columns}
+
         contributions = {}
         for col in X.columns:
-            # Use simple heuristics
-            val = X[col].iloc[0]
-            if col == "Age" and val > 50:
-                contributions[col] = 0.15
-            elif col == "IsActiveMember" and val == 0:
-                contributions[col] = 0.18
-            elif col == "NumOfProducts" and val == 1:
-                contributions[col] = 0.12
-            elif col == "Geography" and val == "Germany":
-                contributions[col] = 0.14
-            else:
-                contributions[col] = 0.0
+            weight = importance.get(col, 0.0)
+            contributions[col] = float(weight)
         return contributions

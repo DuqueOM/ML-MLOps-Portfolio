@@ -7,7 +7,7 @@ name = "bankchurn-predictor"
 version = "1.0.0"
 description = "Bank customer churn prediction with ensemble models and fairness analysis"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = {file = "LICENSE"}
 authors = [
     {name = "Duque Ortega Mutis (DuqueOM)", email = "DuqueOrtegaMutis@gmail.com"}
@@ -18,9 +18,9 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
@@ -57,21 +57,27 @@ ml = [
 monitoring = [
     "evidently>=0.4.0",
 ]
+advanced = [
+    "xgboost>=2.0.0",
+    "lightgbm>=4.0.0",
+    "torch>=2.0.0",
+    "optuna>=3.0.0",
+]
 
 [project.urls]
-Homepage = "https://github.com/DuqueOM/Portafolio-ML-MLOps"
-Repository = "https://github.com/DuqueOM/Portafolio-ML-MLOps"
-Documentation = "https://github.com/DuqueOM/Portafolio-ML-MLOps/tree/main/BankChurn-Predictor"
+Homepage = "https://github.com/DuqueOM/ML-MLOps-Portfolio"
+Repository = "https://github.com/DuqueOM/ML-MLOps-Portfolio"
+Documentation = "https://github.com/DuqueOM/ML-MLOps-Portfolio/tree/main/BankChurn-Predictor"
 
 [project.scripts]
 bankchurn = "main:main"
 
-[tool.setuptools]
-packages = ["app", "data", "monitoring", "scripts"]
+[tool.setuptools.packages.find]
+where = ["."]
 
 [tool.black]
 line-length = 120
-target-version = ['py38', 'py39', 'py310']
+target-version = ['py310', 'py311', 'py312']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -119,7 +125,7 @@ filterwarnings = [
 ]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false

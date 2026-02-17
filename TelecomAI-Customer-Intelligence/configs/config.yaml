@@ -24,11 +24,19 @@ split:
   stratify: true
 
 model:
-  name: gradient_boosting
+  # Primary model: gradient_boosting | xgboost | lightgbm | neural_network | random_forest | logistic_regression
+  name: xgboost
   params:
     n_estimators: 200
-    max_depth: 2
+    max_depth: 4
     learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+  compare_models:
+    - "gradient_boosting"
+    - "lightgbm"
+    - "random_forest"
+    - "neural_network"
 
 threshold: 0.5
 

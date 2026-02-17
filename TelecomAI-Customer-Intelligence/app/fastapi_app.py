@@ -102,8 +102,7 @@ async def predict(features: TelecomFeatures) -> dict:
         raise HTTPException(status_code=503, detail="Model not loaded")
 
     try:
-        # pydantic v2 compatibility
-        data_dict = features.model_dump() if hasattr(features, "model_dump") else features.dict()
+        data_dict = features.model_dump()
         df = pd.DataFrame([data_dict])
         proba = None
         if hasattr(pipeline, "predict_proba"):

@@ -39,6 +39,12 @@ ml = [
 monitoring = [
     "evidently>=0.4.0",
 ]
+advanced = [
+    "xgboost>=2.0.0",
+    "lightgbm>=4.0.0",
+    "torch>=2.0.0",
+    "optuna>=3.0.0",
+]
 
 [tool.black]
 line-length = 120

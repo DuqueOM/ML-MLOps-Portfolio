@@ -8,19 +8,22 @@ stages:
     outs:
       - data/processed/churn_processed.csv
   train:
-    cmd: python main.py --mode train --config configs/config.yaml --seed 42 --input data/processed/churn_processed.csv
+    cmd: python main.py train --config configs/config.yaml --input data/processed/churn_processed.csv --model models/best_model.pkl --metrics-output artifacts/training_results.json
     deps:
       - data/processed/churn_processed.csv
       - main.py
+      - src/bankchurn/training.py
+      - src/bankchurn/config.py
+      - configs/config.yaml
     outs:
       - models/best_model.pkl
-      - models/model_v1.0.0.pkl
       - artifacts/training_results.json
   evaluate:
-    cmd: python main.py --mode evaluate --model models/best_model.pkl --config configs/config.yaml
+    cmd: python main.py evaluate --config configs/config.yaml --input data/processed/churn_processed.csv --model models/best_model.pkl --output artifacts/evaluation_results.json
     deps:
       - models/best_model.pkl
       - data/processed/churn_processed.csv
       - main.py
+      - src/bankchurn/evaluation.py
     outs:
-      - artifacts/metrics
+      - artifacts/evaluation_results.json

@@ -99,6 +99,29 @@ RandomForestRegressor:
 
 **Why RandomForest?**: Best balance of accuracy, speed, and robustness to outliers. Ensemble of 100 trees reduces variance without excessive training time.
 
+### Advanced Model Comparison Framework
+
+The training pipeline now supports automatic comparison across multiple model families via a unified factory pattern (`models_advanced.py`):
+
+| Model | Backend | Default Primary? | Key Characteristics |
+|-------|---------|:-:|-------------------|
+| **LightGBM** | lightgbm | ✅ | Fast training, high accuracy on tabular data |
+| **XGBoost** | xgboost | | State-of-the-art gradient boosting, regularized |
+| **Random Forest** | scikit-learn | | Robust bagging baseline |
+| **Neural Network** | PyTorch | | Deep learning MLP (256→128→64), target normalization |
+
+**Configuration** (`configs/config.yaml`):
+```yaml
+training:
+  model: lightgbm  # Primary model
+  compare_models:
+    - "random_forest"
+    - "xgboost"
+    - "neural_network"
+```
+
+All comparison results are saved to `artifacts/model_comparison.json` for analysis.
+
 ---
 
 ## 💾 Training Data

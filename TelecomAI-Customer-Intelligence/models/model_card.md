@@ -93,6 +93,31 @@ VotingClassifier (soft voting, weights=[1, 2, 2]):
 
 **Weights**: `[1, 2, 2]` favor tree-based models (better performance than LogReg alone)
 
+### Advanced Model Comparison Framework
+
+The training pipeline now supports automatic comparison across multiple model families via a unified factory pattern (`models_advanced.py`):
+
+| Model | Backend | Default Primary? | Key Characteristics |
+|-------|---------|:-:|-------------------|
+| **XGBoost** | xgboost | ✅ | State-of-the-art gradient boosting, regularized |
+| **LightGBM** | lightgbm | | Fast training, native imbalance handling |
+| **Gradient Boosting** | scikit-learn | | Established baseline |
+| **Random Forest** | scikit-learn | | Robust bagging |
+| **Neural Network** | PyTorch | | Compact MLP (64→32→16) for small-feature input |
+
+**Configuration** (`configs/config.yaml`):
+```yaml
+model:
+  name: xgboost  # Primary model
+  compare_models:
+    - "gradient_boosting"
+    - "lightgbm"
+    - "random_forest"
+    - "neural_network"
+```
+
+All comparison results are saved to `artifacts/model_comparison.json` for analysis.
+
 ---
 
 ## 💾 Training Data
