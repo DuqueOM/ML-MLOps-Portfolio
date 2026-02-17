@@ -332,13 +332,8 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Install Docker Compose
-        run: |
-          # Install docker-compose if not present (GitHub Actions runners usually have it)
-          if ! command -v docker-compose &> /dev/null; then
-             sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-             sudo chmod +x /usr/local/bin/docker-compose
-          fi
+      - name: Verify Docker Compose
+        run: docker compose version
       
       - name: Set up Python for model training
         uses: actions/setup-python@v6
@@ -386,21 +381,21 @@ jobs:
       - name: Spin up Demo Stack
         run: |
           # Start services using pre-built images
-          docker-compose -f docker-compose.demo.yml up -d
+          docker compose -f docker-compose.demo.yml up -d
           
           # Wait for services to be ready (increased for shap/heavy deps)
           echo "Waiting for services to initialize..."
           sleep 60
           
           # Show container status
-          docker-compose -f docker-compose.demo.yml ps
+          docker compose -f docker-compose.demo.yml ps
           
           # Wait for health checks with retry logic
           echo "Waiting for health checks..."
           for service in bankchurn carvision telecom; do
             echo "Checking $service..."
             for i in {1..12}; do
-              if docker-compose -f docker-compose.demo.yml exec -T $service curl -sf http://localhost:8000/health > /dev/null 2>&1; then
+              if docker compose -f docker-compose.demo.yml exec -T $service curl -sf http://localhost:8000/health > /dev/null 2>&1; then
                 echo "$service is healthy"
                 break
               fi
@@ -410,9 +405,9 @@ jobs:
           done
           
           # Final status
-          docker-compose -f docker-compose.demo.yml ps
+          docker compose -f docker-compose.demo.yml ps
           echo "Recent logs:"
-          docker-compose -f docker-compose.demo.yml logs --tail 30
+          docker compose -f docker-compose.demo.yml logs --tail 30
 
       - name: Run Integration Tests
         run: |
@@ -423,15 +418,15 @@ jobs:
         if: failure()
         run: |
           echo "=== Container Status ==="
-          docker-compose -f docker-compose.demo.yml ps -a
+          docker compose -f docker-compose.demo.yml ps -a
           echo "=== CarVision Logs ==="
-          docker-compose -f docker-compose.demo.yml logs carvision --tail 100
+          docker compose -f docker-compose.demo.yml logs carvision --tail 100
           echo "=== All Logs ==="
-          docker-compose -f docker-compose.demo.yml logs --tail 50
+          docker compose -f docker-compose.demo.yml logs --tail 50
 
       - name: Tear down
         if: always()
-        run: docker-compose -f docker-compose.demo.yml down
+        run: docker compose -f docker-compose.demo.yml down
 
   # Job 6: Performance Benchmarks (on main push only)
   benchmarks:

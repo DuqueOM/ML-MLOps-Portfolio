@@ -24,14 +24,14 @@ try:
     import xgboost as xgb
 
     XGBOOST_AVAILABLE = True
-except ImportError:
+except ImportError:  # pragma: no cover
     XGBOOST_AVAILABLE = False
 
 try:
     import lightgbm as lgb
 
     LIGHTGBM_AVAILABLE = True
-except ImportError:
+except ImportError:  # pragma: no cover
     LIGHTGBM_AVAILABLE = False
 
 try:
@@ -39,7 +39,7 @@ try:
     import torch.nn as nn
 
     TORCH_AVAILABLE = True
-except ImportError:
+except ImportError:  # pragma: no cover
     TORCH_AVAILABLE = False
 
 
@@ -127,7 +127,7 @@ def build_lightgbm_classifier(params: Dict[str, Any] | None = None, seed: int = 
 # ===================================================================
 # PyTorch Tabular Neural Network
 # ===================================================================
-if TORCH_AVAILABLE:
+if TORCH_AVAILABLE:  # pragma: no cover
 
     class _ChurnNet(nn.Module):
         """Feed-forward neural network for tabular churn prediction.

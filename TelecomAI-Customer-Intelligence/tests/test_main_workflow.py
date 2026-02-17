@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+
 from src.telecom.config import Config
 from src.telecom.evaluation import evaluate_model
 from src.telecom.prediction import predict_batch
@@ -32,6 +33,11 @@ def make_isolated_config(tmp_path: Path) -> Config:
         model_export_path=str(models_dir / "model_v1.0.0.pkl"),
     )
     cfg.mlflow = None
+
+    # Force sklearn-only model for tests (no optional deps like xgboost/lightgbm)
+    from src.telecom.config import ModelConfig
+
+    cfg.model = ModelConfig(name="gradient_boosting", params={"n_estimators": 20, "max_depth": 3}, compare_models=[])
     return cfg
 
 

@@ -62,9 +62,12 @@ def build_test_config(
         "model_export_path": str(artifacts_dir / "model_export.pkl"),
     }
 
+    # Force random_forest for tests (always available, no optional deps)
+    cfg["training"]["model"] = "random_forest"
     rf_params = cfg["training"].get("random_forest_params", {}).copy()
     rf_params.update({"n_estimators": 20, "max_depth": 5, "n_jobs": 1})
     cfg["training"]["random_forest_params"] = rf_params
+    cfg["training"]["compare_models"] = []
     cfg["seed"] = 7
 
     eval_cfg = cfg.setdefault("evaluation", {})
