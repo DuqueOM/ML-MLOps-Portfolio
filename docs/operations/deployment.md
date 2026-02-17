@@ -32,10 +32,10 @@ docker build -t ml-portfolio-carvision:latest -f CarVision-Market-Intelligence/D
 docker build -t ml-portfolio-telecom:latest -f TelecomAI-Customer-Intelligence/Dockerfile TelecomAI-Customer-Intelligence
 
 # Start the stack
-docker-compose -f docker-compose.demo.yml up -d
+docker compose -f docker-compose.demo.yml up -d
 
 # Verify services
-docker-compose -f docker-compose.demo.yml ps
+docker compose -f docker-compose.demo.yml ps
 ```
 
 ### Service Endpoints
@@ -52,7 +52,7 @@ docker-compose -f docker-compose.demo.yml ps
 
 ```bash
 # Start with Prometheus + Grafana
-docker-compose -f docker-compose.demo.yml --profile monitoring up -d
+docker compose -f docker-compose.demo.yml --profile monitoring up -d
 ```
 
 Access monitoring:
@@ -62,10 +62,10 @@ Access monitoring:
 ### Stop Services
 
 ```bash
-docker-compose -f docker-compose.demo.yml down
+docker compose -f docker-compose.demo.yml down
 
 # Remove volumes too
-docker-compose -f docker-compose.demo.yml down -v
+docker compose -f docker-compose.demo.yml down -v
 ```
 
 ---
@@ -132,7 +132,7 @@ kubectl rollout undo deployment/bankchurn-api
 
 ```bash
 # Using Docker Compose (recommended)
-docker-compose -f docker-compose.mlflow.yml up -d
+docker compose -f docker-compose.mlflow.yml up -d
 
 # Or standalone
 mlflow server \
@@ -226,7 +226,7 @@ readinessProbe:
 !!! warning "Container Won't Start"
     ```bash
     # Check logs
-    docker-compose logs <service-name>
+    docker compose logs <service-name>
     
     # Common causes:
     # - Missing model files → Run setup_demo_models.sh
@@ -237,7 +237,7 @@ readinessProbe:
 !!! warning "API Returns 500 Error"
     ```bash
     # Check application logs
-    docker-compose logs --tail 100 bankchurn-api
+    docker compose logs --tail 100 bankchurn-api
     
     # Common causes:
     # - Model file missing or corrupted
@@ -248,26 +248,26 @@ readinessProbe:
 !!! warning "MLflow Connection Refused"
     ```bash
     # Ensure MLflow is running
-    docker-compose ps mlflow
+    docker compose ps mlflow
     
     # Check network connectivity
-    docker-compose exec bankchurn-api curl http://mlflow:5000/health
+    docker compose exec bankchurn-api curl http://mlflow:5000/health
     ```
 
 ### Useful Commands
 
 ```bash
 # View all container logs
-docker-compose logs -f
+docker compose logs -f
 
 # Enter container for debugging
-docker-compose exec bankchurn-api /bin/bash
+docker compose exec bankchurn-api /bin/bash
 
 # Check resource usage
 docker stats
 
 # Rebuild single service
-docker-compose up -d --build bankchurn-api
+docker compose up -d --build bankchurn-api
 ```
 
 ---
@@ -287,4 +287,4 @@ docker-compose up -d --build bankchurn-api
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026

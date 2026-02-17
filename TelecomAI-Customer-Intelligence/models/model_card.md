@@ -24,7 +24,7 @@
 | **Primary Metric** | AUC-ROC: **0.84**, Accuracy: **82%** |
 | **Business Impact** | $5.4M annual revenue recovery (100K customer base) |
 | **Production Status** | ✅ Active |
-| **Last Updated** | March 2026 |
+| **Last Updated** | February 2026 |
 | **Owner** | Duque Ortega Mutis (DuqueOM) |
 
 ---
@@ -445,7 +445,7 @@ if drift_score > 0.3:
 
 <div align="center">
 
-**Model Card Version**: 2.0 | **Last Updated**: March 2026  
+**Model Card Version**: 2.0 | **Last Updated**: February 2026  
 **Model Version**: 1.5.0 | **Framework**: Scikit-learn 1.3+
 
 ⭐ **Production-Ready Plan Optimization** ⭐

@@ -166,7 +166,7 @@ curl http://localhost:8003/health  # TelecomAI
 
 ```bash
 # Ensure demo stack is running
-docker-compose -f docker-compose.demo.yml up -d
+docker compose -f docker-compose.demo.yml up -d
 
 # Run comprehensive integration tests
 pytest tests/integration/test_demo.py -v
@@ -182,20 +182,20 @@ pytest tests/integration/test_demo.py -v
 
 ```bash
 # Stop all containers
-docker-compose -f docker-compose.demo.yml down
+docker compose -f docker-compose.demo.yml down
 
 # Stop + remove volumes (clean slate)
-docker-compose -f docker-compose.demo.yml down -v
+docker compose -f docker-compose.demo.yml down -v
 ```
 
 ### View Logs
 
 ```bash
 # All services
-docker-compose -f docker-compose.demo.yml logs -f
+docker compose -f docker-compose.demo.yml logs -f
 
 # Specific service
-docker-compose -f docker-compose.demo.yml logs -f bankchurn
+docker compose -f docker-compose.demo.yml logs -f bankchurn
 ```
 
 ---
@@ -218,7 +218,7 @@ For detailed development instructions, see:
 | Issue | Solution |
 |-------|----------|
 | **Port already in use** | Kill existing process: `lsof -i :8001` (or 8002, 8003) |
-| **Container not starting** | Check logs: `docker-compose logs <service>` |
+| **Container not starting** | Check logs: `docker compose logs <service>` |
 | **Model not found** | Run `bash scripts/setup_demo_models.sh` first |
 | **Connection refused** | Wait 30s after `docker-compose up` for services to start |
 | **Out of memory** | Increase Docker memory limit (8GB minimum) |
@@ -237,7 +237,7 @@ For detailed development instructions, see:
 
 <div align="center">
 
-**Quick Start Version**: 2.0 | **Last Updated**: March 2026
+**Quick Start Version**: 2.0 | **Last Updated**: February 2026
 
 ⭐ **Production-Ready ML Portfolio** ⭐
 

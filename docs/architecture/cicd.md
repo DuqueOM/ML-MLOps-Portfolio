@@ -259,7 +259,7 @@ Recommended settings for `main` branch:
 | Metric | Target | Current |
 |--------|--------|---------|
 | Build Time | <10 min | ~8 min |
-| Test Coverage | >70% | 78-96% |
+| Test Coverage | >70% | 87-96% |
 | Security Findings | 0 critical | ✅ Pass |
 | Docker Size | <1 GB | ~500 MB |
 
@@ -318,4 +318,4 @@ docker build -t myproject .
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026

@@ -222,7 +222,7 @@ All projects included in the one-command demo:
 
 ```bash
 # Start full stack
-docker-compose -f docker-compose.demo.yml up -d --build
+docker compose -f docker-compose.demo.yml up -d --build
 
 # Access points:
 # - BankChurn API:       http://localhost:8001/docs
@@ -234,4 +234,4 @@ docker-compose -f docker-compose.demo.yml up -d --build
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026

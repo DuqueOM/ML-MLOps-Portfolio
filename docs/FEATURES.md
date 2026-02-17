@@ -1,6 +1,6 @@
 # 🚀 New Features - MLOps Portfolio
 
-## Recent Additions (March 2026)
+## Recent Additions (February 2026)
 
 ### ⚡ Performance Optimizations (v6.0.0)
 
@@ -197,4 +197,4 @@ python scripts/mlflow_registry_automation.py latest \
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026

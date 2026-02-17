@@ -24,7 +24,7 @@
 | **Primary Metric** | R²: **0.766**, RMSE: **$4,794** |
 | **Business Impact** | 18% improvement in pricing accuracy vs manual valuation |
 | **Production Status** | ✅ Active (API + Streamlit Dashboard) |
-| **Last Updated** | March 2026 |
+| **Last Updated** | February 2026 |
 | **Owner** | Duque Ortega Mutis (DuqueOM) |
 
 ---
@@ -477,7 +477,7 @@ if drift_score > 0.25:
 
 <div align="center">
 
-**Model Card Version**: 2.0 | **Last Updated**: March 2026  
+**Model Card Version**: 2.0 | **Last Updated**: February 2026  
 **Model Version**: 1.5.0 | **Framework**: Scikit-learn 1.3+
 
 ⭐ **Production-Ready Vehicle Valuation** ⭐

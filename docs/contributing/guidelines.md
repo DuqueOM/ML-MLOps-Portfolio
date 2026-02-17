@@ -82,13 +82,13 @@ make lint
 **Run integration tests**:
 ```bash
 # Start demo stack
-docker-compose -f docker-compose.demo.yml up -d
+docker compose -f docker-compose.demo.yml up -d
 
 # Run tests
 pytest tests/integration/test_demo.py -v
 
 # Tear down
-docker-compose -f docker-compose.demo.yml down
+docker compose -f docker-compose.demo.yml down
 ```
 
 ## Commit Messages
@@ -137,4 +137,4 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026

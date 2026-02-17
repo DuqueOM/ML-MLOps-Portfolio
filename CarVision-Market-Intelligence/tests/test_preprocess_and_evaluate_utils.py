@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 import yaml
+
 from src.carvision.data import build_preprocessor, clean_data, infer_feature_types, load_data, split_data
 from src.carvision.evaluation import evaluate_model, rmse
 from src.carvision.features import FeatureEngineer
@@ -142,9 +143,11 @@ def test_evaluate_model_creates_artifacts(tmp_path: Path) -> None:
         "split_indices_path": str(artifacts_dir / "split_indices.json"),
     }
 
-    # Speed up training
+    # Force random_forest for tests (always available, no optional deps)
+    cfg["training"]["model"] = "random_forest"
     cfg["training"]["random_forest_params"]["n_estimators"] = 2
     cfg["training"]["random_forest_params"]["n_jobs"] = 1
+    cfg["training"]["compare_models"] = []
 
     train_model(cfg)
     results = evaluate_model(cfg)

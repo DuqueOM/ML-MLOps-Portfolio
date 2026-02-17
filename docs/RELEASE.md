@@ -72,12 +72,12 @@ git checkout -b release/v1.2.0
 pytest --cov=. --cov-report=html
 
 # Build Docker images
-docker-compose -f docker-compose.demo.yml build
+docker compose -f docker-compose.demo.yml build
 
 # Run integration tests
-docker-compose -f docker-compose.demo.yml up -d
+docker compose -f docker-compose.demo.yml up -d
 pytest tests/integration/test_demo.py -v
-docker-compose -f docker-compose.demo.yml down
+docker compose -f docker-compose.demo.yml down
 
 # Security scans
 bandit -r . -f json -o bandit-report.json
@@ -156,8 +156,8 @@ kubectl rollout status deployment/telecom -n ml-production
 **Docker Compose** (staging):
 ```bash
 # Update docker-compose.demo.yml with new tags
-docker-compose -f docker-compose.demo.yml pull
-docker-compose -f docker-compose.demo.yml up -d
+docker compose -f docker-compose.demo.yml pull
+docker compose -f docker-compose.demo.yml up -d
 ```
 
 #### 9. Post-Release Verification
@@ -280,7 +280,7 @@ kubectl rollout undo deployment/bankchurn --to-revision=3 -n ml-production
 docker pull ghcr.io/duqueom/bankchurn-api:1.1.0
 
 # Update docker-compose.yml with old tag
-docker-compose -f docker-compose.demo.yml up -d
+docker compose -f docker-compose.demo.yml up -d
 ```
 
 ### Full Rollback (Git)
@@ -306,9 +306,9 @@ git checkout -b hotfix/critical-bug-fix
 
 # Test
 pytest tests/
-docker-compose -f docker-compose.demo.yml up -d
+docker compose -f docker-compose.demo.yml up -d
 pytest tests/integration/test_demo.py
-docker-compose -f docker-compose.demo.yml down
+docker compose -f docker-compose.demo.yml down
 
 # Bump patch version (e.g., 1.2.0 → 1.2.1)
 # Update CHANGELOG.md
@@ -491,4 +491,4 @@ kubectl scale deployment/bankchurn-canary --replicas=0 -n ml-production
 - [ ] Stakeholder approval obtained
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026

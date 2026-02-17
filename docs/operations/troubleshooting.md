@@ -11,7 +11,7 @@ Comprehensive troubleshooting guide for Docker, CI/CD, model serving, and depend
 ./scripts/health_check.sh
 
 # Or manually:
-docker-compose ps                    # Container status
+docker compose ps                    # Container status
 docker stats                         # Resource usage
 curl localhost:8001/health           # API health
 ```
@@ -28,10 +28,10 @@ curl localhost:8001/health           # API health
 
 ```bash
 # Check logs
-docker-compose logs --tail 100 <service-name>
+docker compose logs <service-name>
 
 # Check exit code
-docker-compose ps
+docker compose ps
 
 # Inspect container
 docker inspect <container-id> | jq '.[0].State'
@@ -91,10 +91,10 @@ services:
 docker builder prune -f
 
 # Build without cache
-docker-compose build --no-cache
+docker compose build --no-cache
 
 # Check for network issues
-docker-compose build --network host
+docker compose build --network host
 ```
 
 ---
@@ -214,7 +214,7 @@ curl -X POST http://localhost:8001/predict \
 
 ```bash
 # Check API logs
-docker-compose logs --tail 50 bankchurn-api
+docker compose up -d --build bankchurn-api
 
 # Common causes:
 # 1. Feature mismatch between training and inference
@@ -286,13 +286,13 @@ app.add_middleware(
 
 ```bash
 # Check if service is running
-docker-compose ps
+docker compose logs -f
 
-# Check if port is exposed
-docker-compose port bankchurn 8000
+# Enter container for debugging
+docker compose exec bankchurn-api /bin/bash
 
 # Check logs for startup errors
-docker-compose logs bankchurn-api | head -50
+docker compose logs bankchurn-api | head -50
 ```
 
 ### Request timeout
@@ -301,7 +301,7 @@ docker-compose logs bankchurn-api | head -50
 
 ```bash
 # Check for deadlocks
-docker-compose exec bankchurn-api ps aux
+docker compose exec bankchurn-api ps aux
 
 # Check resource usage
 docker stats bankchurn-api
@@ -369,13 +369,13 @@ python -m bankchurn.cli train
 
 ```bash
 # Start MLflow
-docker-compose -f docker-compose.mlflow.yml up -d
+docker compose -f docker-compose.mlflow.yml up -d
 
 # Check status
-docker-compose -f docker-compose.mlflow.yml ps
+docker compose -f docker-compose.mlflow.yml ps
 
 # View logs
-docker-compose -f docker-compose.mlflow.yml logs
+docker compose -f docker-compose.mlflow.yml logs
 ```
 
 ### Artifact storage errors
@@ -465,10 +465,10 @@ python -m memory_profiler your_script.py
 python --version
 pip freeze > requirements_current.txt
 docker --version
-docker-compose --version
+docker compose version
 
 # Logs
-docker-compose logs > docker_logs.txt
+docker compose logs > docker_logs.txt
 
 # Error message
 # (copy full traceback)
@@ -485,4 +485,4 @@ docker-compose logs > docker_logs.txt
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026

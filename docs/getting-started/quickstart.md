@@ -27,10 +27,10 @@ cd ML-MLOps-Portfolio
 bash scripts/setup_demo_models.sh
 
 # 3. Start full demo stack
-docker-compose -f docker-compose.demo.yml up -d --build
+docker compose -f docker-compose.demo.yml up -d --build
 
 # 4. Verify services (wait 30s for startup)
-docker-compose -f docker-compose.demo.yml ps
+docker compose -f docker-compose.demo.yml ps
 ```
 
 ---
@@ -152,10 +152,10 @@ bash scripts/run_demo_tests.sh
 
 ```bash
 # Stop all containers
-docker-compose -f docker-compose.demo.yml down
+docker compose -f docker-compose.demo.yml down
 
 # Stop + remove volumes (clean slate)
-docker-compose -f docker-compose.demo.yml down -v
+docker compose -f docker-compose.demo.yml down -v
 ```
 
 ---
@@ -165,7 +165,7 @@ docker-compose -f docker-compose.demo.yml down -v
 | Issue | Solution |
 |-------|----------|
 | **Port already in use** | Kill process: `lsof -i :8001` (or 8002, 8003, 8501, 5000) |
-| **Container not starting** | Check logs: `docker-compose -f docker-compose.demo.yml logs <service>` |
+| **Container not starting** | Check logs: `docker compose -f docker-compose.demo.yml logs <service>` |
 | **Model not found** | Run `bash scripts/setup_demo_models.sh` first |
 | **Connection refused** | Wait 30s after startup for services to initialize |
 | **Out of memory** | Increase Docker memory limit (8GB minimum) |
@@ -174,13 +174,13 @@ docker-compose -f docker-compose.demo.yml down -v
 
 ```bash
 # All services (real-time)
-docker-compose -f docker-compose.demo.yml logs -f
+docker compose -f docker-compose.demo.yml logs -f
 
 # Specific service
-docker-compose -f docker-compose.demo.yml logs -f bankchurn
+docker compose -f docker-compose.demo.yml logs -f bankchurn
 
 # Last 50 lines
-docker-compose -f docker-compose.demo.yml logs --tail=50
+docker compose -f docker-compose.demo.yml logs --tail=50
 ```
 
 ---
@@ -215,4 +215,4 @@ docker-compose -f docker-compose.demo.yml logs --tail=50
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026

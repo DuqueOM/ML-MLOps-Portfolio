@@ -51,7 +51,7 @@
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|--------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 86% | <50ms p95 | Ensemble, XGBoost, LightGBM, PyTorch MLP, SHAP |
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 87% | <50ms p95 | Ensemble, XGBoost, LightGBM, PyTorch MLP, SHAP |
 | [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.77**, RMSE $4.4K | 94% | <30ms p95 | LightGBM, XGBoost, PyTorch MLP, Streamlit |
 | [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **AUC 0.84**, Acc 82% | 96% | <25ms p95 | XGBoost, LightGBM, PyTorch MLP, Revenue Opt |
 
@@ -113,7 +113,7 @@ Strategic plan optimization reducing **$6.9M/year** revenue leakage per 100K cus
 | **Monitoring** | Prometheus, Grafana, Evidently (drift detection) |
 | **CI/CD** | GitHub Actions (550-line unified pipeline), GHCR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
-| **Testing** | pytest (86-96% coverage), pre-commit hooks |
+| **Testing** | pytest (87-96% coverage), pre-commit hooks |
 
 > **v6.0+ Performance Optimizations**: Joblib compression (-76% model size), Pandas dtype optimization (-56% memory), sklearn parallelization (2-4x faster), vectorized batch predictions (-84% time). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
@@ -131,7 +131,7 @@ git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git && cd ML-MLOps-Portf
 bash scripts/setup_demo_models.sh
 
 # 3. Start full stack (APIs + MLflow + Dashboard, ~3 min build)
-docker-compose -f docker-compose.demo.yml up -d --build
+docker compose -f docker-compose.demo.yml up -d --build
 
 # 4. Wait for services and verify health (~60s)
 sleep 60 && bash scripts/run_demo_tests.sh

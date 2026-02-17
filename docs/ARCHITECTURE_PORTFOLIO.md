@@ -7,7 +7,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Multi--Stage-2496ED?style=for-the-badge&logo=docker)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5?style=for-the-badge&logo=kubernetes)
 ![GitHub Actions](https://img.shields.io/badge/CI/CD-GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions)
-![Last Updated](https://img.shields.io/badge/Updated-March%202026-blue?style=for-the-badge)
+![Last Updated](https://img.shields.io/badge/Updated-February%202026-blue?style=for-the-badge)
 
 [![YouTube Demo](https://img.shields.io/badge/📺_Video-Watch_Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
@@ -35,9 +35,9 @@ graph TB
     end
     
     subgraph "Training Pipeline"
-        T1[BankChurn Training<br/>XGBoost + Optuna]
-        T2[CarVision Training<br/>RandomForest]
-        T3[TelecomAI Training<br/>Scikit-Learn]
+        T1[BankChurn Training<br/>Ensemble LR+RF]
+        T2[CarVision Training<br/>LightGBM / RF]
+        T3[TelecomAI Training<br/>XGBoost / Ensemble]
     end
     
     subgraph "MLflow Tracking"
@@ -140,7 +140,7 @@ Raw Data → Preprocessing (SimpleImputer + StandardScaler + OneHotEncoder) → 
 - `src/bankchurn/data.py`: Data loading and validation
 - `src/bankchurn/training.py`: Training loop with MLflow tracking
 - `src/bankchurn/prediction.py`: ChurnPredictor class for inference
-- `src/bankchurn/explainer.py`: SHAP explainability
+- `src/bankchurn/explainability.py`: SHAP explainability
 - `app/fastapi_app.py`: REST API (Port 8001)
 
 **Unified Pipeline** (artifacts/model.joblib):
@@ -213,9 +213,9 @@ Raw Data (4 features) → Preprocessing (StandardScaler) → VotingClassifier �
 ```
 
 **Key Components**:
-- `src/telecomai/data.py`: Data loading (users_behavior.csv)
-- `src/telecomai/training.py`: Model training with class weights
-- `src/telecomai/prediction.py`: PlanPredictor class
+- `src/telecom/data.py`: Data loading (users_behavior.csv)
+- `src/telecom/training.py`: Model training with class weights
+- `src/telecom/prediction.py`: PlanPredictor class
 - `app/fastapi_app.py`: REST API (Port 8003)
 
 **Unified Pipeline** (artifacts/model.joblib):
@@ -370,7 +370,7 @@ CarVision Market Intelligence dashboard with price predictor:
 
 !!! info "Architecture Status"
     This architecture is **actively maintained** and reflects the current production state.  
-    **Last Updated**: March 2026  
-    **Portfolio Version**: 1.5.0
+    **Last Updated**: February 2026  
+    **Portfolio Version**: 6.2.0
 
 ---

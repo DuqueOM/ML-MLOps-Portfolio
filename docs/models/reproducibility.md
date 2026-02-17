@@ -215,10 +215,10 @@ cd ML-MLOps-Portfolio
 bash scripts/setup_demo_models.sh
 
 # Build and start all services
-docker-compose -f docker-compose.demo.yml up -d --build
+docker compose -f docker-compose.demo.yml up -d --build
 
 # Verify all services
-docker-compose -f docker-compose.demo.yml ps
+docker compose -f docker-compose.demo.yml ps
 ```
 
 ### Using Makefile
@@ -293,7 +293,7 @@ dvc push
 ### Start MLflow Server
 
 ```bash
-docker-compose -f docker-compose.mlflow.yml up -d
+docker compose -f docker-compose.mlflow.yml up -d
 ```
 
 ### View Experiments
@@ -371,4 +371,4 @@ If you cannot reproduce results:
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: February 2026
