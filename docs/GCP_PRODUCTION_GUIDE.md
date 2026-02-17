@@ -23,27 +23,27 @@ Complete guide to deploy the ML-MLOps Portfolio to Google Cloud Platform.
 ┌─────────────────────────────────────────────────────────┐
 │                    GCP Project                          │
 │                                                         │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
-│  │  Artifact    │  │  Cloud SQL  │  │  GCS Bucket │    │
-│  │  Registry    │  │  (Postgres) │  │  (Models)   │    │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘    │
-│         │                │                │             │
-│  ┌──────┴────────────────┴────────────────┴──────┐     │
+│  ┌──────────────┐  ┌─────────────┐  ┌─────────────┐     │
+│  │  Artifact    │  │  Cloud SQL  │  │  GCS Bucket │     │ 
+│  │  Registry    │  │  (Postgres) │  │  (Models)   │     │
+│  └──────┬───────┘  └──────┬──────┘  └──────┬──────┘     │
+│         │                 │                │            │
+│  ┌──────┴─────────────────┴────────────────┴──────┐     │
 │  │              GKE Autopilot Cluster             │     │
 │  │                                                │     │
-│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐      │     │
-│  │  │BankChurn │ │CarVision │ │TelecomAI │      │     │
-│  │  │  API     │ │  API     │ │  API     │      │     │
-│  │  └────┬─────┘ └────┬─────┘ └────┬─────┘      │     │
-│  │       │             │             │             │     │
-│  │  ┌────┴─────────────┴─────────────┴─────┐     │     │
-│  │  │         Ingress (HTTPS)              │     │     │
-│  │  └─────────────────────────────────────-┘     │     │
+│  │  ┌──────────┐ ┌──────────┐ ┌───────────┐       │     │
+│  │  │BankChurn │ │CarVision │ │TelecomAI  │       │     │
+│  │  │  API     │ │  API     │ │  API      │       │     │
+│  │  └────┬─────┘ └─────┬────┘ └──────┬────┘       │     │
+│  │       │             │             │            │     │
+│  │  ┌────┴─────────────┴─────────────┴─────┐      │     │
+│  │  │         Ingress (HTTPS)              │      │     │
+│  │  └──────────────────────────────────────┘      │     │
 │  │                                                │     │
-│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐      │     │
-│  │  │MLflow    │ │Prometheus│ │ Grafana  │      │     │
-│  │  │Server    │ │          │ │          │      │     │
-│  │  └──────────┘ └──────────┘ └──────────┘      │     │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐        │     │
+│  │  │MLflow    │ │Prometheus│ │ Grafana  │        │     │
+│  │  │Server    │ │          │ │          │        │     │
+│  │  └──────────┘ └──────────┘ └──────────┘        │     │
 │  └────────────────────────────────────────────────┘     │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -55,8 +55,8 @@ Complete guide to deploy the ML-MLOps Portfolio to Google Cloud Platform.
 ### 1.1 Create GCP Project
 
 ```bash
-# Set your project ID (must be globally unique)
-export PROJECT_ID="ml-portfolio-$(whoami)-$(date +%Y%m)"
+# Set your project ID (must be globally unique, no underscores)
+export PROJECT_ID="ml-portfolio-$(whoami | tr '_' '-')-$(date +%Y%m)"
 export REGION="us-central1"
 export ZONE="us-central1-a"
 
