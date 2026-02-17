@@ -51,9 +51,9 @@
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|--------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 86% | <50ms p95 | Ensemble, SHAP, SMOTE |
-| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.77**, RMSE $4.4K | 94% | <30ms p95 | Streamlit Dashboard, Bootstrap CI |
-| [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **AUC 0.84**, Acc 82% | 96% | <25ms p95 | GradientBoosting, Revenue Optimization |
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 86% | <50ms p95 | Ensemble, XGBoost, LightGBM, PyTorch MLP, SHAP |
+| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.77**, RMSE $4.4K | 94% | <30ms p95 | LightGBM, XGBoost, PyTorch MLP, Streamlit |
+| [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **AUC 0.84**, Acc 82% | 96% | <25ms p95 | XGBoost, LightGBM, PyTorch MLP, Revenue Opt |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------|
@@ -106,7 +106,7 @@ Strategic plan optimization reducing **$6.9M/year** revenue leakage per 100K cus
 
 | Category | Technologies |
 |----------|-------------|
-| **ML/DS** | Scikit-learn, XGBoost, Pandas, NumPy, SHAP, Optuna |
+| **ML/DS** | Scikit-learn, XGBoost, LightGBM, PyTorch, Pandas, NumPy, SHAP, Optuna |
 | **MLOps** | MLflow (9 experiments), DVC, Docker, Kubernetes, Terraform |
 | **API & Dashboard** | FastAPI, Pydantic, Streamlit, Plotly |
 | **Cloud & IaC** | AWS (EKS, S3, ECR, RDS), GCP, Terraform, K8s manifests |

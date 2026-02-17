@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 import time
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -39,9 +40,6 @@ try:
     )
 except ImportError:
     PROMETHEUS_AVAILABLE = False
-
-app = FastAPI(title="CarVision Inference API", version="1.0.0")
-start_time = time.time()
 
 MODEL_PATH = os.getenv("MODEL_PATH", "artifacts/model.joblib")
 ARTIFACTS_DIR = Path(os.getenv("ARTIFACTS_DIR", "artifacts"))
@@ -88,6 +86,16 @@ class ModelWrapper:
 wrapper = ModelWrapper()
 
 
+@asynccontextmanager
+async def lifespan(application: FastAPI):
+    wrapper.load()
+    yield
+
+
+app = FastAPI(title="CarVision Inference API", version="1.0.0", lifespan=lifespan)
+start_time = time.time()
+
+
 class VehicleFeatures(BaseModel):
     model_year: int
     model: str
@@ -99,11 +107,6 @@ class VehicleFeatures(BaseModel):
     drive: Optional[str] = "fwd"
     type: Optional[str] = "sedan"
     paint_color: Optional[str] = "white"
-
-
-@app.on_event("startup")
-def load_model():
-    wrapper.load()
 
 
 @app.get("/", include_in_schema=False)
@@ -131,7 +134,7 @@ async def metrics():
 async def predict(features: VehicleFeatures):
     pred_start = time.time()
     try:
-        pred = wrapper.predict(features.dict())
+        pred = wrapper.predict(features.model_dump())
         latency = time.time() - pred_start
 
         if PROMETHEUS_AVAILABLE:

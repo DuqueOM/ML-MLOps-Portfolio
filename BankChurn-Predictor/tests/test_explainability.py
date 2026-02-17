@@ -128,9 +128,9 @@ class TestFallbackMethods:
         assert importance == {"no_importance_available": 1.0}
 
     def test_fallback_contributions(self, simple_model):
-        """Test fallback contributions calculation."""
+        """Test fallback contributions calculation uses model-based importance."""
         model, X = simple_model
-        explainer = ModelExplainer(model)
+        explainer = ModelExplainer(model, feature_names=list(X.columns))
 
         # Create single sample
         X_single = pd.DataFrame(
@@ -148,13 +148,13 @@ class TestFallbackMethods:
 
         assert isinstance(contributions, dict)
         assert "Age" in contributions
-        assert contributions["Age"] == 0.15  # Age > 50
-        assert contributions["IsActiveMember"] == 0.18  # Inactive
+        # Model-based fallback: values come from feature_importances_
+        assert all(isinstance(v, float) for v in contributions.values())
 
-    def test_fallback_contributions_germany(self, simple_model):
-        """Test fallback contributions for Germany customer."""
+    def test_fallback_contributions_unknown_feature(self, simple_model):
+        """Test fallback contributions for features not in model importance."""
         model, _ = simple_model
-        explainer = ModelExplainer(model)
+        explainer = ModelExplainer(model, feature_names=["Age", "Balance", "NumOfProducts", "IsActiveMember"])
 
         X_single = pd.DataFrame(
             [
@@ -168,7 +168,8 @@ class TestFallbackMethods:
         )
 
         contributions = explainer._fallback_contributions(X_single)
-        assert contributions["Geography"] == 0.14
+        # Geography is not in the model's feature names, so weight defaults to 0.0
+        assert contributions["Geography"] == 0.0
 
 
 class TestGetFeatureImportance:

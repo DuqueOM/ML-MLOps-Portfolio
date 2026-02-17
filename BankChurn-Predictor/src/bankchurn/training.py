@@ -28,6 +28,8 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from .config import BankChurnConfig
 from .models import ResampleClassifier
+from .models_advanced import build_model as build_advanced_model
+from .models_advanced import get_available_models
 
 logger = logging.getLogger(__name__)
 
@@ -211,50 +213,135 @@ class ChurnTrainer:
             verbose_feature_names_out=False,  # Cleaner feature names
         )
 
-    def build_model(self) -> Pipeline:
-        """Build ensemble model pipeline.
+    def build_model(self, model_type: str | None = None) -> ResampleClassifier:
+        """Build a model using the factory pattern.
+
+        Supports legacy ensemble as well as advanced models
+        (xgboost, lightgbm, neural_network) via models_advanced.
+
+        Parameters
+        ----------
+        model_type : str, optional
+            Override self.config.model.type for this call.
 
         Returns
         -------
-        pipeline : Pipeline
-            Complete model pipeline with preprocessing.
+        model : ResampleClassifier
+            Wrapped model with optional resampling.
         """
-        # Build ensemble
-        lr_config = self.config.model.logistic_regression
-        lr = LogisticRegression(
-            C=lr_config.C,
-            max_iter=lr_config.max_iter,
-            class_weight=lr_config.class_weight,
-            solver=lr_config.solver,
-            random_state=self.random_state,
-        )
+        model_type = model_type or self.config.model.type
 
-        rf_config = self.config.model.random_forest
-        rf = RandomForestClassifier(
-            n_estimators=rf_config.n_estimators,
-            max_depth=rf_config.max_depth,
-            min_samples_split=rf_config.min_samples_split,
-            min_samples_leaf=rf_config.min_samples_leaf,
-            class_weight=rf_config.class_weight,
-            random_state=self.random_state,
-            n_jobs=rf_config.n_jobs,
-        )
+        if model_type == "ensemble":
+            lr_config = self.config.model.logistic_regression
+            lr = LogisticRegression(
+                C=lr_config.C,
+                max_iter=lr_config.max_iter,
+                class_weight=lr_config.class_weight,
+                solver=lr_config.solver,
+                random_state=self.random_state,
+            )
 
-        ensemble = VotingClassifier(
-            estimators=[("lr", lr), ("rf", rf)],
-            voting=self.config.model.ensemble.voting,
-            weights=self.config.model.ensemble.weights,
-            n_jobs=-1,  # Parallel training of base estimators
-        )
+            rf_config = self.config.model.random_forest
+            rf = RandomForestClassifier(
+                n_estimators=rf_config.n_estimators,
+                max_depth=rf_config.max_depth,
+                min_samples_split=rf_config.min_samples_split,
+                min_samples_leaf=rf_config.min_samples_leaf,
+                class_weight=rf_config.class_weight,
+                random_state=self.random_state,
+                n_jobs=rf_config.n_jobs,
+            )
 
-        # Wrap in resample classifier if needed
+            base_model = VotingClassifier(
+                estimators=[("lr", lr), ("rf", rf)],
+                voting=self.config.model.ensemble.voting,
+                weights=self.config.model.ensemble.weights,
+                n_jobs=-1,
+            )
+        else:
+            # Use advanced model factory
+            adv = self.config.model.advanced
+            params_map = {
+                "xgboost": adv.xgboost_params,
+                "lightgbm": adv.lightgbm_params,
+                "neural_network": adv.neural_network_params,
+                "mlp": adv.mlp_params,
+            }
+            params = params_map.get(model_type, {})
+            base_model = build_advanced_model(model_type, params=params, seed=self.random_state)
+
         model = ResampleClassifier(
-            estimator=ensemble,
+            estimator=base_model,
             strategy=self.config.model.resampling_strategy,
             random_state=self.random_state,
         )
 
         return model
+
+    def compare_models(
+        self,
+        X_train: np.ndarray,
+        y_train: pd.Series,
+        X_test: np.ndarray,
+        y_test: pd.Series,
+    ) -> dict[str, dict[str, float]]:
+        """Train and compare multiple model types.
+
+        Uses models listed in config.model.advanced.compare_models.
+        Returns a dict mapping model_name → metrics.
+
+        Parameters
+        ----------
+        X_train, y_train : preprocessed training data
+        X_test, y_test : preprocessed test data
+
+        Returns
+        -------
+        results : dict
+            {model_name: {"f1": ..., "auc": ..., "accuracy": ...}}
+        """
+        from sklearn.metrics import accuracy_score
+
+        model_names = self.config.model.advanced.compare_models
+        if not model_names:
+            return {}
+
+        available = get_available_models()
+        results: dict[str, dict[str, float]] = {}
+
+        for name in model_names:
+            if not available.get(name, False):
+                logger.warning(f"Model '{name}' not available (missing dependency), skipping")
+                continue
+
+            logger.info(f"Training comparison model: {name}")
+            try:
+                model = self.build_model(model_type=name)
+                model.fit(X_train, y_train)
+
+                y_pred = model.predict(X_test)
+                test_f1 = f1_score(y_test, y_pred, average="weighted")
+                test_acc = accuracy_score(y_test, y_pred)
+
+                test_auc = None
+                try:
+                    y_proba = model.predict_proba(X_test)[:, 1]
+                    test_auc = roc_auc_score(y_test, y_proba)
+                except Exception:
+                    pass
+
+                metrics = {"f1": test_f1, "accuracy": test_acc}
+                if test_auc is not None:
+                    metrics["auc"] = test_auc
+
+                results[name] = metrics
+                logger.info(f"  {name}: F1={test_f1:.4f}, AUC={test_auc or 'N/A'}")
+
+            except Exception as e:
+                logger.error(f"  {name} failed: {e}")
+                results[name] = {"error": str(e)}
+
+        return results
 
     def train(
         self,
@@ -352,22 +439,43 @@ class ChurnTrainer:
             "train_f1": self.train_score_,
             "test_f1": self.test_score_,
             "test_auc": test_auc,
+            "model_type": self.config.model.type,
         }
 
         logger.info(f"Training complete - Train F1: {self.train_score_:.4f}, Test F1: {self.test_score_:.4f}")
 
+        # Run model comparison if configured
+        comparison_results = self.compare_models(X_train, y_train, X_test, y_test)
+        if comparison_results:
+            metrics["model_comparison"] = comparison_results
+            logger.info("Model comparison results:")
+            for name, m in comparison_results.items():
+                if "error" not in m:
+                    logger.info(f"  {name}: F1={m.get('f1', 'N/A'):.4f}, AUC={m.get('auc', 'N/A')}")
+
         if self.config.mlflow.enabled:
-            with mlflow.start_run():
-                # Log parameters
-                mlflow.log_params(self.config.model.dict())
-                mlflow.log_params(self.config.data.dict())
+            try:
+                with mlflow.start_run():
+                    mlflow.log_param("model_type", self.config.model.type)
+                    mlflow.log_params(
+                        {
+                            k: v
+                            for k, v in self.config.data.model_dump().items()
+                            if isinstance(v, (str, int, float, bool))
+                        }
+                    )
+                    safe_metrics = {k: v for k, v in metrics.items() if isinstance(v, (int, float)) and v is not None}
+                    mlflow.log_metrics(safe_metrics)
 
-                # Log metrics
-                mlflow.log_metrics(metrics)
+                    # Log comparison metrics
+                    for name, m in comparison_results.items():
+                        for mk, mv in m.items():
+                            if isinstance(mv, (int, float)):
+                                mlflow.log_metric(f"compare_{name}_{mk}", mv)
 
-                # Log model (optional, might be large)
-                # mlflow.sklearn.log_model(self.model_, "model")
-                logger.info("Logged params and metrics to MLflow")
+                    logger.info("Logged params and metrics to MLflow")
+            except Exception as e:
+                logger.warning(f"MLflow logging failed: {e}")
 
         return self.model_, metrics
 

@@ -92,6 +92,45 @@ VotingClassifier (soft voting, weights=[1.0, 1.5]):
 
 **Ensemble Strategy**: Soft voting combines predicted probabilities, leveraging RandomForest's pattern detection while maintaining LogisticRegression's stability.
 
+### Advanced Model Comparison Framework
+
+The training pipeline supports automatic comparison across multiple model families via a unified factory pattern (`models_advanced.py`):
+
+| Model | Backend | Type | Key Characteristics |
+|-------|---------|------|-------------------|
+| **Ensemble** (default) | scikit-learn | LR + RF VotingClassifier | Interpretable, stable baseline |
+| **XGBoost** | xgboost | Gradient Boosting | State-of-the-art tabular, regularized |
+| **LightGBM** | lightgbm | Gradient Boosting | Fast training, handles imbalance natively |
+| **Neural Network** | PyTorch | Feed-forward MLP | Deep learning, BatchNorm + Dropout |
+| **Random Forest** | scikit-learn | Bagging | Robust, parallelizable |
+
+**Configuration** (`configs/config.yaml`):
+```yaml
+model:
+  type: "ensemble"  # Primary model
+  advanced:
+    compare_models:
+      - "xgboost"
+      - "lightgbm"
+      - "neural_network"
+      - "random_forest"
+```
+
+**Neural Network Architecture** (PyTorch `TorchTabularClassifier`):
+```
+Input → BatchNorm(d) → Linear(d,128) → ReLU → Dropout(0.3)
+      → Linear(128,64)  → ReLU → Dropout(0.2)
+      → Linear(64,32)   → ReLU → Dropout(0.1)
+      → Linear(32,2)    → Softmax → output
+```
+- AdamW optimizer with weight decay (L2 regularization)
+- ReduceLROnPlateau scheduler
+- Early stopping with patience=10
+- Class-weighted CrossEntropyLoss for imbalanced data
+- Gradient clipping (max_norm=1.0)
+
+All models are sklearn-compatible (implement `fit`/`predict`/`predict_proba`) and integrate seamlessly into the existing Pipeline + MLflow infrastructure.
+
 ---
 
 ## 💾 Training Data

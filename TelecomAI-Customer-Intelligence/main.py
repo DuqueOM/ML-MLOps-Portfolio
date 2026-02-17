@@ -50,7 +50,7 @@ def main() -> None:
     elif args.mode == "predict":
         if not args.input_csv or not args.output_path:
             raise ValueError("Predict mode requires --input_csv and --output_path")
-        predict_batch(args.input_csv, args.output_path, cfg.paths["model_path"], cfg.features)
+        predict_batch(args.input_csv, args.output_path, cfg.paths.model_path, cfg.features)
 
 
 if __name__ == "__main__":

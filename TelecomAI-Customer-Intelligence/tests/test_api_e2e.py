@@ -4,8 +4,9 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from app.fastapi_app import app
 from fastapi.testclient import TestClient
+
+from app.fastapi_app import app
 from src.telecom.config import Config
 from src.telecom.training import train_model
 
@@ -15,7 +16,7 @@ def ensure_artifacts() -> None:
     project_root = Path(__file__).resolve().parents[1]
     cfg = Config.from_yaml(str(project_root / "configs" / "config.yaml"))
     # Only train if artifacts are missing to keep CI fast
-    if not (project_root / cfg.paths["model_path"]).exists():
+    if not (project_root / cfg.paths.model_path).exists():
         train_model(cfg)
 
 

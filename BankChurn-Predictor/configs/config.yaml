@@ -44,13 +44,14 @@ training:
 
 # Configuración del modelo
 model:
-  type: "ensemble"  # ensemble, single
+  # Primary model type: ensemble | xgboost | lightgbm | neural_network | random_forest | logistic_regression
+  type: "ensemble"
   resampling_strategy: "none"  # oversample, undersample, none
   
   # Configuración de ensemble
   ensemble:
-    voting: "soft"  # soft, hard
-    weights: [0.4, 0.6]  # [LogisticRegression, RandomForest]
+    voting: "soft"
+    weights: [0.4, 0.6]
   
   # Hiperparámetros de modelos base
   logistic_regression:
@@ -65,6 +66,36 @@ model:
     min_samples_split: 10
     min_samples_leaf: 5
     class_weight: "balanced_subsample"
+
+  # Advanced models configuration
+  advanced:
+    xgboost_params:
+      n_estimators: 300
+      max_depth: 6
+      learning_rate: 0.05
+      subsample: 0.8
+      colsample_bytree: 0.8
+      scale_pos_weight: 3.9  # ~7963/2037 ratio
+    lightgbm_params:
+      n_estimators: 300
+      max_depth: 6
+      learning_rate: 0.05
+      num_leaves: 31
+      is_unbalance: true
+    neural_network_params:
+      hidden_dims: [128, 64, 32]
+      lr: 0.001
+      epochs: 100
+      batch_size: 256
+      dropout: 0.3
+      early_stopping_patience: 10
+      class_weight: "balanced"
+    # Models to train and compare alongside the primary model
+    compare_models:
+      - "xgboost"
+      - "lightgbm"
+      - "neural_network"
+      - "random_forest"
 
 # Configuración de optimización de hiperparámetros
 hyperparameter_optimization:

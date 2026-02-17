@@ -4,14 +4,15 @@ Evaluation logic.
 
 from __future__ import annotations
 
+import json
 import logging
 from typing import Any, Dict, Optional
 
 import joblib
 import numpy as np
-import yaml
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 from sklearn.model_selection import train_test_split
+
 from src.telecom.data import get_features_target, load_dataset
 
 logger = logging.getLogger(__name__)
@@ -59,6 +60,6 @@ def evaluate_model(cfg: Any) -> Dict[str, float]:
 
     # Save metrics
     with open(cfg.paths.metrics_path, "w") as f:
-        yaml.dump(metrics, f)
+        json.dump(metrics, f, indent=2)
 
     return metrics

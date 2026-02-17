@@ -19,7 +19,7 @@ import pandas as pd
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 # Prometheus metrics
 try:
@@ -139,15 +139,17 @@ class CustomerData(BaseModel):
     IsActiveMember: int = Field(..., ge=0, le=1)
     EstimatedSalary: float = Field(..., ge=0)
 
-    @validator("Geography")
-    def validate_geography(cls, v):
+    @field_validator("Geography")
+    @classmethod
+    def validate_geography(cls, v: str) -> str:
         valid = ["France", "Spain", "Germany"]
         if v not in valid:
             raise ValueError(f"Geography must be one of: {valid}")
         return v
 
-    @validator("Gender")
-    def validate_gender(cls, v):
+    @field_validator("Gender")
+    @classmethod
+    def validate_gender(cls, v: str) -> str:
         valid = ["Male", "Female"]
         if v not in valid:
             raise ValueError(f"Gender must be one of: {valid}")
@@ -159,8 +161,9 @@ class BatchCustomerData(BaseModel):
 
     customers: List[CustomerData]
 
-    @validator("customers")
-    def validate_batch_size(cls, v):
+    @field_validator("customers")
+    @classmethod
+    def validate_batch_size(cls, v: list) -> list:
         if len(v) > 1000:
             raise ValueError("Max 1000 customers per batch")
         if len(v) == 0:
@@ -308,7 +311,7 @@ async def predict_churn(customer: CustomerData):
 
     start_pred = time.time()
     try:
-        customer_dict = customer.dict()
+        customer_dict = customer.model_dump()
         df = pd.DataFrame([customer_dict])
 
         # Use robust prediction from src
@@ -353,7 +356,7 @@ async def predict_batch(batch_data: BatchCustomerData, background_tasks: Backgro
     batch_id = f"batch_{int(start_batch)}"
 
     try:
-        customers_list = [c.dict() for c in batch_data.customers]
+        customers_list = [c.model_dump() for c in batch_data.customers]
         df = pd.DataFrame(customers_list)
 
         results = predictor.predict(df, include_proba=True)

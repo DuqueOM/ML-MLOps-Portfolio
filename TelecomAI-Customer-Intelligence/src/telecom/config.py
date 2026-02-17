@@ -50,10 +50,14 @@ class ModelConfig(BaseModel):
 
     name: str = Field(
         default="gradient_boosting",
-        pattern="^(gradient_boosting|random_forest|logistic_regression)$",
+        pattern="^(gradient_boosting|random_forest|logistic_regression|xgboost|lightgbm|neural_network|mlp)$",
         description="Model type",
     )
     params: Dict[str, Any] = Field(default_factory=dict, description="Model hyperparameters")
+    compare_models: List[str] = Field(
+        default_factory=list,
+        description="List of model names to compare alongside the primary model",
+    )
 
     @field_validator("params")
     @classmethod
@@ -69,6 +73,24 @@ class ModelConfig(BaseModel):
             if "learning_rate" in v and (v["learning_rate"] <= 0 or v["learning_rate"] > 1):
                 raise ValueError(f"learning_rate must be between 0 and 1, got {v['learning_rate']}")
 
+        return v
+
+    @field_validator("compare_models")
+    @classmethod
+    def validate_compare_models(cls, v: List[str]) -> List[str]:
+        """Validate compare_models contains supported model names."""
+        valid_models = {
+            "gradient_boosting",
+            "random_forest",
+            "logistic_regression",
+            "xgboost",
+            "lightgbm",
+            "neural_network",
+            "mlp",
+        }
+        invalid = set(v) - valid_models
+        if invalid:
+            raise ValueError(f"Invalid compare_models entries: {invalid}. Valid: {valid_models}")
         return v
 
 

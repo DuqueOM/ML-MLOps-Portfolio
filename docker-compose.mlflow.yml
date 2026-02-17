@@ -1,5 +1,3 @@
-version: '3.8'
-
 # MLflow Tracking Server con PostgreSQL y MinIO (S3-compatible)
 # Para demo local del portfolio ML/MLOps
 
