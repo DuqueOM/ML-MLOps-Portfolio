@@ -1,0 +1,13 @@
+# GCP Terraform Variables — Copy to terraform.tfvars and fill in values
+# See docs/GCP_PRODUCTION_GUIDE.md for full deployment instructions
+
+project_id     = "ml-portfolio-YOUR_ID"
+project_name   = "ml-portfolio"
+environment    = "production"
+region         = "us-central1"
+machine_type   = "e2-medium"
+node_count     = 2
+min_node_count = 1
+max_node_count = 5
+db_tier        = "db-f1-micro"
+db_password    = "CHANGE_ME_USE_openssl_rand_base64_24"

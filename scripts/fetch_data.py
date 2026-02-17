@@ -42,34 +42,6 @@ DATASET_REGISTRY: Dict[str, Dict] = {
         "checksum": None,
         "size_mb": 5,
     },
-    "chicago": {
-        "name": "Chicago Taxi Dataset",
-        "url": "https://example.com/datasets/taxi_data.csv",  # Placeholder
-        "path": "Chicago-Mobility-Analytics/data/taxi_data.csv",
-        "checksum": None,
-        "size_mb": 30,
-    },
-    "gold": {
-        "name": "Gold Recovery Dataset",
-        "url": "https://example.com/datasets/gold_recovery_full.csv",  # Placeholder
-        "path": "GoldRecovery-Process-Optimizer/data/gold_recovery_full.csv",
-        "checksum": None,
-        "size_mb": 20,
-    },
-    "gaming": {
-        "name": "Gaming Market Dataset",
-        "url": "https://example.com/datasets/games.csv",  # Placeholder
-        "path": "Gaming-Market-Intelligence/data/games.csv",
-        "checksum": None,
-        "size_mb": 5,
-    },
-    "oil": {
-        "name": "OilWell Location Datasets",
-        "url": None,  # Multiple files
-        "path": "OilWell-Location-Optimizer/data/",
-        "checksum": None,
-        "size_mb": 3,
-    },
 }
 
 

@@ -219,10 +219,6 @@ resource "aws_ecr_repository" "ml_services" {
     "bankchurn-predictor",
     "telecom-intelligence",
     "carvision-intelligence",
-    "chicago-mobility",
-    "goldrecovery-optimizer",
-    "gaming-intelligence",
-    "oilwell-optimizer"
   ])
 
   name                 = "${var.project_name}/${each.key}"

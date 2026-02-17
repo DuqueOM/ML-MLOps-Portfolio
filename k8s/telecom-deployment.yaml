@@ -38,7 +38,7 @@ spec:
           protocol: TCP
         env:
         - name: MODEL_PATH
-          value: "/app/models/model.pkl"
+          value: "/app/models/model.joblib"
         - name: PYTHONUNBUFFERED
           value: "1"
         envFrom:

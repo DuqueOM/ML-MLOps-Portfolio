@@ -61,9 +61,11 @@ def cache_response(prefix: str = "api", ttl: int = 3600):
             if client is None:
                 return await func(*args, **kwargs)
 
-            # Extract data for cache key
+            # Extract data for cache key (Pydantic v2: model_dump, v1: dict)
             cache_data = {}
-            if args and hasattr(args[0], "dict"):
+            if args and hasattr(args[0], "model_dump"):
+                cache_data = args[0].model_dump()
+            elif args and hasattr(args[0], "dict"):
                 cache_data = args[0].dict()
             elif kwargs:
                 cache_data = kwargs

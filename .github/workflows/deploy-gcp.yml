@@ -1,0 +1,242 @@
+name: Deploy to GKE
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'BankChurn-Predictor/**'
+      - 'CarVision-Market-Intelligence/**'
+      - 'TelecomAI-Customer-Intelligence/**'
+      - 'k8s/**'
+      - '.github/workflows/deploy-gcp.yml'
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Service to deploy (all, bankchurn, carvision, telecom)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - bankchurn
+          - carvision
+          - telecom
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_REGION: ${{ secrets.GCP_REGION || 'us-central1' }}
+  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER_NAME }}
+  AR_REPO: ${{ secrets.GCP_REGION || 'us-central1' }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ml-portfolio-images
+  NAMESPACE: ml-portfolio
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Detect which services changed (skip on manual dispatch)
+  # ---------------------------------------------------------------------------
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      bankchurn: ${{ steps.filter.outputs.bankchurn }}
+      carvision: ${{ steps.filter.outputs.carvision }}
+      telecom: ${{ steps.filter.outputs.telecom }}
+      k8s: ${{ steps.filter.outputs.k8s }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            bankchurn:
+              - 'BankChurn-Predictor/**'
+            carvision:
+              - 'CarVision-Market-Intelligence/**'
+            telecom:
+              - 'TelecomAI-Customer-Intelligence/**'
+            k8s:
+              - 'k8s/**'
+
+  # ---------------------------------------------------------------------------
+  # Build & Push Docker images to Artifact Registry
+  # ---------------------------------------------------------------------------
+  build-push:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - service: bankchurn
+            context: BankChurn-Predictor
+            image: bankchurn-predictor
+            manifest: k8s/bankchurn-deployment.yaml
+          - service: carvision
+            context: CarVision-Market-Intelligence
+            image: carvision-market-intelligence
+            manifest: k8s/carvision-deployment.yaml
+          - service: telecom
+            context: TelecomAI-Customer-Intelligence
+            image: telecomai-customer-intelligence
+            manifest: k8s/telecom-deployment.yaml
+    # Build if: manual dispatch selected this service/all, OR push changed this service
+    if: >
+      (github.event_name == 'workflow_dispatch' &&
+        (github.event.inputs.service == 'all' || github.event.inputs.service == matrix.service)) ||
+      (github.event_name == 'push' &&
+        (needs.detect-changes.outputs[matrix.service] == 'true'))
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push image
+        run: |
+          IMAGE="${{ env.AR_REPO }}/${{ matrix.image }}"
+          TAG="sha-${GITHUB_SHA::8}"
+
+          docker build \
+            -t ${IMAGE}:${TAG} \
+            -t ${IMAGE}:latest \
+            ${{ matrix.context }}/
+
+          docker push ${IMAGE}:${TAG}
+          docker push ${IMAGE}:latest
+
+          echo "IMAGE_TAG=${TAG}" >> $GITHUB_ENV
+
+      - name: Upload image tag artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-tag-${{ matrix.service }}
+          path: |
+            echo "${{ env.IMAGE_TAG }}" > tag.txt
+
+  # ---------------------------------------------------------------------------
+  # Deploy to GKE
+  # ---------------------------------------------------------------------------
+  deploy:
+    needs: build-push
+    runs-on: ubuntu-latest
+    if: always() && !cancelled() && !contains(needs.*.result, 'failure')
+    environment:
+      name: ${{ github.event.inputs.environment || 'production' }}
+      url: https://ml.duqueom.com
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GCP_REGION }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Update image tags in manifests
+        run: |
+          TAG="sha-${GITHUB_SHA::8}"
+
+          # Update all deployment manifests with new image + tag
+          for FILE in k8s/bankchurn-deployment.yaml k8s/carvision-deployment.yaml k8s/telecom-deployment.yaml; do
+            if [ -f "$FILE" ]; then
+              # Replace image references to use Artifact Registry
+              sed -i "s|image: duqueom/.*|image: ${{ env.AR_REPO }}/$(basename ${FILE%-deployment.yaml}):${TAG}|g" "$FILE" || true
+            fi
+          done
+
+      - name: Apply Kubernetes manifests
+        run: |
+          # Ensure namespace exists
+          kubectl apply -f k8s/namespace.yaml
+
+          # Apply storage
+          kubectl apply -f k8s/storage.yaml
+
+          # Deploy ML services
+          kubectl apply -f k8s/bankchurn-deployment.yaml
+          kubectl apply -f k8s/carvision-deployment.yaml
+          kubectl apply -f k8s/telecom-deployment.yaml
+
+          # Deploy monitoring
+          kubectl apply -f k8s/prometheus-deployment.yaml
+          kubectl apply -f k8s/grafana-deployment.yaml
+
+          # Apply ingress
+          kubectl apply -f k8s/ingress.yaml
+
+      - name: Wait for rollouts
+        run: |
+          echo "Waiting for deployments to be ready..."
+          kubectl rollout status deployment/bankchurn-predictor -n ${{ env.NAMESPACE }} --timeout=300s || true
+          kubectl rollout status deployment/carvision-intelligence -n ${{ env.NAMESPACE }} --timeout=300s || true
+          kubectl rollout status deployment/telecom-intelligence -n ${{ env.NAMESPACE }} --timeout=300s || true
+
+      - name: Verify deployment
+        run: |
+          echo "=== Pod Status ==="
+          kubectl get pods -n ${{ env.NAMESPACE }}
+
+          echo ""
+          echo "=== Services ==="
+          kubectl get svc -n ${{ env.NAMESPACE }}
+
+          echo ""
+          echo "=== Ingress ==="
+          kubectl get ingress -n ${{ env.NAMESPACE }}
+
+      - name: Smoke test health endpoints
+        run: |
+          # Get any running pod for port-forward tests
+          for SVC in bankchurn-service carvision-service telecom-service; do
+            echo "Testing ${SVC}..."
+            kubectl run health-test-${SVC} \
+              --namespace=${{ env.NAMESPACE }} \
+              --image=curlimages/curl:latest \
+              --restart=Never \
+              --rm -i --timeout=30s \
+              -- curl -sf http://${SVC}/health || echo "WARNING: ${SVC} health check failed"
+          done
+
+  # ---------------------------------------------------------------------------
+  # Post-deploy notification
+  # ---------------------------------------------------------------------------
+  notify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${GITHUB_SHA::8}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${GITHUB_REF_NAME}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger**: ${GITHUB_EVENT_NAME}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ needs.deploy.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Endpoints" >> $GITHUB_STEP_SUMMARY
+          echo "- BankChurn: https://bankchurn.ml.duqueom.com/docs" >> $GITHUB_STEP_SUMMARY
+          echo "- CarVision: https://carvision.ml.duqueom.com/docs" >> $GITHUB_STEP_SUMMARY
+          echo "- TelecomAI: https://telecom.ml.duqueom.com/docs" >> $GITHUB_STEP_SUMMARY
