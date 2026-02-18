@@ -2,9 +2,9 @@
 
 > **Para quién es esta guía**: Para alguien que nunca ha usado GCP y necesita documentar visualmente un proyecto ya desplegado. Se explica **qué es cada cosa**, **dónde encontrarla exactamente**, **qué hacer paso a paso** y **por qué importa** para el portafolio profesional.
 >
-> **Tiempo estimado total**: ~2 horas divididas en 5 sesiones independientes
+> **Tiempo estimado total**: ~3 horas divididas en 6 sesiones independientes
 >
-> **Resultado final**: 30+ screenshots + 5 GIFs/videos que demuestran un deployment real de ML en producción
+> **Resultado final**: 55+ screenshots + 5 GIFs + 1 video de portafolio (3-5 min) que demuestran un deployment real de ML en producción
 
 ---
 
@@ -17,10 +17,12 @@
 5. [Sesión 2: Terminal — Estado del Sistema](#5-sesión-2-terminal--estado-del-sistema)
 6. [Sesión 3: APIs en Vivo — FastAPI y Predicciones](#6-sesión-3-apis-en-vivo--fastapi-y-predicciones)
 7. [Sesión 4: Monitoring — Grafana, Prometheus, MLflow](#7-sesión-4-monitoring--grafana-prometheus-mlflow)
-8. [Sesión 5: CI/CD — GitHub Actions](#8-sesión-5-cicd--github-actions)
-9. [Videos y GIFs para el README](#9-videos-y-gifs-para-el-readme)
-10. [Integración en README.md](#10-integración-en-readmemd)
-11. [Consejos de Calidad Profesional](#11-consejos-de-calidad-profesional)
+8. [Sesión 4b: Terraform — Infrastructure as Code](#8-sesión-4b-terraform--infrastructure-as-code)
+9. [Sesión 5: CI/CD — GitHub Actions](#9-sesión-5-cicd--github-actions)
+10. [GIFs para el README](#10-gifs-para-el-readme)
+11. [Video de Portafolio Profesional](#11-video-de-portafolio-profesional)
+12. [Integración en README.md](#12-integración-en-readmemd)
+13. [Consejos de Calidad Profesional](#13-consejos-de-calidad-profesional)
 
 ---
 
@@ -149,7 +151,9 @@ mkdir -p docs/evidence/screenshots/terminal
 mkdir -p docs/evidence/screenshots/aplicaciones
 mkdir -p docs/evidence/screenshots/monitoring
 mkdir -p docs/evidence/screenshots/cicd
+mkdir -p docs/evidence/screenshots/terraform
 mkdir -p docs/evidence/gifs
+mkdir -p docs/evidence/video
 
 echo "Estructura creada:"
 ls docs/evidence/screenshots/
@@ -1192,7 +1196,189 @@ kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio
 
 ---
 
-## 8. Sesión 5: CI/CD — GitHub Actions
+## 8. Sesión 4b: Terraform — Infrastructure as Code
+
+> **Dónde**: Terminal WSL + Editor de código (VS Code o cualquier editor)
+> **Qué necesitas**: Tener Terraform instalado (ya lo tienes del deployment)
+> **Tiempo**: ~15 minutos | **Capturas en esta sesión**: 7 screenshots
+>
+> **Por qué Terraform merece su propia sesión**: Terraform es la prueba más contundente de que tu infraestructura no fue creada manualmente con clics. Es código reproducible — cualquier persona puede clonar tu repositorio y recrear exactamente la misma infraestructura en GCP con un solo comando. Esto es lo que separa un proyecto de portafolio amateur de uno enterprise-grade.
+
+---
+
+### 8.1 — Código Terraform en el Editor
+
+**¿Qué vas a mostrar?** El archivo `main.tf` que define toda la infraestructura: el cluster GKE, los buckets de Cloud Storage, el Artifact Registry, la red VPC, y el service account. Este código ES la infraestructura.
+
+**Pasos exactos:**
+
+1. Abre VS Code (o tu editor preferido) en el directorio del proyecto:
+   ```bash
+   code /home/duque_om/projects/ML-MLOps-Portfolio/infra/terraform/gcp/
+   ```
+2. Abre el archivo `main.tf`
+3. Asegúrate de que el tema de sintaxis de HCL/Terraform esté activo (el código debe tener colores)
+4. Navega a la sección del cluster GKE (busca `resource "google_container_cluster"`)
+
+---
+
+> **📸 CAPTURA #48 — Código Terraform main.tf (Cluster GKE)**
+>
+> - **Archivo**: `docs/evidence/screenshots/terraform/48-terraform-main-gke.png`
+> - **Qué debe verse**: El bloque `resource "google_container_cluster"` con la configuración del cluster: nombre, región, node pools, disk_size_gb, machine_type
+> - **Por qué importa**: Demuestra Infrastructure as Code — la infraestructura está definida en código versionado, no creada manualmente
+> - **Tip**: Usa `Ctrl + G` en VS Code para ir a la línea del recurso GKE directamente
+
+---
+
+> **📸 CAPTURA #49 — Código Terraform main.tf (Cloud Storage + Artifact Registry)**
+>
+> - **Archivo**: `docs/evidence/screenshots/terraform/49-terraform-main-storage.png`
+> - **Qué debe verse**: Los bloques `resource "google_storage_bucket"` y `resource "google_artifact_registry_repository"` — los recursos de almacenamiento
+> - **Por qué importa**: Muestra que TODOS los recursos (no solo el cluster) fueron creados con código
+
+---
+
+### 8.2 — Variables y Configuración
+
+**¿Qué son las variables de Terraform?** En lugar de hardcodear valores como el project ID o la región directamente en el código, Terraform usa variables. Esto hace que el código sea reutilizable — cualquiera puede usar el mismo código con su propio proyecto cambiando solo el archivo de variables.
+
+```bash
+# Ver el archivo de variables
+cat /home/duque_om/projects/ML-MLOps-Portfolio/infra/terraform/gcp/variables.tf
+
+# Ver los valores actuales (sin secretos)
+cat /home/duque_om/projects/ML-MLOps-Portfolio/infra/terraform/gcp/terraform.tfvars
+```
+
+---
+
+> **📸 CAPTURA #50 — terraform.tfvars (Valores de Configuración)**
+>
+> - **Archivo**: `docs/evidence/screenshots/terraform/50-terraform-tfvars.png`
+> - **Qué debe verse**: El archivo `terraform.tfvars` con los valores: project_id, region, node_count, disk_size_gb
+> - **Por qué importa**: Muestra la separación entre código (reutilizable) y configuración (específica del entorno) — una práctica de ingeniería de software profesional
+> - **Importante**: Si el archivo contiene la contraseña de la base de datos, usa Flameshot blur para ocultarla antes de capturar
+
+---
+
+### 8.3 — Terraform State (El Estado de la Infraestructura)
+
+**¿Qué es el Terraform state?** Terraform mantiene un archivo de estado (`terraform.tfstate`) que registra exactamente qué recursos existen en GCP y cuál es su configuración actual. Es la "memoria" de Terraform — le permite saber qué ya existe para no recrearlo.
+
+```bash
+cd /home/duque_om/projects/ML-MLOps-Portfolio
+
+# Ver la lista de recursos gestionados por Terraform
+terraform -chdir=infra/terraform/gcp state list
+```
+
+**¿Qué verás?** Una lista de todos los recursos GCP que Terraform creó y gestiona:
+```
+google_artifact_registry_repository.ml_portfolio
+google_compute_network.vpc
+google_container_cluster.primary
+google_container_node_pool.primary_nodes
+google_storage_bucket.ml_models
+google_storage_bucket.mlflow_artifacts
+google_service_account.gke_sa
+...
+```
+
+---
+
+> **📸 CAPTURA #51 — terraform state list**
+>
+> - **Archivo**: `docs/evidence/screenshots/terraform/51-terraform-state-list.png`
+> - **Comando**: `terraform -chdir=infra/terraform/gcp state list`
+> - **Qué debe verse**: La lista completa de recursos GCP gestionados por Terraform (10-15 recursos)
+> - **Por qué importa**: Demuestra que la infraestructura completa está bajo control de Terraform — cualquier cambio pasa por código
+
+---
+
+### 8.4 — Terraform Outputs (Valores Exportados)
+
+**¿Qué son los outputs?** Son valores que Terraform exporta después de crear la infraestructura — la IP del cluster, el nombre del bucket, la URL del registry. Otros sistemas (como el CI/CD) pueden usar estos valores automáticamente.
+
+```bash
+# Ver todos los outputs
+terraform -chdir=infra/terraform/gcp output
+```
+
+---
+
+> **📸 CAPTURA #52 — terraform output (Valores Exportados)**
+>
+> - **Archivo**: `docs/evidence/screenshots/terraform/52-terraform-outputs.png`
+> - **Qué debe verse**: Los outputs: `cluster_name`, `registry_url`, `ml_models_bucket`, `mlflow_bucket`, `cluster_endpoint`
+> - **Por qué importa**: Demuestra que la infraestructura exporta sus valores de forma programática — integración con CI/CD y otros sistemas
+> - **Nota**: Esta captura reemplaza la captura #22 de la Sesión Terminal con más contexto
+
+---
+
+### 8.5 — Terraform Plan (Verificar que no hay cambios pendientes)
+
+**¿Qué es `terraform plan`?** Es el comando que compara el estado actual de GCP con lo que describe el código y muestra qué cambios haría. Si el código y la infraestructura están sincronizados, el plan dirá `No changes`.
+
+```bash
+# Ejecutar plan (solo lee, no modifica nada)
+terraform -chdir=infra/terraform/gcp plan \
+  -var-file=infra/terraform/gcp/terraform.tfvars
+```
+
+**¿Qué verás?** Si todo está sincronizado:
+```
+No changes. Your infrastructure matches the configuration.
+
+Terraform has compared your real infrastructure against your
+configuration and found no differences, so no changes are needed.
+```
+
+Esto es exactamente lo que quieres mostrar — la infraestructura está perfectamente descrita por el código.
+
+---
+
+> **📸 CAPTURA #53 — terraform plan (No Changes)**
+>
+> - **Archivo**: `docs/evidence/screenshots/terraform/53-terraform-plan-no-changes.png`
+> - **Qué debe verse**: El mensaje `No changes. Your infrastructure matches the configuration.` en verde
+> - **Por qué importa**: **Captura de alto impacto** — demuestra que el código Terraform y la infraestructura real en GCP están perfectamente sincronizados. Es la prueba definitiva de IaC bien implementado
+> - **Tip**: Si hay cambios pendientes (por los comentarios temporales en disk_size_gb), primero aplícalos con `terraform apply` antes de capturar
+
+---
+
+### 8.6 — Estructura de Archivos Terraform en el Repositorio
+
+**¿Por qué capturar la estructura de archivos?** Demuestra que el código está bien organizado siguiendo las convenciones de Terraform: separación de variables, outputs, y recursos principales en archivos distintos.
+
+```bash
+# Ver la estructura del directorio Terraform
+tree infra/terraform/gcp/ -L 1
+# O si no tienes tree:
+ls -la infra/terraform/gcp/
+```
+
+Debes ver:
+```
+infra/terraform/gcp/
+├── main.tf          # Recursos principales
+├── variables.tf     # Definición de variables
+├── outputs.tf       # Valores exportados
+├── terraform.tfvars # Valores de configuración
+└── terraform.tfvars.example  # Plantilla para otros usuarios
+```
+
+---
+
+> **📸 CAPTURA #54 — Estructura de Archivos Terraform**
+>
+> - **Archivo**: `docs/evidence/screenshots/terraform/54-terraform-estructura-archivos.png`
+> - **Qué debe verse**: El listado de archivos del directorio `infra/terraform/gcp/` con los 5 archivos principales
+> - **Por qué importa**: Muestra organización y adherencia a las convenciones de Terraform — señal de código profesional
+
+---
+
+## 9. Sesión 5: CI/CD — GitHub Actions
 
 > **Dónde**: Navegador web en GitHub.com
 > **Tiempo**: ~15 minutos | **Capturas en esta sesión**: 7 screenshots
@@ -1201,7 +1387,7 @@ kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio
 
 ---
 
-### 8.1 — Repositorio en GitHub
+### 9.1 — Repositorio en GitHub
 
 1. Ve a: **https://github.com/DuqueOM/ML-MLOps-Portfolio**
 2. Observa la estructura: `k8s/`, `infra/`, `docs/`, `.github/workflows/`
@@ -1217,7 +1403,7 @@ kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio
 
 ---
 
-### 8.2 — GitHub Actions Workflows
+### 9.2 — GitHub Actions Workflows
 
 **¿Qué son los Workflows?** Son los archivos YAML en `.github/workflows/` que definen qué pasos ejecutar automáticamente cuando haces `git push`. Tu workflow `deploy-gcp.yml` construye imágenes Docker y las despliega en GKE.
 
@@ -1235,7 +1421,7 @@ kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio
 
 ---
 
-### 8.3 — GitHub Secrets Configurados
+### 9.3 — GitHub Secrets Configurados
 
 **¿Qué son los Secrets?** Son variables de entorno secretas que GitHub almacena de forma segura. Contienen las credenciales para conectarse a GCP. Los valores nunca son visibles — solo sus nombres.
 
@@ -1254,7 +1440,7 @@ kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio
 
 ---
 
-### 8.4 — Código del Workflow
+### 9.4 — Código del Workflow
 
 1. En el repositorio, navega a `.github/workflows/deploy-gcp.yml`
 2. Verás el código YAML del pipeline
@@ -1270,7 +1456,7 @@ kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio
 
 ---
 
-### 8.5 — Ejecutar el Workflow y Capturar su Ejecución
+### 9.5 — Ejecutar el Workflow y Capturar su Ejecución
 
 **Opción A — Trigger manual desde GitHub:**
 1. En la pestaña **"Actions"**, haz clic en el workflow "Deploy to GCP"
@@ -1314,7 +1500,7 @@ Luego ve a GitHub → Actions y observa el workflow ejecutándose.
 
 ---
 
-## 9. Videos y GIFs para el README
+## 10. GIFs para el README
 
 Los GIFs son el elemento más impactante de un portafolio técnico. Un GIF de 30 segundos que muestra el sistema funcionando vale más que 10 screenshots estáticos. Aquí están los 5 GIFs más importantes para crear, con instrucciones exactas.
 
@@ -1505,7 +1691,355 @@ Graba con OBS Studio o asciinema mientras los 3 paneles muestran respuestas.
 
 ---
 
-## 10. Integración en README.md
+## 11. Video de Portafolio Profesional
+
+> **¿Por qué un video y no solo GIFs?** Los GIFs son loops cortos sin audio — perfectos para el README. Pero un video de 3-5 minutos con narración es lo que presentas en entrevistas, en LinkedIn, en tu sitio web personal, y en aplicaciones de trabajo donde te piden "muéstrame algo que hayas construido". Un video bien producido demuestra no solo habilidades técnicas sino también capacidad de comunicación — una habilidad crítica para cualquier ML Engineer.
+>
+> **Estándar de la industria**: Los mejores portafolios técnicos en GitHub, LinkedIn y YouTube incluyen siempre un video demo de 3-5 minutos. Es el formato que más retención tiene y el que más impresiona a reclutadores técnicos.
+
+---
+
+### 11.1 — Características del Video
+
+| Característica | Especificación |
+|----------------|----------------|
+| **Duración** | 3:30 - 5:00 minutos (óptimo: 4 minutos) |
+| **Resolución** | 1920×1080 (Full HD) mínimo |
+| **FPS** | 30fps para el video principal |
+| **Audio** | Narración en voz (tu voz explicando lo que se ve) |
+| **Formato de salida** | MP4 (H.264) — compatible con YouTube, LinkedIn, GitHub |
+| **Idioma** | Español o inglés (inglés si buscas trabajo internacional) |
+| **Subtítulos** | Recomendado — muchos lo ven sin audio |
+| **Intro** | 5-10 segundos con título del proyecto |
+| **Ritmo** | Lento y deliberado — pausa 2-3 segundos en cada elemento importante |
+| **Tamaño máximo** | < 100MB para subir a GitHub (usa YouTube/Loom para versión completa) |
+
+---
+
+### 11.2 — Herramientas de Grabación y Edición
+
+**Grabación:**
+```bash
+# OBS Studio (recomendado — gratuito, profesional)
+# Descarga: https://obsproject.com
+# Configuración recomendada:
+# - Output: MP4, H.264
+# - Resolution: 1920x1080
+# - FPS: 30
+# - Bitrate: 2500 kbps (buen balance calidad/tamaño)
+```
+
+**Micrófono:**
+- Cualquier auricular con micrófono funciona
+- Graba en un cuarto silencioso (cierra ventanas, apaga ventiladores)
+- Habla a ~20cm del micrófono
+- Haz una prueba de audio de 30 segundos antes de grabar el video completo
+
+**Edición (opcional pero recomendada):**
+- **DaVinci Resolve** (gratuito, profesional): https://www.blackmagicdesign.com/products/davinciresolve
+- **Kdenlive** (gratuito, Linux): `sudo apt install kdenlive -y`
+- **OpenShot** (gratuito, simple): `sudo apt install openshot -y`
+
+**Para subir el video:**
+- **YouTube** (no listado): Ideal — link directo para el README
+- **Loom** (https://loom.com): Graba y sube automáticamente, genera link compartible
+- **GitHub Releases**: Para archivos < 100MB directamente en el repositorio
+
+---
+
+### 11.3 — Guión Completo del Video
+
+El guión está dividido en 7 escenas. Cada escena tiene el texto exacto a decir y lo que debe mostrarse en pantalla.
+
+---
+
+#### 🎬 ESCENA 1 — Introducción (0:00 - 0:30)
+
+**Pantalla**: Slide de título (crea una imagen simple en Canva o Google Slides) con:
+- Título: "ML MLOps Portfolio — GCP Production Deployment"
+- Subtítulo: "3 ML APIs + Kubernetes + Terraform + CI/CD"
+- Tu nombre y fecha
+
+**Narración**:
+> *"Hola, en este video voy a mostrar el deployment en producción de mi portafolio de MLOps en Google Cloud Platform. El sistema consiste en tres APIs de Machine Learning — predicción de churn bancario, valoración de vehículos, y predicción de churn en telecomunicaciones — todas corriendo simultáneamente en un cluster de Kubernetes en GCP, con monitoreo en tiempo real, tracking de experimentos con MLflow, y un pipeline de CI/CD con GitHub Actions. Toda la infraestructura fue creada con Terraform como Infrastructure as Code."*
+
+**Duración**: 30 segundos
+
+---
+
+#### 🎬 ESCENA 2 — Arquitectura del Sistema (0:30 - 1:00)
+
+**Pantalla**: Diagrama de arquitectura (puedes usar el de `docs/ARCHITECTURE_PORTFOLIO.md` o crear uno en draw.io)
+
+**Narración**:
+> *"La arquitectura tiene estas capas: los modelos ML entrenados están almacenados en Cloud Storage. Las APIs de FastAPI están empaquetadas en imágenes Docker y almacenadas en Artifact Registry. Kubernetes Engine orquesta los contenedores en el cluster. Un Ingress con IP pública enruta el tráfico a cada servicio. Prometheus recolecta métricas y Grafana las visualiza. Y MLflow trackea los experimentos de entrenamiento."*
+
+**Duración**: 30 segundos
+
+---
+
+#### 🎬 ESCENA 3 — Infraestructura en GCP Console (1:00 - 1:45)
+
+**Pantalla**: Navegador con GCP Console — mueve el cursor lentamente
+
+**Secuencia exacta de navegación**:
+1. Mostrar el dashboard del proyecto `ml-portfolio-duque-om-202602` (5 segundos)
+2. Navegar a Kubernetes Engine → Workloads (10 segundos)
+3. Mostrar los 6 workloads en verde — pausa aquí 5 segundos (es el momento más importante)
+4. Hacer clic en `bankchurn-predictor` para mostrar el detalle (10 segundos)
+5. Volver y navegar a Artifact Registry → mostrar las 3 imágenes Docker (10 segundos)
+
+**Narración**:
+> *"Aquí vemos la consola de GCP. En Kubernetes Engine, los seis workloads están corriendo: las tres APIs de ML, MLflow, Prometheus y Grafana. Cada uno tiene su imagen Docker almacenada en Artifact Registry — bankchurn-predictor, carvision-market-intelligence, y telecomai-customer-intelligence, todas con sus tags de versión."*
+
+**Duración**: 45 segundos
+
+---
+
+#### 🎬 ESCENA 4 — Infrastructure as Code con Terraform (1:45 - 2:15)
+
+**Pantalla**: VS Code con el archivo `infra/terraform/gcp/main.tf` abierto
+
+**Secuencia exacta**:
+1. Mostrar el archivo `main.tf` con el bloque del cluster GKE (10 segundos)
+2. Cambiar a la terminal y ejecutar `terraform -chdir=infra/terraform/gcp state list` (10 segundos)
+3. Mostrar el output con todos los recursos listados (10 segundos)
+
+**Narración**:
+> *"Toda la infraestructura fue creada con Terraform. Este archivo main.tf define el cluster GKE, los buckets de Cloud Storage, el Artifact Registry, la red VPC, y el service account. El comando terraform state list muestra todos los recursos que Terraform gestiona — son más de diez recursos GCP creados y versionados como código."*
+
+**Duración**: 30 segundos
+
+---
+
+#### 🎬 ESCENA 5 — APIs de ML en Producción (2:15 - 3:15)
+
+**Pantalla**: Terminal + Navegador — esta es la escena más importante del video
+
+**Secuencia exacta**:
+1. En terminal: `kubectl get pods -n ml-portfolio` — mostrar 6/6 Running (10 segundos)
+2. En terminal: `kubectl port-forward svc/bankchurn-service 8001:80 -n ml-portfolio &` (5 segundos)
+3. Cambiar al navegador → `http://localhost:8001/docs` — mostrar Swagger UI (10 segundos)
+4. En Swagger: hacer clic en `POST /predict` → "Try it out" → pegar el JSON → "Execute" (20 segundos)
+5. Mostrar la respuesta JSON con la probabilidad de churn y las contribuciones SHAP (15 segundos)
+
+**Narración**:
+> *"Desde la terminal, kubectl confirma que los seis pods están corriendo. Con port-forward creo un túnel al servicio de BankChurn. En el navegador, FastAPI genera automáticamente esta documentación interactiva. Voy a hacer una predicción real: envío los datos de un cliente bancario — crédito, geografía, edad, balance — y el modelo responde con una probabilidad de churn del 23%, clasificado como riesgo bajo, junto con las contribuciones de cada feature calculadas con SHAP. Esto es el modelo de Machine Learning funcionando en producción en GCP."*
+
+**Duración**: 60 segundos
+
+---
+
+#### 🎬 ESCENA 6 — Monitoreo con Grafana y Prometheus (3:15 - 4:00)
+
+**Pantalla**: Navegador con Grafana y Prometheus
+
+**Secuencia exacta**:
+1. `kubectl port-forward svc/grafana-service 3000:3000 -n ml-portfolio &` (5 segundos)
+2. Abrir `http://localhost:3000` — mostrar el dashboard de Grafana con gráficas (20 segundos)
+3. Cambiar a `http://localhost:9090/targets` — mostrar los targets UP en Prometheus (15 segundos)
+4. Cambiar a `http://localhost:5000` — mostrar MLflow con los experimentos (15 segundos)
+
+**Narración**:
+> *"El sistema tiene monitoreo completo. Grafana muestra en tiempo real las métricas de las APIs: requests por segundo, latencia de predicción, y uso de recursos. Prometheus está recolectando métricas de los tres servicios ML — todos los targets están UP. Y MLflow registra cada experimento de entrenamiento con sus parámetros y métricas, permitiendo comparar versiones de modelos y reproducir cualquier experimento."*
+
+**Duración**: 45 segundos
+
+---
+
+#### 🎬 ESCENA 7 — CI/CD Pipeline y Cierre (4:00 - 4:30)
+
+**Pantalla**: GitHub Actions en el navegador
+
+**Secuencia exacta**:
+1. Mostrar el repositorio en GitHub con la estructura de carpetas (10 segundos)
+2. Navegar a Actions → mostrar el workflow completado con todos los jobs en verde (15 segundos)
+3. Hacer clic en el job `build-and-push` para mostrar los pasos detallados (10 segundos)
+
+**Narración**:
+> *"Finalmente, el pipeline de CI/CD con GitHub Actions. Cuando hago git push, automáticamente se detectan los cambios, se construyen las imágenes Docker, se suben a Artifact Registry, y se despliegan en GKE. Todo el proceso está automatizado y verificado con smoke tests. El código del repositorio, la infraestructura Terraform, los manifiestos de Kubernetes, y este pipeline están todos disponibles en GitHub. Gracias por ver el demo."*
+
+**Duración**: 30 segundos
+
+---
+
+### 11.4 — Preparación Antes de Grabar
+
+Sigue este checklist antes de presionar "Start Recording" en OBS:
+
+```
+□ 1. Todos los port-forwards activos:
+      kubectl port-forward svc/bankchurn-service 8001:80 -n ml-portfolio &
+      kubectl port-forward svc/grafana-service 3000:3000 -n ml-portfolio &
+      kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio &
+      kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio &
+
+□ 2. Pestañas del navegador pre-abiertas (en orden):
+      - Tab 1: GCP Console → Workloads
+      - Tab 2: http://localhost:8001/docs (BankChurn Swagger)
+      - Tab 3: http://localhost:3000 (Grafana)
+      - Tab 4: http://localhost:9090/targets (Prometheus)
+      - Tab 5: http://localhost:5000 (MLflow)
+      - Tab 6: https://github.com/DuqueOM/ML-MLOps-Portfolio/actions
+
+□ 3. VS Code abierto con infra/terraform/gcp/main.tf
+
+□ 4. Terminal lista con el comando kubectl get pods preparado
+
+□ 5. Modo "No molestar" activado (sin notificaciones)
+
+□ 6. Prueba de audio de 30 segundos grabada y revisada
+
+□ 7. Resolución de pantalla: 1920×1080
+
+□ 8. Zoom del navegador: 100% (ni más ni menos)
+
+□ 9. Tamaño de fuente de terminal: legible (Ctrl + + si es necesario)
+
+□ 10. JSON de predicción copiado en el portapapeles:
+       {"CreditScore":650,"Geography":"France","Gender":"Male","Age":35,
+        "Tenure":5,"Balance":50000,"NumOfProducts":2,"HasCrCard":1,
+        "IsActiveMember":1,"EstimatedSalary":75000}
+```
+
+---
+
+### 11.5 — Configuración de OBS Studio para el Video
+
+```
+1. Abre OBS Studio
+
+2. En "Scenes", crea una nueva escena: "Portfolio Demo"
+
+3. En "Sources", agrega:
+   - "Display Capture" → selecciona tu monitor principal
+     (esto captura todo lo que está en pantalla)
+   - "Audio Input Capture" → selecciona tu micrófono
+
+4. En Settings → Output:
+   - Recording Format: MP4
+   - Encoder: x264 (software) o NVENC (si tienes GPU NVIDIA)
+   - Rate Control: CRF
+   - CRF Value: 23 (buena calidad, tamaño razonable)
+
+5. En Settings → Video:
+   - Base Resolution: 1920×1080
+   - Output Resolution: 1920×1080
+   - FPS: 30
+
+6. En Settings → Audio:
+   - Sample Rate: 44.1 kHz
+   - Channels: Stereo
+
+7. Haz clic en "Start Recording"
+   El archivo se guarda en ~/Videos/ por defecto
+```
+
+---
+
+### 11.6 — Post-Producción (Edición Básica con DaVinci Resolve)
+
+Si quieres pulir el video antes de publicarlo:
+
+```
+1. Abre DaVinci Resolve → New Project → "ML Portfolio Demo"
+
+2. Importa el video: File → Import Media → selecciona el MP4 de OBS
+
+3. Ediciones básicas recomendadas:
+   - Cortar los primeros/últimos segundos si hay silencio o preparación visible
+   - Agregar fade in/out al inicio y final (1 segundo)
+   - Si tartamudeaste o te equivocaste, corta esa parte
+   - Agregar subtítulos si quieres (Text+ en la librería de efectos)
+
+4. Agregar intro (opcional):
+   - Crea un clip de texto con el título del proyecto
+   - Duración: 5 segundos
+   - Fondo negro, texto blanco
+
+5. Exportar:
+   File → Export → Render Settings:
+   - Format: MP4
+   - Codec: H.264
+   - Resolution: 1920×1080
+   - Quality: Restrict to 8000 kbps
+   - Haz clic en "Add to Render Queue" → "Render All"
+```
+
+---
+
+### 11.7 — Dónde Publicar el Video
+
+**Opción A — YouTube (recomendada para portafolio)**:
+1. Sube el video como **No listado** (no aparece en búsquedas, pero cualquiera con el link puede verlo)
+2. Título: `ML MLOps Portfolio — GCP Production Deployment (GKE + Terraform + CI/CD)`
+3. Descripción: incluye el link al repositorio de GitHub
+4. Agrega el link en el README: `[![Demo Video](thumbnail.png)](https://youtube.com/watch?v=XXXX)`
+
+**Opción B — Loom (más rápido)**:
+1. Descarga Loom: https://loom.com
+2. Graba directamente desde Loom (no necesitas OBS)
+3. Loom genera automáticamente un link compartible
+4. Agrega el link en el README
+
+**Opción C — GitHub Releases (para archivos < 100MB)**:
+```bash
+# Comprimir el video si es necesario
+ffmpeg -i ~/Videos/portfolio-demo.mp4 \
+  -vcodec libx264 -crf 28 \
+  docs/evidence/video/portfolio-demo-compressed.mp4
+
+# Subir como GitHub Release:
+# GitHub → Releases → Create new release → Attach files
+```
+
+---
+
+### 11.8 — Cómo Agregar el Video al README
+
+Una vez publicado, agrega esto en la sección de GCP Deployment del README:
+
+```markdown
+### 🎬 Video Demo Completo (4 minutos)
+
+[![ML Portfolio GCP Demo](docs/evidence/screenshots/gcp-console/05-gke-workloads-running.png)](https://youtube.com/watch?v=TU_VIDEO_ID)
+
+> Haz clic en la imagen para ver el demo completo en YouTube (4 min) — incluye:
+> infraestructura GCP, Terraform IaC, 3 APIs ML en producción, predicciones reales,
+> monitoreo con Grafana/Prometheus, MLflow, y pipeline CI/CD con GitHub Actions.
+```
+
+**¿Por qué usar una imagen como thumbnail?** GitHub no reproduce videos directamente. El truco estándar es poner una imagen (el screenshot de los workloads running) que al hacer clic lleva al video de YouTube. Es el patrón más usado en portafolios técnicos de GitHub.
+
+---
+
+### 11.9 — Guión Alternativo: Video Corto para LinkedIn (60 segundos)
+
+LinkedIn tiene un límite de atención muy corto. Este guión condensado es para el video que subes directamente a LinkedIn:
+
+**Secuencia (sin narración, solo texto en pantalla)**:
+1. `[0:00-0:10]` Slide: "3 ML APIs deployed on GCP Kubernetes" — mostrar los 6 pods running
+2. `[0:10-0:25]` Hacer una predicción real en Swagger UI — mostrar la respuesta JSON
+3. `[0:25-0:40]` Mostrar Grafana dashboard con métricas en tiempo real
+4. `[0:40-0:55]` Mostrar GitHub Actions pipeline completado (todos los jobs en verde)
+5. `[0:55-1:00]` Slide final: "Full project on GitHub → github.com/DuqueOM/ML-MLOps-Portfolio"
+
+**Para crear este video corto desde el video largo:**
+```bash
+# Extraer segmentos del video largo con ffmpeg
+# Ejemplo: extraer desde el segundo 130 hasta el segundo 190 (escena de APIs)
+ffmpeg -i ~/Videos/portfolio-demo.mp4 \
+  -ss 00:02:10 -to 00:03:10 \
+  -c copy \
+  docs/evidence/video/linkedin-clip-apis.mp4
+
+# Concatenar clips en un video de 60 segundos
+# (requiere crear un archivo de lista primero)
+```
+
+---
+
+## 12. Integración en README.md
 
 Una vez que tengas las capturas y GIFs, agrégalos al README principal. Esta sección te da el código exacto para hacerlo.
 
@@ -1577,7 +2111,7 @@ Agrega estos badges justo debajo del título del README (antes de la descripció
 
 ---
 
-## 11. Consejos de Calidad Profesional
+## 13. Consejos de Calidad Profesional
 
 ### Consistencia Visual — Reglas de Oro
 
@@ -1669,46 +2203,58 @@ Usa siempre el formato: `##-descripcion-corta.png`
 
 ---
 
-## Resumen: Lista Completa de Capturas por Prioridad
+## Resumen: Lista Completa de Capturas, GIFs y Video por Prioridad
 
 ### Capturas Críticas (hazlas sí o sí)
 
-| # | Archivo | Por qué es crítica |
-|---|---------|-------------------|
-| 05 | `gcp-console/05-gke-workloads-running.png` | 6 pods running — el corazón del deployment |
-| 17 | `terminal/17-kubectl-pods-running.png` | Evidencia técnica desde CLI |
-| 23 | `terminal/23-health-checks-apis.png` | APIs respondiendo con modelo cargado |
-| 26 | `aplicaciones/26-bankchurn-prediccion-real.png` | Predicción ML real en producción |
-| 34 | `monitoring/34-grafana-dashboard.png` | Monitoreo en tiempo real |
-| 37 | `monitoring/37-prometheus-targets-up.png` | Todos los targets monitoreados |
-| 46 | `cicd/46-workflow-completado.png` | CI/CD pipeline funcionando |
+| # | Carpeta | Archivo | Por qué es crítica |
+|---|---------|---------|-------------------|
+| 05 | `gcp-console/` | `05-gke-workloads-running.png` | 6 pods running — el corazón del deployment |
+| 17 | `terminal/` | `17-kubectl-pods-running.png` | Evidencia técnica desde CLI |
+| 23 | `terminal/` | `23-health-checks-apis.png` | APIs respondiendo con modelo cargado |
+| 26 | `aplicaciones/` | `26-bankchurn-prediccion-real.png` | Predicción ML real en producción |
+| 34 | `monitoring/` | `34-grafana-dashboard.png` | Monitoreo en tiempo real |
+| 37 | `monitoring/` | `37-prometheus-targets-up.png` | Todos los targets monitoreados |
+| 46 | `cicd/` | `46-workflow-completado.png` | CI/CD pipeline funcionando |
+| 53 | `terraform/` | `53-terraform-plan-no-changes.png` | IaC sincronizado con GCP — prueba definitiva |
 
 ### Capturas de Alto Impacto (muy recomendadas)
 
-| # | Archivo | Valor para el portafolio |
-|---|---------|--------------------------|
-| 01 | `gcp-console/01-project-dashboard.png` | Muestra el proyecto GCP real |
-| 08 | `gcp-console/08-gke-ingress-ip.png` | IP pública real asignada por GCP |
-| 09 | `gcp-console/09-artifact-registry-imagenes.png` | 3 imágenes Docker en registry privado |
-| 13 | `gcp-console/13-cloud-build-history.png` | Cloud Build como solución profesional |
-| 22 | `terminal/22-terraform-outputs.png` | Infrastructure as Code demostrado |
-| 25 | `aplicaciones/25-fastapi-swagger-bankchurn.png` | Documentación automática de API |
-| 39 | `monitoring/39-mlflow-experiments.png` | Gestión profesional de experimentos ML |
-| 43 | `cicd/43-github-secrets.png` | Seguridad en CI/CD |
+| # | Carpeta | Archivo | Valor para el portafolio |
+|---|---------|---------|---------------------------|
+| 01 | `gcp-console/` | `01-project-dashboard.png` | Muestra el proyecto GCP real |
+| 08 | `gcp-console/` | `08-gke-ingress-ip.png` | IP pública real asignada por GCP |
+| 09 | `gcp-console/` | `09-artifact-registry-imagenes.png` | 3 imágenes Docker en registry privado |
+| 13 | `gcp-console/` | `13-cloud-build-history.png` | Cloud Build como solución profesional |
+| 25 | `aplicaciones/` | `25-fastapi-swagger-bankchurn.png` | Documentación automática de API |
+| 39 | `monitoring/` | `39-mlflow-experiments.png` | Gestión profesional de experimentos ML |
+| 43 | `cicd/` | `43-github-secrets.png` | Seguridad en CI/CD |
+| 48 | `terraform/` | `48-terraform-main-gke.png` | Código IaC del cluster GKE |
+| 51 | `terraform/` | `51-terraform-state-list.png` | Todos los recursos bajo control de Terraform |
+| 52 | `terraform/` | `52-terraform-outputs.png` | Valores exportados programáticamente |
 
 ### GIFs por Prioridad
 
 | # | Archivo | Prioridad |
-|---|---------|-----------|
+|---|---------|----------|
 | 01 | `gifs/01-demo-prediccion.gif` | **Crítica** — el demo más impactante |
 | 02 | `gifs/02-gke-workloads.gif` | Alta — infraestructura visual |
 | 03 | `gifs/03-grafana-monitoring.gif` | Alta — monitoreo en acción |
 | 04 | `gifs/04-cicd-pipeline.gif` | Alta — automatización demostrada |
 | 05 | `gifs/05-tres-apis-simultaneas.gif` | Media — impacto visual adicional |
 
+### Video por Prioridad
+
+| Archivo | Duración | Plataforma | Prioridad |
+|---------|----------|------------|-----------|
+| `video/portfolio-demo.mp4` | 3:30-5:00 min | YouTube (no listado) | **Crítica** — para entrevistas y LinkedIn |
+| `video/linkedin-clip.mp4` | 60 segundos | LinkedIn directo | Alta — para publicación en redes |
+
 ---
 
 ## Script Automatizado de Recopilación de Evidencia de Terminal
+
+> **Nota**: Ejecuta este script antes de empezar las sesiones de capturas para verificar que todo el sistema está activo.
 
 Ejecuta este script para capturar toda la evidencia de terminal en un solo comando y guardarla como texto:
 
