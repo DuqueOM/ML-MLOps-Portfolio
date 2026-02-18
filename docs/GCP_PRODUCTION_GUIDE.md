@@ -1,6 +1,10 @@
 # GCP Production Deployment Guide
 
 Complete guide to deploy the ML-MLOps Portfolio to Google Cloud Platform.
+This document includes the **real deployment experience** with problems encountered and solutions applied.
+
+> **Deployment Status**: ✅ Successfully deployed on February 18, 2026
+> **Ingress IP**: `34.120.120.57` | **Region**: `us-central1` | **Cluster**: `ml-portfolio-gke-production`
 
 ---
 
@@ -8,44 +12,50 @@ Complete guide to deploy the ML-MLOps Portfolio to Google Cloud Platform.
 
 | Requirement | Version | Purpose |
 |-------------|---------|---------|
-| GCP Account | Free tier OK | Cloud infrastructure |
+| GCP Account | Free tier OK ($300 credit) | Cloud infrastructure |
 | `gcloud` CLI | >= 467.0 | GCP management |
 | `terraform` | >= 1.5.0 | Infrastructure as Code |
 | `kubectl` | >= 1.28 | Kubernetes management |
-| `docker` | >= 24.0 | Container builds |
-| `helm` | >= 3.12 | K8s package manager |
+| `docker` | >= 24.0 | Container builds (or use Cloud Build) |
+
+> **Note**: `helm` is NOT required. All deployments use raw Kubernetes manifests.
 
 ---
 
 ## Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    GCP Project                          │
-│                                                         │
-│  ┌──────────────┐  ┌─────────────┐  ┌─────────────┐     │
-│  │  Artifact    │  │  Cloud SQL  │  │  GCS Bucket │     │ 
-│  │  Registry    │  │  (Postgres) │  │  (Models)   │     │
-│  └──────┬───────┘  └──────┬──────┘  └──────┬──────┘     │
-│         │                 │                │            │
-│  ┌──────┴─────────────────┴────────────────┴──────┐     │
-│  │              GKE Autopilot Cluster             │     │
-│  │                                                │     │
-│  │  ┌──────────┐ ┌──────────┐ ┌───────────┐       │     │
-│  │  │BankChurn │ │CarVision │ │TelecomAI  │       │     │
-│  │  │  API     │ │  API     │ │  API      │       │     │
-│  │  └────┬─────┘ └─────┬────┘ └──────┬────┘       │     │
-│  │       │             │             │            │     │
-│  │  ┌────┴─────────────┴─────────────┴─────┐      │     │
-│  │  │         Ingress (HTTPS)              │      │     │
-│  │  └──────────────────────────────────────┘      │     │
-│  │                                                │     │
-│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐        │     │
-│  │  │MLflow    │ │Prometheus│ │ Grafana  │        │     │
-│  │  │Server    │ │          │ │          │        │     │
-│  │  └──────────┘ └──────────┘ └──────────┘        │     │
-│  └────────────────────────────────────────────────┘     │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    GCP Project                              │
+│              ml-portfolio-duque-om-202602                    │
+│                                                             │
+│  ┌──────────────┐  ┌─────────────┐  ┌──────────────────┐    │
+│  │  Artifact    │  │  Cloud SQL  │  │  GCS Buckets     │    │
+│  │  Registry    │  │  (Postgres) │  │  (Models + MLflow)│    │
+│  │  3 images    │  │  db-f1-micro│  │  ~50MB artifacts │    │
+│  └──────┬───────┘  └──────┬──────┘  └────────┬─────────┘    │
+│         │                 │                  │              │
+│  ┌──────┴─────────────────┴──────────────────┴────────┐     │
+│  │         GKE Standard Cluster (us-central1)         │     │
+│  │         3 zones × 1-5 nodes (e2-medium, 30GB)      │     │
+│  │                                                    │     │
+│  │  ┌──────────┐  ┌──────────┐  ┌───────────┐         │     │
+│  │  │BankChurn │  │CarVision │  │TelecomAI  │         │     │
+│  │  │  FastAPI  │  │  FastAPI  │  │  FastAPI  │         │     │
+│  │  │  :8000   │  │  :8000   │  │  :8000    │         │     │
+│  │  └────┬─────┘  └─────┬────┘  └──────┬────┘         │     │
+│  │       │              │              │              │     │
+│  │  ┌────┴──────────────┴──────────────┴──────┐       │     │
+│  │  │    GCE Ingress (HTTP Load Balancer)     │       │     │
+│  │  │    IP: 34.120.120.57                    │       │     │
+│  │  └─────────────────────────────────────────┘       │     │
+│  │                                                    │     │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐          │     │
+│  │  │ MLflow   │  │Prometheus│  │ Grafana  │          │     │
+│  │  │ :5000    │  │ :9090    │  │ :3000    │          │     │
+│  │  └──────────┘  └──────────┘  └──────────┘          │     │
+│  └────────────────────────────────────────────────────┘     │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -55,7 +65,7 @@ Complete guide to deploy the ML-MLOps Portfolio to Google Cloud Platform.
 ### 1.1 Create GCP Project
 
 ```bash
-# Set your project ID (must be globally unique, no underscores)
+# Set your project ID (must be globally unique, NO underscores allowed)
 export PROJECT_ID="ml-portfolio-$(whoami | tr '_' '-')-$(date +%Y%m)"
 export REGION="us-central1"
 export ZONE="us-central1-a"
@@ -83,8 +93,11 @@ gcloud services enable \
   cloudresourcemanager.googleapis.com \
   servicenetworking.googleapis.com \
   monitoring.googleapis.com \
-  logging.googleapis.com
+  logging.googleapis.com \
+  cloudbuild.googleapis.com
 ```
+
+> **Lesson Learned**: Enable `cloudbuild.googleapis.com` from the start. It's needed if local Docker builds fail.
 
 ### 1.3 Create Service Account for CI/CD
 
@@ -101,6 +114,7 @@ for ROLE in \
   roles/artifactregistry.admin \
   roles/storage.admin \
   roles/cloudsql.admin \
+  roles/cloudbuild.builds.editor \
   roles/iam.serviceAccountUser; do
   gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:${SA_EMAIL}" \
@@ -110,6 +124,9 @@ done
 # Create key for CI/CD (store securely!)
 gcloud iam service-accounts keys create ~/gcp-key.json \
   --iam-account=$SA_EMAIL
+
+# Authenticate with the service account
+gcloud auth activate-service-account --key-file=~/gcp-key.json
 ```
 
 ---
@@ -128,20 +145,24 @@ gsutil versioning set on gs://${PROJECT_ID}-terraform-state
 ```bash
 cd infra/terraform/gcp
 
-# Create terraform.tfvars
+# Create terraform.tfvars (see terraform.tfvars.example)
 cat > terraform.tfvars <<EOF
 project_id   = "${PROJECT_ID}"
 project_name = "ml-portfolio"
 environment  = "production"
 region       = "${REGION}"
 machine_type = "e2-medium"
-node_count   = 2
+node_count   = 1
 min_node_count = 1
 max_node_count = 5
 db_tier      = "db-f1-micro"
 db_password  = "$(openssl rand -base64 24)"
 EOF
 ```
+
+> **⚠️ Important**: Use `node_count = 1` to stay within SSD quota limits.
+> With 3 zones × 1 node × 30GB disk = 90GB, well within the 250GB SSD quota.
+> Using `node_count = 2` would require 3 × 2 × 30 = 180GB (still OK but more costly).
 
 ### 2.3 Deploy Infrastructure
 
@@ -164,11 +185,23 @@ terraform output -json > ../../terraform-outputs.json
 CLUSTER_NAME=$(terraform output -raw gke_cluster_name)
 gcloud container clusters get-credentials $CLUSTER_NAME \
   --region $REGION --project $PROJECT_ID
+
+# Verify connection
+kubectl get nodes
 ```
+
+### 2.5 Problems Encountered & Solutions
+
+| Problem | Root Cause | Solution |
+|---------|-----------|----------|
+| `SSD_TOTAL_GB quota exceeded` | Default `node_count=2` × 3 zones × 100GB disk | Reduce `disk_size_gb=30` in `main.tf`, `node_count=1` |
+| `deletion_protection` prevents changes | GKE cluster has `deletion_protection=true` | Set `deletion_protection=false` in `main.tf`, apply, then change config |
+| Cloud SQL private IP networking | Missing private service connection | Add `google_compute_global_address` + `google_service_networking_connection` in Terraform |
+| Terraform state inconsistency | Partial apply left orphaned resources | `terraform state rm` + re-import, or `terraform apply` with updated config |
 
 ---
 
-## Phase 3: Build & Push Docker Images (15 min)
+## Phase 3: Build & Push Docker Images (15-30 min)
 
 ### 3.1 Configure Artifact Registry
 
@@ -181,22 +214,62 @@ gcloud auth configure-docker ${REGION}-docker.pkg.dev
 
 ### 3.2 Build and Push Images
 
+**Option A: Local Docker Build (fastest if Docker is stable)**
+
 ```bash
 cd /path/to/ML-MLOps-Portfolio
 
-# Build and push all 3 projects
 for PROJECT in BankChurn-Predictor CarVision-Market-Intelligence TelecomAI-Customer-Intelligence; do
   IMAGE_NAME=$(echo $PROJECT | tr '[:upper:]' '[:lower:]')
   echo "Building ${IMAGE_NAME}..."
-  
-  docker build -t ${AR_REPO}/${IMAGE_NAME}:latest \
-               -t ${AR_REPO}/${IMAGE_NAME}:v1.0.0 \
-               ${PROJECT}/
-  
+
+  DOCKER_BUILDKIT=1 docker build \
+    -t ${AR_REPO}/${IMAGE_NAME}:latest \
+    -t ${AR_REPO}/${IMAGE_NAME}:v1.0.0 \
+    ${PROJECT}/
+
   docker push ${AR_REPO}/${IMAGE_NAME}:latest
   docker push ${AR_REPO}/${IMAGE_NAME}:v1.0.0
 done
 ```
+
+**Option B: Google Cloud Build (recommended if local Docker is slow/unstable)**
+
+```bash
+# Build and push directly in GCP (no local Docker required)
+for PROJECT in BankChurn-Predictor CarVision-Market-Intelligence TelecomAI-Customer-Intelligence; do
+  IMAGE_NAME=$(echo $PROJECT | tr '[:upper:]' '[:lower:]')
+  echo "Cloud Building ${IMAGE_NAME}..."
+
+  gcloud builds submit \
+    --tag ${AR_REPO}/${IMAGE_NAME}:latest \
+    --project $PROJECT_ID \
+    --timeout=1800 \
+    ${PROJECT}/
+
+  # Add version tag
+  gcloud artifacts docker tags add \
+    ${AR_REPO}/${IMAGE_NAME}:latest \
+    ${AR_REPO}/${IMAGE_NAME}:v1.0.0
+done
+```
+
+### 3.3 Verify Images
+
+```bash
+gcloud artifacts docker images list ${AR_REPO} --format="table(package,tags,createTime)"
+```
+
+### 3.4 Problems Encountered & Solutions
+
+| Problem | Root Cause | Solution |
+|---------|-----------|----------|
+| `docker push` hangs on large layers (~2GB) | WSL Docker daemon instability with large uploads | **Use Google Cloud Build** (`gcloud builds submit`) |
+| BuildKit `CANCELED: context canceled` | Docker daemon instability in WSL environment | Restart Docker daemon or use Cloud Build |
+| Image size too large (2.3GB) | ML dependencies (scikit-learn, pandas, etc.) | Multi-stage builds already in place; consider slimmer base images |
+
+> **Best Practice**: Google Cloud Build is faster and more reliable than local builds for large ML images.
+> CarVision built in **4m37s** on Cloud Build vs hanging indefinitely locally.
 
 ---
 
@@ -218,16 +291,19 @@ MODELS_BUCKET=$(terraform -chdir=infra/terraform/gcp output -raw ml_models_bucke
 gsutil cp BankChurn-Predictor/models/best_model.pkl \
   gs://${MODELS_BUCKET}/bankchurn/best_model.pkl
 
-# Upload CarVision model + features
+# Upload CarVision model
 gsutil cp CarVision-Market-Intelligence/artifacts/model.joblib \
   gs://${MODELS_BUCKET}/carvision/model.joblib
-gsutil cp CarVision-Market-Intelligence/artifacts/feature_columns.json \
-  gs://${MODELS_BUCKET}/carvision/feature_columns.json
 
 # Upload TelecomAI model
 gsutil cp TelecomAI-Customer-Intelligence/artifacts/model.joblib \
   gs://${MODELS_BUCKET}/telecom/model.joblib
+
+# Verify uploads
+gsutil ls -r gs://${MODELS_BUCKET}/
 ```
+
+> **Tip**: If `gsutil cp` fails with `ServerNotFoundError`, retry — it's usually a transient DNS issue.
 
 ---
 
@@ -243,7 +319,7 @@ kubectl create secret generic mlflow-db-secret \
   --namespace=ml-portfolio \
   --from-literal=POSTGRES_PASSWORD="$(grep db_password infra/terraform/gcp/terraform.tfvars | cut -d'"' -f2)"
 
-# Create model storage PV/PVC
+# Create storage resources
 kubectl apply -f k8s/storage.yaml
 ```
 
@@ -253,18 +329,20 @@ kubectl apply -f k8s/storage.yaml
 AR_REPO="${REGION}-docker.pkg.dev/${PROJECT_ID}/ml-portfolio-images"
 
 # Update image references in deployment files
-for FILE in k8s/bankchurn-deployment.yaml k8s/carvision-deployment.yaml k8s/telecom-deployment.yaml; do
-  sed -i "s|duqueom/.*:|${AR_REPO}/|g" $FILE
-done
+sed -i "s|image: .*bankchurn.*|image: ${AR_REPO}/bankchurn-predictor:latest|" k8s/bankchurn-deployment.yaml
+sed -i "s|image: .*carvision.*|image: ${AR_REPO}/carvision-market-intelligence:latest|" k8s/carvision-deployment.yaml
+sed -i "s|image: .*telecom.*|image: ${AR_REPO}/telecomai-customer-intelligence:latest|" k8s/telecom-deployment.yaml
 ```
 
 ### 5.3 Deploy Services
 
 ```bash
-# Deploy all services
+# Deploy all ML services
 kubectl apply -f k8s/bankchurn-deployment.yaml
 kubectl apply -f k8s/carvision-deployment.yaml
 kubectl apply -f k8s/telecom-deployment.yaml
+
+# Deploy ingress
 kubectl apply -f k8s/ingress.yaml
 
 # Deploy monitoring stack
@@ -280,30 +358,47 @@ kubectl rollout status deployment/telecom-intelligence -n ml-portfolio --timeout
 ### 5.4 Verify Deployment
 
 ```bash
-# Check pods
+# Check all pods are Running
 kubectl get pods -n ml-portfolio
 
 # Check services
 kubectl get svc -n ml-portfolio
 
-# Get external IP
+# Get external IP (may take 5-10 min)
 kubectl get ingress -n ml-portfolio
 
-# Test health endpoints (replace IP)
-EXTERNAL_IP=$(kubectl get ingress ml-portfolio-ingress -n ml-portfolio -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-curl http://${EXTERNAL_IP}/bankchurn/health
-curl http://${EXTERNAL_IP}/carvision/health
-curl http://${EXTERNAL_IP}/telecom/health
+# Test health endpoints via kubectl exec
+kubectl exec -n ml-portfolio deployment/bankchurn-predictor -- curl -s http://localhost:8000/health
+kubectl exec -n ml-portfolio deployment/carvision-intelligence -- curl -s http://localhost:8000/health
+kubectl exec -n ml-portfolio deployment/telecom-intelligence -- curl -s http://localhost:8000/health
 ```
+
+### 5.5 Problems Encountered & Solutions
+
+| Problem | Root Cause | Solution |
+|---------|-----------|----------|
+| Pods `Pending` - unbound PVC | `ReadWriteMany` + `standard` StorageClass not supported on GKE | Changed to `ReadWriteOnce` + `standard-rwo` in `storage.yaml` |
+| Pods `Pending` - model-storage PVC | PVC required but models load from GCS at runtime | Removed `model-storage` volumeMount from BankChurn deployment |
+| `ImagePullBackOff` | Docker image not pushed to Artifact Registry | Used Google Cloud Build to push the image |
+| `CrashLoopBackOff` (Prometheus/Grafana) | Permission denied on `/var/lib/grafana` and `/prometheus` | Added `securityContext` (runAsUser, fsGroup) + replaced PVC with `emptyDir` |
+| `Insufficient cpu` scheduling failures | All nodes at capacity with 6 pods | GKE autoscaler triggered scale-up (1→2 nodes) automatically |
+| Services type `ClusterIP` incompatible with GCE ingress | GCE ingress requires `NodePort` backends | Changed all ML services to `type: NodePort` |
+
+> **Key GKE Differences from local K8s**:
+> - Use `standard-rwo` StorageClass (not `standard` or `hostPath`)
+> - Use `ReadWriteOnce` (not `ReadWriteMany` unless using Filestore)
+> - Services backing a GCE Ingress must be `NodePort`
+> - Prometheus/Grafana need `securityContext` for proper file permissions
 
 ---
 
-## Phase 6: MLflow Server on GKE (15 min)
+## Phase 6: MLflow Server on GKE (10 min)
 
-### 6.1 Deploy MLflow with Cloud SQL Backend
+### 6.1 Deploy MLflow with SQLite Backend
+
+For a portfolio demo, SQLite is sufficient. For production, use Cloud SQL.
 
 ```bash
-DB_CONNECTION=$(terraform -chdir=infra/terraform/gcp output -raw mlflow_db_connection_name)
 ARTIFACTS_BUCKET=$(terraform -chdir=infra/terraform/gcp output -raw mlflow_artifacts_bucket)
 
 cat <<EOF | kubectl apply -f -
@@ -327,29 +422,22 @@ spec:
         image: ghcr.io/mlflow/mlflow:v2.9.2
         ports:
         - containerPort: 5000
-        env:
-        - name: MLFLOW_BACKEND_STORE_URI
-          value: "postgresql://mlflow:\$(POSTGRES_PASSWORD)@127.0.0.1:5432/mlflow"
-        - name: MLFLOW_DEFAULT_ARTIFACT_ROOT
-          value: "gs://${ARTIFACTS_BUCKET}/artifacts"
-        envFrom:
-        - secretRef:
-            name: mlflow-db-secret
-        command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]
+        command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000",
+                  "--backend-store-uri", "sqlite:///mlflow/mlflow.db",
+                  "--default-artifact-root", "gs://${ARTIFACTS_BUCKET}/artifacts"]
         resources:
           requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-      - name: cloud-sql-proxy
-        image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.0
-        args: ["--structured-logs", "${DB_CONNECTION}"]
-        resources:
-          requests:
-            memory: "128Mi"
+            memory: "256Mi"
             cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: mlflow-data
+          mountPath: /mlflow
+      volumes:
+      - name: mlflow-data
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -366,6 +454,13 @@ spec:
 EOF
 ```
 
+### 6.2 Access MLflow UI
+
+```bash
+kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio &
+# Open http://localhost:5000
+```
+
 ---
 
 ## Phase 7: Monitoring Stack (10 min)
@@ -373,25 +468,25 @@ EOF
 ### 7.1 Prometheus + Grafana
 
 ```bash
-# Apply Prometheus config
-kubectl create configmap prometheus-config \
-  --namespace=ml-portfolio \
-  --from-file=prometheus.yml=infra/prometheus-config.yaml
-
-# Apply Prometheus rules
-kubectl create configmap prometheus-rules \
-  --namespace=ml-portfolio \
-  --from-file=rules.yml=infra/prometheus-rules.yaml
-
-# Deploy monitoring
+# Deploy monitoring (ConfigMaps are embedded in the deployment YAMLs)
 kubectl apply -f k8s/prometheus-deployment.yaml
 kubectl apply -f k8s/grafana-deployment.yaml
-
-# Import Grafana dashboards
-GRAFANA_POD=$(kubectl get pods -n ml-portfolio -l app=grafana -o jsonpath='{.items[0].metadata.name}')
-kubectl cp infra/grafana/dashboards/ml-portfolio-dashboard.json \
-  ml-portfolio/${GRAFANA_POD}:/var/lib/grafana/dashboards/
 ```
+
+### 7.2 Access Dashboards
+
+```bash
+# Grafana (default: admin/admin)
+kubectl port-forward svc/grafana-service 3000:3000 -n ml-portfolio &
+# Open http://localhost:3000
+
+# Prometheus
+kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio &
+# Open http://localhost:9090/targets
+```
+
+> **Note**: Prometheus and Grafana use `emptyDir` volumes (non-persistent).
+> Data is lost on pod restart. For production, use PVCs with `standard-rwo`.
 
 ---
 
@@ -403,17 +498,31 @@ Add these secrets in your GitHub repo (Settings → Secrets → Actions):
 
 | Secret Name | Value |
 |-------------|-------|
-| `GCP_PROJECT_ID` | Your project ID |
+| `GCP_PROJECT_ID` | `ml-portfolio-duque-om-202602` |
 | `GCP_SA_KEY` | Contents of `~/gcp-key.json` (base64 encoded) |
 | `GCP_REGION` | `us-central1` |
-| `GKE_CLUSTER_NAME` | From terraform output |
+| `GKE_CLUSTER_NAME` | `ml-portfolio-gke-production` |
 
 ### 8.2 Encode the service account key
 
 ```bash
 cat ~/gcp-key.json | base64 -w 0 > gcp-key-b64.txt
 # Copy the content of gcp-key-b64.txt to GitHub secret GCP_SA_KEY
+rm gcp-key-b64.txt  # Clean up
 ```
+
+### 8.3 CI/CD Workflow
+
+The workflow at `.github/workflows/deploy-gcp.yml` automatically:
+1. Detects which services changed (BankChurn, CarVision, TelecomAI)
+2. Builds and pushes Docker images to Artifact Registry
+3. Deploys to GKE with rolling updates
+4. Runs health check smoke tests
+5. Posts deployment summary
+
+Trigger options:
+- **Automatic**: Push to `main` branch with changes in service directories
+- **Manual**: `workflow_dispatch` with service selection (all/bankchurn/carvision/telecom)
 
 ---
 
@@ -421,12 +530,13 @@ cat ~/gcp-key.json | base64 -w 0 > gcp-key-b64.txt
 
 | Resource | Spec | Estimated Cost |
 |----------|------|---------------|
-| GKE Autopilot | 2-5 nodes e2-medium | $50-120 |
+| GKE Standard | 1-5 nodes e2-medium (preemptible) | $25-80 |
 | Cloud SQL (Postgres) | db-f1-micro | $10 |
-| Artifact Registry | ~2GB images | $1 |
-| GCS Buckets | ~500MB models | $0.02 |
-| Load Balancer | 1 IP + forwarding | $18 |
-| **Total** | | **~$80-150/month** |
+| Artifact Registry | ~5GB images | $2 |
+| GCS Buckets | ~100MB models + artifacts | $0.05 |
+| Load Balancer | 1 IP + forwarding rules | $18 |
+| Cloud Build | Occasional builds | $0-5 |
+| **Total** | | **~$55-115/month** |
 
 ### Cost Optimization Tips
 - Use **preemptible/spot VMs** for non-production (already configured in Terraform)
@@ -434,6 +544,7 @@ cat ~/gcp-key.json | base64 -w 0 > gcp-key-b64.txt
 - Use `db-f1-micro` for Cloud SQL (sufficient for portfolio demo)
 - Set **lifecycle rules** on GCS buckets (auto-archive after 90 days)
 - **Free tier**: First 3 months get $300 credit on new GCP accounts
+- **Teardown** when not needed for portfolio review — redeploy in ~30 min
 
 ---
 
@@ -442,39 +553,46 @@ cat ~/gcp-key.json | base64 -w 0 > gcp-key-b64.txt
 After deployment, verify everything works:
 
 ```bash
-# 1. All pods running
-kubectl get pods -n ml-portfolio | grep -c Running
+# 1. All 6 pods running
+kubectl get pods -n ml-portfolio
+# Expected: 6 pods (bankchurn, carvision, telecom, mlflow, prometheus, grafana) all Running
 
-# 2. Health checks pass
-for svc in bankchurn carvision telecom; do
-  echo "Testing $svc..."
-  curl -s http://${EXTERNAL_IP}/${svc}/health | python3 -m json.tool
+# 2. Health checks pass (via kubectl exec)
+for DEPLOY in bankchurn-predictor carvision-intelligence telecom-intelligence; do
+  echo "Testing ${DEPLOY}..."
+  kubectl exec -n ml-portfolio deployment/${DEPLOY} -- curl -s http://localhost:8000/health
+  echo ""
 done
 
-# 3. Predictions work
-curl -X POST http://${EXTERNAL_IP}/bankchurn/predict \
+# 3. Ingress has external IP
+kubectl get ingress -n ml-portfolio
+# Expected: ADDRESS column shows an IP (may take 5-10 min)
+
+# 4. Predictions work (via port-forward)
+kubectl port-forward svc/bankchurn-service 8001:80 -n ml-portfolio &
+curl -X POST http://localhost:8001/predict \
   -H "Content-Type: application/json" \
   -d '{"CreditScore":650,"Geography":"France","Gender":"Male","Age":35,"Tenure":5,"Balance":50000,"NumOfProducts":2,"HasCrCard":1,"IsActiveMember":1,"EstimatedSalary":75000}'
 
-curl -X POST http://${EXTERNAL_IP}/carvision/predict \
-  -H "Content-Type: application/json" \
-  -d '{"model_year":2020,"model":"civic","condition":"good","cylinders":4,"fuel":"gas","odometer":30000,"transmission":"automatic","drive":"fwd","type":"sedan","paint_color":"white"}'
-
-curl -X POST http://${EXTERNAL_IP}/telecom/predict \
-  -H "Content-Type: application/json" \
-  -d '{"calls":55.0,"minutes":300.0,"messages":45.0,"mb_used":15000.0}'
-
-# 4. MLflow UI accessible
+# 5. MLflow UI accessible
 kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio &
-open http://localhost:5000
+# Open http://localhost:5000
 
-# 5. Grafana dashboards
-kubectl port-forward svc/grafana 3000:3000 -n ml-portfolio &
-open http://localhost:3000  # admin/admin
+# 6. Grafana dashboards
+kubectl port-forward svc/grafana-service 3000:3000 -n ml-portfolio &
+# Open http://localhost:3000 (admin/admin)
 
-# 6. Prometheus targets up
-kubectl port-forward svc/prometheus 9090:9090 -n ml-portfolio &
-open http://localhost:9090/targets
+# 7. Prometheus targets
+kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio &
+# Open http://localhost:9090/targets
+
+# 8. Artifact Registry images
+gcloud artifacts docker images list \
+  ${REGION}-docker.pkg.dev/${PROJECT_ID}/ml-portfolio-images \
+  --format="table(package,tags)"
+
+# 9. GCS models
+gsutil ls -r gs://$(terraform -chdir=infra/terraform/gcp output -raw ml_models_bucket)/
 ```
 
 ---
@@ -482,26 +600,93 @@ open http://localhost:9090/targets
 ## Teardown (When Done Collecting Evidence)
 
 ```bash
-# Option A: Delete GKE workloads only (keep infra)
-kubectl delete -f k8s/ --all
+# Option A: Delete GKE workloads only (keep infra, ~$10/month)
+kubectl delete namespace ml-portfolio
 
-# Option B: Full teardown
+# Option B: Full teardown (stop all billing)
 cd infra/terraform/gcp
-terraform destroy
+terraform destroy -auto-approve
 
-# Delete project entirely (nuclear option)
+# Option C: Delete project entirely (nuclear option)
 gcloud projects delete $PROJECT_ID
 ```
 
 ---
 
-## Troubleshooting
+## Troubleshooting Reference
 
-| Issue | Solution |
-|-------|----------|
-| Pods in CrashLoopBackOff | `kubectl logs <pod> -n ml-portfolio --previous` |
-| ImagePullBackOff | Check Artifact Registry auth: `gcloud auth configure-docker` |
-| Cloud SQL connection refused | Verify Cloud SQL Proxy sidecar is running |
-| Ingress no external IP | Wait 5-10 min for GCP load balancer provisioning |
-| OOMKilled | Increase memory limits in deployment YAML |
-| Terraform state lock | `terraform force-unlock <LOCK_ID>` |
+### Common Issues
+
+| Issue | Symptom | Solution |
+|-------|---------|----------|
+| SSD Quota Exceeded | `terraform apply` fails | Reduce `disk_size_gb` to 30 and `node_count` to 1 |
+| Pods in `Pending` | `kubectl describe pod` shows PVC issues | Use `standard-rwo` StorageClass with `ReadWriteOnce` |
+| Pods in `CrashLoopBackOff` | `kubectl logs <pod> --previous` shows permission errors | Add `securityContext` with correct `runAsUser` and `fsGroup` |
+| `ImagePullBackOff` | Image not in Artifact Registry | Build with `gcloud builds submit` or re-push with Docker |
+| Ingress no external IP | `kubectl get ingress` shows no ADDRESS | Wait 5-10 min for GCP load balancer provisioning |
+| `docker push` hangs | Large layers timeout in WSL | Use `gcloud builds submit` instead of local push |
+| `gsutil` `ServerNotFoundError` | Transient DNS issue | Retry the command — usually works on second attempt |
+| `OOMKilled` | Pod exceeds memory limits | Increase `limits.memory` in deployment YAML |
+| Terraform state lock | Concurrent operations | `terraform force-unlock <LOCK_ID>` |
+| `Insufficient cpu` | Nodes at capacity | GKE autoscaler will add nodes; or reduce resource requests |
+
+### Useful Debug Commands
+
+```bash
+# Pod logs
+kubectl logs -n ml-portfolio <pod-name> --tail=50
+kubectl logs -n ml-portfolio <pod-name> --previous  # crashed pod
+
+# Pod details
+kubectl describe pod <pod-name> -n ml-portfolio
+
+# Events (sorted by time)
+kubectl get events -n ml-portfolio --sort-by='.lastTimestamp'
+
+# Resource usage
+kubectl top pods -n ml-portfolio
+kubectl top nodes
+
+# Exec into pod
+kubectl exec -it -n ml-portfolio <pod-name> -- /bin/bash
+```
+
+---
+
+## Deployment Log (Real Execution)
+
+### Timeline
+
+| Phase | Duration | Status | Notes |
+|-------|----------|--------|-------|
+| Phase 1: GCP Setup | 30 min | ✅ Complete | Project, APIs, service account created |
+| Phase 2: Terraform | 45 min | ✅ Complete | Required quota adjustments (SSD, node count) |
+| Phase 3: Docker Images | 60 min | ✅ Complete | BankChurn + Telecom via Docker; CarVision via Cloud Build |
+| Phase 4: Model Upload | 10 min | ✅ Complete | 3 models uploaded to GCS |
+| Phase 5: K8s Deploy | 40 min | ✅ Complete | Required PVC, service type, and security fixes |
+| Phase 6: MLflow | 5 min | ✅ Complete | SQLite backend (sufficient for demo) |
+| Phase 7: Monitoring | 10 min | ✅ Complete | securityContext fixes for Prometheus/Grafana |
+| Phase 8: CI/CD | 15 min | ✅ Complete | GitHub Secrets configured, workflow deployed |
+| **Total** | **~3.5 hours** | **✅ Complete** | 6/6 pods Running, Ingress active |
+
+### Final State
+
+```
+$ kubectl get pods -n ml-portfolio
+NAME                                      READY   STATUS    AGE
+bankchurn-predictor-6758c897bd-zttzf      1/1     Running   2m
+carvision-intelligence-77f58796cf-7lg2l   1/1     Running   2m
+telecom-intelligence-788c44bcc-pxk49      1/1     Running   2m
+mlflow-server-6cf9564cd7-qn7rz            1/1     Running   82m
+prometheus-dc4689989-qf9gm                1/1     Running   94m
+grafana-78486fd569-jtmtj                  1/1     Running   94m
+```
+
+### Key Decisions Made During Deployment
+
+1. **Cloud Build over local Docker**: WSL Docker hangs on large layer pushes. Cloud Build completed in 4m37s.
+2. **`node_count=1` with autoscaler**: Saves cost, GKE auto-scales when needed.
+3. **`emptyDir` over PVC for monitoring**: Avoids PVC binding issues on single-node clusters.
+4. **SQLite for MLflow**: Simpler than Cloud SQL proxy for a portfolio demo.
+5. **`NodePort` services**: Required for GCE Ingress (native GKE load balancer).
+6. **`standard-rwo` StorageClass**: GKE's default for ReadWriteOnce persistent disks.
