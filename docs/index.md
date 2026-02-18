@@ -7,8 +7,9 @@
 ---
 
 ## 🎬 Portfolio Demo
-![Portfolio Demo](media/gifs/01-demo-prediccion.gif)
 **End-to-end demonstration** of the ML/MLOps stack deployed on GCP: GKE cluster with 6 services, real ML predictions, Grafana monitoring, and CI/CD pipeline.
+
+> 🎬 [Watch the full demo on YouTube](https://youtu.be/qmw9VlgUcn8)
 
 ---
 
@@ -366,7 +367,7 @@ This portfolio was developed using **AI-assisted tools** (Cursor / Cascade) for 
 
 AI tools were used as **accelerators, not replacements** for understanding — the same way senior engineers use code completion and documentation generators to increase throughput while retaining full ownership of design decisions.
 
-For full details, see [Contributing Guidelines](contributing/guidelines.md#development-process--ai-transparency).
+For full details, see [Contributing Guidelines](contributing/guidelines.md).
 
 !!! info "Documentation Status"
     This documentation is actively maintained.  
