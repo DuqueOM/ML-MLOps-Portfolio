@@ -32,6 +32,7 @@ spec:
       - name: telecom-api
         image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/telecomai-customer-intelligence:latest
         imagePullPolicy: Always
+        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
         ports:
         - containerPort: 8000
           name: http
