@@ -16,11 +16,12 @@
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.demo.yml)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-6.1.0-brightgreen.svg)](docs/FEATURES.md)
+[![Version](https://img.shields.io/badge/Version-6.2.1-brightgreen.svg)](docs/FEATURES.md)
 
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow)](https://mlflow.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Kubernetes](https://img.shields.io/badge/K8s-Ready-326CE5.svg?logo=kubernetes&logoColor=white)](k8s/)
+[![GCP](https://img.shields.io/badge/GCP-Deployed-4285F4.svg?logo=googlecloud&logoColor=white)](docs/architecture/infrastructure.md)
+[![Kubernetes](https://img.shields.io/badge/GKE-Running-326CE5.svg?logo=kubernetes&logoColor=white)](k8s/)
 [![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC.svg?logo=terraform&logoColor=white)](infra/terraform/)
 [![Prometheus](https://img.shields.io/badge/Prometheus-Metrics-E6522C.svg?logo=prometheus&logoColor=white)](infra/prometheus-config.yaml)
 [![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800.svg?logo=grafana&logoColor=white)](infra/grafana/)
@@ -237,7 +238,7 @@ The author maintains and operates all systems independently, including CI/CD pip
 
 <div align="center">
 
-**Portfolio Version**: 6.1.0 · **License**: MIT · **Status**: ✅ Production-Ready
+**Portfolio Version**: 6.2.1 · **License**: MIT · **Status**: ✅ Production-Ready (GCP)
 
 *Building ML systems that work at 2am* 🌙
 
