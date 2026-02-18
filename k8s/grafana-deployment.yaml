@@ -17,6 +17,10 @@ spec:
         app: grafana
         component: monitoring
     spec:
+      securityContext:
+        runAsUser: 472
+        runAsGroup: 472
+        fsGroup: 472
       containers:
       - name: grafana
         image: grafana/grafana:10.2.2
@@ -68,8 +72,7 @@ spec:
           periodSeconds: 5
       volumes:
       - name: grafana-data
-        persistentVolumeClaim:
-          claimName: grafana-data-pvc
+        emptyDir: {}
       - name: grafana-datasources
         configMap:
           name: grafana-datasources
