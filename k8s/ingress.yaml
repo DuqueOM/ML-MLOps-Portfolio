@@ -6,9 +6,21 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
 spec:
+  defaultBackend:
+    service:
+      name: bankchurn-service
+      port:
+        number: 80
   rules:
   - http:
       paths:
+      - path: /bankchurn
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: bankchurn-service
+            port:
+              number: 80
       - path: /bankchurn/*
         pathType: ImplementationSpecific
         backend:
@@ -16,11 +28,25 @@ spec:
             name: bankchurn-service
             port:
               number: 80
+      - path: /telecom
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: telecom-service
+            port:
+              number: 80
       - path: /telecom/*
         pathType: ImplementationSpecific
         backend:
           service:
             name: telecom-service
+            port:
+              number: 80
+      - path: /carvision
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: carvision-service
             port:
               number: 80
       - path: /carvision/*
