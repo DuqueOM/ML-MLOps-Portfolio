@@ -9,7 +9,7 @@ terraform {
   }
 
   backend "gcs" {
-    bucket = "ml-portfolio-terraform-state"
+    bucket = "ml-portfolio-duque-om-202602-terraform-state"
     prefix = "terraform/state"
   }
 }
@@ -23,12 +23,19 @@ provider "google" {
 resource "google_container_cluster" "ml_portfolio" {
   name     = "${var.project_name}-gke-${var.environment}"
   location = var.region
+  deletion_protection = false
 
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
   # node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
+
+  # Minimal config for default pool to avoid quota issues
+  node_config {
+    disk_size_gb = 20
+    machine_type = "e2-medium"
+  }
 
   network    = google_compute_network.vpc.name
   subnetwork = google_compute_subnetwork.subnet.name
@@ -77,6 +84,7 @@ resource "google_container_node_pool" "ml_services" {
   }
 
   node_config {
+    disk_size_gb = 30
     preemptible  = var.environment != "production"
     machine_type = var.machine_type
 
@@ -120,6 +128,21 @@ resource "google_compute_subnetwork" "subnet" {
   }
 }
 
+# Private Service Connection for Cloud SQL
+resource "google_compute_global_address" "private_ip_address" {
+  name          = "${var.project_name}-private-ip-${var.environment}"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = google_compute_network.vpc.id
+}
+
+resource "google_service_networking_connection" "private_vpc_connection" {
+  network                 = google_compute_network.vpc.id
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
+}
+
 # Cloud Storage Buckets
 resource "google_storage_bucket" "ml_models" {
   name          = "${var.project_id}-ml-models-${var.environment}"
@@ -157,6 +180,7 @@ resource "google_storage_bucket" "mlflow_artifacts" {
 
 # Cloud SQL for MLflow
 resource "google_sql_database_instance" "mlflow" {
+  depends_on       = [google_service_networking_connection.private_vpc_connection]
   name             = "${var.project_name}-mlflow-db-${var.environment}"
   database_version = "POSTGRES_15"
   region           = var.region

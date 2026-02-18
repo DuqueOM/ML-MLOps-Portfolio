@@ -8,7 +8,7 @@ metadata:
     tier: ml-service
     version: v2.0.0
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
   selector:
@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name: carvision-api
-        image: duqueom/carvision-market-intelligence:v2.0.0
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/carvision-market-intelligence:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
@@ -68,7 +68,7 @@ metadata:
   labels:
     app: carvision-intelligence
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: carvision-intelligence
   ports:

@@ -8,7 +8,7 @@ metadata:
     tier: ml-service
     version: v2.0.0
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: telecom-api
-        image: duqueom/telecomai-customer-intelligence:v2.0.0
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/telecomai-customer-intelligence:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
@@ -72,7 +72,7 @@ metadata:
   labels:
     app: telecom-intelligence
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: telecom-intelligence
   ports:
@@ -100,8 +100,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: telecom-intelligence
-  minReplicas: 2
-  maxReplicas: 8
+  minReplicas: 1
+  maxReplicas: 3
   metrics:
   - type: Resource
     resource:
