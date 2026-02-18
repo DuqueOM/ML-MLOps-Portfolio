@@ -39,9 +39,9 @@
 
 <div align="center">
 
-![Portfolio Demo](docs/media/gifs/portfolio-demo.gif)
+![Portfolio Demo](docs/media/gifs/01-demo-prediccion.gif)
 
-*End-to-end walkthrough: Architecture, MLflow experiments, API demos, and Streamlit dashboards*
+*End-to-end walkthrough: GCP deployment, ML predictions, monitoring, and CI/CD pipeline*
 
 </div>
 
@@ -57,9 +57,10 @@
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------|
-| **CI/CD** | ✅ Unified | Matrix testing (Py 3.11/3.12), security scanning, GHCR publishing |
-| **IaC** | ✅ Ready | Terraform (AWS EKS / GCP GKE), Kubernetes manifests with HPA |
-| **Monitoring** | ✅ Full Stack | Prometheus + Grafana + alerting rules + drift detection |
+| **GCP Deployment** | ✅ Live | GKE cluster, 6 pods running, Artifact Registry, Cloud Storage |
+| **CI/CD** | ✅ Unified | GitHub Actions → Artifact Registry → GKE auto-deploy |
+| **IaC** | ✅ Applied | Terraform (GCP GKE, Cloud SQL, GCS, VPC) — `No changes` plan |
+| **Monitoring** | ✅ Full Stack | Prometheus + Grafana + MLflow — running on GKE |
 | **Security** | ✅ Automated | Gitleaks, Bandit, Trivy, pip-audit — all enforced in CI |
 
 ---
@@ -109,9 +110,9 @@ Strategic plan optimization reducing **$6.9M/year** revenue leakage per 100K cus
 | **ML/DS** | Scikit-learn, XGBoost, LightGBM, PyTorch, Pandas, NumPy, SHAP, Optuna |
 | **MLOps** | MLflow (9 experiments), DVC, Docker, Kubernetes, Terraform |
 | **API & Dashboard** | FastAPI, Pydantic, Streamlit, Plotly |
-| **Cloud & IaC** | AWS (EKS, S3, ECR, RDS), GCP, Terraform, K8s manifests |
+| **Cloud & IaC** | GCP (GKE, GCS, Artifact Registry, Cloud SQL), Terraform, K8s manifests |
 | **Monitoring** | Prometheus, Grafana, Evidently (drift detection) |
-| **CI/CD** | GitHub Actions (550-line unified pipeline), GHCR, Codecov |
+| **CI/CD** | GitHub Actions (CI + GCP deploy pipeline), Artifact Registry, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Testing** | pytest (87-96% coverage), pre-commit hooks |
 
@@ -148,12 +149,60 @@ For API examples, monitoring setup, and troubleshooting, see [QUICK_START.md](QU
 
 ---
 
+## ☁️ GCP Production Deployment
+
+This portfolio is **deployed on Google Cloud Platform** with full production infrastructure:
+
+<div align="center">
+
+![GKE Workloads Running](docs/media/screenshots/gcp-console/05-gke-workloads-running.png)
+
+*6 services running simultaneously on GKE: 3 ML APIs + MLflow + Prometheus + Grafana*
+
+</div>
+
+| Component | Technology | Status |
+|-----------|-----------|--------|
+| Kubernetes Cluster | GKE (`ml-portfolio-gke-production`, us-central1) | ✅ Running |
+| Container Registry | Artifact Registry (3 versioned images) | ✅ Ready |
+| Model Storage | Cloud Storage (GCS) | ✅ 3 models |
+| Monitoring | Prometheus + Grafana (on GKE) | ✅ Active |
+| ML Tracking | MLflow (on GKE) | ✅ Running |
+| CI/CD Pipeline | GitHub Actions → Artifact Registry → GKE | ✅ Configured |
+| Infrastructure as Code | Terraform (10+ resources, synchronized) | ✅ Applied |
+| Load Balancer | GCE Ingress (public IP) | ✅ Active |
+
+<div align="center">
+
+[![🎬 Video Demo](https://img.shields.io/badge/🎬_Full_Demo-YouTube_(4_min)-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+
+</div>
+
+<details>
+<summary><strong>📊 More GCP Evidence (click to expand)</strong></summary>
+
+#### Terraform IaC — Infrastructure synchronized
+![Terraform Plan](docs/media/screenshots/terraform/53-terraform-plan-no-changes.png)
+
+#### Monitoring — Grafana Dashboard
+![Grafana](docs/media/screenshots/monitoring/34-grafana-dashboard.png)
+
+#### CI/CD — GitHub Actions Pipeline Completed
+![CI/CD](docs/media/screenshots/cicd/46-workflow-completado.png)
+
+#### ML Prediction in Production
+![Prediction](docs/media/screenshots/apis/26-bankchurn-prediccion-real.png)
+
+</details>
+
+---
+
 ## 📚 Documentation
 
 | Document | Description |
 |----------|-------------|
 | **[Quick Start](QUICK_START.md)** | 5-minute demo with API examples and health checks |
-| **[Architecture](docs/ARCHITECTURE_PORTFOLIO.md)** | System design, Mermaid diagrams, pipeline details, CI/CD workflow |
+| **[Architecture](docs/ARCHITECTURE_PORTFOLIO.md)** | System design, Mermaid diagrams, GCP infrastructure, CI/CD workflow |
 | **[Operations Runbook](RUNBOOK.md)** | Day-to-day commands, Docker, K8s, Terraform deployment |
 | **[Features & Changelog](docs/FEATURES.md)** | Performance optimizations, new features (v6.0–v6.1) |
 | **[Release Process](docs/RELEASE.md)** | GHCR publishing, blue/green deployments, rollback procedures |

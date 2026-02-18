@@ -203,53 +203,75 @@ graph LR
 - **Voting Classifier**: Combines multiple base models for robust predictions
 - **Domain Features**: Telecom-specific feature engineering
 
-## Deployment Architecture
+## Deployment Architecture (GCP Production)
 
 ```mermaid
 graph TB
     subgraph "Developer"
-        DEV["Local Dev"]
+        DEV["Local Dev<br/>(WSL)"]
     end
 
-    subgraph "CI/CD"
-        GH["GitHub Actions"]
+    subgraph "CI/CD (GitHub Actions)"
+        GH["Push to main"]
         TEST["Tests & Linting"]
         BUILD["Docker Build"]
         SCAN["Security Scan"]
     end
 
-    subgraph "Registry"
-        GHCR["GitHub Container Registry"]
+    subgraph "GCP Registry"
+        AR["Artifact Registry<br/>(3 images)"]
     end
 
-    subgraph "Deployment"
-        K8S["Kubernetes Cluster"]
-        HPA["Horizontal Pod Autoscaler"]
-        ING["Ingress Controller"]
+    subgraph "GCP Production (GKE)"
+        K8S["GKE Cluster<br/>(us-central1)"]
+        BC["BankChurn Pod"]
+        CV["CarVision Pod"]
+        TC["TelecomAI Pod"]
+        MLF["MLflow Pod"]
+        PROM["Prometheus Pod"]
+        GRAF["Grafana Pod"]
+        ING["GCE Ingress<br/>(34.120.120.57)"]
     end
 
-    DEV -->|push| GH
+    subgraph "GCP Storage"
+        GCS["Cloud Storage<br/>(ML Models)"]
+        SQL["Cloud SQL<br/>(MLflow DB)"]
+    end
+
+    DEV -->|git push| GH
     GH --> TEST
     TEST --> BUILD
     BUILD --> SCAN
-    SCAN -->|push image| GHCR
-    GHCR -->|pull| K8S
-    K8S --> HPA
-    K8S --> ING
+    SCAN -->|push image| AR
+    AR -->|pull| K8S
+    K8S --> BC
+    K8S --> CV
+    K8S --> TC
+    K8S --> MLF
+    K8S --> PROM
+    K8S --> GRAF
+    ING --> BC
+    ING --> CV
+    ING --> TC
+    GCS --> BC
+    GCS --> CV
+    GCS --> TC
+    SQL --> MLF
 ```
 
 ## Technology Stack Summary
 
 | Layer | Technologies |
 |-------|--------------|
-| **Languages** | Python 3.11+, Bash |
+| **Languages** | Python 3.11+, Bash, HCL |
 | **ML Frameworks** | Scikit-learn, XGBoost, LightGBM |
 | **Web Frameworks** | FastAPI, Streamlit |
 | **MLOps** | MLflow, DVC, Evidently |
-| **Containers** | Docker, Docker Compose |
-| **Orchestration** | Kubernetes, GitHub Actions |
-| **Monitoring** | Prometheus, Grafana |
-| **Infrastructure** | Terraform (AWS/GCP) |
+| **Containers** | Docker (multi-stage builds) |
+| **Orchestration** | GKE (production), Docker Compose (local) |
+| **Monitoring** | Prometheus, Grafana (on GKE) |
+| **Infrastructure** | Terraform (GCP: GKE, GCS, Artifact Registry, Cloud SQL, VPC) |
+| **CI/CD** | GitHub Actions → Artifact Registry → GKE |
 
 ---
 

@@ -35,13 +35,13 @@
 
 <div align="center">
 
-**API Demo:**
+**API Demo (Running on GKE):**
 
-![CarVision API Demo](../docs/media/gifs/carvision-preview.gif)
+![CarVision API Demo](../docs/media/screenshots/apis/27-fastapi-swagger-carvision.png)
 
-**Streamlit Dashboard:**
+**Real-time Monitoring:**
 
-![Streamlit Dashboard](../docs/media/gifs/streamlit-carvision.gif)
+![Grafana Monitoring](../docs/media/gifs/03-grafana-monitoring.gif)
 
 </div>
 

@@ -35,7 +35,7 @@
 
 <div align="center">
 
-![TelecomAI Demo](../docs/media/gifs/telecom-preview.gif)
+![TelecomAI Demo](../docs/media/screenshots/apis/29-fastapi-swagger-telecom.png)
 
 </div>
 

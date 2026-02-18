@@ -42,22 +42,127 @@ graph TB
 
 ---
 
+## GCP Production Deployment (Live) ✅
+
+This portfolio is **actively deployed on Google Cloud Platform**. The infrastructure below was created with Terraform and is currently running.
+
+![GKE Workloads](../media/screenshots/gcp-console/05-gke-workloads-running.png)
+
+### GCP Resources (Terraform-managed)
+
+| Resource | Type | Details |
+|----------|------|---------|
+| **GKE Cluster** | `google_container_cluster` | `ml-portfolio-gke-production`, us-central1, 1-5 nodes (e2-medium) |
+| **Node Pool** | `google_container_node_pool` | 30GB SSD, autoscaling 1-5 nodes |
+| **VPC Network** | `google_compute_network` | Custom VPC with private subnets |
+| **Cloud Storage** | `google_storage_bucket` | ML models bucket + MLflow artifacts bucket |
+| **Artifact Registry** | `google_artifact_registry_repository` | 3 Docker images (bankchurn, carvision, telecom) |
+| **Cloud SQL** | `google_sql_database_instance` | PostgreSQL for MLflow backend |
+| **Service Account** | `google_service_account` | GKE workload identity |
+| **Private VPC Peering** | `google_service_networking_connection` | Cloud SQL private IP |
+
+### GCP Terraform Code
+
+```hcl
+# infra/terraform/gcp/main.tf (simplified)
+
+resource "google_container_cluster" "primary" {
+  name     = "${var.project_name}-gke-production"
+  location = var.region
+
+  initial_node_count       = 1
+  remove_default_node_pool = true
+  deletion_protection      = false
+
+  network    = google_compute_network.vpc.name
+  subnetwork = google_compute_subnetwork.subnet.name
+}
+
+resource "google_container_node_pool" "primary_nodes" {
+  name       = "${var.project_name}-node-pool"
+  cluster    = google_container_cluster.primary.name
+  location   = var.region
+  node_count = var.node_count
+
+  node_config {
+    machine_type = "e2-medium"
+    disk_size_gb = 30
+    oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+
+  autoscaling {
+    min_node_count = 1
+    max_node_count = var.max_node_count
+  }
+}
+
+resource "google_storage_bucket" "ml_models" {
+  name     = "${var.project_id}-ml-models"
+  location = var.region
+}
+
+resource "google_artifact_registry_repository" "ml_portfolio" {
+  location      = var.region
+  repository_id = "ml-portfolio"
+  format        = "DOCKER"
+}
+```
+
+### GCP Terraform Commands
+
+```bash
+cd infra/terraform/gcp
+
+# Initialize
+terraform init
+
+# Plan (verify no unexpected changes)
+terraform plan -var-file=terraform.tfvars
+
+# Apply infrastructure
+terraform apply -var-file=terraform.tfvars
+
+# List managed resources
+terraform state list
+
+# View outputs (cluster name, registry URL, bucket names)
+terraform output
+```
+
+![Terraform Plan](../media/screenshots/terraform/53-terraform-plan-no-changes.png)
+
+### CI/CD: GitHub Actions → GKE
+
+The deployment pipeline (`.github/workflows/deploy-gcp.yml`) automates:
+
+1. **Detect changes** — only build modified projects
+2. **Build Docker images** — multi-stage builds
+3. **Push to Artifact Registry** — versioned with git SHA
+4. **Deploy to GKE** — `kubectl apply` with rolling updates
+5. **Smoke tests** — verify health endpoints
+
+![CI/CD Pipeline](../media/screenshots/cicd/46-workflow-completado.png)
+
+---
+
 ## Directory Structure
 
 ```
 infra/
 ├── terraform/
-│   ├── aws/                  # AWS-specific configuration
+│   ├── gcp/                  # GCP configuration (LIVE ✅)
+│   │   ├── main.tf           # GKE, GCS, Artifact Registry, VPC, Cloud SQL
+│   │   ├── variables.tf      # Variable definitions
+│   │   ├── outputs.tf        # Exported values
+│   │   ├── terraform.tfvars  # Environment-specific values
+│   │   └── terraform.tfvars.example  # Template for new users
+│   ├── aws/                  # AWS configuration (reference)
 │   │   ├── main.tf
 │   │   ├── variables.tf
-│   │   ├── outputs.tf
-│   │   └── eks.tf
-│   ├── gcp/                  # GCP-specific configuration
-│   │   ├── main.tf
-│   │   └── gke.tf
+│   │   └── outputs.tf
 │   └── README.md
-├── docker-compose-mlflow.yml # MLflow stack
-├── prometheus-config.yaml    # Prometheus configuration
+├── prometheus-config.yaml    # Prometheus scrape configuration
+├── grafana/                  # Grafana dashboards and datasources
 ├── alertmanager-config.yaml  # Alerting rules
 └── .env.example              # Environment template
 ```
@@ -66,7 +171,7 @@ infra/
 
 ## Terraform Configuration
 
-### AWS Provider Setup
+### AWS Provider Setup (Reference)
 
 ```hcl
 # infra/terraform/aws/main.tf

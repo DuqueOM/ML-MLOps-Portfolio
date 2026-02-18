@@ -2,9 +2,9 @@
 
 Vehicle price prediction platform with interactive dashboard.
 
-![CarVision Dashboard Demo](../media/gifs/carvision-preview.gif)
+![CarVision API Demo](../media/screenshots/apis/27-fastapi-swagger-carvision.png)
 
-![Streamlit Dashboard](../media/gifs/streamlit-carvision.gif)
+![Monitoring Dashboard](../media/gifs/03-grafana-monitoring.gif)
 
 ## Overview
 

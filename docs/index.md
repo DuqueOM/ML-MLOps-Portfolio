@@ -7,8 +7,8 @@
 ---
 
 ## 🎬 Portfolio Demo
-![Portfolio Demo](media/gifs/portfolio-demo.gif)
-**End-to-end demonstration** of the complete ML/MLOps stack: MLflow experiments, Docker Compose orchestration, FastAPI services, Streamlit dashboard, and Prometheus monitoring.
+![Portfolio Demo](media/gifs/01-demo-prediccion.gif)
+**End-to-end demonstration** of the ML/MLOps stack deployed on GCP: GKE cluster with 6 services, real ML predictions, Grafana monitoring, and CI/CD pipeline.
 
 ---
 
@@ -32,19 +32,19 @@ This is a **production-grade MLOps platform** showcasing enterprise best practic
 
     ---
 
-    Terraform (AWS/GCP), Kubernetes manifests, Docker multi-stage builds
+    Deployed on GCP (GKE, Artifact Registry, Cloud Storage), Terraform IaC, Docker multi-stage builds
 
 -   🔄 **Full CI/CD Pipeline**
 
     ---
 
-    GitHub Actions with matrix testing, security scanning, automated deployment
+    GitHub Actions with matrix testing, security scanning, automated GKE deployment
 
 -   📊 **MLOps Best Practices**
 
     ---
 
-    MLflow tracking, DVC versioning, Prometheus + Grafana observability
+    MLflow tracking (on GKE), DVC versioning, Prometheus + Grafana observability
 
 -   🧪 **High Test Coverage**
 
@@ -149,8 +149,8 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
   - Quality gates (Black, Flake8, Mypy, Bandit)
   - Security scans (Trivy, Gitleaks, pip-audit)
   - E2E tests with full stack validation
-- ✅ **Containerization**: Multi-stage Docker builds, GHCR registry
-- ✅ **Orchestration**: Kubernetes manifests, Terraform (AWS EKS / GCP GKE)
+- ✅ **Containerization**: Multi-stage Docker builds, GCP Artifact Registry
+- ✅ **Orchestration**: GKE cluster (6 pods running), Terraform IaC (10+ resources)
 
 ### Software Engineering
 
@@ -218,9 +218,9 @@ docker compose -f docker-compose.demo.yml ps
 | **APIs** | FastAPI with automatic OpenAPI docs |
 | **Dashboard** | Streamlit (CarVision) |
 | **Containerization** | Docker (multi-stage builds) |
-| **Orchestration** | Docker Compose, Kubernetes |
-| **CI/CD** | GitHub Actions (6-stage pipeline) |
-| **IaC** | Terraform (AWS EKS / GCP GKE, RDS, S3, ECR) |
+| **Orchestration** | Docker Compose (local), GKE (production) |
+| **CI/CD** | GitHub Actions (CI + GCP deploy pipeline) |
+| **IaC** | Terraform (GCP: GKE, Cloud SQL, GCS, VPC, Artifact Registry) |
 
 ### Security & Quality
 
@@ -371,7 +371,7 @@ For full details, see [Contributing Guidelines](contributing/guidelines.md#devel
 !!! info "Documentation Status"
     This documentation is actively maintained.  
     **Last Updated**: February 2026  
-    **Portfolio Version**: 6.2.0
+    **Portfolio Version**: 6.2.1
 
 !!! tip "Quick Evaluation"
     **For recruiters**: Start with the [5-minute Quick Start](getting-started/quickstart.md) and explore the [Streamlit Dashboard](http://localhost:8501) (after starting demo stack)
