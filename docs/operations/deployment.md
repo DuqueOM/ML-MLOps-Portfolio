@@ -74,7 +74,7 @@ docker compose -f docker-compose.demo.yml down -v
 
 This portfolio is **deployed on Google Cloud Platform** with a GKE cluster running 6 services.
 
-![GKE Workloads](../media/screenshots/gcp-console/05-gke-workloads-running.png)
+> 🎬 [Watch GCP deployment demo on YouTube](https://youtu.be/qmw9VlgUcn8)
 
 ### Prerequisites
 
