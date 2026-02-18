@@ -8,7 +8,7 @@ metadata:
     tier: ml-service
     version: v2.0.0
 spec:
-  replicas: 3
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: bankchurn-api
-        image: duqueom/bankchurn-predictor:v2.0.0
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/bankchurn-predictor:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
@@ -73,15 +73,9 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 3
         volumeMounts:
-        - name: model-storage
-          mountPath: /app/models
-          readOnly: true
         - name: logs
           mountPath: /app/logs
       volumes:
-      - name: model-storage
-        persistentVolumeClaim:
-          claimName: ml-models-pvc
       - name: logs
         emptyDir: {}
       affinity:
@@ -105,7 +99,7 @@ metadata:
   labels:
     app: bankchurn-predictor
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: bankchurn-predictor
   ports:
@@ -139,8 +133,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: bankchurn-predictor
-  minReplicas: 2
-  maxReplicas: 10
+  minReplicas: 1
+  maxReplicas: 3
   metrics:
   - type: Resource
     resource:

@@ -84,12 +84,11 @@ jobs:
             context: TelecomAI-Customer-Intelligence
             image: telecomai-customer-intelligence
             manifest: k8s/telecom-deployment.yaml
-    # Build if: manual dispatch selected this service/all, OR push changed this service
     if: >
-      (github.event_name == 'workflow_dispatch' &&
-        (github.event.inputs.service == 'all' || github.event.inputs.service == matrix.service)) ||
-      (github.event_name == 'push' &&
-        (needs.detect-changes.outputs[matrix.service] == 'true'))
+      needs.detect-changes.outputs.bankchurn == 'true' ||
+      needs.detect-changes.outputs.carvision == 'true' ||
+      needs.detect-changes.outputs.telecom == 'true' ||
+      github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       id-token: write
@@ -120,11 +119,11 @@ jobs:
           echo "IMAGE_TAG=${TAG}" >> $GITHUB_ENV
 
       - name: Upload image tag artifact
-        uses: actions/upload-artifact@v4
+        run: echo "${{ env.IMAGE_TAG }}" > tag.txt
+      - uses: actions/upload-artifact@v4
         with:
           name: image-tag-${{ matrix.service }}
-          path: |
-            echo "${{ env.IMAGE_TAG }}" > tag.txt
+          path: tag.txt
 
   # ---------------------------------------------------------------------------
   # Deploy to GKE
