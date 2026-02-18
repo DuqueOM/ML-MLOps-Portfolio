@@ -70,58 +70,131 @@ docker compose -f docker-compose.demo.yml down -v
 
 ---
 
-## Production Deployment (Kubernetes)
+## Production Deployment (GCP GKE) ✅
+
+This portfolio is **deployed on Google Cloud Platform** with a GKE cluster running 6 services.
+
+![GKE Workloads](../media/screenshots/gcp-console/05-gke-workloads-running.png)
 
 ### Prerequisites
 
-- Kubernetes cluster (EKS, GKE, or local)
-- kubectl configured
-- Helm 3.x (optional, for ingress)
+- GCP account with billing enabled
+- `gcloud` CLI configured (`gcloud auth login`)
+- `kubectl` configured for GKE (`gcloud container clusters get-credentials`)
+- Terraform 1.0+ installed
 
-### Deploy Services
+### Infrastructure Setup (Terraform)
 
 ```bash
-# Apply all manifests
+# 1. Initialize Terraform
+cd infra/terraform/gcp
+terraform init
+
+# 2. Review plan
+terraform plan -var-file=terraform.tfvars
+
+# 3. Apply infrastructure (creates GKE, GCS, Artifact Registry, VPC, Cloud SQL)
+terraform apply -var-file=terraform.tfvars
+
+# 4. Configure kubectl
+gcloud container clusters get-credentials ml-portfolio-gke-production \
+  --region us-central1 --project ml-portfolio-duque-om-202602
+```
+
+### Build & Push Docker Images
+
+```bash
+# Authenticate Docker with Artifact Registry
+gcloud auth configure-docker us-central1-docker.pkg.dev
+
+# Build and push each service
+for svc in BankChurn-Predictor CarVision-Market-Intelligence TelecomAI-Customer-Intelligence; do
+  docker build -t us-central1-docker.pkg.dev/PROJECT_ID/ml-portfolio/$(echo $svc | tr '[:upper:]' '[:lower:]'):latest -f $svc/Dockerfile $svc
+  docker push us-central1-docker.pkg.dev/PROJECT_ID/ml-portfolio/$(echo $svc | tr '[:upper:]' '[:lower:]'):latest
+done
+```
+
+### Deploy to GKE
+
+```bash
+# Apply namespace and storage
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/storage.yaml
+
+# Deploy all services
 kubectl apply -f k8s/
 
-# Verify pods
+# Verify all 6 pods are running
 kubectl get pods -n ml-portfolio
+```
 
-# Check services
-kubectl get svc -n ml-portfolio
+**Expected output:**
+```
+NAME                                    READY   STATUS    RESTARTS   AGE
+bankchurn-predictor-xxx                 1/1     Running   0          5m
+carvision-intelligence-xxx              1/1     Running   0          5m
+telecom-intelligence-xxx                1/1     Running   0          5m
+mlflow-server-xxx                       1/1     Running   0          5m
+prometheus-xxx                          1/1     Running   0          5m
+grafana-xxx                             1/1     Running   0          5m
 ```
 
 ### Kubernetes Resources
 
 | Resource | File | Purpose |
 |----------|------|---------|
-| Deployments | `k8s/*-deployment.yaml` | Service pods |
-| Services | `k8s/*-deployment.yaml` | Internal networking |
-| HPA | `k8s/hpa.yaml` | Auto-scaling |
-| Ingress | `k8s/ingress.yaml` | External access |
+| Namespace | `k8s/namespace.yaml` | `ml-portfolio` namespace with resource quotas |
+| Deployments | `k8s/*-deployment.yaml` | Service pods (6 deployments) |
+| Services | `k8s/*-deployment.yaml` | NodePort services for GCE ingress |
+| Ingress | `k8s/ingress.yaml` | GCE load balancer with path-based routing |
+| Storage | `k8s/storage.yaml` | PVCs for persistent data |
+| Monitoring | `k8s/prometheus-deployment.yaml` | Prometheus + Grafana |
+
+### Access Services (Port Forward)
+
+```bash
+# BankChurn API
+kubectl port-forward svc/bankchurn-service 8001:80 -n ml-portfolio
+
+# CarVision API
+kubectl port-forward svc/carvision-service 8002:80 -n ml-portfolio
+
+# TelecomAI API
+kubectl port-forward svc/telecom-service 8003:80 -n ml-portfolio
+
+# Grafana (admin/admin)
+kubectl port-forward svc/grafana-service 3000:3000 -n ml-portfolio
+
+# Prometheus
+kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio
+
+# MLflow
+kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio
+```
 
 ### Scaling
 
 ```bash
 # Manual scaling
-kubectl scale deployment bankchurn-api --replicas=3
+kubectl scale deployment bankchurn-predictor --replicas=3 -n ml-portfolio
 
 # View HPA status
-kubectl get hpa
+kubectl get hpa -n ml-portfolio
 ```
 
 ### Rolling Updates
 
 ```bash
-# Update image
-kubectl set image deployment/bankchurn-api \
-  bankchurn-api=ghcr.io/duqueom/bankchurn:v1.2.0
+# Update image from Artifact Registry
+kubectl set image deployment/bankchurn-predictor \
+  bankchurn-predictor=us-central1-docker.pkg.dev/PROJECT_ID/ml-portfolio/bankchurn-predictor:v1.1.0 \
+  -n ml-portfolio
 
 # Check rollout status
-kubectl rollout status deployment/bankchurn-api
+kubectl rollout status deployment/bankchurn-predictor -n ml-portfolio
 
 # Rollback if needed
-kubectl rollout undo deployment/bankchurn-api
+kubectl rollout undo deployment/bankchurn-predictor -n ml-portfolio
 ```
 
 ---

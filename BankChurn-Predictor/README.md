@@ -35,7 +35,7 @@
 
 <div align="center">
 
-![BankChurn Demo](../docs/media/gifs/bankchurn-preview.gif)
+![BankChurn Demo](../docs/media/gifs/01-demo-prediccion.gif)
 
 </div>
 

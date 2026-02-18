@@ -2,7 +2,7 @@
 
 Customer churn prediction system for banking institutions.
 
-![BankChurn API Demo](../media/gifs/bankchurn-preview.gif)
+![BankChurn API Demo](../media/gifs/01-demo-prediccion.gif)
 
 ## Overview
 

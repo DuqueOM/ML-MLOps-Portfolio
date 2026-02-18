@@ -120,10 +120,11 @@ fairness_metrics.json
 metrics.json
 
 # Large media files (videos hosted on YouTube)
-docs/media/videos/*.mp4
-docs/media/videos/*.mov
-docs/media/videos/*.avi
-docs/media/videos/*.mkv
+docs/media/videos/
+
+# Private deployment guides (not for public repo)
+docs/GCP_DEPLOYMENT_EVIDENCE.md
+docs/GCP_PRODUCTION_GUIDE.md
 
 # Generated audio for guia_mlops docs
 docs/guia_mlops/audio/

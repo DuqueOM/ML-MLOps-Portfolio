@@ -2,7 +2,7 @@
 
 Strategic customer intelligence for telecommunications.
 
-![TelecomAI API Demo](../media/gifs/telecom-preview.gif)
+![TelecomAI API Demo](../media/screenshots/apis/29-fastapi-swagger-telecom.png)
 
 ## Overview
 

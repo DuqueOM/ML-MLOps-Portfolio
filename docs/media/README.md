@@ -1,8 +1,8 @@
-# Media Assets
+# Media Assets — GCP Production Deployment
 
-This directory contains visual assets for the ML-MLOps Portfolio documentation.
+Visual evidence of the ML-MLOps Portfolio running in production on Google Cloud Platform.
 
-## 📺 Main Demo Video
+## 📺 Video Demo
 
 [![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
@@ -14,124 +14,162 @@ This directory contains visual assets for the ML-MLOps Portfolio documentation.
 
 ```
 media/
-├── gifs/                           # Animated demonstrations
-│   ├── portfolio-demo.gif          # ✅ Full portfolio overview (time-lapse)
-│   ├── bankchurn-preview.gif       # ✅ BankChurn API demo
-│   ├── carvision-preview.gif       # ✅ CarVision API demo
-│   ├── streamlit-carvision.gif     # ✅ CarVision Streamlit dashboard
-│   ├── telecom-preview.gif         # ✅ TelecomAI API demo
-│   └── mlflow-demo.gif             # ✅ MLflow experiment tracking
+├── screenshots/
+│   ├── gcp-console/               # GCP Console UI captures
+│   │   ├── 01-project-dashboard.png
+│   │   ├── 03-gke-clusters-lista.png
+│   │   ├── 05-gke-workloads-running.png   ⭐ Critical
+│   │   ├── 08-gke-ingress-ip.png
+│   │   ├── 09-artifact-registry-imagenes.png
+│   │   └── ...                    # 16 screenshots total
+│   │
+│   ├── terminal/                  # kubectl & CLI captures
+│   │   ├── 17-kubectl-pods-running.png    ⭐ Critical
+│   │   ├── 18-kubectl-services-ingress.png
+│   │   ├── 23-health-checks-apis.png      ⭐ Critical
+│   │   └── ...                    # 8 screenshots total
+│   │
+│   ├── apis/                      # FastAPI Swagger & predictions
+│   │   ├── 25-fastapi-swagger-bankchurn.png
+│   │   ├── 26-bankchurn-prediccion-real.png  ⭐ Critical
+│   │   ├── 27-fastapi-swagger-carvision.png
+│   │   ├── 29-fastapi-swagger-telecom.png
+│   │   └── ...                    # 9 screenshots total
+│   │
+│   ├── monitoring/                # Grafana, Prometheus, MLflow
+│   │   ├── 34-grafana-dashboard.png       ⭐ Critical
+│   │   ├── 37-prometheus-targets-up.png   ⭐ Critical
+│   │   ├── 39-mlflow-experiments.png
+│   │   └── ...                    # 8 screenshots total
+│   │
+│   ├── cicd/                      # GitHub Actions pipeline
+│   │   ├── 41-github-repositorio.png
+│   │   ├── 46-workflow-completado.png     ⭐ Critical
+│   │   └── ...                    # 7 screenshots total
+│   │
+│   └── terraform/                 # Infrastructure as Code
+│       ├── 48-terraform-main-gke.png
+│       ├── 51-terraform-state-list.png
+│       ├── 53-terraform-plan-no-changes.png  ⭐ Critical
+│       └── ...                    # 7 screenshots total
 │
-├── screenshots/                    # Static screenshots
-│   ├── github-actions-ci.PNG       # ✅ CI/CD pipeline passing
-│   ├── mlflow-experiments.PNG      # ✅ MLflow experiments view
-│   ├── mlflow-metrics.PNG          # ✅ MLflow metrics comparison
-│   ├── streamlit-dashboard.PNG     # ✅ CarVision Streamlit UI
-│   ├── streamlit-prediction.PNG    # ✅ Price prediction result
-│   ├── swagger-bankchurn.PNG       # ✅ BankChurn API docs
-│   ├── swagger-carvision.PNG       # ✅ CarVision API docs
-│   └── swagger-telecom.PNG         # ✅ TelecomAI API docs
+├── gifs/                          # Animated demonstrations
+│   ├── 01-demo-prediccion.gif     # ⭐ BankChurn prediction demo
+│   ├── 02-gke-workloads.gif       # GKE workloads in GCP Console
+│   ├── 03-grafana-monitoring.gif  # Grafana dashboard navigation
+│   ├── 04-cicd-pipeline.gif       # GitHub Actions pipeline run
+│   └── 05-tres-apis-simultaneas.gif  # 3 APIs responding simultaneously
 │
-├── videos/                         # Source video files
-│   ├── portfolio-demo.mp4          # Main portfolio demo
-│   ├── bankchurn-preview.mp4       # BankChurn recording
-│   ├── carvision-preview.mp4       # CarVision API recording
-│   ├── streamlit-carvision.mp4     # Streamlit recording
-│   ├── telecom-preview.mp4         # TelecomAI recording
-│   └── mlflow-demo.mp4             # MLflow recording
-│
-└── thumbnails/                     # Video thumbnails (optional)
+└── videos/                        # Source recordings (gitignored)
+    ├── portfolio-demo.mp4         # Main demo (uploaded to YouTube)
+    └── linkedin-clip.mp4          # 60-second LinkedIn version
 ```
 
 ---
 
-## GIF Assets (All Complete ✅)
+## Screenshot Assets
+
+### Critical Captures (8 must-have)
+
+| # | Folder | File | Description |
+|---|--------|------|-------------|
+| 05 | `gcp-console/` | `05-gke-workloads-running.png` | 6 pods running — heart of the deployment |
+| 17 | `terminal/` | `17-kubectl-pods-running.png` | CLI evidence of all services |
+| 23 | `terminal/` | `23-health-checks-apis.png` | APIs responding with models loaded |
+| 26 | `apis/` | `26-bankchurn-prediccion-real.png` | Real ML prediction in production |
+| 34 | `monitoring/` | `34-grafana-dashboard.png` | Real-time monitoring dashboard |
+| 37 | `monitoring/` | `37-prometheus-targets-up.png` | All monitoring targets active |
+| 46 | `cicd/` | `46-workflow-completado.png` | CI/CD pipeline completed |
+| 53 | `terraform/` | `53-terraform-plan-no-changes.png` | IaC perfectly synchronized |
+
+### High Impact Captures (10 recommended)
+
+| # | Folder | File | Description |
+|---|--------|------|-------------|
+| 01 | `gcp-console/` | `01-project-dashboard.png` | GCP project overview |
+| 08 | `gcp-console/` | `08-gke-ingress-ip.png` | Public IP assigned by GCP |
+| 09 | `gcp-console/` | `09-artifact-registry-imagenes.png` | 3 Docker images in registry |
+| 13 | `gcp-console/` | `13-cloud-build-history.png` | Cloud Build runs |
+| 25 | `apis/` | `25-fastapi-swagger-bankchurn.png` | Auto-generated API docs |
+| 39 | `monitoring/` | `39-mlflow-experiments.png` | MLflow experiment tracking |
+| 43 | `cicd/` | `43-github-secrets.png` | Secure CI/CD configuration |
+| 48 | `terraform/` | `48-terraform-main-gke.png` | IaC code for GKE cluster |
+| 51 | `terraform/` | `51-terraform-state-list.png` | All resources under Terraform |
+| 52 | `terraform/` | `52-terraform-outputs.png` | Programmatic output values |
+
+**Total**: 55 screenshots across 6 sessions + 5 GIFs + 1 video
+
+---
+
+## GIF Assets
 
 | GIF | Description | Duration | Used In |
 |-----|-------------|----------|---------|
-| `portfolio-demo.gif` | Full stack overview (time-lapse) | ~22s | Main README |
-| `bankchurn-preview.gif` | BankChurn API prediction | ~9s | BankChurn README |
-| `carvision-preview.gif` | CarVision API prediction | ~9s | CarVision README |
-| `streamlit-carvision.gif` | Streamlit dashboard tour | ~13s | CarVision README |
-| `telecom-preview.gif` | TelecomAI API prediction | ~8s | TelecomAI README |
-| `mlflow-demo.gif` | MLflow experiment tracking | ~11s | Main README |
-
-### GIF Generation
-
-GIFs were generated from MP4 source videos using ffmpeg:
-
-```bash
-# Time-lapse style (covers full video at 3x speed)
-ffmpeg -i video.mp4 \
-  -vf "fps=12,setpts=PTS/3,scale=800:600:force_original_aspect_ratio=decrease,pad=800:600:(ow-iw)/2:(oh-ih)/2" \
-  output.gif
-```
+| `01-demo-prediccion.gif` | BankChurn real prediction flow | ~15s | Main README, BankChurn README |
+| `02-gke-workloads.gif` | GKE Console showing 6 workloads | ~10s | Main README |
+| `03-grafana-monitoring.gif` | Grafana dashboard navigation | ~15s | Operations docs |
+| `04-cicd-pipeline.gif` | GitHub Actions pipeline execution | ~12s | Architecture docs |
+| `05-tres-apis-simultaneas.gif` | 3 APIs responding simultaneously | ~20s | Main README |
 
 ---
 
-## Screenshot Assets (All Complete ✅)
-
-| Screenshot | Description | Used In |
-|------------|-------------|---------|
-| `github-actions-ci.PNG` | CI/CD pipeline passing | Main README |
-| `mlflow-experiments.PNG` | MLflow experiments list | Main README, Project READMEs |
-| `mlflow-metrics.PNG` | Metrics comparison view | Documentation |
-| `streamlit-dashboard.PNG` | CarVision dashboard overview | CarVision README |
-| `streamlit-prediction.PNG` | Price prediction result | CarVision README |
-| `swagger-bankchurn.PNG` | BankChurn Swagger UI | BankChurn README |
-| `swagger-carvision.PNG` | CarVision Swagger UI | CarVision README |
-| `swagger-telecom.PNG` | TelecomAI Swagger UI | TelecomAI README |
-
----
-
-## Video Assets
-
-Source MP4 files used to generate the GIFs above. These are not committed to Git (use Git LFS or external hosting for large files).
-
-### Main Demo Video
+## Video Demo
 
 The full portfolio demonstration is hosted on YouTube:
 
-- **Title**: ML/MLOps Portfolio – Production-Ready End-to-End Demo
+- **Title**: ML MLOps Portfolio — GCP Production Deployment (GKE + Terraform + CI/CD)
 - **URL**: [https://youtu.be/qmw9VlgUcn8](https://youtu.be/qmw9VlgUcn8)
-- **Duration**: ~3 minutes
+- **Duration**: ~4 minutes
 - **Content**:
   1. Architecture overview
-  2. MLflow experiments (9 runs across 3 projects)
-  3. BankChurn API demo
-  4. CarVision API + Streamlit dashboard
-  5. TelecomAI API demo
-  6. Docker Compose stack
+  2. GCP Console — 6 services running on GKE
+  3. Terraform Infrastructure as Code
+  4. 3 ML APIs with real predictions (BankChurn, CarVision, TelecomAI)
+  5. Monitoring stack (Grafana + Prometheus + MLflow)
+  6. CI/CD pipeline (GitHub Actions → GKE)
+
+Source video files are in `videos/` (gitignored — too large for Git).
+
+---
+
+## GCP Deployment Details
+
+| Component | Technology | Status |
+|-----------|-----------|--------|
+| **Cluster** | GKE (`ml-portfolio-gke-production`, us-central1) | ✅ Running |
+| **Pods** | 6 services (3 ML APIs + MLflow + Prometheus + Grafana) | ✅ 6/6 Running |
+| **Registry** | Artifact Registry (3 Docker images, versioned) | ✅ Ready |
+| **Storage** | Cloud Storage (3 ML models: .pkl, .joblib) | ✅ Uploaded |
+| **IaC** | Terraform (10+ resources, `No changes` plan) | ✅ Synchronized |
+| **CI/CD** | GitHub Actions → Artifact Registry → GKE | ✅ Configured |
+| **Ingress** | GCE Load Balancer (IP: 34.120.120.57) | ✅ Active |
+| **Monitoring** | Prometheus scraping 3 APIs, Grafana dashboards | ✅ Active |
 
 ---
 
 ## Usage in Documentation
 
-### Embedding GIFs in README
-
-```markdown
-![Portfolio Demo](media/gifs/portfolio-demo.gif)
-```
-
 ### Embedding Screenshots
 
 ```markdown
-![MLflow Experiments](media/screenshots/mlflow-experiments.PNG)
+<!-- GCP workloads running -->
+![GKE Workloads](media/screenshots/gcp-console/05-gke-workloads-running.png)
+
+<!-- API prediction -->
+![BankChurn Prediction](media/screenshots/apis/26-bankchurn-prediccion-real.png)
+
+<!-- Monitoring -->
+![Grafana Dashboard](media/screenshots/monitoring/34-grafana-dashboard.png)
 ```
 
-### Collapsible Demo Section
+### Embedding GIFs
 
 ```markdown
-<details>
-<summary>🎬 Click to expand demo</summary>
-
-![Demo GIF](media/gifs/bankchurn-preview.gif)
-
-</details>
+![Prediction Demo](media/gifs/01-demo-prediccion.gif)
 ```
 
-### YouTube Badge
+### YouTube Video with Thumbnail
 
 ```markdown
-[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+[![Portfolio Demo](media/screenshots/gcp-console/05-gke-workloads-running.png)](https://youtu.be/qmw9VlgUcn8)
 ```

@@ -333,29 +333,39 @@ jobs:
 
 ## Visual References
 
-### MLflow Experiment Tracking
+### GCP Production Deployment — 6 Services Running on GKE
 
-All 9 experiments (3 per project) tracked in the central MLflow server:
+![GKE Workloads Running](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/gcp-console/05-gke-workloads-running.png)
 
-![MLflow Experiments](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/mlflow-experiments.PNG)
+### MLflow Experiment Tracking (Running on GKE)
 
-### CI/CD Pipeline
+All 9 experiments (3 per project) tracked in the MLflow server deployed on GKE:
 
-Unified GitHub Actions workflow with matrix testing:
+![MLflow Experiments](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/monitoring/39-mlflow-experiments.png)
 
-![GitHub Actions CI](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/github-actions-ci.PNG)
+### CI/CD Pipeline — GitHub Actions → GKE
 
-### API Documentation (Swagger UI)
+Automated deployment pipeline: detect changes, build Docker images, push to Artifact Registry, deploy to GKE:
+
+![GitHub Actions CI/CD](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/cicd/46-workflow-completado.png)
+
+### API Documentation (Swagger UI) — Running on GKE
 
 | BankChurn API | CarVision API | TelecomAI API |
 |---------------|---------------|---------------|
-| ![BankChurn](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/swagger-bankchurn.PNG) | ![CarVision](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/swagger-carvision.PNG) | ![TelecomAI](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/swagger-telecom.PNG) |
+| ![BankChurn](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/apis/25-fastapi-swagger-bankchurn.png) | ![CarVision](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/apis/27-fastapi-swagger-carvision.png) | ![TelecomAI](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/apis/29-fastapi-swagger-telecom.png) |
 
-### Streamlit Dashboard
+### Monitoring — Grafana + Prometheus (Running on GKE)
 
-CarVision Market Intelligence dashboard with price predictor:
+Real-time monitoring dashboard with metrics from all 3 ML APIs:
 
-![Streamlit Dashboard](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/streamlit-dashboard.PNG)
+![Grafana Dashboard](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/monitoring/34-grafana-dashboard.png)
+
+### Infrastructure as Code — Terraform
+
+All GCP resources managed by Terraform (`No changes` = perfectly synchronized):
+
+![Terraform Plan](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/terraform/53-terraform-plan-no-changes.png)
 
 ---
 
