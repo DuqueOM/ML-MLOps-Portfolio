@@ -134,3 +134,7 @@ docs/guia_mlops/pdf/_DEBUG_*
 docs/guia_mlops/pdf/_test_links.pdf
 docs/guia_mlops/pdf/_*.css
 requirements.txt
+
+# Terraform secrets (use terraform.tfvars.example as template)
+infra/terraform/gcp/terraform.tfvars
+infra/terraform/aws/terraform.tfvars

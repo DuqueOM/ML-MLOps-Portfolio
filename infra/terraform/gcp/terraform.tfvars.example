@@ -10,4 +10,4 @@ node_count     = 2
 min_node_count = 1
 max_node_count = 5
 db_tier        = "db-f1-micro"
-db_password    = "CHANGE_ME_USE_openssl_rand_base64_24"
+db_password    = ""  
