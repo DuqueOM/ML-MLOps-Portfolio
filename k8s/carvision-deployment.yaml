@@ -24,6 +24,7 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8000"
     spec:
+      serviceAccountName: ml-workload
       containers:
       - name: carvision-api
         image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/carvision-market-intelligence:latest

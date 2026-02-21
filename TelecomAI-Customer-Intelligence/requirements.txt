@@ -3775,3 +3775,4 @@ zipp==3.23.0 \
 # pinned when the requirements file includes hashes and the requirement is not
 # satisfied by a package already installed. Consider using the --allow-unsafe flag.
 # setuptools
+xgboost==2.1.3
