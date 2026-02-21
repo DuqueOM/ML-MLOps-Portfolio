@@ -16,7 +16,7 @@ training:
   val_size: 0.2
   shuffle: true
   # Primary model: random_forest | xgboost | lightgbm | neural_network
-  model: lightgbm
+  model: random_forest
   random_forest_params:
     n_estimators: 300
     max_depth: 12
