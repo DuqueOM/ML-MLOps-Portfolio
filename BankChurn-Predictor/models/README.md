@@ -23,11 +23,10 @@ The following files are **legacy artifacts** from earlier development iterations
 
 | File | Size | Purpose | Status |
 |------|------|---------|--------|
-| `best_model.pkl` | 4.0 MB | Old model artifact (pre-pipeline unification) | ⚠️ **LEGACY** |
-| `preprocessor.pkl` | 4.4 KB | Separate preprocessor (pre-pipeline unification) | ⚠️ **LEGACY** |
-| `model_v1.0.0.pkl` | 39 MB | Initial baseline model (demo/reference) | ⚠️ **LEGACY** |
+| `model.joblib` | ~4 MB | Production model (unified sklearn Pipeline) | ✅ **CURRENT** |
+| `preprocessor.joblib` | ~4 KB | Standalone preprocessor (optional, for debugging) | ✅ Optional |
 
-**Note**: Current production model is trained to `artifacts/model.joblib` (unified pipeline).
+**Note**: Production model is a unified sklearn Pipeline saved as `models/model.joblib`.
 
 ---
 
@@ -49,10 +48,10 @@ This file contains the **complete unified pipeline**:
 
 **Before (v1.0-1.3)**:
 - Separate `models/preprocessor.pkl` + `models/best_model.pkl`
-- Manual two-step loading
+- Manual two-step loading (`.pkl` extension)
 
 **After (v1.4+)**:
-- Unified `artifacts/model.joblib`
+- Unified `models/model.joblib`
 - Single-step loading via `ChurnPredictor.from_files()`
 
 Legacy files kept for backward compatibility reference only.

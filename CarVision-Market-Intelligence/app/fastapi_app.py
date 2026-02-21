@@ -41,7 +41,7 @@ try:
 except ImportError:
     PROMETHEUS_AVAILABLE = False
 
-MODEL_PATH = os.getenv("MODEL_PATH", "artifacts/model.joblib")
+MODEL_PATH = os.getenv("MODEL_PATH", "models/model.joblib")
 ARTIFACTS_DIR = Path(os.getenv("ARTIFACTS_DIR", "artifacts"))
 
 

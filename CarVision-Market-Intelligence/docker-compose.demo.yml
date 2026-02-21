@@ -7,7 +7,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MODEL_PATH=artifacts/model.joblib
+      - MODEL_PATH=models/model.joblib
       - PYTHONPATH=/app
     volumes:
       - ./artifacts:/app/artifacts

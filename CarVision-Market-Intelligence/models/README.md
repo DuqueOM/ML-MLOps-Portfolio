@@ -22,15 +22,15 @@ Comprehensive model card following MLOps Staff best practices:
 
 | File | Size | Purpose | Status |
 |------|------|---------|--------|
-| `model_v1.0.0.pkl` | 5.8 KB | Initial baseline model (demo/reference) | ⚠️ **LEGACY** |
+| `model.joblib` | ~6 KB | Production model (unified sklearn Pipeline) | ✅ **CURRENT** |
 
-**Note**: Current production model is trained to `artifacts/model.joblib`.
+**Note**: Production model is a unified sklearn Pipeline saved as `models/model.joblib`.
 
 ---
 
 ## Production Model Location
 
-**Current**: `artifacts/model.joblib` (trained via `main.py --mode train`)
+**Current**: `models/model.joblib` (trained via `main.py --mode train`)
 
 This file contains the **complete pipeline**:
 - FeatureEngineer (vehicle_age, brand extraction)

@@ -30,7 +30,7 @@ def make_isolated_config(tmp_path: Path) -> Config:
         metrics_path=str(artifacts_dir / "metrics.json"),
         confusion_matrix_path=str(artifacts_dir / "confusion_matrix.png"),
         roc_curve_path=str(artifacts_dir / "roc_curve.png"),
-        model_export_path=str(models_dir / "model_v1.0.0.pkl"),
+        model_export_path=str(models_dir / "model.joblib"),
     )
     cfg.mlflow = None
 

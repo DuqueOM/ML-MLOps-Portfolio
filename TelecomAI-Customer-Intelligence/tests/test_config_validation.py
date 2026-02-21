@@ -3,6 +3,7 @@
 import pytest
 import yaml
 from pydantic import ValidationError
+
 from src.telecom.config import Config, ModelConfig, PathsConfig, SplitConfig
 
 # ===== Tests for SplitConfig =====
@@ -308,8 +309,8 @@ def test_paths_config_defaults():
 
     assert config.data_csv == "data.csv"
     assert config.artifacts_dir == "artifacts"
-    assert config.model_path == "artifacts/model.joblib"
-    assert config.preprocessor_path == "artifacts/preprocessor.joblib"
+    assert config.model_path == "models/model.joblib"
+    assert config.preprocessor_path == "models/preprocessor.joblib"
 
 
 def test_paths_config_custom_values():

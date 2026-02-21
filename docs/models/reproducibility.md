@@ -134,7 +134,7 @@ Loading data from data/raw/vehicles.csv
 Applying filters: price=[1000, 500000], year>=1990
 Records after filtering: ~51,000
 Training RandomForestRegressor...
-Model saved to models/model_v1.0.0.pkl
+Model saved to models/model.joblib
 ```
 
 ### Step 4: Evaluate Model

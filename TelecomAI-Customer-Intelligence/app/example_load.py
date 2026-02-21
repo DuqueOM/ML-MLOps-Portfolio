@@ -12,8 +12,7 @@ import joblib
 import pandas as pd
 
 CANDIDATE_PATHS = [
-    Path("models/model_v1.0.0.pkl"),
-    Path("artifacts/model.joblib"),
+    Path("models/model.joblib"),
 ]
 
 

@@ -104,7 +104,7 @@ make train-hyperopt
 ```
 
 **Artifacts Generated:**
-- `models/best_model.pkl`: Serialized model pipeline.
+- `models/model.joblib`: Serialized model pipeline.
 - `models/metrics.json`: Evaluation metrics.
 - `models/model_card.md`: Automated model card.
 

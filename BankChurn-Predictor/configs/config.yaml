@@ -175,8 +175,8 @@ paths:
   
   models:
     directory: "models/"
-    filename_template: "best_model_{timestamp}.pkl"
-    preprocessor_template: "preprocessor_{timestamp}.pkl"
+    filename: "models/model.joblib"
+    preprocessor: "models/preprocessor.joblib"
   
   artifacts:
     directory: "artifacts/"

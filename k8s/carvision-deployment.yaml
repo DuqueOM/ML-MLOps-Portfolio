@@ -35,7 +35,7 @@ spec:
           protocol: TCP
         env:
         - name: MODEL_PATH
-          value: "artifacts/model.joblib"
+          value: "/app/models/model.joblib"
         - name: PYTHONUNBUFFERED
           value: "1"
         envFrom:
@@ -60,6 +60,33 @@ spec:
             port: 8000
           initialDelaySeconds: 10
           periodSeconds: 5
+        volumeMounts:
+        - name: models
+          mountPath: /app/models
+      initContainers:
+      - name: download-model
+        image: python:3.11-alpine
+        command:
+        - sh
+        - -c
+        - |
+          pip install --quiet google-cloud-storage==2.18.2 && \
+          python /scripts/download-model.py
+        envFrom:
+        - configMapRef:
+            name: carvision-model-config
+        volumeMounts:
+        - name: models
+          mountPath: /models
+        - name: download-script
+          mountPath: /scripts
+      volumes:
+      - name: models
+        emptyDir: {}
+      - name: download-script
+        configMap:
+          name: download-script
+          defaultMode: 0755
 ---
 apiVersion: v1
 kind: Service

@@ -41,7 +41,7 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app \
     PATH="/opt/venv/bin:$PATH" \
     # CarVision specific env vars
-    MODEL_PATH=artifacts/model.joblib \
+    MODEL_PATH=models/model.joblib \
     ARTIFACTS_DIR=artifacts
 
 # Install runtime dependencies (curl for healthcheck)

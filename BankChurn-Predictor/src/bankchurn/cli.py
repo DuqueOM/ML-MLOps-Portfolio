@@ -206,7 +206,7 @@ def create_parser() -> argparse.ArgumentParser:
     train_parser = subparsers.add_parser("train", help="Train a new model")
     train_parser.add_argument("--config", required=True, help="Path to config YAML")
     train_parser.add_argument("--input", required=True, help="Path to input CSV")
-    train_parser.add_argument("--model", default="models/best_model.pkl", help="Path to save model")
+    train_parser.add_argument("--model", default="models/model.joblib", help="Path to save model")
     train_parser.add_argument("--preprocessor", default=None, help="Path to save preprocessor (optional)")
     train_parser.add_argument("--metrics-output", help="Path to save metrics JSON")
     train_parser.add_argument("--no-cv", action="store_true", help="Disable cross-validation")
