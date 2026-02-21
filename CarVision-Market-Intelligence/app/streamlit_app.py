@@ -48,7 +48,7 @@ CONFIG_PATH, APP_VERSION = ROOT_DIR / "configs" / "config.yaml", "v2.0.0 Pro"
 CONFIG = yaml.safe_load(open(CONFIG_PATH)) if CONFIG_PATH.exists() else {}
 PATHS = CONFIG.get("paths", {})
 ARTIFACTS_DIR = ROOT_DIR / PATHS.get("artifacts_dir", "artifacts")
-MODEL_PATH = ROOT_DIR / PATHS.get("model_path", "artifacts/model.joblib")
+MODEL_PATH = ROOT_DIR / PATHS.get("model_path", "models/model.joblib")
 METRICS_PATH = ROOT_DIR / PATHS.get("metrics_path", "artifacts/metrics.json")
 PROCESSED_PARQUET = ARTIFACTS_DIR / "processed.parquet"
 REQUIRED_COLS = ["price", "model_year", "model", "odometer"]
@@ -612,9 +612,9 @@ elif selected_tab == "🔮 Price Predictor":
             except Exception as e:
                 st.error(f"Prediction error: {e}")
     else:
-        st.error("❌ Model not found. Place artifacts/model.joblib or run: python main.py --mode train")
+        st.error("❌ Model not found. Place models/model.joblib or run: python main.py --mode train")
 
 # POST-INSTALACIÓN:
-# 1) Asegurar artifacts/model.joblib
+# 1) Asegurar models/model.joblib
 # 2) Colocar data/raw/vehicles_us.csv
 # Note: shap and pandera are included in requirements.txt

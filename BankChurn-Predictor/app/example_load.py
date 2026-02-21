@@ -34,7 +34,7 @@ def load_config() -> Dict:
 
 
 def _load_combined(models_dir: Path) -> Tuple[Any, Any] | None:
-    pack = models_dir / "model_v1.0.0.pkl"
+    pack = models_dir / "model.joblib"
     if pack.exists():
         obj = joblib.load(pack)
         if isinstance(obj, dict) and "model" in obj and "preprocessor" in obj:
@@ -43,8 +43,8 @@ def _load_combined(models_dir: Path) -> Tuple[Any, Any] | None:
 
 
 def _load_separate(models_dir: Path) -> Tuple[Any, Any] | None:
-    model_path = models_dir / "best_model.pkl"
-    prep_path = models_dir / "preprocessor.pkl"
+    model_path = models_dir / "model.joblib"
+    prep_path = models_dir / "preprocessor.joblib"
 
     # Check if model_path exists and contains a pipeline
     if model_path.exists():
@@ -60,7 +60,7 @@ def _load_separate(models_dir: Path) -> Tuple[Any, Any] | None:
                 )
             else:
                 # Fallback or assumption that model_obj is just classifier if preprocessor is separate?
-                # But new design says best_model.pkl is the full pipeline.
+                # But new design says model.joblib is the full pipeline.
                 return model_obj.named_steps.get("preprocessor"), model_obj.named_steps.get("classifier", model_obj)
 
         # Legacy fallback: if separate files exist

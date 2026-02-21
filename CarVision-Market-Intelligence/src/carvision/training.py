@@ -137,11 +137,6 @@ def train_model(cfg: Dict[str, Any]) -> Dict[str, Any]:
     size_mb = model_path.stat().st_size / (1024 * 1024)
     logger.info(f"Model saved to {model_path} ({size_mb:.2f} MB)")
 
-    legacy_path = Path("models/model_v1.0.0.pkl")
-    if legacy_path.resolve() != model_path.resolve():
-        legacy_path.parent.mkdir(exist_ok=True)
-        joblib.dump(pipe, legacy_path, compress=3)
-
     feature_columns = sorted(num_cols + cat_cols)
     artifacts_dir = Path(paths["artifacts_dir"])
     with open(artifacts_dir / "feature_columns.json", "w") as f:

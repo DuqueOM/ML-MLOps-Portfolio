@@ -20,7 +20,7 @@ class PathsConfig(BaseModel):
 
     data_path: str = Field(..., description="Path to raw data CSV file")
     artifacts_dir: str = Field(default="artifacts", description="Directory for artifacts")
-    model_path: str = Field(default="artifacts/model.joblib", description="Model file path")
+    model_path: str = Field(default="models/model.joblib", description="Model file path")
     metrics_path: str = Field(default="artifacts/metrics.json", description="Metrics JSON path")
     baseline_metrics_path: str = Field(default="artifacts/metrics_baseline.json", description="Baseline metrics path")
     split_indices_path: str = Field(default="artifacts/split_indices.json", description="Split indices path")

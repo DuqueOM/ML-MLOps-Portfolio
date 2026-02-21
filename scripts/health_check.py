@@ -30,7 +30,7 @@ def check_bankchurn():
         import joblib
         import pandas as pd
 
-        model_path = ROOT / "BankChurn-Predictor" / "models" / "best_model.pkl"
+        model_path = ROOT / "BankChurn-Predictor" / "models" / "model.joblib"
         if not model_path.exists():
             print("⚠️  Model not found (run training first)")
             return False

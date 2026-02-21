@@ -4,12 +4,12 @@ random_seed: 42
 paths:
   data_csv: data/raw/users_behavior.csv
   artifacts_dir: artifacts
-  model_path: artifacts/model.joblib
-  preprocessor_path: artifacts/preprocessor.joblib
+  model_path: models/model.joblib
+  preprocessor_path: models/preprocessor.joblib
   metrics_path: artifacts/metrics.json
   confusion_matrix_path: artifacts/confusion_matrix.png
   roc_curve_path: artifacts/roc_curve.png
-  model_export_path: models/model_v1.0.0.pkl
+  model_export_path: models/model.joblib
 
 # Datos
 features:

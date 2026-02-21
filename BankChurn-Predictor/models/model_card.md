@@ -253,7 +253,7 @@ Mean: AUC=0.856 (±0.006), F1=0.607 (±0.011)
 ```python
 from src.bankchurn import ModelExplainer, ChurnPredictor
 
-predictor = ChurnPredictor.from_files("models/best_model.pkl", None)
+predictor = ChurnPredictor.from_files("models/model.joblib", None)
 explainer = ModelExplainer(predictor.model, X_train)
 
 customer_profile = {

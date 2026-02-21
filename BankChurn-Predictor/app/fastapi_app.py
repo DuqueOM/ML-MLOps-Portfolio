@@ -10,6 +10,7 @@ Features:
 
 import contextlib
 import logging
+import os
 import sys
 import time
 from pathlib import Path
@@ -71,8 +72,8 @@ def load_model_logic() -> bool:
     """Internal logic to load model."""
     global predictor, model_explainer, model_metadata
     try:
-        model_path = BASE_DIR / "models" / "best_model.pkl"
-        preprocessor_path = BASE_DIR / "models" / "preprocessor.pkl"
+        model_path = Path(os.environ.get("MODEL_PATH", str(BASE_DIR / "models" / "model.joblib")))
+        preprocessor_path = Path(os.environ.get("PREPROCESSOR_PATH", str(BASE_DIR / "models" / "preprocessor.joblib")))
 
         if not model_path.exists():
             logger.error(f"Model not found: {model_path}")

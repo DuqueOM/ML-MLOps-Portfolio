@@ -20,14 +20,14 @@ class PathsConfig(BaseModel):
 
     data_csv: str = Field(..., description="Path to raw data CSV file")
     artifacts_dir: str = Field(default="artifacts", description="Directory for artifacts")
-    model_path: str = Field(default="artifacts/model.joblib", description="Model file path")
-    preprocessor_path: str = Field(default="artifacts/preprocessor.joblib", description="Preprocessor file path")
+    model_path: str = Field(default="models/model.joblib", description="Model file path")
+    preprocessor_path: str = Field(default="models/preprocessor.joblib", description="Preprocessor file path")
     metrics_path: str = Field(default="artifacts/metrics.json", description="Metrics JSON path")
     confusion_matrix_path: str = Field(
         default="artifacts/confusion_matrix.png", description="Confusion matrix plot path"
     )
     roc_curve_path: str = Field(default="artifacts/roc_curve.png", description="ROC curve plot path")
-    model_export_path: str = Field(default="models/model_v1.0.0.pkl", description="Model export path for production")
+    model_export_path: str = Field(default="models/model.joblib", description="Model export path for production")
 
 
 class SplitConfig(BaseModel):

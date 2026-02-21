@@ -102,7 +102,7 @@ def main() -> None:
                     pass
 
         # Log combined model pack as artifact if present
-        combined = Path("models/model_v1.0.0.pkl")
+        combined = Path("models/model.joblib")
         model_registered = False
         if combined.exists():
             try:

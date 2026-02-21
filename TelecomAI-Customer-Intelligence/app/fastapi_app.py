@@ -40,7 +40,7 @@ except ImportError:
     PROMETHEUS_AVAILABLE = False
 
 APP_TITLE = "TelecomAI Inference API"
-MODEL_PATH = os.getenv("MODEL_PATH", "artifacts/model.joblib")
+MODEL_PATH = os.getenv("MODEL_PATH", "models/model.joblib")
 start_time = time.time()
 
 ml_models = {}

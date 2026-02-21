@@ -39,7 +39,7 @@ spec:
           protocol: TCP
         env:
         - name: MODEL_PATH
-          value: "/app/models/model.pkl"
+          value: "/app/models/model.joblib"
         - name: PYTHONUNBUFFERED
           value: "1"
         - name: LOG_LEVEL
@@ -74,11 +74,36 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 3
         volumeMounts:
+        - name: models
+          mountPath: /app/models
         - name: logs
           mountPath: /app/logs
+      initContainers:
+      - name: download-model
+        image: python:3.11-alpine
+        command:
+        - sh
+        - -c
+        - |
+          pip install --quiet google-cloud-storage==2.18.2 && \
+          python /scripts/download-model.py
+        envFrom:
+        - configMapRef:
+            name: bankchurn-model-config
+        volumeMounts:
+        - name: models
+          mountPath: /models
+        - name: download-script
+          mountPath: /scripts
       volumes:
+      - name: models
+        emptyDir: {}
       - name: logs
         emptyDir: {}
+      - name: download-script
+        configMap:
+          name: download-script
+          defaultMode: 0755
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

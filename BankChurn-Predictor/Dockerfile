@@ -44,6 +44,7 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONPATH=/app
 ENV PATH="/opt/venv/bin:$PATH"
+ENV MODEL_PATH=models/model.joblib
 
 # Instalar solo runtime dependencies mínimas
 RUN apt-get update && apt-get install -y --no-install-recommends \
