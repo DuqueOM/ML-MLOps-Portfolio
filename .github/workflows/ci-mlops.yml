@@ -401,21 +401,54 @@ jobs:
           echo "Recent logs:"
           docker compose -f docker-compose.demo.yml logs --tail 30
 
-      - name: Diagnostic - Check sklearn versions and model files
+      - name: Diagnostic - Check all containers and model files
+        if: always()
         run: |
+          echo "=== Container status ==="
+          docker compose -f docker-compose.demo.yml ps -a
+          echo ""
           echo "=== sklearn versions inside containers ==="
           for svc in bankchurn carvision telecom; do
             echo "--- $svc ---"
-            docker compose -f docker-compose.demo.yml exec -T $svc python -c "import sklearn; print(f'sklearn={sklearn.__version__}')" 2>&1 || echo "FAILED to check $svc"
+            docker compose -f docker-compose.demo.yml exec -T $svc python -c "import sklearn; print(f'sklearn={sklearn.__version__}')" 2>&1 || echo "FAILED"
           done
           echo ""
-          echo "=== Model file info ==="
-          ls -la BankChurn-Predictor/models/model.joblib
-          file BankChurn-Predictor/models/model.joblib
-          head -c 100 BankChurn-Predictor/models/model.joblib | xxd | head -5
+          echo "=== Model files on HOST (all 3 projects) ==="
+          for proj in BankChurn-Predictor CarVision-Market-Intelligence TelecomAI-Customer-Intelligence; do
+            echo "--- $proj ---"
+            ls -la $proj/models/model.joblib 2>&1
+            file $proj/models/model.joblib 2>&1
+          done
+          echo ""
+          echo "=== Model files INSIDE containers ==="
+          for svc in bankchurn carvision telecom; do
+            echo "--- $svc ---"
+            docker compose -f docker-compose.demo.yml exec -T $svc ls -la models/model.joblib 2>&1 || echo "NOT FOUND"
+            docker compose -f docker-compose.demo.yml exec -T $svc file models/model.joblib 2>&1 || echo "CANNOT CHECK"
+          done
+          echo ""
+          echo "=== Test model loading inside CarVision container ==="
+          docker compose -f docker-compose.demo.yml exec -T carvision python -c "
+          import os, sys
+          print(f'CWD: {os.getcwd()}')
+          print(f'PYTHONPATH: {os.environ.get(\"PYTHONPATH\", \"not set\")}')
+          print(f'src/__init__.py exists: {os.path.exists(\"src/__init__.py\")}')
+          print(f'src/carvision/__init__.py exists: {os.path.exists(\"src/carvision/__init__.py\")}')
+          print(f'MODEL_PATH env: {os.environ.get(\"MODEL_PATH\", \"not set\")}')
+          print(f'models/model.joblib exists: {os.path.exists(\"models/model.joblib\")}')
+          try:
+              import joblib
+              m = joblib.load('models/model.joblib')
+              print(f'MODEL LOADED OK: {type(m)}')
+          except Exception as e:
+              print(f'MODEL LOAD FAILED: {e}')
+          " 2>&1 || echo "EXEC FAILED"
+          echo ""
+          echo "=== CarVision container logs ==="
+          docker compose -f docker-compose.demo.yml logs carvision --tail 50
           echo ""
           echo "=== Git LFS status ==="
-          git lfs ls-files | grep model.joblib
+          git lfs ls-files 2>&1 | grep model.joblib
 
       - name: Run Integration Tests
         run: |
