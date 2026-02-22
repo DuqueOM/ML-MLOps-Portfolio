@@ -401,6 +401,22 @@ jobs:
           echo "Recent logs:"
           docker compose -f docker-compose.demo.yml logs --tail 30
 
+      - name: Diagnostic - Check sklearn versions and model files
+        run: |
+          echo "=== sklearn versions inside containers ==="
+          for svc in bankchurn carvision telecom; do
+            echo "--- $svc ---"
+            docker compose -f docker-compose.demo.yml exec -T $svc python -c "import sklearn; print(f'sklearn={sklearn.__version__}')" 2>&1 || echo "FAILED to check $svc"
+          done
+          echo ""
+          echo "=== Model file info ==="
+          ls -la BankChurn-Predictor/models/model.joblib
+          file BankChurn-Predictor/models/model.joblib
+          head -c 100 BankChurn-Predictor/models/model.joblib | xxd | head -5
+          echo ""
+          echo "=== Git LFS status ==="
+          git lfs ls-files | grep model.joblib
+
       - name: Run Integration Tests
         run: |
           chmod +x scripts/run_demo_tests.sh
