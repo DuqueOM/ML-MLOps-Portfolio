@@ -7,9 +7,8 @@
 ---
 
 ## 🎬 Portfolio Demo
+![Portfolio Demo](media/gifs/01-demo-prediccion.gif)
 **End-to-end demonstration** of the ML/MLOps stack deployed on GCP: GKE cluster with 6 services, real ML predictions, Grafana monitoring, and CI/CD pipeline.
-
-> 🎬 [Watch the full demo on YouTube](https://youtu.be/qmw9VlgUcn8)
 
 ---
 

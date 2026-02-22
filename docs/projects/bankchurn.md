@@ -2,7 +2,7 @@
 
 Customer churn prediction system for banking institutions.
 
-> 🎬 [Watch the BankChurn demo on YouTube](https://youtu.be/qmw9VlgUcn8)
+![BankChurn API Demo](../media/gifs/01-demo-prediccion.gif)
 
 ## Overview
 
