@@ -46,7 +46,7 @@ graph TB
 
 This portfolio is **actively deployed on Google Cloud Platform**. The infrastructure below was created with Terraform and is currently running.
 
-> 🎬 [Watch GCP deployment demo on YouTube](https://youtu.be/qmw9VlgUcn8)
+![GKE Workloads](../media/screenshots/gcp-console/05-gke-workloads-running.png)
 
 ### GCP Resources (Terraform-managed)
 
@@ -129,6 +129,8 @@ terraform state list
 terraform output
 ```
 
+![Terraform Plan](../media/screenshots/terraform/53-terraform-plan-no-changes.png)
+
 ### CI/CD: GitHub Actions → GKE
 
 The deployment pipeline (`.github/workflows/deploy-gcp.yml`) automates:
@@ -138,6 +140,8 @@ The deployment pipeline (`.github/workflows/deploy-gcp.yml`) automates:
 3. **Push to Artifact Registry** — versioned with git SHA
 4. **Deploy to GKE** — `kubectl apply` with rolling updates
 5. **Smoke tests** — verify health endpoints
+
+![CI/CD Pipeline](../media/screenshots/cicd/46-workflow-completado.png)
 
 ---
 
