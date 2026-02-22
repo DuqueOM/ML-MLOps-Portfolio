@@ -53,7 +53,10 @@ async def lifespan(app: FastAPI):
         # Warn but don't crash, might be a build phase
         print(f"WARNING: Model not found at {MODEL_PATH}")
     else:
-        ml_models["pipeline"] = joblib.load(MODEL_PATH)
+        try:
+            ml_models["pipeline"] = joblib.load(MODEL_PATH)
+        except Exception as e:
+            print(f"ERROR loading model from {MODEL_PATH}: {e}")
     yield
     ml_models.clear()
 

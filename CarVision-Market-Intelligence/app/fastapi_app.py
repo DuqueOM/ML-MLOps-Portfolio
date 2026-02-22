@@ -53,7 +53,11 @@ class ModelWrapper:
     def load(self):
         if not Path(MODEL_PATH).exists():
             return  # Handle gracefully or fail
-        self.model = joblib.load(MODEL_PATH)
+        try:
+            self.model = joblib.load(MODEL_PATH)
+        except Exception as e:
+            print(f"ERROR loading model from {MODEL_PATH}: {e}")
+            return
         feat_path = ARTIFACTS_DIR / "feature_columns.json"
         if feat_path.exists():
             self.feature_columns = json.loads(feat_path.read_text())
