@@ -63,11 +63,16 @@ ipython_config.py
 **/artifacts/
 **/mlruns/
 **/mlartifacts/
+
+# Ignore temporary/experimental models but keep production models
 **/*.pkl
-**/*.joblib
 **/*.h5
 **/*.pth
 **/*.onnx
+
+# Exception: Allow production models in models/ directories
+!**/models/*.joblib
+!**/models/**/*.joblib
 
 # Environment variables
 .env

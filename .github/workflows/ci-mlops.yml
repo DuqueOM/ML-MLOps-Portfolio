@@ -335,16 +335,6 @@ jobs:
       - name: Verify Docker Compose
         run: docker compose version
       
-      - name: Set up Python for model training
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-      
-      - name: Generate demo models
-        run: |
-          pip install scikit-learn pandas joblib numpy
-          chmod +x scripts/setup_demo_models.sh
-          bash scripts/setup_demo_models.sh
       - name: Build demo images for docker-compose (with cache)
         uses: docker/build-push-action@v5
         with:
