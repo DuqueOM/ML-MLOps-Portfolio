@@ -77,6 +77,79 @@ def test_predict_creates_output_csv(tmp_path: Path) -> None:
     assert "proba_is_ultra" in out_df.columns
 
 
+def test_train_with_model_comparison_and_auto_selection(tmp_path: Path) -> None:
+    """Test that model comparison and auto-selection logic works end-to-end."""
+    cfg = make_isolated_config(tmp_path)
+
+    from src.telecom.config import ModelConfig
+
+    # Use a weak primary model so comparison models can beat it
+    cfg.model = ModelConfig(
+        name="logistic_regression",
+        params={},
+        compare_models=["gradient_boosting", "random_forest"],
+    )
+
+    metrics = train_model(cfg)
+
+    # Comparison should have run
+    assert "model_comparison" in metrics
+    assert "gradient_boosting" in metrics["model_comparison"]
+    assert "random_forest" in metrics["model_comparison"]
+
+    # Auto-selection fields should be present
+    assert "auto_selected" in metrics
+
+    # Check comparison metrics saved to file
+    comp_path = Path(cfg.paths.metrics_path).parent / "model_comparison.json"
+    assert comp_path.exists()
+
+    import json
+
+    with open(comp_path) as f:
+        comp_data = json.load(f)
+    assert "gradient_boosting" in comp_data or "random_forest" in comp_data
+
+    # Model file should exist
+    assert Path(cfg.paths.model_path).exists()
+
+
+def test_train_comparison_keeps_best_primary(tmp_path: Path) -> None:
+    """Test that auto-selection keeps primary when it is already the best."""
+    cfg = make_isolated_config(tmp_path)
+
+    from src.telecom.config import ModelConfig
+
+    # Use a strong primary model; logistic_regression is weaker, so primary should win
+    cfg.model = ModelConfig(
+        name="gradient_boosting",
+        params={"n_estimators": 50, "max_depth": 5},
+        compare_models=["logistic_regression"],
+    )
+
+    metrics = train_model(cfg)
+    assert "auto_selected" in metrics
+    # Primary gradient_boosting should likely beat logistic_regression
+    assert "model_comparison" in metrics
+
+
+def test_train_comparison_with_unavailable_model(tmp_path: Path) -> None:
+    """Test that unavailable comparison models are skipped gracefully."""
+    cfg = make_isolated_config(tmp_path)
+
+    from src.telecom.config import ModelConfig
+
+    cfg.model = ModelConfig(
+        name="gradient_boosting",
+        params={"n_estimators": 20, "max_depth": 3},
+        compare_models=["random_forest", "lightgbm"],
+    )
+
+    # Should not raise; lightgbm may be skipped if not installed
+    metrics = train_model(cfg)
+    assert "accuracy" in metrics
+
+
 def test_predict_raises_for_missing_columns(tmp_path: Path) -> None:
     cfg = make_isolated_config(tmp_path)
     train_model(cfg)

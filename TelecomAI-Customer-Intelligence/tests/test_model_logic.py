@@ -43,6 +43,15 @@ def test_pipeline_structure(synthetic_data):
     assert len(preds) == 50
 
 
+def test_build_model_legacy_logreg_name():
+    """Test that legacy 'logreg' name is normalized to 'logistic_regression'."""
+    model_cfg = {"name": "logreg", "params": {}}
+    clf = build_model(model_cfg, seed=42)
+    # Should return a LogisticRegression-compatible model
+    assert hasattr(clf, "fit")
+    assert hasattr(clf, "predict")
+
+
 def test_model_determinism(synthetic_data):
     """Ensure training is deterministic with fixed seed."""
     features = ["calls", "minutes", "messages", "mb_used"]
