@@ -423,11 +423,12 @@ def test_compare_models_with_unavailable_skips(config, full_sample_data):
 
     X_train, X_test, y_train, y_test = train_test_split(X_transformed, y, test_size=0.2, random_state=42, stratify=y)
 
-    results = trainer.compare_models(X_train, y_train, X_test, y_test)
+    results, fitted_models = trainer.compare_models(X_train, y_train, X_test, y_test)
 
     # logistic_regression should always succeed
     assert "logistic_regression" in results
     assert "f1" in results["logistic_regression"]
+    assert "logistic_regression" in fitted_models
 
 
 def test_compare_models_empty_list(config, full_sample_data):
@@ -444,5 +445,6 @@ def test_compare_models_empty_list(config, full_sample_data):
 
     X_train, X_test, y_train, y_test = train_test_split(X_transformed, y, test_size=0.2, random_state=42, stratify=y)
 
-    results = trainer.compare_models(X_train, y_train, X_test, y_test)
+    results, fitted_models = trainer.compare_models(X_train, y_train, X_test, y_test)
     assert results == {}
+    assert fitted_models == {}
