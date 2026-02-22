@@ -57,6 +57,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0  # Para gitleaks
+          lfs: true  # Download Git LFS files
       
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -249,6 +250,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          lfs: true
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -328,6 +331,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          lfs: true
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
