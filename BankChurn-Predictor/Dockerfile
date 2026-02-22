@@ -34,10 +34,7 @@ RUN python -m venv /opt/venv && \
     else \
         sed -e '/--hash=/d' -e 's/ \\$//' -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' requirements.txt > requirements_clean.txt; \
     fi && \
-    pip install --no-cache-dir -r requirements_clean.txt && \
-    echo "=== Verifying scikit-learn version ===" && \
-    pip install --no-cache-dir --upgrade "scikit-learn>=1.7.0" && \
-    python -c "import sklearn; print(f'sklearn version: {sklearn.__version__}')"
+    pip install --no-cache-dir -r requirements_clean.txt
 
 # Stage 2: Runtime - Imagen final ligera
 FROM python:3.11-slim-bookworm AS runtime
