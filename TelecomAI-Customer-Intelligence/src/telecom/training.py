@@ -103,6 +103,7 @@ def train_model(cfg: Any) -> Dict[str, float]:
     # Model comparison if configured
     compare_list = getattr(cfg.model, "compare_models", []) or []
     comparison_results: Dict[str, Any] = {}
+    fitted_pipelines: Dict[str, Pipeline] = {}
     if compare_list:
         available = get_available_models()
         for cmp_name in compare_list:
@@ -123,6 +124,7 @@ def train_model(cfg: Any) -> Dict[str, float]:
                 except Exception:
                     pass
                 comparison_results[cmp_name] = cmp_metrics
+                fitted_pipelines[cmp_name] = cmp_pipe
                 logger.info(f"  {cmp_name}: acc={cmp_acc:.4f}, f1={cmp_f1:.4f}")
             except Exception as e:
                 logger.error(f"  {cmp_name} failed: {e}")
@@ -130,6 +132,33 @@ def train_model(cfg: Any) -> Dict[str, float]:
 
     if comparison_results:
         metrics["model_comparison"] = comparison_results
+
+    # Auto-select best model based on F1 score
+    if comparison_results:
+        primary_f1 = f1
+        best_name = model_name
+        best_f1 = primary_f1
+        for cmp_name, cmp_m in comparison_results.items():
+            if "error" not in cmp_m and cmp_m.get("f1", 0) > best_f1:
+                best_f1 = cmp_m["f1"]
+                best_name = cmp_name
+
+        if best_name != model_name and best_name in fitted_pipelines:
+            logger.info(
+                f"Auto-selection: {best_name} (F1={best_f1:.4f}) beats "
+                f"{model_name} (F1={primary_f1:.4f}). Switching model."
+            )
+            pipeline = fitted_pipelines[best_name]
+            metrics["model"] = best_name
+            metrics["f1"] = best_f1
+            metrics["accuracy"] = comparison_results[best_name]["accuracy"]
+            if "roc_auc" in comparison_results[best_name]:
+                metrics["roc_auc"] = comparison_results[best_name]["roc_auc"]
+            metrics["auto_selected"] = True
+            metrics["original_model"] = model_name
+        else:
+            logger.info(f"Auto-selection: keeping {model_name} (F1={primary_f1:.4f}) as best model.")
+            metrics["auto_selected"] = False
 
     # Save pipeline
     model_path = Path(cfg.paths.model_path)

@@ -284,11 +284,11 @@ class ChurnTrainer:
         y_train: pd.Series,
         X_test: np.ndarray,
         y_test: pd.Series,
-    ) -> dict[str, dict[str, float]]:
+    ) -> tuple[dict[str, dict[str, float]], dict[str, ResampleClassifier]]:
         """Train and compare multiple model types.
 
         Uses models listed in config.model.advanced.compare_models.
-        Returns a dict mapping model_name → metrics.
+        Returns a dict mapping model_name → metrics and a dict of fitted models.
 
         Parameters
         ----------
@@ -299,15 +299,18 @@ class ChurnTrainer:
         -------
         results : dict
             {model_name: {"f1": ..., "auc": ..., "accuracy": ...}}
+        fitted_models : dict
+            {model_name: fitted ResampleClassifier}
         """
         from sklearn.metrics import accuracy_score
 
         model_names = self.config.model.advanced.compare_models
         if not model_names:
-            return {}
+            return {}, {}
 
         available = get_available_models()
         results: dict[str, dict[str, float]] = {}
+        fitted_models: dict[str, ResampleClassifier] = {}
 
         for name in model_names:
             if not available.get(name, False):
@@ -335,13 +338,14 @@ class ChurnTrainer:
                     metrics["auc"] = test_auc
 
                 results[name] = metrics
+                fitted_models[name] = model
                 logger.info(f"  {name}: F1={test_f1:.4f}, AUC={test_auc or 'N/A'}")
 
             except Exception as e:
                 logger.error(f"  {name} failed: {e}")
                 results[name] = {"error": str(e)}
 
-        return results
+        return results, fitted_models
 
     def train(
         self,
@@ -445,13 +449,37 @@ class ChurnTrainer:
         logger.info(f"Training complete - Train F1: {self.train_score_:.4f}, Test F1: {self.test_score_:.4f}")
 
         # Run model comparison if configured
-        comparison_results = self.compare_models(X_train, y_train, X_test, y_test)
+        comparison_results, fitted_models = self.compare_models(X_train, y_train, X_test, y_test)
         if comparison_results:
             metrics["model_comparison"] = comparison_results
             logger.info("Model comparison results:")
             for name, m in comparison_results.items():
                 if "error" not in m:
                     logger.info(f"  {name}: F1={m.get('f1', 'N/A'):.4f}, AUC={m.get('auc', 'N/A')}")
+
+            # Auto-select best model based on F1 score
+            primary_f1 = self.test_score_
+            best_name = self.config.model.type
+            best_f1 = primary_f1
+            for name, m in comparison_results.items():
+                if "error" not in m and m.get("f1", 0) > best_f1:
+                    best_f1 = m["f1"]
+                    best_name = name
+
+            if best_name != self.config.model.type and best_name in fitted_models:
+                logger.info(
+                    f"Auto-selection: {best_name} (F1={best_f1:.4f}) beats "
+                    f"{self.config.model.type} (F1={primary_f1:.4f}). Switching model."
+                )
+                self.model_ = fitted_models[best_name]
+                self.test_score_ = best_f1
+                metrics["test_f1"] = best_f1
+                metrics["model_type"] = best_name
+                metrics["auto_selected"] = True
+                metrics["original_model_type"] = self.config.model.type
+            else:
+                logger.info(f"Auto-selection: keeping {self.config.model.type} (F1={primary_f1:.4f}) as best model.")
+                metrics["auto_selected"] = False
 
         if self.config.mlflow.enabled:
             try:

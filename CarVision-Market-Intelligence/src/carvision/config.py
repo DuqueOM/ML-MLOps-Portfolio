@@ -50,9 +50,20 @@ class TrainingConfig(BaseModel):
     test_size: float = Field(default=0.2, ge=0.0, le=1.0, description="Test set proportion")
     val_size: float = Field(default=0.2, ge=0.0, le=1.0, description="Validation set proportion")
     shuffle: bool = Field(default=True, description="Shuffle data before split")
-    model: str = Field(default="random_forest", pattern="^(random_forest|linear|ridge)$")
+    model: str = Field(
+        default="random_forest",
+        pattern="^(random_forest|xgboost|lightgbm|neural_network|mlp|linear|ridge)$",
+        description="Primary model type",
+    )
     random_forest_params: RandomForestParams = Field(default_factory=RandomForestParams)
+    xgboost_params: Dict[str, Any] = Field(default_factory=dict, description="XGBoost hyperparameters")
+    lightgbm_params: Dict[str, Any] = Field(default_factory=dict, description="LightGBM hyperparameters")
+    neural_network_params: Dict[str, Any] = Field(default_factory=dict, description="Neural network hyperparameters")
     baseline: str = Field(default="dummy_median", description="Baseline model type")
+    compare_models: List[str] = Field(
+        default_factory=list,
+        description="List of model names to compare alongside the primary model",
+    )
 
     @field_validator("test_size", "val_size")
     @classmethod

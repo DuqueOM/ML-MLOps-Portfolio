@@ -370,7 +370,8 @@ def build_model(
     elif model_name == "neural_network":
         if not TORCH_AVAILABLE:
             raise ImportError("torch is not installed. Install with: pip install torch")
-        return TorchTabularClassifier(random_state=seed, **params)
+        nn_params = {k: v for k, v in params.items() if k != "random_state"}
+        return TorchTabularClassifier(random_state=seed, **nn_params)
 
     else:
         raise ValueError(f"Unknown model: '{model_name}'. Available: {list(AVAILABLE_MODELS.keys())}")
