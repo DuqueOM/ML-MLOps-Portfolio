@@ -340,7 +340,7 @@ jobs:
       - name: Verify Docker Compose
         run: docker compose version
       
-      - name: Build demo images for docker-compose (with cache)
+      - name: Build demo images for docker-compose (no cache)
         uses: docker/build-push-action@v5
         with:
           context: BankChurn-Predictor
@@ -348,10 +348,9 @@ jobs:
           push: false
           load: true
           tags: ml-portfolio-bankchurn:latest
-          cache-from: type=gha,scope=BankChurn-Predictor-v2
-          cache-to: type=gha,mode=max,scope=BankChurn-Predictor-v2
+          no-cache: true
       
-      - name: Build CarVision image (with cache)
+      - name: Build CarVision image (no cache)
         uses: docker/build-push-action@v5
         with:
           context: CarVision-Market-Intelligence
@@ -359,10 +358,9 @@ jobs:
           push: false
           load: true
           tags: ml-portfolio-carvision:latest
-          cache-from: type=gha,scope=CarVision-Market-Intelligence-v2
-          cache-to: type=gha,mode=max,scope=CarVision-Market-Intelligence-v2
+          no-cache: true
       
-      - name: Build TelecomAI image (with cache)
+      - name: Build TelecomAI image (no cache)
         uses: docker/build-push-action@v5
         with:
           context: TelecomAI-Customer-Intelligence
@@ -370,8 +368,7 @@ jobs:
           push: false
           load: true
           tags: ml-portfolio-telecom:latest
-          cache-from: type=gha,scope=TelecomAI-Customer-Intelligence-v2
-          cache-to: type=gha,mode=max,scope=TelecomAI-Customer-Intelligence-v2
+          no-cache: true
       
       - name: Spin up Demo Stack
         run: |
