@@ -264,8 +264,8 @@ jobs:
           push: false
           load: true
           tags: ml-portfolio:${{ matrix.project }}-${{ github.sha }}
-          cache-from: type=gha,scope=${{ matrix.project }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.project }}
+          cache-from: type=gha,scope=${{ matrix.project }}-v2
+          cache-to: type=gha,mode=max,scope=${{ matrix.project }}-v2
       
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -348,8 +348,8 @@ jobs:
           push: false
           load: true
           tags: ml-portfolio-bankchurn:latest
-          cache-from: type=gha,scope=BankChurn-Predictor
-          cache-to: type=gha,mode=max,scope=BankChurn-Predictor
+          cache-from: type=gha,scope=BankChurn-Predictor-v2
+          cache-to: type=gha,mode=max,scope=BankChurn-Predictor-v2
       
       - name: Build CarVision image (with cache)
         uses: docker/build-push-action@v5
@@ -359,8 +359,8 @@ jobs:
           push: false
           load: true
           tags: ml-portfolio-carvision:latest
-          cache-from: type=gha,scope=CarVision-Market-Intelligence
-          cache-to: type=gha,mode=max,scope=CarVision-Market-Intelligence
+          cache-from: type=gha,scope=CarVision-Market-Intelligence-v2
+          cache-to: type=gha,mode=max,scope=CarVision-Market-Intelligence-v2
       
       - name: Build TelecomAI image (with cache)
         uses: docker/build-push-action@v5
@@ -370,8 +370,8 @@ jobs:
           push: false
           load: true
           tags: ml-portfolio-telecom:latest
-          cache-from: type=gha,scope=TelecomAI-Customer-Intelligence
-          cache-to: type=gha,mode=max,scope=TelecomAI-Customer-Intelligence
+          cache-from: type=gha,scope=TelecomAI-Customer-Intelligence-v2
+          cache-to: type=gha,mode=max,scope=TelecomAI-Customer-Intelligence-v2
       
       - name: Spin up Demo Stack
         run: |
