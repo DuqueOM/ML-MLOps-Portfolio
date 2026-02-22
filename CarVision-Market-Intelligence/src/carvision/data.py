@@ -31,7 +31,7 @@ def load_data(csv_path: str) -> pd.DataFrame:
     # Note: cylinders is not specified as it may contain strings like '6 cylinders'
     dtypes = {
         "price": "float32",
-        "model_year": "int16",
+        "model_year": "float32",
         "odometer": "float32",
         "condition": "category",
         "fuel": "category",

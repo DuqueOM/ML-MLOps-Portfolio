@@ -104,6 +104,7 @@ def train_model(cfg: Dict[str, Any]) -> Dict[str, Any]:
     # Model comparison if configured
     compare_list = tr.get("compare_models", [])
     comparison_results = {}
+    fitted_pipelines = {}
     if compare_list:
         available = get_available_models()
         for cmp_name in compare_list:
@@ -111,9 +112,7 @@ def train_model(cfg: Dict[str, Any]) -> Dict[str, Any]:
                 logger.warning(f"Model '{cmp_name}' not available, skipping")
                 continue
             try:
-                cmp_params = tr.get(f"{cmp_name}_params", {})
-                if "random_state" not in cmp_params:
-                    cmp_params["random_state"] = cfg["seed"]
+                cmp_params = dict(tr.get(f"{cmp_name}_params", {}))
                 cmp_model = build_model(cmp_name, params=cmp_params, seed=cfg["seed"])
                 cmp_pipe = Pipeline(
                     steps=[("features", FeatureEngineer(current_year=dataset_year)), ("pre", pre), ("model", cmp_model)]
@@ -126,10 +125,37 @@ def train_model(cfg: Dict[str, Any]) -> Dict[str, Any]:
                     "r2": float(r2_score(y_val, cmp_preds)),
                 }
                 comparison_results[cmp_name] = cmp_metrics
+                fitted_pipelines[cmp_name] = cmp_pipe
                 logger.info(f"  {cmp_name}: RMSE={cmp_metrics['rmse']:.2f}, R2={cmp_metrics['r2']:.4f}")
             except Exception as e:
                 logger.error(f"  {cmp_name} failed: {e}")
                 comparison_results[cmp_name] = {"error": str(e)}
+
+    # Auto-select best model based on R2 score
+    if comparison_results:
+        primary_r2 = val_metrics["r2"]
+        best_name = model_name
+        best_r2 = primary_r2
+        for cmp_name, cmp_m in comparison_results.items():
+            if "error" not in cmp_m and cmp_m.get("r2", -999) > best_r2:
+                best_r2 = cmp_m["r2"]
+                best_name = cmp_name
+
+        if best_name != model_name and best_name in fitted_pipelines:
+            logger.info(
+                f"Auto-selection: {best_name} (R2={best_r2:.4f}) beats "
+                f"{model_name} (R2={primary_r2:.4f}). Switching model."
+            )
+            pipe = fitted_pipelines[best_name]
+            val_metrics["model"] = best_name
+            val_metrics["r2"] = best_r2
+            val_metrics["rmse"] = comparison_results[best_name]["rmse"]
+            val_metrics["mae"] = comparison_results[best_name]["mae"]
+            val_metrics["auto_selected"] = True
+            val_metrics["original_model"] = model_name
+        else:
+            logger.info(f"Auto-selection: keeping {model_name} (R2={primary_r2:.4f}) as best model.")
+            val_metrics["auto_selected"] = False
 
     # Persist artifacts
     model_path = Path(paths["model_path"])
