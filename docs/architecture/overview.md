@@ -147,7 +147,7 @@ graph LR
     end
 
     subgraph "Model"
-        RF["RandomForest<br/>Regressor"]
+        XGB["XGBRegressor"]
     end
 
     subgraph "Output"
@@ -160,9 +160,9 @@ graph LR
     API --> CLEAN
     CLEAN --> FEAT
     FEAT --> PREP
-    PREP --> RF
-    RF --> PRICE
-    RF --> ANAL
+    PREP --> XGB
+    XGB --> PRICE
+    XGB --> ANAL
     ANAL --> DASH
 ```
 

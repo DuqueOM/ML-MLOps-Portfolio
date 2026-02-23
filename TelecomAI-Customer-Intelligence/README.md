@@ -83,7 +83,7 @@ TelecomAI Customer Intelligence is a **sophisticated plan recommendation engine*
 | **Precision** | **0.72** | 0.65-0.75 | ✅ Good |
 | **Recall** | **0.56** | 0.50-0.65 | ✅ Acceptable |
 | **API Latency** | **<25ms p95** | <50ms | ✅ Fast |
-| **Test Coverage** | **96%** | 80%+ | ✅ Excellent |
+| **Test Coverage** | **80%** | 80%+ | ✅ Target |
 | **Throughput** | **1,200 RPS** | >1,000 RPS | ✅ Scalable |
 
 ---
@@ -209,7 +209,7 @@ TelecomAI provides **proactive, data-driven plan optimization**:
   - Config-driven training (`configs/config.yaml`)
   - Seed control for deterministic results
 - **Quality Assurance**:
-  - 96% test coverage (unit + integration + e2e)
+  - 80% test coverage target (unit + integration + e2e)
   - Pre-commit hooks (black, flake8, mypy)
   - Security scanning (bandit, safety)
 
@@ -317,7 +317,7 @@ pipeline = Pipeline([
 4. Preprocessing:  StandardScaler → feature scaling
 5. Training:       VotingClassifier (LR + GB + RF) with 5-fold CV
 6. Evaluation:     Accuracy, F1, AUC-ROC, confusion matrix
-7. Registry:       MLflow → artifacts/model.joblib + metrics.json
+7. Registry:       MLflow → models/model.joblib + metrics.json
 8. Deployment:     K8s pulls from GHCR → loads model → serves API
 9. Inference:      POST /predict → preprocess → model.predict() → JSON response
 10. Monitoring:    Prometheus scrapes /metrics → Grafana visualizes
@@ -722,8 +722,8 @@ TelecomAI-Customer-Intelligence/
 ├── tests/                   # Unit, integration, E2E tests
 ├── configs/config.yaml      # Main configuration
 ├── data/raw/                # Training data (DVC tracked)
-├── artifacts/               # Trained model + metrics
-├── models/model_card.md     # Model documentation
+├── models/                  # Trained model (model.joblib) + model_card.md
+├── artifacts/               # Evaluation metrics + plots
 ├── Dockerfile               # Production image
 └── Makefile                 # Development commands
 ```
@@ -748,9 +748,9 @@ git push origin feature/improve-features
 
 ### Code Quality
 
-**Tools**: Black, Flake8, Mypy, Bandit, Pytest (96% coverage achieved)
+**Tools**: Black, Flake8, Mypy, Bandit, Pytest (80% coverage target)
 
-**Test Coverage**: 96% (Unit 12 files • Integration 3 files • E2E 1 file)
+**Test Coverage**: 80% target (Unit 12 files • Integration 3 files • E2E 1 file)
 
 ---
 
@@ -762,7 +762,7 @@ git push origin feature/improve-features
 # Build and run
 docker build -t telecomai:latest .
 docker run -d -p 8000:8000 \
-  -e MODEL_PATH=/app/artifacts/model.joblib \
+  -e MODEL_PATH=/app/models/model.joblib \
   --name telecomai-api telecomai:latest
 
 # Health check

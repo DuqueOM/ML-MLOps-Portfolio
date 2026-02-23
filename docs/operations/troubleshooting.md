@@ -174,7 +174,7 @@ notebooks/EDA.ipynb:aws-access-token:123
 
 ### Model fails to load
 
-**Symptoms:** `FileNotFoundError: models/model.pkl`
+**Symptoms:** `FileNotFoundError: models/model.joblib`
 
 ```bash
 # Check model exists
@@ -243,7 +243,7 @@ time curl -X POST http://localhost:8001/predict \
    
    @lru_cache(maxsize=1)
    def load_model():
-       return joblib.load("models/model.pkl")
+       return joblib.load("models/model.joblib")
    ```
 
 2. **Reduce model size:**
@@ -351,7 +351,7 @@ pandas>=2.0.0,<3.0.0
 # Check model version
 python -c "
 import joblib
-model = joblib.load('models/model.pkl')
+model = joblib.load('models/model.joblib')
 print(model.__class__.__module__)
 "
 

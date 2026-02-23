@@ -40,7 +40,7 @@ graph LR
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **Test Coverage** | 96% | Unit + integration tests |
+| **Test Coverage** | 94% | Unit + integration tests |
 | **P95 Latency** | <100ms | Inference time |
 | **Model Size** | ~5 MB | Serialized pipeline |
 
@@ -107,7 +107,7 @@ graph TB
         CSV["Raw Data"] --> CLEAN["clean_data()<br/>(filtering)"]
         CLEAN --> FEAT["FeatureEngineer<br/>(centralized)"]
         FEAT --> PREP["Preprocessor"]
-        PREP --> MODEL["RandomForest"]
+        PREP --> MODEL["XGBRegressor"]
     end
 
     subgraph "Serving"

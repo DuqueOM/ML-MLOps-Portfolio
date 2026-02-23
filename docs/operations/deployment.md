@@ -254,7 +254,7 @@ model = mlflow.sklearn.load_model("models:/BankChurnModel/Production")
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `MODEL_PATH` | Path to model artifact | `models/model.pkl` |
+| `MODEL_PATH` | Path to model artifact | `models/model.joblib` |
 | `DATA_PATH` | Path to data directory | `data/` |
 | `PORT` | API server port | `8000` |
 

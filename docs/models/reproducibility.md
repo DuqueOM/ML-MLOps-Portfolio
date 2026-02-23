@@ -72,14 +72,14 @@ Loading training data: data/raw/train.csv
 Training with 5-fold cross-validation
 CV Results: AUC-ROC=0.844±0.018, F1=0.596±0.031
 Training final model on full dataset
-Model saved to models/model.pkl
+Model saved to models/model.joblib
 ```
 
 ### Step 4: Evaluate Model
 
 ```bash
 python -m bankchurn.cli evaluate \
-  --model models/model.pkl \
+  --model models/model.joblib \
   --data data/raw/test.csv
 ```
 
@@ -97,7 +97,7 @@ python -m bankchurn.cli evaluate \
 pytest tests/ -v --cov=src/bankchurn
 ```
 
-**Expected Coverage:** ≥78%
+**Expected Coverage:** ≥79%
 
 ---
 
@@ -133,7 +133,7 @@ python main.py train --config configs/config.yaml
 Loading data from data/raw/vehicles.csv
 Applying filters: price=[1000, 500000], year>=1990
 Records after filtering: ~51,000
-Training RandomForestRegressor...
+Training model (auto-selected: XGBRegressor)...
 Model saved to models/model.joblib
 ```
 
@@ -157,7 +157,7 @@ python main.py evaluate --config configs/config.yaml
 pytest tests/ -v --cov=src/carvision
 ```
 
-**Expected Coverage:** ≥96%
+**Expected Coverage:** ≥80%
 
 ---
 
@@ -199,7 +199,7 @@ python main.py evaluate --config configs/config.yaml
 pytest tests/ -v --cov=src/telecom
 ```
 
-**Expected Coverage:** ≥96%
+**Expected Coverage:** ≥80%
 
 ---
 

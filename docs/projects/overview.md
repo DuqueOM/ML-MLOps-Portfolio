@@ -22,7 +22,7 @@ Watch the complete portfolio demonstration:
 | **Best Model** | VotingClassifier (LR + RF) | XGBRegressor | VotingClassifier (3 models) |
 | **Primary Metric** | **AUC=0.853**, F1=0.604 | **R²=0.766**, RMSE=$4,794 | **AUC=0.84**, Accuracy=82% |
 | **MLflow Experiments** | 3 tracked runs | 3 tracked runs | 3 tracked runs |
-| **Test Coverage** | 87% | 94% | 80% |
+| **Test Coverage** | 85% | 86% | 91% |
 | **Interface** | REST API (FastAPI) | REST API + **Streamlit Dashboard** | REST API (FastAPI) |
 | **Special Features** | SHAP explainability, drift detection | 4-tab dashboard, bootstrap CI | Threshold tuning, ROI analysis |
 
@@ -164,7 +164,7 @@ project/
 
 | Component | Technology |
 |-----------|-----------|
-| **Testing** | pytest, pytest-cov (80%+ coverage) |
+| **Testing** | pytest, pytest-cov (85-91% coverage), Codecov |
 | **Linting** | Black, Flake8, isort |
 | **Type Checking** | Mypy (strict mode) |
 | **Security** | Bandit, Gitleaks, pip-audit, Trivy |

@@ -776,7 +776,7 @@ mlflow.log_metrics({
 ```
 
 #### Artifacts
-- `model.pkl`: Serialized scikit-learn pipeline (full preprocessing + model)
+- `model.joblib`: Serialized scikit-learn pipeline (full preprocessing + model)
 - `confusion_matrix.png`: Visual confusion matrix
 - `roc_curve.png`: ROC curve plot
 - `feature_importance.csv`: SHAP values for all features
@@ -1006,10 +1006,9 @@ BankChurn-Predictor/
 │   └── logging.yaml            # Logging configuration
 ├── data/raw/
 │   └── Churn_Modelling.csv     # Training data (DVC tracked)
-├── artifacts/
-│   ├── model.pkl               # Trained model pipeline
-│   └── metrics.json            # Evaluation metrics
 ├── models/
+│   ├── model.joblib            # Trained model pipeline
+│   ├── metrics.json            # Evaluation metrics
 │   └── model_card.md           # Model documentation
 ├── monitoring/
 │   └── check_drift.py          # Drift detection script

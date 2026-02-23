@@ -134,7 +134,7 @@ graph LR
     end
     
     subgraph "Model"
-        RF["RandomForest<br/>Regressor"]
+        XGB["XGBRegressor"]
     end
     
     CSV --> FILT
@@ -142,8 +142,8 @@ graph LR
     FE --> DROP
     DROP --> NUM
     DROP --> CAT
-    NUM --> RF
-    CAT --> RF
+    NUM --> XGB
+    CAT --> XGB
 ```
 
 **Key Design Decisions:**
@@ -166,7 +166,7 @@ graph LR
     end
     
     subgraph "Model"
-        VC["VotingClassifier<br/>(LR + RF)"]
+        VC["VotingClassifier<br/>(LR + GB + RF)"]
     end
     
     subgraph "Output"
@@ -314,7 +314,7 @@ report.run(reference_data=train_df, current_data=prod_df)
 |------|------|--------|
 | Raw Data | `data/raw/` | CSV |
 | Processed | `data/processed/` | Parquet |
-| Model Artifacts | `models/` | Pickle |
+| Model Artifacts | `models/` | Joblib |
 | MLflow Artifacts | `mlruns/` | Various |
 | Predictions | `results/` | CSV/JSON |
 
