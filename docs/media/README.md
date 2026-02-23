@@ -159,11 +159,29 @@ media/
 | 85 | `monitoring/` | `85-drift-report-json.png` | Structured drift JSON |
 | 86 | `cicd/` | `86-github-drift-workflow.png` | Automated drift monitoring |
 
-**Total**: 86 screenshots across 10 sessions + 5 GIFs + 1 video
+**GCP Total**: 86 screenshots across 10 sessions + 5 GIFs + 1 video
+
+### AWS Screenshots (Planned — Sessions 14-24)
+
+| Folder | Count | Description |
+|--------|-------|-------------|
+| `aws-console/` | 16 | EKS cluster, ECR repos, S3 buckets, RDS, ALB, IAM |
+| `aws-terminal/` | 8 | kubectl on EKS, node status, pod logs |
+| `aws-apis/` | 14 | FastAPI predictions via ALB, health checks |
+| `aws-monitoring/` | 16 | Grafana/Prometheus/MLflow on EKS |
+| `aws-terraform/` | 12 | Terraform AWS plan, state, outputs |
+| `aws-cicd/` | 10 | deploy-aws.yml workflow, ECR push, EKS deploy |
+| `aws-dvc/` | 6 | DVC with S3 backend |
+
+**AWS Total**: ~82 screenshots across 7 sessions + 5 AWS GIFs + 3 multi-cloud GIFs
+
+**Combined Total**: 168+ screenshots + 13 GIFs + 1 multi-cloud video
 
 ---
 
 ## GIF Assets
+
+### GCP GIFs
 
 | GIF | Description | Duration | Used In |
 |-----|-------------|----------|---------|
@@ -173,28 +191,57 @@ media/
 | `04-cicd-pipeline.gif` | GitHub Actions pipeline execution | ~12s | Architecture docs |
 | `05-tres-apis-simultaneas.gif` | 3 APIs responding simultaneously | ~20s | Main README |
 
+### AWS GIFs (Planned)
+
+| GIF | Description | Duration | Used In |
+|-----|-------------|----------|---------|
+| `aws-01-eks-cluster.gif` | EKS Console with 6 workloads | ~10s | README AWS section |
+| `aws-02-alb-prediction.gif` | API prediction via ALB | ~15s | README AWS section |
+| `aws-03-ecr-images.gif` | ECR repos with versioned images | ~10s | Architecture docs |
+| `aws-04-s3-models.gif` | S3 bucket with model artifacts | ~10s | Architecture docs |
+| `aws-05-deploy-workflow.gif` | deploy-aws.yml running | ~15s | CI/CD docs |
+
+### Multi-Cloud Comparison GIFs (Planned)
+
+| GIF | Description | Duration | Used In |
+|-----|-------------|----------|---------|
+| `multicloud-01-side-by-side-pods.gif` | GKE vs EKS pods side-by-side | ~15s | Main README |
+| `multicloud-02-terraform-both.gif` | Terraform plan on both clouds | ~15s | Architecture docs |
+| `multicloud-03-deploy-both.gif` | Dual deploy workflows | ~15s | CI/CD docs |
+
 ---
 
 ## Video Demo
 
-The full portfolio demonstration is hosted on YouTube:
+### Current GCP Video
 
 - **Title**: ML MLOps Portfolio — GCP Production Deployment (GKE + Terraform + CI/CD)
 - **URL**: [https://youtu.be/qmw9VlgUcn8](https://youtu.be/qmw9VlgUcn8)
 - **Duration**: ~4 minutes
+
+### Planned Multi-Cloud Video
+
+- **Title**: ML MLOps Portfolio — Multi-Cloud Deployment (GCP + AWS)
+- **Duration**: 12-15 minutes
 - **Content**:
-  1. Architecture overview
-  2. GCP Console — 6 services running on GKE
-  3. Terraform Infrastructure as Code
-  4. 3 ML APIs with real predictions (BankChurn, CarVision, TelecomAI)
-  5. Monitoring stack (Grafana + Prometheus + MLflow)
-  6. CI/CD pipeline (GitHub Actions → GKE)
+  1. Architecture overview (multi-cloud)
+  2. GCP Console — 6 services on GKE
+  3. AWS Console — 6 services on EKS
+  4. Side-by-side: same predictions on both clouds
+  5. Terraform IaC for both providers
+  6. CI/CD: dual deploy workflows
+  7. Monitoring stack (cloud-agnostic)
+  8. Cost comparison and optimization
+
+Full video script in [GCP_DEPLOYMENT_EVIDENCE.md](../GCP_DEPLOYMENT_EVIDENCE.md#-parte-iii--unified-multi-cloud-demo-video).
 
 Source video files are in `videos/` (gitignored — too large for Git).
 
 ---
 
-## GCP Deployment Details
+## Deployment Details
+
+### GCP (Live)
 
 | Component | Technology | Status |
 |-----------|-----------|--------|
@@ -206,6 +253,19 @@ Source video files are in `videos/` (gitignored — too large for Git).
 | **CI/CD** | GitHub Actions → Artifact Registry → GKE | ✅ Configured |
 | **Ingress** | GCE Load Balancer (IP: 34.120.120.57) | ✅ Active |
 | **Monitoring** | Prometheus scraping 3 APIs, Grafana dashboards | ✅ Active |
+
+### AWS (Ready)
+
+| Component | Technology | Status |
+|-----------|-----------|--------|
+| **Cluster** | EKS (`ml-portfolio-eks-production`, us-east-1) | 🟡 Ready |
+| **Pods** | 6 services (same as GCP, AWS overlay) | 🟡 Ready |
+| **Registry** | ECR (3 repos with lifecycle policies) | 🟡 Ready |
+| **Storage** | S3 (versioned, encrypted, Glacier lifecycle) | 🟡 Ready |
+| **IaC** | Terraform (25+ resources: VPC, EKS, RDS, S3, ECR) | 🟡 Ready |
+| **CI/CD** | GitHub Actions → ECR → EKS | 🟡 Ready |
+| **Ingress** | ALB (Application Load Balancer) | 🟡 Ready |
+| **Monitoring** | Same Prometheus + Grafana stack (cloud-agnostic) | 🟡 Ready |
 
 ---
 

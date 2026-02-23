@@ -8,7 +8,7 @@
 
 ## 🎬 Portfolio Demo
 ![Portfolio Demo](media/gifs/01-demo-prediccion.gif)
-**End-to-end demonstration** of the ML/MLOps stack deployed on GCP: GKE cluster with 6 services, real ML predictions, Grafana monitoring, and CI/CD pipeline.
+**End-to-end demonstration** of the ML/MLOps stack deployed on GCP (GKE) and AWS (EKS): 6 services, real ML predictions, Grafana monitoring, and CI/CD pipeline.
 
 ---
 
@@ -32,13 +32,13 @@ This is a **production-grade MLOps platform** showcasing enterprise best practic
 
     ---
 
-    Deployed on GCP (GKE, Artifact Registry, Cloud Storage), Terraform IaC, Docker multi-stage builds
+    Multi-cloud: GCP (GKE, AR, GCS) + AWS (EKS, ECR, S3), Terraform IaC, Docker multi-stage builds
 
 -   🔄 **Full CI/CD Pipeline**
 
     ---
 
-    GitHub Actions with matrix testing, security scanning, automated GKE deployment
+    GitHub Actions with matrix testing, security scanning, automated GKE + EKS deployment
 
 -   📊 **MLOps Best Practices**
 

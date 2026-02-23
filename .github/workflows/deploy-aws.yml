@@ -1,0 +1,254 @@
+name: Deploy to EKS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'BankChurn-Predictor/**'
+      - 'CarVision-Market-Intelligence/**'
+      - 'TelecomAI-Customer-Intelligence/**'
+      - 'k8s/overlays/aws/**'
+      - '.github/workflows/deploy-aws.yml'
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Service to deploy (all, bankchurn, carvision, telecom)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - bankchurn
+          - carvision
+          - telecom
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  EKS_CLUSTER: ${{ secrets.EKS_CLUSTER_NAME }}
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION || 'us-east-1' }}.amazonaws.com
+  NAMESPACE: ml-portfolio
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Detect which services changed (skip on manual dispatch)
+  # ---------------------------------------------------------------------------
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      bankchurn: ${{ steps.filter.outputs.bankchurn }}
+      carvision: ${{ steps.filter.outputs.carvision }}
+      telecom: ${{ steps.filter.outputs.telecom }}
+      k8s: ${{ steps.filter.outputs.k8s }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            bankchurn:
+              - 'BankChurn-Predictor/**'
+            carvision:
+              - 'CarVision-Market-Intelligence/**'
+            telecom:
+              - 'TelecomAI-Customer-Intelligence/**'
+            k8s:
+              - 'k8s/overlays/aws/**'
+
+  # ---------------------------------------------------------------------------
+  # Build & Push Docker images to ECR
+  # ---------------------------------------------------------------------------
+  build-push:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - service: bankchurn
+            context: BankChurn-Predictor
+            image: ml-portfolio/bankchurn-predictor
+            manifest: k8s/overlays/aws/bankchurn-deployment-aws.yaml
+          - service: carvision
+            context: CarVision-Market-Intelligence
+            image: ml-portfolio/carvision-intelligence
+            manifest: k8s/overlays/aws/carvision-deployment-aws.yaml
+          - service: telecom
+            context: TelecomAI-Customer-Intelligence
+            image: ml-portfolio/telecom-intelligence
+            manifest: k8s/overlays/aws/telecom-deployment-aws.yaml
+    if: >
+      needs.detect-changes.outputs.bankchurn == 'true' ||
+      needs.detect-changes.outputs.carvision == 'true' ||
+      needs.detect-changes.outputs.telecom == 'true' ||
+      github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image to ECR
+        run: |
+          IMAGE="${{ env.ECR_REGISTRY }}/${{ matrix.image }}"
+          TAG="sha-${GITHUB_SHA::8}"
+
+          docker build \
+            -t ${IMAGE}:${TAG} \
+            -t ${IMAGE}:latest \
+            ${{ matrix.context }}/
+
+          docker push ${IMAGE}:${TAG}
+          docker push ${IMAGE}:latest
+
+          echo "IMAGE_TAG=${TAG}" >> $GITHUB_ENV
+
+      - name: Upload image tag artifact
+        run: echo "${{ env.IMAGE_TAG }}" > tag.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: image-tag-aws-${{ matrix.service }}
+          path: tag.txt
+
+  # ---------------------------------------------------------------------------
+  # Deploy to EKS
+  # ---------------------------------------------------------------------------
+  deploy:
+    needs: build-push
+    runs-on: ubuntu-latest
+    if: always() && !cancelled() && !contains(needs.*.result, 'failure')
+    environment:
+      name: ${{ github.event.inputs.environment || 'production' }}-aws
+      url: https://ml-aws.duqueom.com
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig \
+            --region ${{ env.AWS_REGION }} \
+            --name ${{ env.EKS_CLUSTER }}
+
+      - name: Update image tags in AWS manifests
+        run: |
+          TAG="sha-${GITHUB_SHA::8}"
+
+          # Replace ACCOUNT_ID placeholder and update tags in AWS deployment manifests
+          for FILE in k8s/overlays/aws/*-deployment-aws.yaml; do
+            if [ -f "$FILE" ]; then
+              sed -i "s|ACCOUNT_ID|${{ env.AWS_ACCOUNT_ID }}|g" "$FILE"
+              sed -i "s|:latest|:${TAG}|g" "$FILE"
+            fi
+          done
+
+          # Also update the service account ARN
+          sed -i "s|ACCOUNT_ID|${{ env.AWS_ACCOUNT_ID }}|g" k8s/overlays/aws/serviceaccount-aws.yaml
+
+      - name: Apply Kubernetes manifests (AWS overlay)
+        run: |
+          # Ensure namespace exists
+          kubectl apply -f k8s/namespace.yaml
+
+          # Apply shared resources
+          kubectl apply -f k8s/storage.yaml
+
+          # Apply AWS-specific overlay
+          kubectl apply -f k8s/overlays/aws/serviceaccount-aws.yaml
+          kubectl apply -f k8s/overlays/aws/download-script-aws.yaml
+          kubectl apply -f k8s/overlays/aws/model-configmaps-aws.yaml
+
+          # Deploy ML services (AWS versions)
+          kubectl apply -f k8s/overlays/aws/bankchurn-deployment-aws.yaml
+          kubectl apply -f k8s/overlays/aws/carvision-deployment-aws.yaml
+          kubectl apply -f k8s/overlays/aws/telecom-deployment-aws.yaml
+
+          # Deploy monitoring (shared manifests)
+          kubectl apply -f k8s/prometheus-deployment.yaml
+          kubectl apply -f k8s/grafana-deployment.yaml
+
+          # Apply AWS ALB ingress
+          kubectl apply -f k8s/overlays/aws/ingress-aws.yaml
+
+      - name: Wait for rollouts
+        run: |
+          echo "Waiting for deployments to be ready..."
+          kubectl rollout status deployment/bankchurn-predictor -n ${{ env.NAMESPACE }} --timeout=300s || true
+          kubectl rollout status deployment/carvision-intelligence -n ${{ env.NAMESPACE }} --timeout=300s || true
+          kubectl rollout status deployment/telecom-intelligence -n ${{ env.NAMESPACE }} --timeout=300s || true
+
+      - name: Verify deployment
+        run: |
+          echo "=== Pod Status ==="
+          kubectl get pods -n ${{ env.NAMESPACE }}
+
+          echo ""
+          echo "=== Services ==="
+          kubectl get svc -n ${{ env.NAMESPACE }}
+
+          echo ""
+          echo "=== Ingress (ALB) ==="
+          kubectl get ingress -n ${{ env.NAMESPACE }}
+
+      - name: Smoke test health endpoints
+        run: |
+          for SVC in bankchurn-service carvision-service telecom-service; do
+            echo "Testing ${SVC}..."
+            kubectl run health-test-${SVC} \
+              --namespace=${{ env.NAMESPACE }} \
+              --image=curlimages/curl:latest \
+              --restart=Never \
+              --rm -i --timeout=30s \
+              -- curl -sf http://${SVC}/health || echo "WARNING: ${SVC} health check failed"
+          done
+
+  # ---------------------------------------------------------------------------
+  # Post-deploy notification
+  # ---------------------------------------------------------------------------
+  notify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Deployment summary
+        run: |
+          echo "## AWS EKS Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${GITHUB_SHA::8}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${GITHUB_REF_NAME}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger**: ${GITHUB_EVENT_NAME}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Cloud**: AWS (EKS)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Region**: ${{ env.AWS_REGION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ needs.deploy.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Services" >> $GITHUB_STEP_SUMMARY
+          echo "- BankChurn: via ALB" >> $GITHUB_STEP_SUMMARY
+          echo "- CarVision: via ALB" >> $GITHUB_STEP_SUMMARY
+          echo "- TelecomAI: via ALB" >> $GITHUB_STEP_SUMMARY

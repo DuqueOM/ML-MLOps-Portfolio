@@ -1,0 +1,16 @@
+# GCP Overlay — GKE-specific resources
+# Usage: kubectl apply -k k8s/overlays/gcp/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ml-portfolio
+
+resources:
+  - ../../base
+  - ../../bankchurn-deployment.yaml
+  - ../../carvision-deployment.yaml
+  - ../../telecom-deployment.yaml
+  - ../../ingress.yaml
+  - ../../ml-workload-serviceaccount.yaml
+  - ../../download-script-configmap.yaml
+  - ../../model-configmaps.yaml
