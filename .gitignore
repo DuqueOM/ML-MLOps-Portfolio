@@ -140,6 +140,13 @@ docs/guia_mlops/pdf/_test_links.pdf
 docs/guia_mlops/pdf/_*.css
 requirements.txt
 
-# Terraform secrets (use terraform.tfvars.example as template)
+# Terraform secrets and state files
 infra/terraform/gcp/terraform.tfvars
 infra/terraform/aws/terraform.tfvars
+infra/terraform/gcp/.terraform/
+infra/terraform/aws/.terraform/
+infra/terraform/gcp/tfplan
+infra/terraform/aws/tfplan
+infra/terraform-outputs.json
+*.tfstate
+*.tfstate.backup
