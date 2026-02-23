@@ -88,10 +88,17 @@ project/
 │   └── streamlit_app.py        # Dashboard (CarVision only)
 │
 ├── tests/                      # Comprehensive test suite
+│   ├── conftest.py             # Shared fixtures
 │   ├── test_training.py
 │   ├── test_prediction.py
-│   ├── test_api.py
-│   └── integration/            # E2E tests
+│   ├── test_data.py
+│   └── test_models_advanced.py
+│
+├── monitoring/
+│   └── check_drift.py          # Drift detection (KS + PSI)
+│
+├── scripts/
+│   └── run_mlflow.py           # MLflow experiment runner
 │
 ├── configs/
 │   └── config.yaml             # Configuration file
@@ -101,6 +108,8 @@ project/
 │   └── README.md               # Artifact documentation
 │
 ├── data_card.md                # Dataset documentation (v2.0)
+├── dvc.yaml                    # DVC pipeline definition
+├── params.yaml                 # DVC parameters
 ├── Dockerfile                  # Multi-stage Docker build
 ├── requirements.txt            # Python dependencies
 └── README.md                   # Project documentation (hybrid)
@@ -113,7 +122,7 @@ project/
 3. **Data Versioning**: DVC for dataset lineage
 4. **Containerization**: Multi-stage Docker builds (<500MB images)
 5. **API Design**: FastAPI with automatic OpenAPI docs
-6. **Testing**: pytest with >70% coverage target
+6. **Testing**: pytest with >80% coverage target (85-91% actual, Codecov verified)
 7. **CI/CD**: Unified GitHub Actions workflow
 
 ---
@@ -157,7 +166,7 @@ project/
 | **Dashboard** | Streamlit (CarVision — 4 tabs) |
 | **Containerization** | Docker (multi-stage builds) |
 | **Orchestration** | Docker Compose, Kubernetes (HPA, services) |
-| **CI/CD** | GitHub Actions (matrix testing, 6 jobs) |
+| **CI/CD** | GitHub Actions (matrix testing, 10 jobs) |
 | **IaC** | Terraform (GCP: GKE, Cloud SQL, GCS, Artifact Registry) ✅ Live |
 
 ### Quality & Security

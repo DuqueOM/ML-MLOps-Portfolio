@@ -231,7 +231,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -435,7 +435,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Deploy to staging
         run: |
           kubectl config use-context staging

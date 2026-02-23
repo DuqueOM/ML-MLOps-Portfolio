@@ -203,7 +203,7 @@ strategy:
   fail-fast: false
 ```
 
-This produces 6 parallel jobs (3 projects × 2 Python versions).
+This produces 6 parallel test jobs (3 projects × 2 Python versions). The full CI pipeline has **10 jobs** total (tests, quality-gates, security, docker, e2e, integration-test, benchmarks, integration-report, validate-docs, ghcr-publish).
 
 ---
 
@@ -212,7 +212,7 @@ This produces 6 parallel jobs (3 projects × 2 Python versions).
 ### Pip Cache
 
 ```yaml
-- uses: actions/setup-python@v5
+- uses: actions/setup-python@v6
   with:
     python-version: ${{ matrix.python-version }}
     cache: 'pip'
@@ -259,7 +259,7 @@ Recommended settings for `main` branch:
 | Metric | Target | Current |
 |--------|--------|---------|
 | Build Time | <10 min | ~8 min |
-| Test Coverage | >70% | 80%+ |
+| Test Coverage | >80% | 85-91% (Codecov) |
 | Security Findings | 0 critical | ✅ Pass |
 | Docker Size | <1 GB | ~500 MB |
 
