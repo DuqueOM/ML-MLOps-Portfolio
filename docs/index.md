@@ -50,7 +50,7 @@ This is a **production-grade MLOps platform** showcasing enterprise best practic
 
     ---
 
-    80%+ coverage with Pytest, integration tests, security scans
+    85-91% coverage ([Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)) with Pytest, integration tests, security scans
 
 -   📚 **Comprehensive Docs**
 
@@ -124,9 +124,9 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
 
 | Project | Domain | Type | Best Metrics | Key Features |
 |---------|--------|------|--------------|--------------|
-| **[BankChurn Predictor](projects/bankchurn.md)** | Banking | Classification | AUC=0.87, F1=0.64 | SHAP explainability, drift detection, 86% test coverage |
-| **[CarVision Market Intelligence](projects/carvision.md)** | Automotive | Regression | R²=0.77, RMSE=$4,396 | Interactive dashboard, 4 tabs, 94% test coverage |
-| **[TelecomAI Customer Intelligence](projects/telecom.md)** | Telecom | Classification | AUC=0.84, Acc=82% | Plan optimization, threshold tuning, 96% coverage |
+| **[BankChurn Predictor](projects/bankchurn.md)** | Banking | Classification | AUC=0.85, F1=0.60 | SHAP explainability, drift detection, 85% coverage |
+| **[CarVision Market Intelligence](projects/carvision.md)** | Automotive | Regression | R²=0.77, RMSE=$4,794 | Interactive dashboard, 4 tabs, 86% coverage |
+| **[TelecomAI Customer Intelligence](projects/telecom.md)** | Telecom | Classification | AUC=0.84, Acc=82% | Plan optimization, threshold tuning, 91% coverage |
 
 ---
 
@@ -260,13 +260,22 @@ docker compose -f docker-compose.demo.yml ps
 ```
 ML-MLOps-Portfolio/
 ├── .github/workflows/
-│   └── ci-mlops.yml               # ⚡ Unified CI Pipeline (6 jobs)
+│   ├── ci-mlops.yml               # ⚡ Unified CI Pipeline (10 jobs)
+│   ├── deploy-gcp.yml             # 🚀 GKE deployment pipeline
+│   ├── drift-detection.yml        # 📉 Scheduled drift monitoring
+│   ├── retrain-bankchurn.yml      # 🔄 Auto-retrain workflow
+│   ├── cml-training-comparison.yml # 📊 CML model comparison
+│   └── docs.yml                   # 📚 GitHub Pages deployment
 │
 ├── BankChurn-Predictor/           # 🏦 Customer Churn Prediction
 │   ├── src/bankchurn/             # Core package
 │   ├── app/fastapi_app.py         # REST API
-│   ├── tests/                     # 85% coverage
+│   ├── tests/                     # 85% coverage (Codecov)
+│   ├── monitoring/check_drift.py  # Drift detection (KS + PSI)
+│   ├── scripts/run_mlflow.py      # MLflow experiment runner
 │   ├── models/model_card.md       # Model documentation v2.0
+│   ├── dvc.yaml                   # DVC pipeline definition
+│   ├── Dockerfile                 # Multi-stage build
 │   └── data_card.md               # Dataset documentation v2.0
 │
 ├── CarVision-Market-Intelligence/ # 🚗 Vehicle Price Prediction
@@ -274,21 +283,36 @@ ML-MLOps-Portfolio/
 │   ├── app/
 │   │   ├── fastapi_app.py         # REST API
 │   │   └── streamlit_app.py       # Dashboard (4 tabs)
-│   ├── tests/                     # 86% coverage
+│   ├── tests/                     # 86% coverage (Codecov)
+│   ├── monitoring/check_drift.py  # Drift detection
+│   ├── scripts/run_mlflow.py      # MLflow experiment runner
 │   ├── models/model_card.md       # Model documentation v2.0
+│   ├── dvc.yaml                   # DVC pipeline definition
+│   ├── Dockerfile                 # Multi-stage build
 │   └── data_card.md               # Dataset documentation v2.0
 │
 ├── TelecomAI-Customer-Intelligence/ # 📱 Plan Recommendation
 │   ├── src/telecom/              # Core package
 │   ├── app/fastapi_app.py         # REST API
-│   ├── tests/                     # 91% coverage
+│   ├── tests/                     # 91% coverage (Codecov)
+│   ├── monitoring/check_drift.py  # Drift detection
+│   ├── scripts/run_mlflow.py      # MLflow experiment runner
 │   ├── models/model_card.md       # Model documentation v2.0
+│   ├── dvc.yaml                   # DVC pipeline definition
+│   ├── Dockerfile                 # Multi-stage build
 │   └── data_card.md               # Dataset documentation v2.0
+│
+├── k8s/                           # ☸ Kubernetes manifests
+│   ├── *-deployment.yaml          # Deployments (3 APIs + Grafana + Prometheus)
+│   ├── ingress.yaml               # Ingress with public IP
+│   ├── model-configmaps.yaml      # GCS model path configs
+│   ├── download-script-configmap.yaml # Init Container script
+│   └── namespace.yaml             # ml-portfolio namespace
 │
 ├── infra/
 │   ├── terraform/aws/             # AWS infrastructure (EKS, RDS, S3)
 │   ├── terraform/gcp/             # GCP infrastructure (GKE, Cloud SQL, GCS)
-│   └── prometheus/grafana/        # Monitoring configuration
+│   └── grafana/                   # Grafana dashboards & provisioning
 │
 ├── docs/                          # 📚 GitHub Pages documentation site
 │   ├── getting-started/           # Quick start, installation, development
@@ -300,12 +324,19 @@ ML-MLOps-Portfolio/
 │
 ├── scripts/                       # Automation scripts
 │   ├── setup_demo_models.sh       # Generate demo artifacts
-│   └── run_experiments.py         # MLflow experiments
+│   ├── run_experiments.py         # MLflow experiments
+│   ├── benchmark_optimizations.py # Performance benchmarks
+│   ├── run_demo_tests.sh          # Integration test runner
+│   ├── upload-models-to-gcs.sh    # Model upload to GCS
+│   └── download-model.py          # Init Container download script
 │
-├── docker-compose.demo.yml        # Full demo stack
+├── docker-compose.demo.yml        # Full demo stack (3 APIs)
+├── docker-compose.mlflow.yml      # MLflow tracking server
+├── mkdocs.yml                     # Documentation site config
 ├── QUICK_START.md                 # 5-minute setup guide v2.0
 ├── RUNBOOK.md                     # Operations reference v2.0
 ├── SECURITY.md                    # Security policy
+├── CODE_OF_CONDUCT.md             # Community guidelines
 └── README.md                      # Main documentation
 ```
 

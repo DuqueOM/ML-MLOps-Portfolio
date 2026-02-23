@@ -330,7 +330,7 @@ Training pipeline trains the primary model plus all models listed in `compare_mo
 ### Rationale
 
 - **Data-driven selection**: CarVision's config defaults to RandomForest, but the auto-selection pipeline discovered that XGBoost achieves R²=0.705 vs RandomForest's R²=0.675 — a 4.4% improvement selected automatically without manual intervention.
-- **Reproducibility**: The comparison results are persisted to `artifacts/model_comparison.json` and the selected model name is recorded in `artifacts/metrics_val.json` with `auto_selected: true` and `original_model: random_forest`.
+- **Reproducibility**: The comparison results are persisted to `models/model_comparison.json` and the selected model name is recorded in `models/metrics_val.json` with `auto_selected: true` and `original_model: random_forest`.
 - **Config-driven**: The `compare_models` list in `config.yaml` controls which models are evaluated. Adding a new model is a one-line config change.
 
 ### Production Models

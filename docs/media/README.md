@@ -97,7 +97,69 @@ media/
 | 51 | `terraform/` | `51-terraform-state-list.png` | All resources under Terraform |
 | 52 | `terraform/` | `52-terraform-outputs.png` | Programmatic output values |
 
-**Total**: 55 screenshots across 6 sessions + 5 GIFs + 1 video
+### MLflow Advanced (7 captures)
+
+| # | Folder | File | Description |
+|---|--------|------|-------------|
+| 55 | `monitoring/` | `55-mlflow-xgboost-comparison.png` | XGBoost hyperparameter comparison |
+| 56 | `monitoring/` | `56-mlflow-parallel-coordinates.png` | Parallel coordinates visualization |
+| 57 | `monitoring/` | `57-mlflow-cross-model-comparison.png` | Cross-model evaluation |
+| 58 | `monitoring/` | `58-mlflow-best-recall-run.png` | Best recall-optimized run |
+| 59 | `monitoring/` | `59-mlflow-scatter-recall-precision.png` | Recall vs Precision trade-off |
+
+### DVC Evidence (8 captures)
+
+| # | Folder | File | Description |
+|---|--------|------|-------------|
+| 60 | `dvc/` | `60-dvc-init.png` | DVC initialized in project |
+| 61 | `dvc/` | `61-dvc-remote-config.png` | GCS remote configured |
+| 62 | `dvc/` | `62-dvc-add-dataset.png` | Dataset tracked with .dvc file |
+| 63 | `dvc/` | `63-dvc-files-list.png` | 6 .dvc files (3 datasets + 3 models) |
+| 64 | `dvc/` | `64-dvc-push-gcs.png` | Push to Google Cloud Storage |
+| 65 | `dvc/` | `65-dvc-github-pointer.png` | .dvc pointer file in GitHub |
+| 66 | `dvc/` | `66-dvc-pull-reproducibility.png` | Reproducibility demonstrated |
+| 67 | `dvc/` | `67-dvc-status-clean.png` | Synchronized and consistent |
+
+### Codecov Evidence (2 captures)
+
+| # | Folder | File | Description |
+|---|--------|------|-------------|
+| 68 | `cicd/` | `68-codecov-dashboard.png` | Coverage verified by third-party (86.68%) |
+| 69 | `cicd/` | `69-codecov-bankchurn-detail.png` | Per-file coverage breakdown |
+
+### Grafana & Prometheus Advanced (8 captures)
+
+| # | Folder | File | Description |
+|---|--------|------|-------------|
+| 70 | `monitoring/` | `70-grafana-ml-dashboard-full.png` | ML dashboard with 4 golden signals |
+| 71 | `monitoring/` | `71-grafana-latency-p95-detail.png` | Latency P95 per service |
+| 72 | `monitoring/` | `72-grafana-error-rate.png` | Error rate gauge per service |
+| 73 | `monitoring/` | `73-grafana-prometheus-working.png` | Grafana↔Prometheus integration confirmed |
+| 74 | `monitoring/` | `74-prometheus-prediction-rate.png` | PromQL: prediction rate per model |
+| 75 | `monitoring/` | `75-prometheus-latency-p95.png` | PromQL: histogram_quantile P95 |
+| 76 | `monitoring/` | `76-prometheus-targets-detail.png` | Targets with scrape duration |
+| 77 | `monitoring/` | `77-metrics-endpoint-raw.png` | /metrics endpoint instrumented |
+
+### Streamlit & SHAP Evidence (6 captures)
+
+| # | Folder | File | Description |
+|---|--------|------|-------------|
+| 78 | `apis/` | `78-streamlit-data-explorer.png` | Interactive dashboard (Data Explorer) |
+| 79 | `apis/` | `79-streamlit-prediction.png` | Live prediction with result |
+| 80 | `apis/` | `80-streamlit-model-performance.png` | Model metrics (R², RMSE) |
+| 81 | `apis/` | `81-streamlit-full-dashboard.png` | Full 4-tab dashboard view |
+| 82 | `apis/` | `82-shap-prediction-response.png` | SHAP feature contributions |
+| 83 | `apis/` | `83-swagger-shap-response.png` | Swagger + SHAP response |
+
+### Drift Detection Evidence (3 captures)
+
+| # | Folder | File | Description |
+|---|--------|------|-------------|
+| 84 | `monitoring/` | `84-drift-detection-output.png` | KS + PSI drift report |
+| 85 | `monitoring/` | `85-drift-report-json.png` | Structured drift JSON |
+| 86 | `cicd/` | `86-github-drift-workflow.png` | Automated drift monitoring |
+
+**Total**: 86 screenshots across 10 sessions + 5 GIFs + 1 video
 
 ---
 
