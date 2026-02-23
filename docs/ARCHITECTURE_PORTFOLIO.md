@@ -36,8 +36,8 @@ graph TB
     
     subgraph "Training Pipeline"
         T1[BankChurn Training<br/>Ensemble LR+RF]
-        T2[CarVision Training<br/>LightGBM / RF]
-        T3[TelecomAI Training<br/>XGBoost / Ensemble]
+        T2[CarVision Training<br/>XGBRegressor]
+        T3[TelecomAI Training<br/>Ensemble LR+GB+RF]
     end
     
     subgraph "MLflow Tracking"
@@ -143,7 +143,7 @@ Raw Data → Preprocessing (SimpleImputer + StandardScaler + OneHotEncoder) → 
 - `src/bankchurn/explainability.py`: SHAP explainability
 - `app/fastapi_app.py`: REST API (Port 8001)
 
-**Unified Pipeline** (artifacts/model.joblib):
+**Unified Pipeline** (models/model.joblib):
 ```python
 Pipeline([
     ('preprocessor', ColumnTransformer([
@@ -165,13 +165,13 @@ Pipeline([
 
 ### CarVision-Market-Intelligence
 **Domain**: Vehicle Price Prediction (Automotive)  
-**ML Framework**: RandomForestRegressor  
+**ML Framework**: XGBRegressor (auto-selected)  
 **Version**: 1.5.0 (Production)  
 **Performance**: R²=0.766, RMSE=$4,794, MAPE=17.8%
 
 **Pipeline Architecture**:
 ```
-Raw Data → FeatureEngineer (vehicle_age, brand) → Preprocessing → RandomForest → Price Predictions
+Raw Data → FeatureEngineer (vehicle_age, brand) → Preprocessing → XGBRegressor → Price Predictions
 ```
 
 **Key Components**:
@@ -182,7 +182,7 @@ Raw Data → FeatureEngineer (vehicle_age, brand) → Preprocessing → RandomFo
 - `app/fastapi_app.py`: REST API (Port 8002)
 - `app/streamlit_app.py`: **Interactive 4-tab dashboard** (Port 8501)
 
-**Unified Pipeline** (artifacts/model.joblib):
+**Unified Pipeline** (models/model.joblib):
 ```python
 Pipeline([
     ('features', FeatureEngineer()),  # vehicle_age, brand extraction
@@ -190,7 +190,7 @@ Pipeline([
         ('num', SimpleImputer + StandardScaler, numerical),
         ('cat', OneHotEncoder, categorical)
     ])),
-    ('model', RandomForestRegressor(n_estimators=100, max_depth=15, random_state=42))
+    ('model', XGBRegressor(n_estimators=100, max_depth=6, learning_rate=0.1, random_state=42))
 ])
 ```
 
@@ -218,7 +218,7 @@ Raw Data (4 features) → Preprocessing (StandardScaler) → VotingClassifier �
 - `src/telecom/prediction.py`: PlanPredictor class
 - `app/fastapi_app.py`: REST API (Port 8003)
 
-**Unified Pipeline** (artifacts/model.joblib):
+**Unified Pipeline** (models/model.joblib):
 ```python
 Pipeline([
     ('preprocessor', StandardScaler()),  # 4 numerical features
@@ -371,6 +371,7 @@ All GCP resources managed by Terraform (`No changes` = perfectly synchronized):
 
 ## 🔗 Related Documentation
 
+- **[Architectural Decisions](architecture/decisions.md)** — ADRs with deep technical rationale for every infrastructure, ML, and cost decision
 - **[Operations Guide](OPERATIONS_PORTFOLIO.md)** — Deployment, monitoring, troubleshooting
 - **[Model Catalog](models/catalog.md)** — Registry of trained models
 - **[API Reference](api/rest-apis.md)** — Complete REST API documentation

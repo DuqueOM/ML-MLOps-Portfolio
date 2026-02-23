@@ -50,7 +50,7 @@ This is a **production-grade MLOps platform** showcasing enterprise best practic
 
     ---
 
-    87-96% coverage with Pytest, integration tests, security scans
+    80%+ coverage with Pytest, integration tests, security scans
 
 -   📚 **Comprehensive Docs**
 
@@ -155,7 +155,7 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
 ### Software Engineering
 
 - ✅ **Modern Python**: `src/` layout, Pydantic config, type hints
-- ✅ **Testing**: Comprehensive suites (unit, integration, e2e) with 87-96% coverage
+- ✅ **Testing**: Comprehensive suites (unit, integration, e2e) with 80%+ coverage
 - ✅ **Code Quality**: Pre-commit hooks, automated linting, security scanning
 - ✅ **Documentation**: Model cards, data cards, API docs, operations runbooks
 
@@ -205,7 +205,7 @@ docker compose -f docker-compose.demo.yml ps
 | Component | Technology |
 |-----------|-----------|
 | **Language** | Python 3.11+ |
-| **ML Frameworks** | Scikit-learn 1.3+, XGBoost, Optuna |
+| **ML Frameworks** | Scikit-learn 1.8+, XGBoost, Optuna |
 | **Data Processing** | Pandas, NumPy, Pydantic |
 | **Feature Engineering** | Custom FeatureEngineer classes |
 
@@ -228,7 +228,7 @@ docker compose -f docker-compose.demo.yml ps
 |-----------|-----------|
 | **Code Quality** | Black, Flake8, Mypy, isort |
 | **Security Scanning** | Bandit, Gitleaks, pip-audit, Trivy |
-| **Testing** | pytest, pytest-cov (87-96% coverage) |
+| **Testing** | pytest, pytest-cov (80%+ coverage) |
 | **Pre-commit** | Automated hooks for quality gates |
 
 ---
