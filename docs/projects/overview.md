@@ -19,10 +19,10 @@ Watch the complete portfolio demonstration:
 | **Problem Type** | Binary Classification | Regression | Binary Classification |
 | **Business Domain** | Banking (Customer Retention) | Automotive (Pricing) | Telecom (Plan Optimization) |
 | **Target Variable** | Customer Churn (`Exited`) | Vehicle Price (USD) | Plan Upgrade (`is_ultra`) |
-| **Best Model** | VotingClassifier (LR + RF) | RandomForestRegressor | VotingClassifier (3 models) |
+| **Best Model** | VotingClassifier (LR + RF) | XGBRegressor | VotingClassifier (3 models) |
 | **Primary Metric** | **AUC=0.853**, F1=0.604 | **R²=0.766**, RMSE=$4,794 | **AUC=0.84**, Accuracy=82% |
 | **MLflow Experiments** | 3 tracked runs | 3 tracked runs | 3 tracked runs |
-| **Test Coverage** | 86% | 94% | 96% |
+| **Test Coverage** | 87% | 94% | 80% |
 | **Interface** | REST API (FastAPI) | REST API + **Streamlit Dashboard** | REST API (FastAPI) |
 | **Special Features** | SHAP explainability, drift detection | 4-tab dashboard, bootstrap CI | Threshold tuning, ROI analysis |
 
@@ -141,7 +141,7 @@ project/
 
 | Component | Technology |
 |-----------|-----------|
-| **Core ML** | Scikit-learn 1.3+, XGBoost, Optuna |
+| **Core ML** | Scikit-learn 1.8+, XGBoost, Optuna |
 | **Data Processing** | Pandas, NumPy |
 | **Validation** | Pydantic for config, schema enforcement |
 | **Explainability** | SHAP (BankChurn), feature importance |
@@ -164,7 +164,7 @@ project/
 
 | Component | Technology |
 |-----------|-----------|
-| **Testing** | pytest, pytest-cov (86-96% coverage) |
+| **Testing** | pytest, pytest-cov (80%+ coverage) |
 | **Linting** | Black, Flake8, isort |
 | **Type Checking** | Mypy (strict mode) |
 | **Security** | Bandit, Gitleaks, pip-audit, Trivy |

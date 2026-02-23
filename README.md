@@ -52,9 +52,9 @@
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|--------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 87% | <50ms p95 | Ensemble, XGBoost, LightGBM, PyTorch MLP, SHAP |
-| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.77**, RMSE $4.4K | 94% | <30ms p95 | LightGBM, XGBoost, PyTorch MLP, Streamlit |
-| [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **AUC 0.84**, Acc 82% | 96% | <25ms p95 | XGBoost, LightGBM, PyTorch MLP, Revenue Opt |
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 80%+ | <50ms p95 | Ensemble, XGBoost, LightGBM, PyTorch MLP, SHAP |
+| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.70**, RMSE $4.4K | 80%+ | <30ms p95 | LightGBM, XGBoost, PyTorch MLP, Streamlit |
+| [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **Acc 82%**, AUC 0.84 | 80%+ | <25ms p95 | XGBoost, LightGBM, PyTorch MLP, Revenue Opt |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------|
@@ -74,7 +74,7 @@ Production-grade churn prediction enabling proactive retention campaigns with **
 
 | AUC-ROC | F1 | Precision | Recall | Coverage | Latency |
 |---------|-----|-----------|--------|----------|---------|
-| **0.87** | 0.64 | 0.72 | 0.58 | 86% | <50ms p95 |
+| **0.87** | 0.64 | 0.72 | 0.58 | 80%+ | <50ms p95 |
 
 [📂 Project](BankChurn-Predictor/) · [📄 Model Card](BankChurn-Predictor/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
@@ -86,7 +86,7 @@ End-to-end vehicle valuation platform with **Streamlit BI Dashboard** (4 tabs) a
 
 | R² | RMSE | MAE | MAPE | Coverage | Dashboard |
 |----|------|-----|------|----------|-----------|
-| **0.77** | $4,396 | $3,124 | 18.2% | 94% | <2s load |
+| **0.70** | $4,396 | $3,124 | 18.2% | 80%+ | <2s load |
 
 [📂 Project](CarVision-Market-Intelligence/) · [📄 Model Card](CarVision-Market-Intelligence/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
@@ -98,7 +98,7 @@ Strategic plan optimization reducing **$6.9M/year** revenue leakage per 100K cus
 
 | Accuracy | AUC-ROC | F1 | Precision | Coverage | Throughput |
 |----------|---------|-----|-----------|----------|------------|
-| **82%** | 0.84 | 0.63 | 0.72 | 96% | 1,200 RPS |
+| **82%** | 0.84 | 0.63 | 0.72 | 80%+ | 1,200 RPS |
 
 [📂 Project](TelecomAI-Customer-Intelligence/) · [📄 Model Card](TelecomAI-Customer-Intelligence/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
@@ -115,7 +115,7 @@ Strategic plan optimization reducing **$6.9M/year** revenue leakage per 100K cus
 | **Monitoring** | Prometheus, Grafana, Evidently (drift detection) |
 | **CI/CD** | GitHub Actions (CI + GCP deploy pipeline), Artifact Registry, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
-| **Testing** | pytest (87-96% coverage), pre-commit hooks |
+| **Testing** | pytest (80%+ coverage), pre-commit hooks |
 
 > **v6.0+ Performance Optimizations**: Joblib compression (-76% model size), Pandas dtype optimization (-56% memory), sklearn parallelization (2-4x faster), vectorized batch predictions (-84% time). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 

@@ -27,27 +27,27 @@ variable "region" {
 }
 
 variable "machine_type" {
-  description = "Machine type for GKE nodes"
+  description = "Machine type for GKE nodes (e2-medium: 1 shared vCPU, 4GB — sufficient for 6 lightweight ML pods)"
   type        = string
-  default     = "e2-standard-4"
+  default     = "e2-medium"
 }
 
 variable "node_count" {
-  description = "Initial number of nodes"
+  description = "Initial number of nodes (1 node handles full portfolio workload)"
   type        = number
-  default     = 3
+  default     = 1
 }
 
 variable "min_node_count" {
   description = "Minimum number of nodes for autoscaling"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "max_node_count" {
   description = "Maximum number of nodes for autoscaling"
   type        = number
-  default     = 10
+  default     = 5
 }
 
 variable "db_tier" {
