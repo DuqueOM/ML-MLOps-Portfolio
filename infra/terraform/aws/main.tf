@@ -291,36 +291,4 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-# Outputs
-output "eks_cluster_endpoint" {
-  description = "Endpoint for EKS cluster"
-  value       = module.eks.cluster_endpoint
-}
-
-output "eks_cluster_name" {
-  description = "Name of the EKS cluster"
-  value       = module.eks.cluster_name
-}
-
-output "mlflow_db_endpoint" {
-  description = "RDS endpoint for MLflow"
-  value       = aws_db_instance.mlflow_db.endpoint
-  sensitive   = true
-}
-
-output "ml_models_bucket" {
-  description = "S3 bucket for ML models"
-  value       = aws_s3_bucket.ml_models.id
-}
-
-output "mlflow_artifacts_bucket" {
-  description = "S3 bucket for MLflow artifacts"
-  value       = aws_s3_bucket.mlflow_artifacts.id
-}
-
-output "ecr_repositories" {
-  description = "ECR repository URLs"
-  value = {
-    for k, v in aws_ecr_repository.ml_services : k => v.repository_url
-  }
-}
+# Outputs are defined in outputs.tf

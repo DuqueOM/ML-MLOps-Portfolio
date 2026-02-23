@@ -1,0 +1,16 @@
+# AWS Overlay — EKS-specific resources
+# Usage: kubectl apply -k k8s/overlays/aws/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ml-portfolio
+
+resources:
+  - ../../base
+  - ingress-aws.yaml
+  - serviceaccount-aws.yaml
+  - download-script-aws.yaml
+  - model-configmaps-aws.yaml
+  - bankchurn-deployment-aws.yaml
+  - carvision-deployment-aws.yaml
+  - telecom-deployment-aws.yaml

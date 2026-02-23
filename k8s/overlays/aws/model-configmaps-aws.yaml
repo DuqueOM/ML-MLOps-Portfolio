@@ -1,0 +1,47 @@
+# ConfigMaps for S3 model download paths (AWS).
+# Equivalent to k8s/model-configmaps.yaml (GCS version for GCP)
+# Usage: kubectl patch configmap bankchurn-model-config -n ml-portfolio \
+#          -p '{"data":{"S3_MODEL_PATH":"bankchurn/model-v2.joblib"}}'
+#        kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bankchurn-model-config
+  namespace: ml-portfolio
+  labels:
+    app: bankchurn-predictor
+    component: model-download
+    cloud: aws
+data:
+  S3_BUCKET: "ml-portfolio-ml-models-production"
+  S3_MODEL_PATH: "bankchurn/model.joblib"
+  LOCAL_MODEL_PATH: "/models/model.joblib"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: carvision-model-config
+  namespace: ml-portfolio
+  labels:
+    app: carvision-intelligence
+    component: model-download
+    cloud: aws
+data:
+  S3_BUCKET: "ml-portfolio-ml-models-production"
+  S3_MODEL_PATH: "carvision/model.joblib"
+  LOCAL_MODEL_PATH: "/models/model.joblib"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telecom-model-config
+  namespace: ml-portfolio
+  labels:
+    app: telecom-intelligence
+    component: model-download
+    cloud: aws
+data:
+  S3_BUCKET: "ml-portfolio-ml-models-production"
+  S3_MODEL_PATH: "telecom/model.joblib"
+  LOCAL_MODEL_PATH: "/models/model.joblib"

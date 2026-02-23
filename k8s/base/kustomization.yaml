@@ -1,0 +1,12 @@
+# Base Kustomization — shared resources for all clouds
+# Usage: kubectl apply -k k8s/overlays/gcp/ or k8s/overlays/aws/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ml-portfolio
+
+resources:
+  - ../namespace.yaml
+  - ../storage.yaml
+  - ../prometheus-deployment.yaml
+  - ../grafana-deployment.yaml

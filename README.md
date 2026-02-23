@@ -20,9 +20,10 @@
 
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow)](https://mlflow.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![GCP](https://img.shields.io/badge/GCP-Deployed-4285F4.svg?logo=googlecloud&logoColor=white)](docs/architecture/infrastructure.md)
-[![Kubernetes](https://img.shields.io/badge/GKE-Running-326CE5.svg?logo=kubernetes&logoColor=white)](k8s/)
-[![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC.svg?logo=terraform&logoColor=white)](infra/terraform/)
+[![GCP](https://img.shields.io/badge/GCP-Deployed-4285F4.svg?logo=googlecloud&logoColor=white)](docs/GCP_PRODUCTION_GUIDE.md)
+[![AWS](https://img.shields.io/badge/AWS-Ready-FF9900.svg?logo=amazonaws&logoColor=white)](docs/AWS_PRODUCTION_GUIDE.md)
+[![Kubernetes](https://img.shields.io/badge/K8s-GKE_%2B_EKS-326CE5.svg?logo=kubernetes&logoColor=white)](k8s/)
+[![Terraform](https://img.shields.io/badge/Terraform-Multi--Cloud-7B42BC.svg?logo=terraform&logoColor=white)](infra/terraform/)
 [![Prometheus](https://img.shields.io/badge/Prometheus-Metrics-E6522C.svg?logo=prometheus&logoColor=white)](infra/prometheus-config.yaml)
 [![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800.svg?logo=grafana&logoColor=white)](infra/grafana/)
 
@@ -57,11 +58,12 @@
 | [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **Acc 82%**, AUC 0.84 | 91% | <25ms p95 | XGBoost, LightGBM, PyTorch MLP, Revenue Opt |
 
 | Infrastructure | Status | Details |
-|----------------|--------|---------|
-| **GCP Deployment** | ✅ Live | GKE cluster, 6 pods running, Artifact Registry, Cloud Storage |
-| **CI/CD** | ✅ Unified | GitHub Actions → Artifact Registry → GKE auto-deploy |
-| **IaC** | ✅ Applied | Terraform (GCP GKE, Cloud SQL, GCS, VPC) — `No changes` plan |
-| **Monitoring** | ✅ Full Stack | Prometheus + Grafana + MLflow — running on GKE |
+|----------------|--------|---------- |
+| **GCP Deployment** | ✅ Live | GKE cluster, 6 pods, Artifact Registry, Cloud Storage |
+| **AWS Deployment** | 🟡 Ready | EKS + ECR + S3 + RDS — Terraform + K8s overlays complete |
+| **CI/CD** | ✅ Unified | GitHub Actions → GKE + EKS (separate deploy workflows) |
+| **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) — parallel provider configs |
+| **Monitoring** | ✅ Full Stack | Prometheus + Grafana + MLflow — cloud-agnostic on K8s |
 | **Security** | ✅ Automated | Gitleaks, Bandit, Trivy, pip-audit — all enforced in CI |
 
 ---
@@ -111,9 +113,9 @@ Strategic plan optimization reducing **$6.9M/year** revenue leakage per 100K cus
 | **ML/DS** | Scikit-learn, XGBoost, LightGBM, PyTorch, Pandas, NumPy, SHAP, Optuna |
 | **MLOps** | MLflow (9 experiments), DVC, Docker, Kubernetes, Terraform |
 | **API & Dashboard** | FastAPI, Pydantic, Streamlit, Plotly |
-| **Cloud & IaC** | GCP (GKE, GCS, Artifact Registry, Cloud SQL), Terraform, K8s manifests |
-| **Monitoring** | Prometheus, Grafana, Evidently (drift detection) |
-| **CI/CD** | GitHub Actions (CI + GCP deploy pipeline), Artifact Registry, Codecov |
+| **Cloud & IaC** | GCP (GKE, GCS, AR, Cloud SQL), AWS (EKS, S3, ECR, RDS), Terraform, K8s |
+| **Monitoring** | Prometheus, Grafana, Evidently (drift detection), CloudWatch |
+| **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy), Artifact Registry, ECR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Testing** | pytest (85-91% coverage), Codecov, pre-commit hooks |
 
@@ -150,9 +152,9 @@ For API examples, monitoring setup, and troubleshooting, see [QUICK_START.md](QU
 
 ---
 
-## ☁️ GCP Production Deployment
+## ☁️ Multi-Cloud Production Deployment
 
-This portfolio is **deployed on Google Cloud Platform** with full production infrastructure:
+This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system deployed on **both GCP and AWS**:
 
 <div align="center">
 
@@ -162,16 +164,22 @@ This portfolio is **deployed on Google Cloud Platform** with full production inf
 
 </div>
 
-| Component | Technology | Status |
-|-----------|-----------|--------|
-| Kubernetes Cluster | GKE (`ml-portfolio-gke-production`, us-central1) | ✅ Running |
-| Container Registry | Artifact Registry (3 versioned images) | ✅ Ready |
-| Model Storage | Cloud Storage (GCS) | ✅ 3 models |
-| Monitoring | Prometheus + Grafana (on GKE) | ✅ Active |
-| ML Tracking | MLflow (on GKE) | ✅ Running |
-| CI/CD Pipeline | GitHub Actions → Artifact Registry → GKE | ✅ Configured |
-| Infrastructure as Code | Terraform (10+ resources, synchronized) | ✅ Applied |
-| Load Balancer | GCE Ingress (public IP) | ✅ Active |
+### Multi-Cloud Architecture
+
+| Component | GCP (Live) | AWS (Ready) |
+|-----------|-----------|-------------|
+| **K8s Cluster** | GKE (`us-central1`) ✅ | EKS (`us-east-1`) 🟡 |
+| **Container Registry** | Artifact Registry ✅ | ECR 🟡 |
+| **Model Storage** | Cloud Storage (GCS) ✅ | S3 (versioned + Glacier lifecycle) 🟡 |
+| **Database** | Cloud SQL (Postgres) ✅ | RDS (Postgres) 🟡 |
+| **Load Balancer** | GCE Ingress (static IP) ✅ | ALB (DNS) 🟡 |
+| **IAM for Pods** | Workload Identity ✅ | IRSA 🟡 |
+| **Init Containers** | GCS download (`google-cloud-storage`) ✅ | S3 download (`boto3`) 🟡 |
+| **CI/CD** | `deploy-gcp.yml` ✅ | `deploy-aws.yml` 🟡 |
+| **IaC** | `infra/terraform/gcp/` ✅ | `infra/terraform/aws/` 🟡 |
+| **Monitoring** | Prometheus + Grafana + MLflow ✅ | Same stack (cloud-agnostic) 🟡 |
+
+> **Cloud-Agnostic Design**: Monitoring stack (Prometheus, Grafana, MLflow), K8s deployment patterns (HPA, anti-affinity, health probes), and CI/CD structure are identical across clouds. Only the init container SDK and ingress annotations change.
 
 <div align="center">
 
@@ -180,7 +188,7 @@ This portfolio is **deployed on Google Cloud Platform** with full production inf
 </div>
 
 <details>
-<summary><strong>📊 More GCP Evidence (click to expand)</strong></summary>
+<summary><strong>📊 GCP Evidence (click to expand)</strong></summary>
 
 #### Terraform IaC — Infrastructure synchronized
 ![Terraform Plan](docs/media/screenshots/terraform/53-terraform-plan-no-changes.png)
@@ -196,6 +204,26 @@ This portfolio is **deployed on Google Cloud Platform** with full production inf
 
 </details>
 
+<details>
+<summary><strong>🟡 AWS Infrastructure (click to expand)</strong></summary>
+
+#### Terraform AWS — EKS + VPC + S3 + RDS + ECR
+- Full Terraform config: [`infra/terraform/aws/`](infra/terraform/aws/)
+- EKS cluster with managed node groups (t3.large)
+- S3 buckets with versioning, encryption, and Glacier lifecycle
+- RDS PostgreSQL for MLflow backend
+- ECR repositories with lifecycle policies
+
+#### K8s Overlay — AWS-Specific Manifests
+- ALB Ingress: [`k8s/overlays/aws/ingress-aws.yaml`](k8s/overlays/aws/ingress-aws.yaml)
+- S3 Download Script: [`k8s/overlays/aws/download-script-aws.yaml`](k8s/overlays/aws/download-script-aws.yaml)
+- IRSA Service Account: [`k8s/overlays/aws/serviceaccount-aws.yaml`](k8s/overlays/aws/serviceaccount-aws.yaml)
+
+#### Deploy Workflow
+- [`deploy-aws.yml`](.github/workflows/deploy-aws.yml): GitHub Actions → ECR → EKS
+
+</details>
+
 ---
 
 ## 📚 Documentation
@@ -203,7 +231,10 @@ This portfolio is **deployed on Google Cloud Platform** with full production inf
 | Document | Description |
 |----------|-------------|
 | **[Quick Start](QUICK_START.md)** | 5-minute demo with API examples and health checks |
-| **[Architecture](docs/ARCHITECTURE_PORTFOLIO.md)** | System design, Mermaid diagrams, GCP infrastructure, CI/CD workflow |
+| **[Architecture](docs/ARCHITECTURE_PORTFOLIO.md)** | System design, Mermaid diagrams, infrastructure, CI/CD workflow |
+| **[GCP Production Guide](docs/GCP_PRODUCTION_GUIDE.md)** | Full GKE deployment walkthrough (12 phases) |
+| **[AWS Production Guide](docs/AWS_PRODUCTION_GUIDE.md)** | Full EKS deployment walkthrough (11 phases) |
+| **[Deployment Evidence](docs/GCP_DEPLOYMENT_EVIDENCE.md)** | 168+ screenshots, 13 GIFs, multi-cloud video script |
 | **[Operations Runbook](RUNBOOK.md)** | Day-to-day commands, Docker, K8s, Terraform deployment |
 | **[Features & Changelog](docs/FEATURES.md)** | Performance optimizations, new features (v6.0–v6.1) |
 | **[Release Process](docs/RELEASE.md)** | GHCR publishing, blue/green deployments, rollback procedures |
@@ -238,7 +269,7 @@ The author maintains and operates all systems independently, including CI/CD pip
 
 <div align="center">
 
-**Portfolio Version**: 6.2.1 · **License**: MIT · **Status**: ✅ Production-Ready (GCP)
+**Portfolio Version**: 6.2.1 · **License**: MIT · **Status**: ✅ Production-Ready (GCP) · 🟡 AWS Ready
 
 *Building ML systems that work at 2am* 🌙
 
