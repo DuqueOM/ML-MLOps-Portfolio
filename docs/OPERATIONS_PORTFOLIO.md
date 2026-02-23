@@ -354,8 +354,8 @@ docker compose -f docker-compose.demo.yml build --no-cache
 cd <project>
 python main.py --mode train
 
-# Check artifacts directory
-ls -la artifacts/
+# Check models directory
+ls -la models/
 ```
 
 #### Import Errors

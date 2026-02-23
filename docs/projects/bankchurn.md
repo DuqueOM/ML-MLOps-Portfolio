@@ -42,7 +42,7 @@ Actual Neg   1496    97
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **Test Coverage** | 78% | Unit + integration tests |
+| **Test Coverage** | 87% | Unit + integration tests |
 | **P95 Latency** | <50ms | Inference time |
 | **Model Size** | ~2 MB | Serialized pipeline |
 
@@ -216,7 +216,7 @@ BankChurn-Predictor/
 
 1. **Imbalanced Classes**: Uses class weights; SMOTE available but not default
 2. **Feature Engineering**: Limited to basic preprocessing
-3. **Explainability**: Basic feature importance; SHAP not integrated
+3. **Explainability**: SHAP integrated for global and individual feature importance
 
 ## Related Documentation
 

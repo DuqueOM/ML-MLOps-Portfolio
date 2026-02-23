@@ -29,7 +29,7 @@
 >
 > **The Solution**: CarVision provides ML-powered valuations with **R² 0.77** accuracy, interactive market analytics, and real-time API predictions—enabling **30% faster sales** and **12-18% margin improvement**.
 >
-> **The Tech**: RandomForest pipeline with centralized `FeatureEngineer`, Streamlit dashboard with 4 analytics tabs, FastAPI serving with <30ms latency.
+> **The Tech**: XGBoost pipeline (auto-selected over RandomForest) with centralized `FeatureEngineer`, Streamlit dashboard with 4 analytics tabs, FastAPI serving with <30ms latency.
 
 ---
 
@@ -190,7 +190,7 @@ CarVision provides three core capabilities:
 - **Temporal feature engineering**: Vehicle age, brand extraction
 - **Categorical binning**: Odometer ranges, year buckets
 - **Robust preprocessing**: Imputation, one-hot encoding, scaling
-- **Ensemble modeling**: RandomForest optimized for regression
+- **Ensemble modeling**: XGBoost auto-selected for regression
 - **Comprehensive validation**: Cross-validation, bootstrap, temporal backtest
 
 ### MLOps Best Practices
@@ -217,7 +217,7 @@ graph TB
     subgraph "Training Pipeline"
         C --> D[Train/Val/Test Split]
         D --> E[Preprocessing Pipeline]
-        E --> F[RandomForest Training]
+        E --> F[XGBoost Training]
         F --> G[Evaluation Suite]
         G --> H[MLflow Registry]
     end
@@ -249,7 +249,7 @@ graph TB
 |-----------|-----------|----------------|-----------|
 | **Feature Engineering** | Pandas + Custom Classes | Transform raw data → ML features | `FeatureEngineer.fit_transform()` |
 | **Preprocessing** | Scikit-learn Pipeline | Impute, encode, scale | `Pipeline.fit_transform()` |
-| **Model** | RandomForest Regressor | Price prediction | `model.predict()` |
+| **Model** | XGBRegressor (auto-selected) | Price prediction | `model.predict()` |
 | **API** | FastAPI + Uvicorn | RESTful inference | HTTP POST `/predict` |
 | **Dashboard** | Streamlit | Interactive analytics | Web UI on port 8501 |
 | **Analytics** | Custom `MarketAnalyzer` | Business intelligence | Python class methods |
@@ -266,12 +266,12 @@ pipeline = Pipeline([
         ('cat_encode', OneHotEncoder(handle_unknown='ignore'), categorical_features)
     ])),
     ('scaler', StandardScaler()),
-    ('regressor', RandomForestRegressor(
-        n_estimators=200,
-        max_depth=20,
-        min_samples_split=10,
-        min_samples_leaf=4,
-        max_features='sqrt',
+    ('regressor', XGBRegressor(
+        n_estimators=500,
+        max_depth=8,
+        learning_rate=0.05,
+        subsample=0.8,
+        colsample_bytree=0.8,
         random_state=42,
         n_jobs=-1
     ))
@@ -285,9 +285,9 @@ pipeline = Pipeline([
 2. Validation:     Schema check, outlier detection
 3. Feature Eng:    FeatureEngineer → vehicle_age, brand, bins
 4. Preprocessing:  Impute → OneHotEncode → StandardScale
-5. Training:       RandomForest(n_estimators=200, max_depth=20)
-6. Evaluation:     5-fold CV, Bootstrap (1000 iter), Temporal backtest
-7. Registry:       MLflow → artifacts/model.joblib
+5. Training:       XGBoost(n_estimators=500, max_depth=8) — auto-selected
+6. Evaluation:     5-fold CV, Bootstrap (200 iter), Temporal backtest
+7. Registry:       MLflow → models/model.joblib
 8. Serving:        FastAPI load model → predict() → JSON response
 9. Dashboard:      Streamlit load model → interactive UI
 10. Monitoring:    Prometheus scrape /metrics → Grafana
@@ -700,12 +700,12 @@ pipeline = Pipeline([
         ('cat_encode', OneHotEncoder(handle_unknown='ignore'), categorical_features)
     ])),
     ('scaler', StandardScaler()),
-    ('regressor', RandomForestRegressor(
-        n_estimators=200,
-        max_depth=20,
-        min_samples_split=10,
-        min_samples_leaf=4,
-        max_features='sqrt',
+    ('regressor', XGBRegressor(
+        n_estimators=500,
+        max_depth=8,
+        learning_rate=0.05,
+        subsample=0.8,
+        colsample_bytree=0.8,
         random_state=42,
         n_jobs=-1
     ))
@@ -769,7 +769,7 @@ class FeatureEngineer:
 
 ### Feature Importance
 
-Top 10 features (Random Forest feature importance):
+Top 10 features (XGBoost feature importance):
 
 | Rank | Feature | Importance | Impact |
 |------|---------|------------|--------|

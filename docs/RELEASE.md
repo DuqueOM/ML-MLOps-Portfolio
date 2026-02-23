@@ -362,8 +362,8 @@ with mlflow.start_run():
 # Export model from MLflow
 mlflow models serve -m "models:/BankChurn-XGBoost/production" -p 5001
 
-# Or copy to artifacts/
-mlflow models download -m "models:/BankChurn-XGBoost/1" -d ./artifacts/
+# Or copy to models/
+mlflow models download -m "models:/BankChurn-XGBoost/1" -d ./models/
 ```
 
 ## Release Artifacts

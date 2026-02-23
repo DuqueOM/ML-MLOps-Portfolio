@@ -155,7 +155,7 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
 ### Software Engineering
 
 - ✅ **Modern Python**: `src/` layout, Pydantic config, type hints
-- ✅ **Testing**: Comprehensive suites (unit, integration, e2e) with 80%+ coverage
+- ✅ **Testing**: Comprehensive suites (unit, integration, e2e) with 85-91% coverage (Codecov verified)
 - ✅ **Code Quality**: Pre-commit hooks, automated linting, security scanning
 - ✅ **Documentation**: Model cards, data cards, API docs, operations runbooks
 
@@ -228,7 +228,7 @@ docker compose -f docker-compose.demo.yml ps
 |-----------|-----------|
 | **Code Quality** | Black, Flake8, Mypy, isort |
 | **Security Scanning** | Bandit, Gitleaks, pip-audit, Trivy |
-| **Testing** | pytest, pytest-cov (80%+ coverage) |
+| **Testing** | pytest, pytest-cov (85-91% coverage), Codecov |
 | **Pre-commit** | Automated hooks for quality gates |
 
 ---
@@ -239,7 +239,7 @@ docker compose -f docker-compose.demo.yml ps
 
 | Metric | BankChurn | CarVision | TelecomAI | Target |
 |--------|-----------|-----------|-----------|--------|
-| **Test Coverage** | 87% | 94% | 96% | >70% ✅ |
+| **Test Coverage** | 85% | 86% | 91% | >80% ✅ |
 | **Linting** | Clean | Clean | Clean | 100% ✅ |
 | **Type Checking** | Strict | Strict | Strict | 100% ✅ |
 | **Security Scan** | 0 HIGH | 0 HIGH | 0 HIGH | 0 ✅ |
@@ -265,7 +265,7 @@ ML-MLOps-Portfolio/
 ├── BankChurn-Predictor/           # 🏦 Customer Churn Prediction
 │   ├── src/bankchurn/             # Core package
 │   ├── app/fastapi_app.py         # REST API
-│   ├── tests/                     # 86% coverage
+│   ├── tests/                     # 85% coverage
 │   ├── models/model_card.md       # Model documentation v2.0
 │   └── data_card.md               # Dataset documentation v2.0
 │
@@ -274,14 +274,14 @@ ML-MLOps-Portfolio/
 │   ├── app/
 │   │   ├── fastapi_app.py         # REST API
 │   │   └── streamlit_app.py       # Dashboard (4 tabs)
-│   ├── tests/                     # 94% coverage
+│   ├── tests/                     # 86% coverage
 │   ├── models/model_card.md       # Model documentation v2.0
 │   └── data_card.md               # Dataset documentation v2.0
 │
 ├── TelecomAI-Customer-Intelligence/ # 📱 Plan Recommendation
 │   ├── src/telecom/              # Core package
 │   ├── app/fastapi_app.py         # REST API
-│   ├── tests/                     # 96% coverage
+│   ├── tests/                     # 91% coverage
 │   ├── models/model_card.md       # Model documentation v2.0
 │   └── data_card.md               # Dataset documentation v2.0
 │

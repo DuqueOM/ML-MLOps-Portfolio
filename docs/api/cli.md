@@ -63,7 +63,7 @@ python -m bankchurn.cli train \
 2025-11-25 12:00:02 - INFO - Training with 5-fold cross-validation
 2025-11-25 12:00:15 - INFO - CV Results: AUC-ROC=0.844±0.018, F1=0.596±0.031
 2025-11-25 12:00:20 - INFO - Training final model on full dataset
-2025-11-25 12:00:25 - INFO - Model saved to models/model.pkl
+2025-11-25 12:00:25 - INFO - Model saved to models/model.joblib
 2025-11-25 12:00:25 - INFO - MLflow run ID: abc123def456
 ```
 
@@ -80,7 +80,7 @@ python -m bankchurn.cli evaluate [OPTIONS]
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `--config` | PATH | `configs/config.yaml` | Configuration file |
-| `--model` | PATH | `models/model.pkl` | Model file path |
+| `--model` | PATH | `models/model.joblib` | Model file path |
 | `--data` | PATH | `data/raw/test.csv` | Test data path |
 | `--output` | PATH | `results/` | Results output directory |
 
@@ -88,7 +88,7 @@ python -m bankchurn.cli evaluate [OPTIONS]
 
 ```bash
 python -m bankchurn.cli evaluate \
-  --model models/model.pkl \
+  --model models/model.joblib \
   --data data/raw/test.csv \
   --output results/evaluation/
 ```
@@ -128,7 +128,7 @@ python -m bankchurn.cli predict [OPTIONS]
 |--------|------|----------|-------------|
 | `--input` | PATH | Yes | Input CSV file |
 | `--output` | PATH | Yes | Output CSV file |
-| `--model` | PATH | No | Model path (default: models/model.pkl) |
+| `--model` | PATH | No | Model path (default: models/model.joblib) |
 | `--threshold` | FLOAT | No | Classification threshold (default: 0.5) |
 | `--include-proba` | FLAG | No | Include probabilities |
 

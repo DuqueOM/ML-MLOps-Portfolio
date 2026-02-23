@@ -24,10 +24,10 @@
 | **Model Name** | BankChurn Customer Churn Classifier |
 | **Version** | 1.5.0 |
 | **Algorithm** | VotingClassifier (Logistic Regression + RandomForest) |
-| **Framework** | Scikit-learn 1.3+ |
+| **Framework** | Scikit-learn 1.8+ |
 | **Status** | ✅ **Production** |
-| **Artifact Path** | `artifacts/model.joblib` (unified pipeline) |
-| **Model Size** | 4.0 MB |
+| **Artifact Path** | `models/model.joblib` (unified pipeline) |
+| **Model Size** | 3.3 MB |
 | **Created** | February 2026 |
 | **Last Updated** | February 2026 |
 
@@ -82,10 +82,10 @@ Full documentation: [BankChurn Model Card](https://github.com/DuqueOM/ML-MLOps-P
 | **Model Name** | CarVision Vehicle Price Predictor |
 | **Version** | 1.5.0 |
 | **Algorithm** | RandomForestRegressor |
-| **Framework** | Scikit-learn 1.3+ |
+| **Framework** | Scikit-learn 1.8+ |
 | **Status** | ✅ **Production** |
-| **Artifact Path** | `artifacts/model.joblib` (full pipeline) |
-| **Model Size** | 6 KB |
+| **Artifact Path** | `models/model.joblib` (full pipeline) |
+| **Model Size** | 968 KB |
 | **Created** | February 2026 |
 | **Last Updated** | February 2026 |
 
@@ -145,10 +145,10 @@ Full documentation: [CarVision Model Card](https://github.com/DuqueOM/ML-MLOps-P
 | **Model Name** | TelecomAI Plan Predictor |
 | **Version** | 1.5.0 |
 | **Algorithm** | VotingClassifier (LR + GB + RF) |
-| **Framework** | Scikit-learn 1.3+ |
+| **Framework** | Scikit-learn 1.8+ |
 | **Status** | ✅ **Production** |
-| **Artifact Path** | `artifacts/model.joblib` (unified pipeline) |
-| **Model Size** | 156 KB |
+| **Artifact Path** | `models/model.joblib` (unified pipeline) |
+| **Model Size** | 66 KB |
 | **Created** | February 2026 |
 | **Last Updated** | February 2026 |
 

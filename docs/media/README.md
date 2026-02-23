@@ -139,7 +139,7 @@ Source video files are in `videos/` (gitignored — too large for Git).
 | **Cluster** | GKE (`ml-portfolio-gke-production`, us-central1) | ✅ Running |
 | **Pods** | 6 services (3 ML APIs + MLflow + Prometheus + Grafana) | ✅ 6/6 Running |
 | **Registry** | Artifact Registry (3 Docker images, versioned) | ✅ Ready |
-| **Storage** | Cloud Storage (3 ML models: .pkl, .joblib) | ✅ Uploaded |
+| **Storage** | Cloud Storage (3 ML models: .joblib) | ✅ Uploaded |
 | **IaC** | Terraform (10+ resources, `No changes` plan) | ✅ Synchronized |
 | **CI/CD** | GitHub Actions → Artifact Registry → GKE | ✅ Configured |
 | **Ingress** | GCE Load Balancer (IP: 34.120.120.57) | ✅ Active |
