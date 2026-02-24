@@ -296,13 +296,14 @@ ls docs/media/screenshots/
 1. En el menú izquierdo de Kubernetes Engine, haz clic en **"Workloads"**
 2. Verás la lista de todos los Deployments. Deben aparecer:
    - `bankchurn-predictor` — API de predicción de churn bancario
-   - `carvision-intelligence` — API de valoración de vehículos
+   - `carvision-intelligence` — API de valoración de vehículos + Streamlit Dashboard (2 containers por pod)
    - `telecom-intelligence` — API de predicción de churn de telecomunicaciones
    - `mlflow-server` — Servidor de tracking de experimentos ML
    - `prometheus` — Sistema de recolección de métricas
    - `grafana` — Dashboard de visualización de métricas
 3. Todos deben tener un ícono verde (✓) o estado "OK"
 4. Si alguno tiene ícono amarillo o rojo, hay un problema con ese servicio
+5. **Nota**: CarVision mostrará 2/2 containers (API + Streamlit sidecar). Los demás muestran 1/1
 
 ---
 
@@ -322,8 +323,8 @@ ls docs/media/screenshots/
 > **📸 CAPTURA #06 — Detalle de Workload BankChurn**
 >
 > - **Archivo**: `docs/media/screenshots/gcp-console/06-workload-bankchurn-detalle.png`
-> - **Qué debe verse**: Detalle del deployment: imagen Docker de Artifact Registry, pods running, recursos CPU/memoria
-> - **Por qué importa**: Muestra la configuración técnica de un servicio ML en producción con todos sus componentes
+> - **Qué debe verse**: Detalle del deployment: imagen Docker de Artifact Registry, pods running, recursos CPU/memoria, **2 init containers** (download-model + download-data), volumes (models + data + logs)
+> - **Por qué importa**: Muestra la configuración técnica de un servicio ML en producción con todos sus componentes, incluyendo la descarga automatizada de modelos y datasets desde GCS
 
 ---
 
@@ -342,8 +343,8 @@ ls docs/media/screenshots/
 > **📸 CAPTURA #07 — Services del Cluster**
 >
 > - **Archivo**: `docs/media/screenshots/gcp-console/07-gke-services.png`
-> - **Qué debe verse**: Lista de servicios: bankchurn-service, carvision-service, telecom-service, grafana-service, etc.
-> - **Por qué importa**: Muestra la arquitectura de red interna del cluster y cómo se comunican los servicios
+> - **Qué debe verse**: Lista de servicios: bankchurn-service, carvision-service (puertos 80 + 8501), telecom-service, grafana-service, etc.
+> - **Por qué importa**: Muestra la arquitectura de red interna del cluster. Nota que carvision-service expone 2 puertos: 80 (API) y 8501 (Streamlit Dashboard)
 
 4. Haz clic en la pestaña **"Ingress"**
 5. Verás el Ingress `ml-portfolio-ingress` con la IP: **`34.120.120.57`**
@@ -391,27 +392,31 @@ ls docs/media/screenshots/
 
 ---
 
-### 4.7 — Cloud Storage (Modelos ML en la Nube)
+### 4.7 — Cloud Storage (Modelos ML + Datasets en la Nube)
 
-**¿Qué es Cloud Storage?** Es donde guardaste los modelos de Machine Learning entrenados. Cuando una API arranca en Kubernetes, lo primero que hace es descargar su modelo desde aquí. Esto permite actualizar modelos sin reconstruir la imagen Docker — una práctica MLOps fundamental.
+**¿Qué es Cloud Storage?** Es el sistema de almacenamiento de archivos de GCP. Guardaste aquí los modelos de Machine Learning entrenados **y los datasets de producción**. Cuando una API arranca en Kubernetes, los init containers descargan automáticamente el modelo y el dataset desde GCS. Esto permite actualizar modelos y datos sin reconstruir la imagen Docker — una práctica MLOps fundamental.
 
 **Pasos exactos:**
 
 1. En la barra de búsqueda, escribe: **"Cloud Storage"**
 2. Haz clic en "Cloud Storage" → "Buckets"
-3. Verás el bucket: **`ml-portfolio-duque-om-202602-ml-models-production`**
-4. Haz clic en ese bucket
+3. Verás **2 buckets de producción**:
+   - **`ml-portfolio-duque-om-202602-ml-models-production`** — Modelos ML (.joblib)
+   - **`ml-portfolio-duque-om-202602-datasets-production`** — Datasets versionados (.csv)
+4. Haz clic en el bucket de **modelos**
 5. Verás las carpetas: `bankchurn/`, `carvision/`, `telecom/`
 
 ---
 
-> **📸 CAPTURA #11 — Cloud Storage Bucket con Carpetas de Modelos**
+> **📸 CAPTURA #11 — Cloud Storage Buckets de Producción**
 >
 > - **Archivo**: `docs/media/screenshots/gcp-console/11-gcs-bucket-modelos.png`
-> - **Qué debe verse**: Las carpetas bankchurn/, carvision/, telecom/ dentro del bucket
-> - **Por qué importa**: Demuestra arquitectura de separación entre código y modelos — práctica profesional de MLOps que permite actualizar modelos sin redeploy
+> - **Qué debe verse**: Los **2 buckets** de producción: `*-ml-models-production` y `*-datasets-production`, ambos con versioning habilitado
+> - **Por qué importa**: Demuestra arquitectura de separación entre código, modelos y datos — práctica profesional de MLOps con buckets dedicados
+> - **Tip**: Asegúrate de que ambos buckets sean visibles en la captura. Si hay más buckets, filtra por `ml-portfolio`
 
-6. Haz clic en la carpeta **`bankchurn/`** y verás el archivo `model.joblib`
+6. Haz clic en el bucket de **modelos** (`*-ml-models-production`) y verás las carpetas: `bankchurn/`, `carvision/`, `telecom/`
+7. Haz clic en `bankchurn/` y verás `model.joblib`
 
 ---
 
@@ -420,6 +425,19 @@ ls docs/media/screenshots/
 > - **Archivo**: `docs/media/screenshots/gcp-console/12-gcs-modelo-bankchurn.png`
 > - **Qué debe verse**: El archivo model.joblib con su tamaño y fecha de subida
 > - **Por qué importa**: Evidencia concreta de que los modelos ML están almacenados en producción y son accesibles por las APIs
+
+8. Vuelve a la lista de buckets y haz clic en el bucket de **datasets** (`*-datasets-production`)
+9. Verás las carpetas: `bankchurn/`, `carvision/`, `telecom/`, cada una con subcarpeta `v1/`
+10. Haz clic en `carvision/v1/` y verás `vehicles_us.csv` (4.3 MB)
+
+---
+
+> **📸 CAPTURA #12b — Datasets Bucket con Versionado**
+>
+> - **Archivo**: `docs/media/screenshots/gcp-console/12b-gcs-datasets-bucket.png`
+> - **Qué debe verse**: El bucket de datasets con carpetas `bankchurn/v1/`, `carvision/v1/`, `telecom/v1/` y los archivos CSV con sus tamaños
+> - **Por qué importa**: Demuestra gestión profesional de datos: versionado de datasets, naming conventions estrictas (`{project}/v{n}/{file}`), lifecycle policies activas
+> - **Detalle importante**: En la consola, verifica que el bucket tenga **Versioning: Enabled** y **Lifecycle rules** configuradas (visible en la pestaña "Protection" del bucket)
 
 ---
 
@@ -550,12 +568,14 @@ kubectl get pods -n ml-portfolio -o wide
 ```
 NAME                                    READY   STATUS    RESTARTS   AGE
 bankchurn-predictor-xxxx-xxxx           1/1     Running   0          Xh
-carvision-intelligence-xxxx-xxxx        1/1     Running   0          Xh
+carvision-intelligence-xxxx-xxxx        2/2     Running   0          Xh
 telecom-intelligence-xxxx-xxxx          1/1     Running   0          Xh
 mlflow-server-xxxx-xxxx                 1/1     Running   0          Xh
 prometheus-xxxx-xxxx                    1/1     Running   0          Xh
 grafana-xxxx-xxxx                       1/1     Running   0          Xh
 ```
+
+> **Nota**: CarVision muestra `2/2` porque tiene 2 containers: la API FastAPI (puerto 8000) y el Streamlit Dashboard sidecar (puerto 8501). Los demás proyectos tienen 1 container cada uno.
 
 ---
 
@@ -563,8 +583,8 @@ grafana-xxxx-xxxx                       1/1     Running   0          Xh
 >
 > - **Archivo**: `docs/media/screenshots/terminal/17-kubectl-pods-running.png`
 > - **Comando**: `kubectl get pods -n ml-portfolio -o wide`
-> - **Qué debe verse**: Los 6 pods en estado `Running` con `READY 1/1` y `RESTARTS 0`
-> - **Por qué importa**: Esta es la evidencia técnica más directa de que el sistema está funcionando — complementa la captura del GCP Console
+> - **Qué debe verse**: Los 6 pods en estado `Running` con `RESTARTS 0`. CarVision muestra `READY 2/2` (API + Streamlit sidecar), los demás `READY 1/1`
+> - **Por qué importa**: Evidencia técnica directa del sistema funcionando. El `2/2` de CarVision demuestra arquitectura multi-container (sidecar pattern)
 > - **Tip**: Aumenta el tamaño de fuente de la terminal (`Ctrl + +`) antes de capturar para mejor legibilidad
 
 ---
@@ -592,8 +612,8 @@ kubectl get svc,ingress -n ml-portfolio
 >
 > - **Archivo**: `docs/media/screenshots/terminal/18-kubectl-services-ingress.png`
 > - **Comando**: `kubectl get svc,ingress -n ml-portfolio`
-> - **Qué debe verse**: Lista de servicios NodePort y el Ingress con IP `34.120.120.57`
-> - **Por qué importa**: Muestra la arquitectura de red del cluster desde la perspectiva técnica de terminal
+> - **Qué debe verse**: Lista de servicios NodePort y el Ingress con IP `34.120.120.57`. Nota que `carvision-service` muestra 2 puertos: `80/TCP` (API) y `8501/TCP` (Streamlit)
+> - **Por qué importa**: Muestra la arquitectura de red del cluster. El puerto 8501 adicional en CarVision evidencia el sidecar pattern para el dashboard
 
 ---
 
@@ -647,18 +667,27 @@ gcloud artifacts docker images list \
 
 ---
 
-### 5.5 — Modelos en Cloud Storage desde CLI
+### 5.5 — Modelos y Datasets en Cloud Storage desde CLI
 
 ```bash
 # Listar modelos en el bucket de GCS
 gsutil ls -r gs://ml-portfolio-duque-om-202602-ml-models-production/
+
+# Listar datasets en el bucket de GCS
+gsutil ls -r gs://ml-portfolio-duque-om-202602-datasets-production/
 ```
 
-**¿Qué verás?** La estructura de carpetas y archivos del bucket:
+**¿Qué verás?** La estructura de carpetas y archivos de ambos buckets:
 ```
+# Models bucket
 gs://ml-portfolio-duque-om-202602-ml-models-production/bankchurn/model.joblib
 gs://ml-portfolio-duque-om-202602-ml-models-production/carvision/model.joblib
 gs://ml-portfolio-duque-om-202602-ml-models-production/telecom/model.joblib
+
+# Datasets bucket (versionados)
+gs://ml-portfolio-duque-om-202602-datasets-production/bankchurn/v1/Churn.csv
+gs://ml-portfolio-duque-om-202602-datasets-production/carvision/v1/vehicles_us.csv
+gs://ml-portfolio-duque-om-202602-datasets-production/telecom/v1/WA_Fn-UseC_-Telco-Customer-Churn.csv
 ```
 
 ---
@@ -668,6 +697,15 @@ gs://ml-portfolio-duque-om-202602-ml-models-production/telecom/model.joblib
 > - **Archivo**: `docs/media/screenshots/terminal/21-gcs-modelos-cli.png`
 > - **Qué debe verse**: Los 3 archivos de modelos ML en el bucket de GCS
 > - **Por qué importa**: Evidencia técnica de que los modelos están almacenados en la nube y son accesibles
+
+---
+
+> **📸 CAPTURA #21b — Datasets en GCS desde CLI**
+>
+> - **Archivo**: `docs/media/screenshots/terminal/21b-gcs-datasets-cli.png`
+> - **Comando**: `gsutil ls -r gs://ml-portfolio-duque-om-202602-datasets-production/`
+> - **Qué debe verse**: Los 3 datasets versionados con naming convention `{project}/v1/{file}.csv` y sus tamaños
+> - **Por qué importa**: Demuestra gestión profesional de datos en la nube con naming conventions, versionado por carpetas, y separación entre modelos y datasets
 
 ---
 
@@ -700,17 +738,17 @@ terraform -chdir=infra/terraform/gcp output
 **¿Qué es `kubectl exec`?** Es un comando que te permite ejecutar comandos dentro de un contenedor que está corriendo en Kubernetes. Es como "entrar" al contenedor y ejecutar algo desde adentro.
 
 ```bash
-# Health check de BankChurn
+# Health check BankChurn
 echo "=== BankChurn Health ==="
 kubectl exec -n ml-portfolio deployment/bankchurn-predictor -- \
   curl -s http://localhost:8000/health | python3 -m json.tool
 
-# Health check de CarVision
+# Health check CarVision
 echo "=== CarVision Health ==="
 kubectl exec -n ml-portfolio deployment/carvision-intelligence -- \
   curl -s http://localhost:8000/health | python3 -m json.tool
 
-# Health check de TelecomAI
+# Health check TelecomAI
 echo "=== TelecomAI Health ==="
 kubectl exec -n ml-portfolio deployment/telecom-intelligence -- \
   curl -s http://localhost:8000/health | python3 -m json.tool
@@ -741,10 +779,10 @@ kubectl exec -n ml-portfolio deployment/telecom-intelligence -- \
 **¿Qué son los logs?** Son los mensajes que genera una aplicación mientras corre — errores, peticiones recibidas, información de inicio, etc. Ver los logs demuestra que sabes diagnosticar problemas en producción.
 
 ```bash
-# Ver los últimos 50 logs de BankChurn
+# Last 50 logs BankChurn
 kubectl logs -n ml-portfolio deployment/bankchurn-predictor --tail=50
 
-# Ver logs en tiempo real (presiona Ctrl+C para detener)
+# Real-time logs BankChurn
 kubectl logs -n ml-portfolio deployment/bankchurn-predictor -f --tail=20
 ```
 

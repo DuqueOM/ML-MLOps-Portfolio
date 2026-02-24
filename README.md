@@ -181,6 +181,8 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 
 > **Cloud-Agnostic Design**: Monitoring stack (Prometheus, Grafana, MLflow), K8s deployment patterns (HPA, anti-affinity, health probes), and CI/CD structure are identical across clouds. Only the init container SDK and ingress annotations change.
 
+> **💰 Cost-Aware**: Full GCP stack runs at ~$51 USD/month (3 nodes, 6 pods, monitoring + CI/CD). See [detailed cost analysis](docs/ARCHITECTURE_PORTFOLIO.md#-production-infrastructure--cost-analysis).
+
 <div align="center">
 
 [![🎬 Video Demo](https://img.shields.io/badge/🎬_Full_Demo-YouTube_(4_min)-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)

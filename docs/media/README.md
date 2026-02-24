@@ -34,7 +34,8 @@ media/
 │   │   ├── 26-bankchurn-prediccion-real.png  ⭐ Critical
 │   │   ├── 27-fastapi-swagger-carvision.png
 │   │   ├── 29-fastapi-swagger-telecom.png
-│   │   └── ...                    # 9 screenshots total
+│   │   ├── 31-tres-apis-pestanas.png        ⭐ Critical
+│   │   └── ...                    # 10 screenshots total
 │   │
 │   ├── monitoring/                # Grafana, Prometheus, MLflow
 │   │   ├── 34-grafana-dashboard.png       ⭐ Critical
@@ -69,7 +70,7 @@ media/
 
 ## Screenshot Assets
 
-### Critical Captures (8 must-have)
+### Critical Captures (9 must-have)
 
 | # | Folder | File | Description |
 |---|--------|------|-------------|
@@ -77,6 +78,7 @@ media/
 | 17 | `terminal/` | `17-kubectl-pods-running.png` | CLI evidence of all services |
 | 23 | `terminal/` | `23-health-checks-apis.png` | APIs responding with models loaded |
 | 26 | `apis/` | `26-bankchurn-prediccion-real.png` | Real ML prediction in production |
+| 31 | `apis/` | `31-tres-apis-pestanas.png` | 3 APIs running simultaneously — browser tabs with Swagger UIs + terminal port-forwards + real curl predictions |
 | 34 | `monitoring/` | `34-grafana-dashboard.png` | Real-time monitoring dashboard |
 | 37 | `monitoring/` | `37-prometheus-targets-up.png` | All monitoring targets active |
 | 46 | `cicd/` | `46-workflow-completado.png` | CI/CD pipeline completed |
