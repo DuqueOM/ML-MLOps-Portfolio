@@ -64,6 +64,45 @@ spec:
         volumeMounts:
         - name: models
           mountPath: /app/models
+        - name: data
+          mountPath: /app/data
+      - name: carvision-streamlit
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/carvision-market-intelligence:latest
+        imagePullPolicy: Always
+        command: ["streamlit", "run", "app/streamlit_app.py", "--server.port", "8501", "--server.address", "0.0.0.0", "--server.headless", "true"]
+        ports:
+        - containerPort: 8501
+          name: streamlit
+          protocol: TCP
+        env:
+        - name: MODEL_PATH
+          value: "/app/models/model.joblib"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8501
+          initialDelaySeconds: 30
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8501
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        volumeMounts:
+        - name: models
+          mountPath: /app/models
+        - name: data
+          mountPath: /app/data
       initContainers:
       - name: download-model
         image: python:3.11-alpine
@@ -81,8 +120,26 @@ spec:
           mountPath: /models
         - name: download-script
           mountPath: /scripts
+      - name: download-data
+        image: python:3.11-alpine
+        command:
+        - sh
+        - -c
+        - |
+          pip install --quiet google-cloud-storage==2.18.2 && \
+          python /scripts/download-model.py
+        envFrom:
+        - configMapRef:
+            name: carvision-dataset-config
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: download-script
+          mountPath: /scripts
       volumes:
       - name: models
+        emptyDir: {}
+      - name: data
         emptyDir: {}
       - name: download-script
         configMap:
@@ -104,6 +161,10 @@ spec:
   - name: http
     port: 80
     targetPort: 8000
+    protocol: TCP
+  - name: streamlit
+    port: 8501
+    targetPort: 8501
     protocol: TCP
 ---
 apiVersion: v1

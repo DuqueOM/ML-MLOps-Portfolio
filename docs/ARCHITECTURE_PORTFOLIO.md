@@ -324,10 +324,106 @@ jobs:
   retraining de forma controlada (opt-in) sin impactar el CI principal.
 
 - **FinOps / Cost Awareness**  
-  La infraestructura propuesta (EKS/GKE + RDS/CloudSQL + S3/GCS + Prom/Grafana) debe
-  acompañarse de análisis de costos por entorno (dev/stage/prod), límites de auto-scaling
-  y etiquetado de recursos. Ver `docs/architecture/infrastructure.md` para recomendaciones
-  de dimensionamiento y cómo extender este portfolio con un análisis FinOps básico.
+  Extend the production cost analysis below with per-environment budgets (dev/staging/prod),
+  auto-scaling spend limits, and resource tagging policies. The current GCP deployment already
+  demonstrates cost-conscious infrastructure choices (see section below).
+
+---
+
+## 💰 Production Infrastructure & Cost Analysis
+
+Real cost data from the live GCP deployment (February 2026). All values originally billed in COP and converted at ~4,200 COP/USD.
+
+### GCP Monthly Cost Breakdown
+
+| Service | Monthly Cost (USD) | % of Total | Purpose |
+|---------|-------------------|------------|----------|
+| **Compute Engine** | ~$20.50 | 40% | 3 GKE nodes (e2-medium) — VMs running all pods |
+| **Kubernetes Engine** | ~$13.35 | 26% | GKE cluster management fee |
+| **Container Scanning** | ~$9.10 | 18% | Automated vulnerability scanning (68 CVEs/image) |
+| **Networking** | ~$6.15 | 12% | VPC, Load Balancer, egress traffic |
+| **Cloud SQL** | ~$1.70 | 3% | PostgreSQL for MLflow backend store |
+| **Artifact Registry** | ~$0.18 | <1% | Docker images (3 services × ~888 MB) |
+| **Cloud Build** | ~$0.00 | <1% | Remote Docker builds (3 images rebuilt) |
+| **Cloud Storage** | ~$0.00 | <1% | ML model artifacts (GCS buckets) |
+| **Total** | **~$51.00** | **100%** | **Full production stack** |
+
+> **Note**: All costs covered by GCP Free Tier credits (Subtotal: $0). The breakdown above represents what the infrastructure would cost in a paid production environment.
+
+### Cost Optimization Decisions
+
+| Decision | Impact | Rationale |
+|----------|--------|-----------|
+| **e2-medium nodes** (vs n1-standard) | ~40% compute savings | Sufficient for ML inference workloads |
+| **Single-zone cluster** (vs regional) | ~67% GKE fee savings | Portfolio project, HA not required |
+| **SQLite MLflow** option | Eliminates Cloud SQL cost | Viable for <10 concurrent users |
+| **Artifact Registry cleanup policy** | Prevents storage creep | Auto-delete `sha-*` tags after 7 days, keep only `latest` + `v*` |
+| **Preemptible/Spot nodes** (recommended) | ~60-80% compute savings | Acceptable for non-critical workloads |
+
+### Infrastructure Metrics (Live)
+
+| Metric | Value |
+|--------|-------|
+| **Running Pods** | 6 (3 ML APIs + MLflow + Prometheus + Grafana) |
+| **GKE Nodes** | 3 (e2-medium, us-central1) |
+| **Pod Restarts** | 0 (stable for 28h+) |
+| **Docker Images** | 3 × ~888 MB (tagged `v1.0.0` + `latest`) |
+| **Container Vulnerabilities** | 68/image (Low/Medium severity — OS base packages, not application code) |
+| **Cloud Builds** | 5 successful builds (Cloud Build remote) |
+| **Model Storage** | 3 models in GCS (3.3–4.2 MB each) |
+| **Dataset Storage** | 3 datasets in GCS (132 KB–4.3 MB each) |
+| **Uptime** | 99.9%+ (no unplanned downtime since deployment) |
+
+### GCS Data Management Strategy
+
+Production data is stored in Google Cloud Storage with enterprise-grade practices:
+
+| Bucket | Purpose | Contents |
+|--------|---------|----------|
+| `*-ml-models-production` | ML model artifacts | `{project}/model.joblib` (3 models) |
+| `*-datasets-production` | Training/reference datasets | `{project}/v{n}/{filename}.csv` (3 datasets) |
+
+**Versioning & Lifecycle Policies:**
+
+| Policy | Models Bucket | Datasets Bucket |
+|--------|--------------|-----------------|
+| **Object Versioning** | ✅ Enabled | ✅ Enabled |
+| **Lifecycle: Nearline** | After 90 days | After 30 days (non-current) |
+| **Lifecycle: Delete** | — | After 90 days (non-current) |
+| **Public Access** | 🚫 Prevention enabled | 🚫 Prevention enabled |
+| **Uniform Bucket IAM** | ✅ | ✅ |
+
+**IAM Access Control (Least Privilege):**
+
+| Principal | Role | Scope |
+|-----------|------|-------|
+| `ml-portfolio-gke-workload` (Workload Identity SA) | `storage.objectViewer` | Both buckets (read-only) |
+| Project editors | `storage.legacyBucketOwner` | Both buckets |
+
+**Naming Conventions:**
+
+```
+gs://{project-id}-{type}-production/{service}/v{version}/{filename}
+
+# Models
+gs://ml-portfolio-duque-om-202602-ml-models-production/bankchurn/model.joblib
+gs://ml-portfolio-duque-om-202602-ml-models-production/carvision/model.joblib
+gs://ml-portfolio-duque-om-202602-ml-models-production/telecom/model.joblib
+
+# Datasets
+gs://ml-portfolio-duque-om-202602-datasets-production/bankchurn/v1/Churn.csv
+gs://ml-portfolio-duque-om-202602-datasets-production/carvision/v1/vehicles_us.csv
+gs://ml-portfolio-duque-om-202602-datasets-production/telecom/v1/WA_Fn-UseC_-Telco-Customer-Churn.csv
+```
+
+**Init Container Architecture:**
+
+Each pod runs **two init containers** before the main application starts:
+
+1. `download-model` → Downloads model from `*-ml-models-production` bucket
+2. `download-data` → Downloads dataset from `*-datasets-production` bucket
+
+Both use the same generic download script (`download-script` ConfigMap) with different environment variables, following the DRY principle.
 
 ---
 

@@ -253,6 +253,20 @@ docker compose -f docker-compose.demo.yml ps
 | **Memory Usage** | 1.2 GB | 1.8 GB | 1.0 GB | <2GB ✅ |
 | **Model Size** | 4 MB | 6 KB | 156 KB | — |
 
+### Production Infrastructure (GCP — Live)
+
+| Metric | Value | Details |
+|--------|-------|---------|
+| **Running Pods** | 6 | 3 ML APIs + MLflow + Prometheus + Grafana |
+| **GKE Nodes** | 3 | e2-medium instances, us-central1 |
+| **Monthly Cost** | ~$51 USD | Compute 40%, GKE 26%, Networking 12%, Scanning 18% |
+| **Docker Images** | 3 × ~888 MB | Versioned (`v1.0.0` + `latest`), cleanup policy active |
+| **GCS Buckets** | 2 | Models + Datasets (versioned, lifecycle policies, IAM) |
+| **Uptime** | 99.9%+ | Zero unplanned downtime since deployment |
+| **Pod Restarts** | 0 | Stable across all 6 services |
+
+> Cost breakdown and optimization decisions: see [Architecture Portfolio](ARCHITECTURE_PORTFOLIO.md#-production-infrastructure--cost-analysis)
+
 ---
 
 ## 🏗️ Repository Structure
@@ -306,7 +320,8 @@ ML-MLOps-Portfolio/
 │   ├── *-deployment.yaml          # Deployments (3 APIs + Grafana + Prometheus)
 │   ├── ingress.yaml               # Ingress with public IP
 │   ├── model-configmaps.yaml      # GCS model path configs
-│   ├── download-script-configmap.yaml # Init Container script
+│   ├── dataset-configmaps.yaml    # GCS dataset path configs
+│   ├── download-script-configmap.yaml # Init Container script (model + data)
 │   └── namespace.yaml             # ml-portfolio namespace
 │
 ├── infra/

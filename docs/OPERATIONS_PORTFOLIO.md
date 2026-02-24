@@ -475,19 +475,125 @@ tar -xzf models-backup-YYYYMMDD.tar.gz
 5. **Enable HTTPS**: Use reverse proxy (nginx) in production
 6. **API authentication**: Implement OAuth2/JWT (future)
 
+## Production Data Management (GCS)
+
+All production datasets and model artifacts are stored in Google Cloud Storage with enterprise-grade data management practices.
+
+### GCS Buckets
+
+| Bucket | Purpose | Versioning | Lifecycle |
+|--------|---------|------------|-----------|
+| `*-ml-models-production` | ML model artifacts (.joblib) | ✅ Enabled | Nearline after 90 days |
+| `*-datasets-production` | Training/reference datasets (.csv) | ✅ Enabled | Nearline 30d → Delete 90d (non-current) |
+
+### Dataset Inventory
+
+| Project | File | Size | GCS Path |
+|---------|------|------|----------|
+| **BankChurn** | `Churn.csv` | 694 KB | `bankchurn/v1/Churn.csv` |
+| **CarVision** | `vehicles_us.csv` | 4.3 MB | `carvision/v1/vehicles_us.csv` |
+| **TelecomAI** | `WA_Fn-UseC_-Telco-Customer-Churn.csv` | 132 KB | `telecom/v1/WA_Fn-UseC_-Telco-Customer-Churn.csv` |
+
+### Security & Access Control
+
+- **Uniform Bucket-Level IAM** on both buckets
+- **Public access prevention** enabled
+- **Workload Identity SA** (`ml-portfolio-gke-workload`) has `storage.objectViewer` (read-only)
+- No service account keys — pods authenticate via GKE Workload Identity
+
+### Init Container Data Flow
+
+```
+Pod startup sequence:
+  1. init: download-model  → GCS models bucket  → /app/models/model.joblib
+  2. init: download-data   → GCS datasets bucket → /app/data/raw/{dataset}.csv
+  3. main: application container starts with both artifacts available
+```
+
+### Useful Commands
+
+```bash
+# List all datasets
+gsutil ls -r gs://ml-portfolio-duque-om-202602-datasets-production/
+
+# Upload a new dataset version
+gsutil cp data/raw/dataset.csv gs://ml-portfolio-duque-om-202602-datasets-production/{project}/v2/dataset.csv
+
+# Check versioning history
+gsutil ls -la gs://ml-portfolio-duque-om-202602-datasets-production/{project}/
+
+# Verify bucket policies
+gsutil lifecycle get gs://ml-portfolio-duque-om-202602-datasets-production/
+gsutil iam get gs://ml-portfolio-duque-om-202602-datasets-production/
+```
+
+---
+
+## Production Cloud Cost Analysis
+
+Real cost data from the live GCP (GKE) deployment. Values originally billed in COP (Colombian Pesos) and converted at ~4,200 COP/USD for international reference.
+
+### GCP Monthly Cost Breakdown (~$51 USD/month)
+
+| Service | USD/month | % | What It Does |
+|---------|-----------|---|--------------|
+| **Compute Engine** | $20.50 | 40% | 3 GKE nodes (e2-medium VMs) hosting all pods |
+| **Kubernetes Engine** | $13.35 | 26% | GKE cluster management and control plane |
+| **Container Scanning** | $9.10 | 18% | Automated vulnerability analysis on Docker images |
+| **Networking** | $6.15 | 12% | Load Balancer, VPC, egress traffic |
+| **Cloud SQL** | $1.70 | 3% | PostgreSQL instance for MLflow tracking store |
+| **Artifact Registry** | $0.18 | <1% | Docker image storage (3 services × ~888 MB) |
+| **Cloud Build + Storage** | $0.02 | <1% | Remote builds and GCS model storage |
+
+> **Free Tier**: All costs currently covered by GCP credits (net cost: $0). The breakdown represents real production pricing.
+
+### Cost Optimization Strategies Applied
+
+| Strategy | Savings | Implementation |
+|----------|---------|----------------|
+| **e2-medium** over n1-standard | ~40% | Right-sized for ML inference (not training) |
+| **Single-zone** cluster | ~67% on GKE fees | Acceptable for portfolio; production would use regional |
+| **Cleanup policies** | Prevents unbounded growth | Artifact Registry auto-deletes `sha-*` tags after 7 days |
+| **Init containers** for model download | Decouples model from image | Smaller images, faster builds, independent model updates |
+
+### Infrastructure Health Metrics
+
+| Metric | Current Value | Status |
+|--------|---------------|--------|
+| **Running Pods** | 6/6 | ✅ All healthy |
+| **Pod Restarts** | 0 | ✅ Stable |
+| **GKE Nodes** | 3 (e2-medium) | ✅ Running |
+| **Docker Images** | 3 × ~888 MB | ✅ Tagged `v1.0.0` + `latest` |
+| **Container CVEs** | 68/image (Low/Medium) | ✅ OS-level, not application code |
+| **Cloud Builds** | 5 successful | ✅ All passed |
+| **Uptime** | 99.9%+ | ✅ No unplanned downtime |
+
+### Cost Projection: Scaling to Production
+
+| Scenario | Estimated USD/month | Key Changes |
+|----------|--------------------:|-------------|
+| **Current** (portfolio) | ~$51 | 3 nodes, single-zone, free tier |
+| **Startup** (low traffic) | ~$150–250 | Regional cluster, spot nodes, auto-scaling 1–5 |
+| **Scale-up** (moderate traffic) | ~$500–1,000 | Multi-zone, dedicated nodes, Cloud CDN, managed certs |
+| **Enterprise** (high traffic) | ~$2,000–5,000 | Multi-region, GPU nodes for inference, dedicated DB |
+
+---
+
 ## Scaling Recommendations
 
 ### Horizontal Scaling
 - Use Kubernetes HPA (Horizontal Pod Autoscaler)
-- Target: CPU 70%, Memory 80%
+- Target: CPU 75% (configured in all ML service deployments)
+- Max replicas: 3 per service (configurable per workload)
 
 ### Vertical Scaling
 - Increase container resources in K8s manifests
 - Monitor with Prometheus/Grafana
+- Current limits: 768 Mi–1 Gi memory, 500m–800m CPU per service
 
 ### Database Scaling
-- Move MLflow to PostgreSQL for production
-- Implement connection pooling
+- Move MLflow to PostgreSQL for production (Cloud SQL already provisioned)
+- Implement connection pooling (PgBouncer recommended)
 
 ## Disaster Recovery
 

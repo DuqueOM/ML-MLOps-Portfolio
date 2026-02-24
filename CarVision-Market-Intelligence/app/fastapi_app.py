@@ -122,8 +122,8 @@ async def root():
 async def health():
     uptime = time.time() - start_time
     if not wrapper.model:
-        return {"status": "unhealthy", "reason": "model_not_loaded", "uptime_seconds": uptime}
-    return {"status": "ok", "uptime_seconds": uptime}
+        return {"status": "unhealthy", "model_loaded": False, "uptime_seconds": uptime}
+    return {"status": "ok", "model_loaded": True, "uptime_seconds": uptime}
 
 
 @app.get("/metrics")
