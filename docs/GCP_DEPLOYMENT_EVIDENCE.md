@@ -303,7 +303,7 @@ ls docs/media/screenshots/
    - `grafana` — Dashboard de visualización de métricas
 3. Todos deben tener un ícono verde (✓) o estado "OK"
 4. Si alguno tiene ícono amarillo o rojo, hay un problema con ese servicio
-5. **Nota**: CarVision mostrará 2/2 containers (API + Streamlit sidecar). Los demás muestran 1/1
+5. **Nota**: CarVision muestra **1/1 pods** en la consola GCP (igual que los demás) — esto es correcto. El pod contiene **2 containers** (API + Streamlit sidecar), pero la columna "Pods" refleja réplicas del Deployment, no containers. El `2/2` aparece en `kubectl get pods` en la columna READY (2 containers listos dentro del pod)
 
 ---
 
