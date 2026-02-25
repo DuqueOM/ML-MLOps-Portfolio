@@ -1,0 +1,9 @@
+{
+  "model": "xgboost",
+  "rmse": 5729.82966588013,
+  "mae": 2152.117431640625,
+  "mape": 28.634259419974452,
+  "r2": 0.7047593593597412,
+  "auto_selected": true,
+  "original_model": "random_forest"
+}

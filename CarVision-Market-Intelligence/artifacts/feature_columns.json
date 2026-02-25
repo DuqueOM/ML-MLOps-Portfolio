@@ -1,0 +1,16 @@
+[
+  "brand",
+  "condition",
+  "cylinders",
+  "date_posted",
+  "days_listed",
+  "fuel",
+  "is_4wd",
+  "model",
+  "model_year",
+  "odometer",
+  "paint_color",
+  "transmission",
+  "type",
+  "vehicle_age"
+]
