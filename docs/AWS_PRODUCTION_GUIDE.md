@@ -33,8 +33,8 @@ This document mirrors the [GCP Production Guide](GCP_PRODUCTION_GUIDE.md) with A
 │                                                               │
 │  ┌───────────────┐  ┌──────────────┐  ┌───────────────────┐   │
 │  │  ECR          │  │  RDS         │  │  S3 Buckets       │   │
-│  │  (Registry)   │  │  (Postgres)  │  │  (Models + MLflow)│   │
-│  │  3 images     │  │  db.t3.micro │  │  ~50MB artifacts  │   │
+│  │  (Registry)   │  │  (Postgres)  │  │  Models+Datasets  │   │
+│  │  3 images     │  │  db.t3.micro │  │  +MLflow artifacts│   │
 │  └──────┬────────┘  └──────┬───────┘  └────────┬──────────┘   │
 │         │                  │                   │              │
 │  ┌──────┴──────────────────┴───────────────────┴─────────┐    │
@@ -43,8 +43,9 @@ This document mirrors the [GCP Production Guide](GCP_PRODUCTION_GUIDE.md) with A
 │  │                                                       │    │
 │  │  ┌──────────┐  ┌──────────┐  ┌───────────┐            │    │
 │  │  │BankChurn │  │CarVision │  │TelecomAI  │            │    │
-│  │  │  FastAPI  │  │  FastAPI  │  │  FastAPI  │            │    │
-│  │  │  :8000   │  │  :8000   │  │  :8000    │            │    │
+│  │  │  FastAPI  │  │FastAPI+  │  │  FastAPI  │            │    │
+│  │  │  :8000   │  │Streamlit │  │  :8000    │            │    │
+│  │  │          │  │:8000+8501│  │           │            │    │
 │  │  └────┬─────┘  └─────┬────┘  └──────┬────┘            │    │
 │  │       │              │              │                 │    │
 │  │  ┌────┴──────────────┴──────────────┴──────┐          │    │
@@ -319,7 +320,7 @@ aws ecr list-images --repository-name ml-portfolio/bankchurn-predictor --output 
 
 ---
 
-## Phase 4: Upload Models to S3 (10 min)
+## Phase 4: Upload Models + Datasets to S3 (15 min)
 
 ### 4.1 Train Demo Models Locally
 
@@ -350,6 +351,51 @@ aws s3 ls s3://${MODELS_BUCKET}/ --recursive --human-readable
 ```
 
 > **Key Difference from GCP**: Uses `aws s3 cp` instead of `gsutil cp`. S3 versioning is already enabled by Terraform.
+
+### 4.3 Upload Datasets to S3
+
+Datasets are stored in a separate S3 bucket with versioning, lifecycle policies, and strict naming conventions.
+
+```bash
+DATASETS_BUCKET="ml-portfolio-datasets-production"
+
+# Create datasets bucket with versioning
+aws s3 mb s3://${DATASETS_BUCKET} --region ${AWS_REGION}
+aws s3api put-bucket-versioning --bucket ${DATASETS_BUCKET} \
+  --versioning-configuration Status=Enabled
+
+# Set lifecycle policy (transition to Glacier after 90 days)
+cat > /tmp/lifecycle.json <<EOF
+{
+  "Rules": [{
+    "ID": "ArchiveOldDatasets",
+    "Status": "Enabled",
+    "Transitions": [{"Days": 90, "StorageClass": "GLACIER"}],
+    "Filter": {"Prefix": ""}
+  }]
+}
+EOF
+aws s3api put-bucket-lifecycle-configuration --bucket ${DATASETS_BUCKET} \
+  --lifecycle-configuration file:///tmp/lifecycle.json
+
+# Upload BankChurn dataset
+aws s3 cp BankChurn-Predictor/data/raw/Churn.csv \
+  s3://${DATASETS_BUCKET}/bankchurn/v1/Churn.csv
+
+# Upload CarVision dataset
+aws s3 cp CarVision-Market-Intelligence/data/raw/vehicles_us.csv \
+  s3://${DATASETS_BUCKET}/carvision/v1/vehicles_us.csv
+
+# Upload TelecomAI dataset
+aws s3 cp TelecomAI-Customer-Intelligence/data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv \
+  s3://${DATASETS_BUCKET}/telecom/v1/WA_Fn-UseC_-Telco-Customer-Churn.csv
+
+# Verify uploads
+aws s3 ls s3://${DATASETS_BUCKET}/ --recursive --human-readable
+```
+
+> **Naming Convention**: `s3://ml-portfolio-datasets-production/{service}/v{version}/{filename}`
+> **Security**: Only the `ml-portfolio-eks-workload-role` IAM role has `s3:GetObject` access.
 
 ---
 
@@ -394,6 +440,7 @@ sed -i "s|ACCOUNT_ID|${AWS_ACCOUNT_ID}|g" k8s/overlays/aws/serviceaccount-aws.ya
 kubectl apply -f k8s/overlays/aws/serviceaccount-aws.yaml
 kubectl apply -f k8s/overlays/aws/download-script-aws.yaml
 kubectl apply -f k8s/overlays/aws/model-configmaps-aws.yaml
+kubectl apply -f k8s/overlays/aws/dataset-configmaps-aws.yaml
 
 # Deploy ML services (AWS versions with ECR images + S3 init containers)
 kubectl apply -f k8s/overlays/aws/bankchurn-deployment-aws.yaml
@@ -583,34 +630,54 @@ Trigger options:
 
 ---
 
-## Phase 9: Init Containers — S3 Model Download Pattern
+## Phase 9: Init Containers — S3 Model & Dataset Download Pattern
+
+Each pod runs **two init containers** before the main application starts:
+1. **download-model** — downloads the ML model from S3
+2. **download-data** — downloads the dataset from S3
 
 ### Architecture (AWS Version)
 
 ```
-┌─────────────────────────────────────────────────┐
-│ Pod: bankchurn-predictor (EKS)                  │
-│                                                 │
-│  ┌─────────────────────────┐                    │
-│  │ Init Container          │                    │
-│  │ python:3.11-alpine      │                    │
-│  │                         │                    │
-│  │ 1. pip install boto3    │                    │
-│  │ 2. Read S3_BUCKET env   │──── ConfigMap ◄────┤
-│  │ 3. Download model.joblib│                    │
-│  │ 4. Write to /models/    │──┐                 │
-│  └─────────────────────────┘  │                 │
-│                               │ emptyDir volume │
-│  ┌─────────────────────────┐  │                 │
-│  │ Main Container          │  │                 │
-│  │ bankchurn-api           │  │                 │
-│  │                         │  │                 │
-│  │ Mount /app/models/ ◄────│──┘                 │
-│  │ Load model.joblib       │                    │
-│  │ Serve predictions       │                    │
-│  └─────────────────────────┘                    │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│ Pod: bankchurn-predictor (EKS)                            │
+│                                                          │
+│  ┌───────────────────────────┐                            │
+│  │ Init: download-model      │                            │
+│  │ python:3.11-alpine        │                            │
+│  │ pip install boto3         │                            │
+│  │ Download model.joblib     │── model-config ConfigMap    │
+│  │ Write to /models/         │──┐                          │
+│  └───────────────────────────┘  │ emptyDir: models          │
+│                                │                          │
+│  ┌───────────────────────────┐  │                          │
+│  │ Init: download-data       │  │                          │
+│  │ python:3.11-alpine        │  │                          │
+│  │ pip install boto3         │  │                          │
+│  │ Download dataset.csv      │──┼─ dataset-config ConfigMap│
+│  │ Write to /data/           │──┼─┐                        │
+│  └───────────────────────────┘  │ │ emptyDir: data          │
+│                                │ │                        │
+│  ┌───────────────────────────┐  │ │                        │
+│  │ Main Container            │  │ │                        │
+│  │ bankchurn-api             │  │ │                        │
+│  │                           │  │ │                        │
+│  │ Mount /app/models/ ◄─────│──┘ │                        │
+│  │ Mount /app/data/   ◄─────│────┘                        │
+│  │ Load model + serve        │                            │
+│  └───────────────────────────┘                            │
+└──────────────────────────────────────────────────────────┘
 ```
+
+### Dataset ConfigMaps (AWS)
+
+Each service has a dataset-specific ConfigMap in `k8s/overlays/aws/dataset-configmaps-aws.yaml`:
+
+| Service | S3 Bucket | S3 Path | Local Path |
+|---------|-----------|---------|------------|
+| BankChurn | `ml-portfolio-datasets-production` | `bankchurn/v1/Churn.csv` | `/data/raw/Churn.csv` |
+| CarVision | `ml-portfolio-datasets-production` | `carvision/v1/vehicles_us.csv` | `/data/raw/vehicles_us.csv` |
+| TelecomAI | `ml-portfolio-datasets-production` | `telecom/v1/WA_Fn-UseC_-...csv` | `/data/raw/WA_Fn-UseC_-...csv` |
 
 ### Key Differences from GCP Init Container
 
@@ -620,6 +687,8 @@ Trigger options:
 | Env vars | `GCS_BUCKET`, `GCS_MODEL_PATH` | `S3_BUCKET`, `S3_MODEL_PATH` |
 | Download | `storage.Client().bucket().blob().download_to_filename()` | `boto3.client("s3").download_file()` |
 | Auth | Workload Identity (auto) | IRSA (auto) |
+| Init containers per pod | 2 (model + data) | 2 (model + data) |
+| Dataset bucket | `{project}-datasets-production` | `ml-portfolio-datasets-production` |
 
 ### Updating a Model Version (AWS)
 
@@ -664,6 +733,8 @@ cat > /tmp/s3-read-policy.json <<EOF
       "Resource": [
         "arn:aws:s3:::ml-portfolio-ml-models-production",
         "arn:aws:s3:::ml-portfolio-ml-models-production/*",
+        "arn:aws:s3:::ml-portfolio-datasets-production",
+        "arn:aws:s3:::ml-portfolio-datasets-production/*",
         "arn:aws:s3:::ml-portfolio-mlflow-artifacts-production",
         "arn:aws:s3:::ml-portfolio-mlflow-artifacts-production/*"
       ]
@@ -751,7 +822,7 @@ kubectl get hpa -n ml-portfolio
 | RDS (db.t3.micro) | Postgres 15 | $15 |
 | NAT Gateway | Single AZ | $32 |
 | ALB | 1 LB + rules | $22 |
-| S3 | ~100MB | $0.05 |
+| S3 (models+datasets) | ~165MB | $0.05 |
 | ECR | ~5GB images | $0.50 |
 | CloudWatch | 30-day retention | $0-5 |
 | **Total** | | **~$322/month** |
@@ -765,7 +836,7 @@ kubectl get hpa -n ml-portfolio
 | **Single NAT Gateway** | Already configured | `single_nat_gateway = true` |
 | **db.t3.micro** | Smallest RDS available | Already configured |
 | **ECR lifecycle** | Auto-expire old images | 10 tagged, 7-day untagged (in Terraform) |
-| **S3 Glacier lifecycle** | Old model versions to Glacier | 90-day transition (in Terraform) |
+| **S3 Glacier lifecycle** | Old models/datasets to Glacier | 90-day transition (models + datasets) |
 | **CloudWatch 30-day retention** | Auto-expire logs | Already configured |
 | **Deploy and teardown** | Pay only for demo hours | Terraform destroy after evidence collection |
 
@@ -824,8 +895,9 @@ kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio &
 # 8. ECR images
 aws ecr describe-repositories --output table
 
-# 9. S3 models
+# 9. S3 models + datasets
 aws s3 ls s3://${MODELS_BUCKET}/ --recursive --human-readable
+aws s3 ls s3://ml-portfolio-datasets-production/ --recursive --human-readable
 ```
 
 ---
@@ -869,7 +941,8 @@ aws rds delete-db-instance --db-instance-identifier ml-portfolio-mlflow-db-produ
 ```bash
 # Pod logs
 kubectl logs -n ml-portfolio <pod-name> --tail=50
-kubectl logs -n ml-portfolio <pod-name> -c download-model  # init container
+kubectl logs -n ml-portfolio <pod-name> -c download-model  # model init container
+kubectl logs -n ml-portfolio <pod-name> -c download-data   # dataset init container
 
 # Pod details
 kubectl describe pod <pod-name> -n ml-portfolio

@@ -1,0 +1,47 @@
+# ConfigMaps for S3 dataset download paths (AWS).
+# Equivalent to k8s/dataset-configmaps.yaml (GCS version for GCP)
+# Each project has its own ConfigMap pointing to the versioned dataset in S3.
+# Bucket: ml-portfolio-datasets-production
+# Naming convention: {project}/v{version}/{filename}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bankchurn-dataset-config
+  namespace: ml-portfolio
+  labels:
+    app: bankchurn-predictor
+    component: dataset-download
+    cloud: aws
+data:
+  S3_BUCKET: "ml-portfolio-datasets-production"
+  S3_MODEL_PATH: "bankchurn/v1/Churn.csv"
+  LOCAL_MODEL_PATH: "/data/raw/Churn.csv"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: carvision-dataset-config
+  namespace: ml-portfolio
+  labels:
+    app: carvision-intelligence
+    component: dataset-download
+    cloud: aws
+data:
+  S3_BUCKET: "ml-portfolio-datasets-production"
+  S3_MODEL_PATH: "carvision/v1/vehicles_us.csv"
+  LOCAL_MODEL_PATH: "/data/raw/vehicles_us.csv"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telecom-dataset-config
+  namespace: ml-portfolio
+  labels:
+    app: telecom-intelligence
+    component: dataset-download
+    cloud: aws
+data:
+  S3_BUCKET: "ml-portfolio-datasets-production"
+  S3_MODEL_PATH: "telecom/v1/WA_Fn-UseC_-Telco-Customer-Churn.csv"
+  LOCAL_MODEL_PATH: "/data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv"
