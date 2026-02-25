@@ -1187,18 +1187,23 @@ curl -s -X POST http://localhost:8001/predict \
   }' | python -m json.tool
 ```
 
-La respuesta incluye las SHAP values por feature:
+La respuesta incluye las feature contributions (SHAP values cuando hay datos de background disponibles):
 ```json
 {
-  "prediction": 1,
-  "probability": 0.73,
-  "shap_contributions": {
+  "churn_probability": 0.85,
+  "churn_prediction": 1,
+  "risk_level": "HIGH",
+  "confidence": 0.69,
+  "feature_contributions": {
     "Balance": 0.15,
     "Age": 0.12,
-    "Geography_Germany": 0.08,
+    "Geography": 0.08,
     "NumOfProducts": -0.05,
-    ...
-  }
+    "CreditScore": -0.03,
+    "..."
+  },
+  "model_version": "1.0.0",
+  "prediction_timestamp": "2026-02-25T18:05:11Z"
 }
 ```
 
