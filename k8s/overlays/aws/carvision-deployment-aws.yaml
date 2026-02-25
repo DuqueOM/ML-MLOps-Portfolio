@@ -68,6 +68,28 @@ spec:
         volumeMounts:
         - name: models
           mountPath: /app/models
+        - name: data
+          mountPath: /app/data
+      - name: streamlit-dashboard
+        image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/ml-portfolio/carvision-intelligence:latest
+        imagePullPolicy: Always
+        command: ["streamlit", "run", "app/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true"]
+        ports:
+        - containerPort: 8501
+          name: streamlit
+          protocol: TCP
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: models
+          mountPath: /app/models
+        - name: data
+          mountPath: /app/data
       initContainers:
       - name: download-model
         image: python:3.11-alpine
@@ -85,8 +107,26 @@ spec:
           mountPath: /models
         - name: download-script
           mountPath: /scripts
+      - name: download-data
+        image: python:3.11-alpine
+        command:
+        - sh
+        - -c
+        - |
+          pip install --quiet boto3==1.34.0 && \
+          python /scripts/download-model.py
+        envFrom:
+        - configMapRef:
+            name: carvision-dataset-config
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: download-script
+          mountPath: /scripts
       volumes:
       - name: models
+        emptyDir: {}
+      - name: data
         emptyDir: {}
       - name: download-script
         configMap:
@@ -108,6 +148,10 @@ spec:
   - name: http
     port: 80
     targetPort: 8000
+    protocol: TCP
+  - name: streamlit
+    port: 8501
+    targetPort: 8501
     protocol: TCP
 ---
 apiVersion: v1

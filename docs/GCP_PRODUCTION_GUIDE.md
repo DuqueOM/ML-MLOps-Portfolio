@@ -31,8 +31,8 @@ This document includes the **real deployment experience** with problems encounte
 │                                                             │
 │  ┌──────────────┐  ┌─────────────┐  ┌──────────────────┐    │
 │  │  Artifact    │  │  Cloud SQL  │  │  GCS Buckets     │    │
-│  │  Registry    │  │  (Postgres) │  │  (Models + MLflow)│    │
-│  │  3 images    │  │  db-f1-micro│  │  ~50MB artifacts │    │
+│  │  Registry    │  │  (Postgres) │  │  Models+Datasets │    │
+│  │  3 images    │  │  db-f1-micro│  │  +MLflow artifact│    │
 │  └──────┬───────┘  └──────┬──────┘  └────────┬─────────┘    │
 │         │                 │                  │              │
 │  ┌──────┴─────────────────┴──────────────────┴────────┐     │
@@ -41,8 +41,9 @@ This document includes the **real deployment experience** with problems encounte
 │  │                                                    │     │
 │  │  ┌──────────┐  ┌──────────┐  ┌───────────┐         │     │
 │  │  │BankChurn │  │CarVision │  │TelecomAI  │         │     │
-│  │  │  FastAPI  │  │  FastAPI  │  │  FastAPI  │         │     │
-│  │  │  :8000   │  │  :8000   │  │  :8000    │         │     │
+│  │  │  FastAPI  │  │FastAPI+  │  │  FastAPI  │         │     │
+│  │  │  :8000   │  │Streamlit │  │  :8000    │         │     │
+│  │  │          │  │:8000+8501│  │           │         │     │
 │  │  └────┬─────┘  └─────┬────┘  └──────┬────┘         │     │
 │  │       │              │              │              │     │
 │  │  ┌────┴──────────────┴──────────────┴──────┐       │     │
@@ -273,7 +274,7 @@ gcloud artifacts docker images list ${AR_REPO} --format="table(package,tags,crea
 
 ---
 
-## Phase 4: Train & Upload Models (10 min)
+## Phase 4: Train & Upload Models + Datasets (15 min)
 
 ### 4.1 Train Demo Models Locally
 
@@ -304,6 +305,42 @@ gsutil ls -r gs://${MODELS_BUCKET}/
 ```
 
 > **Tip**: If `gsutil cp` fails with `ServerNotFoundError`, retry — it's usually a transient DNS issue.
+
+### 4.3 Upload Datasets to GCS
+
+Datasets are stored in a separate GCS bucket with versioning, lifecycle policies, and strict naming conventions.
+
+```bash
+DATASETS_BUCKET="${PROJECT_ID}-datasets-production"
+
+# Create datasets bucket with versioning
+gsutil mb -l $REGION gs://${DATASETS_BUCKET}
+gsutil versioning set on gs://${DATASETS_BUCKET}
+
+# Set lifecycle policy (auto-archive after 90 days)
+cat > /tmp/lifecycle.json <<EOF
+{"rule": [{"action": {"type": "SetStorageClass", "storageClass": "NEARLINE"}, "condition": {"age": 90}}]}
+EOF
+gsutil lifecycle set /tmp/lifecycle.json gs://${DATASETS_BUCKET}
+
+# Upload BankChurn dataset
+gsutil cp BankChurn-Predictor/data/raw/Churn.csv \
+  gs://${DATASETS_BUCKET}/bankchurn/v1/Churn.csv
+
+# Upload CarVision dataset
+gsutil cp CarVision-Market-Intelligence/data/raw/vehicles_us.csv \
+  gs://${DATASETS_BUCKET}/carvision/v1/vehicles_us.csv
+
+# Upload TelecomAI dataset
+gsutil cp TelecomAI-Customer-Intelligence/data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv \
+  gs://${DATASETS_BUCKET}/telecom/v1/WA_Fn-UseC_-Telco-Customer-Churn.csv
+
+# Verify uploads
+gsutil ls -r gs://${DATASETS_BUCKET}/
+```
+
+> **Naming Convention**: `gs://{project-id}-datasets-production/{service}/v{version}/{filename}`
+> **Security**: Only the `ml-portfolio-gke-workload` SA has `storage.objectViewer` access.
 
 ---
 
@@ -337,6 +374,11 @@ sed -i "s|image: .*telecom.*|image: ${AR_REPO}/telecomai-customer-intelligence:l
 ### 5.3 Deploy Services
 
 ```bash
+# Deploy ConfigMaps (model + dataset paths)
+kubectl apply -f k8s/download-script-configmap.yaml
+kubectl apply -f k8s/model-configmaps.yaml
+kubectl apply -f k8s/dataset-configmaps.yaml
+
 # Deploy all ML services
 kubectl apply -f k8s/bankchurn-deployment.yaml
 kubectl apply -f k8s/carvision-deployment.yaml
@@ -591,48 +633,56 @@ gcloud artifacts docker images list \
   ${REGION}-docker.pkg.dev/${PROJECT_ID}/ml-portfolio-images \
   --format="table(package,tags)"
 
-# 9. GCS models
+# 9. GCS models + datasets
 gsutil ls -r gs://$(terraform -chdir=infra/terraform/gcp output -raw ml_models_bucket)/
+gsutil ls -r gs://${PROJECT_ID}-datasets-production/
 ```
 
 ---
 
-## Phase 9: Init Containers — Model Download Pattern
+## Phase 9: Init Containers — Model & Dataset Download Pattern
 
 ### Why Init Containers?
 
-Init containers run **before** the main application container starts. In this portfolio, they download the ML model from Google Cloud Storage to a shared `emptyDir` volume. This pattern ensures:
+Init containers run **before** the main application container starts. In this portfolio, they download **both the ML model and the dataset** from Google Cloud Storage to shared `emptyDir` volumes. This pattern ensures:
 
-1. **The model is available before the API starts** — no race condition
+1. **The model and data are available before the API starts** — no race condition
 2. **Retry logic** — if the download fails, the init container retries before the app starts
 3. **Separation of concerns** — the API container doesn't need GCS credentials or libraries
-4. **Model hot-swapping** — update the ConfigMap and restart the pod to load a new model version
+4. **Hot-swapping** — update the ConfigMap and restart the pod to load a new model/dataset version
+5. **Data versioning** — datasets are versioned in GCS with lifecycle policies
 
 ### Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│ Pod: bankchurn-predictor                        │
-│                                                 │
-│  ┌─────────────────────────┐                    │
-│  │ Init Container          │                    │
-│  │ python:3.11-alpine      │                    │
-│  │                         │                    │
-│  │ 1. pip install gcs SDK  │                    │
-│  │ 2. Read GCS_BUCKET env  │──── ConfigMap ◄────┤
-│  │ 3. Download model.joblib│                    │
-│  │ 4. Write to /models/    │──┐                 │
-│  └─────────────────────────┘  │                 │
-│                               │ emptyDir volume │
-│  ┌─────────────────────────┐  │                 │
-│  │ Main Container          │  │                 │
-│  │ bankchurn-api           │  │                 │
-│  │                         │  │                 │
-│  │ Mount /app/models/ ◄────│──┘                 │
-│  │ Load model.joblib       │                    │
-│  │ Serve predictions       │                    │
-│  └─────────────────────────┘                    │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│ Pod: bankchurn-predictor                                    │
+│                                                            │
+│  ┌───────────────────────────┐                              │
+│  │ Init: download-model      │                              │
+│  │ python:3.11-alpine        │                              │
+│  │ pip install gcs SDK       │                              │
+│  │ Download model.joblib     │── model-config ConfigMap      │
+│  │ Write to /models/         │──┐                            │
+│  └───────────────────────────┘  │ emptyDir: models          │
+│                                │                            │
+│  ┌───────────────────────────┐  │                            │
+│  │ Init: download-data       │  │                            │
+│  │ python:3.11-alpine        │  │                            │
+│  │ pip install gcs SDK       │  │                            │
+│  │ Download dataset.csv      │──┼─ dataset-config ConfigMap  │
+│  │ Write to /data/           │──┼─┐                          │
+│  └───────────────────────────┘  │ │ emptyDir: data            │
+│                                │ │                          │
+│  ┌───────────────────────────┐  │ │                          │
+│  │ Main Container            │  │ │                          │
+│  │ bankchurn-api             │  │ │                          │
+│  │                           │  │ │                          │
+│  │ Mount /app/models/ ◄─────│──┘ │                          │
+│  │ Mount /app/data/   ◄─────│────┘                          │
+│  │ Load model + serve        │                              │
+│  └───────────────────────────┘                              │
+└──────────────────────────────────────────────────────────┘
 ```
 
 ### 9.1 Download Script ConfigMap
@@ -668,7 +718,29 @@ kubectl get configmap -n ml-portfolio -l component=model-download
 # telecom-model-config     3      Xs
 ```
 
-### 9.3 Updating a Model Version
+### 9.3 Dataset ConfigMaps (Per Service)
+
+Each ML service also has a ConfigMap for its dataset path in GCS:
+
+```bash
+# Apply all dataset ConfigMaps
+kubectl apply -f k8s/dataset-configmaps.yaml
+
+# Verify
+kubectl get configmap -n ml-portfolio -l component=dataset-download
+# NAME                       DATA   AGE
+# bankchurn-dataset-config   3      Xs
+# carvision-dataset-config   3      Xs
+# telecom-dataset-config     3      Xs
+```
+
+| Service | Dataset | GCS Path | Size |
+|---------|---------|----------|------|
+| BankChurn | `Churn.csv` | `bankchurn/v1/Churn.csv` | ~1.2 MB |
+| CarVision | `vehicles_us.csv` | `carvision/v1/vehicles_us.csv` | ~63 MB |
+| TelecomAI | `WA_Fn-UseC_-Telco-Customer-Churn.csv` | `telecom/v1/WA_Fn-UseC_-...csv` | ~977 KB |
+
+### 9.4 Updating a Model Version
 
 To deploy a new model version **without rebuilding the Docker image**:
 
@@ -832,7 +904,7 @@ affinity:
 | **Preemptible/Spot VMs** | ~60-80% vs on-demand | `preemptible = true` in node pool config |
 | **db-f1-micro for Cloud SQL** | ~$7/month vs $50+/month | `db_tier = "db-f1-micro"` |
 | **emptyDir for monitoring** | Avoids PVC costs | No persistent disks for Prometheus/Grafana |
-| **GCS lifecycle rules** | Auto-archive old models | Nearline after 30 days in Terraform |
+| **GCS lifecycle rules** | Auto-archive old artifacts | Nearline after 30/90 days (models/datasets) |
 | **Minimal disk size (30GB)** | Fits SSD quota, reduces cost | `disk_size_gb = 30` per node |
 | **Cloud Build** | No local Docker overhead | Pay per build minute (~$0.003/min) |
 
@@ -843,7 +915,7 @@ affinity:
 | GKE nodes | 1×e2-medium ($25/mo) | 3×n1-standard-2 ($200/mo) |
 | Cloud SQL | db-f1-micro ($7/mo) | db-n1-standard-1 ($50/mo) |
 | Load Balancer | 1 IP ($18/mo) | Same |
-| Storage | ~100MB ($0.05/mo) | 10GB+ ($2/mo) |
+| Storage (GCS) | ~165MB models+datasets ($0.05/mo) | 10GB+ ($2/mo) |
 | **Total** | **~$50/mo** | **~$270/mo** |
 
 ### When to Teardown
@@ -926,7 +998,7 @@ kubectl exec -it -n ml-portfolio <pod-name> -- /bin/bash
 | Phase 1: GCP Setup | 30 min | ✅ Complete | Project, APIs, service account created |
 | Phase 2: Terraform | 45 min | ✅ Complete | Required quota adjustments (SSD, node count) |
 | Phase 3: Docker Images | 60 min | ✅ Complete | BankChurn + Telecom via Docker; CarVision via Cloud Build |
-| Phase 4: Model Upload | 10 min | ✅ Complete | 3 models uploaded to GCS |
+| Phase 4: Models+Datasets | 15 min | ✅ Complete | 3 models + 3 datasets uploaded to GCS |
 | Phase 5: K8s Deploy | 40 min | ✅ Complete | Required PVC, service type, and security fixes |
 | Phase 6: MLflow | 5 min | ✅ Complete | SQLite backend (sufficient for demo) |
 | Phase 7: Monitoring | 10 min | ✅ Complete | securityContext fixes for Prometheus/Grafana |
@@ -939,7 +1011,7 @@ kubectl exec -it -n ml-portfolio <pod-name> -- /bin/bash
 $ kubectl get pods -n ml-portfolio
 NAME                                      READY   STATUS    AGE
 bankchurn-predictor-6758c897bd-zttzf      1/1     Running   2m
-carvision-intelligence-77f58796cf-7lg2l   1/1     Running   2m
+carvision-intelligence-77f58796cf-7lg2l   2/2     Running   2m
 telecom-intelligence-788c44bcc-pxk49      1/1     Running   2m
 mlflow-server-6cf9564cd7-qn7rz            1/1     Running   82m
 prometheus-dc4689989-qf9gm                1/1     Running   94m

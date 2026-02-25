@@ -128,8 +128,8 @@ metrics.json
 docs/media/videos/
 
 # Private deployment guides (not for public repo)
-# docs/GCP_DEPLOYMENT_EVIDENCE.md
-# docs/GCP_PRODUCTION_GUIDE.md
+docs/GCP_DEPLOYMENT_EVIDENCE.md
+docs/GCP_PRODUCTION_GUIDE.md
 
 # Generated audio for guia_mlops docs
 docs/guia_mlops/audio/
