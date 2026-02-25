@@ -651,6 +651,7 @@ Init containers run **before** the main application container starts. In this po
 3. **Separation of concerns** — the API container doesn't need GCS credentials or libraries
 4. **Hot-swapping** — update the ConfigMap and restart the pod to load a new model/dataset version
 5. **Data versioning** — datasets are versioned in GCS with lifecycle policies
+6. **SHAP Explainability** — BankChurn uses the downloaded dataset as SHAP background data, enabling real feature contributions in API responses instead of zeros
 
 ### Architecture
 

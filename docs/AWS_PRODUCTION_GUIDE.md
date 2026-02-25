@@ -634,7 +634,7 @@ Trigger options:
 
 Each pod runs init containers before the main application starts:
 1. **download-model** — downloads the ML model from S3
-2. **download-data** — downloads the dataset from S3
+2. **download-data** — downloads the dataset from S3 (also used as SHAP background data for BankChurn feature contributions)
 3. **download-metrics** (CarVision only) — downloads evaluation artifacts from S3 for Streamlit
 
 ### Architecture (AWS Version)
