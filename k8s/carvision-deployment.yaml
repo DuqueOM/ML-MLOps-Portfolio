@@ -103,6 +103,8 @@ spec:
           mountPath: /app/models
         - name: data
           mountPath: /app/data
+        - name: artifacts
+          mountPath: /app/artifacts
       initContainers:
       - name: download-model
         image: python:3.11-alpine
@@ -136,10 +138,45 @@ spec:
           mountPath: /data
         - name: download-script
           mountPath: /scripts
+      - name: download-metrics
+        image: python:3.11-alpine
+        command:
+        - sh
+        - -c
+        - |
+          pip install --quiet google-cloud-storage==2.18.2 && \
+          python -c "
+          import os
+          from google.cloud import storage
+          bucket = storage.Client().bucket(os.environ['GCS_BUCKET'])
+          for line in os.environ['ARTIFACTS'].strip().split('\n'):
+              line = line.strip()
+              if not line: continue
+              gcs_path, local_path = line.split(':')
+              os.makedirs(os.path.dirname(local_path), exist_ok=True)
+              bucket.blob(gcs_path).download_to_filename(local_path)
+              print(f'Downloaded {gcs_path} -> {local_path} ({os.path.getsize(local_path)} bytes)')
+          "
+        env:
+        - name: GCS_BUCKET
+          valueFrom:
+            configMapKeyRef:
+              name: carvision-metrics-config
+              key: GCS_BUCKET
+        - name: ARTIFACTS
+          valueFrom:
+            configMapKeyRef:
+              name: carvision-metrics-config
+              key: ARTIFACTS
+        volumeMounts:
+        - name: artifacts
+          mountPath: /artifacts
       volumes:
       - name: models
         emptyDir: {}
       - name: data
+        emptyDir: {}
+      - name: artifacts
         emptyDir: {}
       - name: download-script
         configMap:

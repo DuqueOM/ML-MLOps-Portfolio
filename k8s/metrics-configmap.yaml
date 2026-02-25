@@ -1,0 +1,20 @@
+# ConfigMap for CarVision metrics/artifacts download from GCS.
+# These JSON files are generated during training and uploaded to GCS.
+# The download-metrics init container fetches them at pod startup.
+# Flow: retrain → upload to GCS → rollout restart → fresh metrics in Streamlit
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: carvision-metrics-config
+  namespace: ml-portfolio
+  labels:
+    app: carvision-intelligence
+    component: metrics-download
+data:
+  GCS_BUCKET: "ml-portfolio-duque-om-202602-ml-models-production"
+  # Comma-separated list of GCS paths and local destinations
+  ARTIFACTS: |
+    carvision/metrics_val.json:/artifacts/metrics_val.json
+    carvision/model_comparison.json:/artifacts/model_comparison.json
+    carvision/feature_columns.json:/artifacts/feature_columns.json
