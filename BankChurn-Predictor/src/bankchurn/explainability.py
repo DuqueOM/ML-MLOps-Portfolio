@@ -67,6 +67,8 @@ class ModelExplainer:
         self.explainer = None
         self.expected_value = None
         self._shap_values_cache = None
+        self._transformed_feature_names: Optional[List[str]] = None
+        self._preprocessor = None
 
         if not SHAP_AVAILABLE:  # pragma: no cover
             logger.warning("SHAP not available. Using fallback explanations.")
@@ -83,6 +85,23 @@ class ModelExplainer:
             # Create appropriate explainer based on model type
             self._initialize_explainer(X_background)
 
+    @staticmethod
+    def _unwrap_classifier(classifier: Any) -> Any:
+        """Unwrap meta-classifiers (e.g. ResampleClassifier) to the inner estimator.
+
+        Only unwraps when the outer classifier lacks feature_importances_ and
+        estimators_ (i.e. it is a thin wrapper, not a real ensemble like RF).
+        """
+        if (
+            hasattr(classifier, "estimator_")
+            and not hasattr(classifier, "feature_importances_")
+            and not hasattr(classifier, "estimators_")
+        ):
+            inner = classifier.estimator_
+            logger.debug(f"Unwrapped {type(classifier).__name__} → {type(inner).__name__}")
+            return inner
+        return classifier
+
     def _initialize_explainer(self, X_background: pd.DataFrame) -> None:  # pragma: no cover
         """Initialize the appropriate SHAP explainer."""
         try:
@@ -90,19 +109,30 @@ class ModelExplainer:
             if hasattr(self.model, "named_steps"):
                 # Pipeline - extract the classifier
                 classifier = self.model.named_steps.get("classifier", self.model.named_steps.get("clf"))
-                if classifier is not None and hasattr(classifier, "estimators_"):
-                    # Transform background data through preprocessor
+                if classifier is not None:
+                    inner = self._unwrap_classifier(classifier)
                     preprocessor = self.model.named_steps.get("preprocessor")
-                    if preprocessor is not None:
+                    if preprocessor is not None and hasattr(inner, "estimators_"):
                         X_transformed = preprocessor.transform(X_background)
-                        self.explainer = shap.TreeExplainer(classifier)
+                        self.explainer = shap.TreeExplainer(inner)
                         self._X_background_transformed = X_transformed
+                        self._preprocessor = preprocessor
                         self.expected_value = self.explainer.expected_value
-                        logger.info("Initialized TreeExplainer for pipeline")
+                        # Store transformed feature names for aggregation
+                        try:
+                            self._transformed_feature_names = list(preprocessor.get_feature_names_out())
+                        except Exception:
+                            self._transformed_feature_names = None
+                        logger.info(
+                            f"Initialized TreeExplainer for pipeline "
+                            f"({type(inner).__name__}, {X_transformed.shape[1]} features)"
+                        )
                         return
 
             # Fallback to KernelExplainer (slower but universal)
             def predict_proba_wrapper(X):
+                if isinstance(X, np.ndarray):
+                    X = pd.DataFrame(X, columns=self.feature_names)
                 return self.model.predict_proba(X)[:, 1]
 
             self.explainer = shap.KernelExplainer(predict_proba_wrapper, X_background.values[:50])
@@ -208,7 +238,9 @@ class ModelExplainer:
 
         try:  # pragma: no cover
             # Transform if pipeline
-            if hasattr(self.model, "named_steps"):
+            if self._preprocessor is not None:
+                X_transformed = self._preprocessor.transform(X_single)
+            elif hasattr(self.model, "named_steps"):
                 preprocessor = self.model.named_steps.get("preprocessor")
                 if preprocessor:
                     X_transformed = preprocessor.transform(X_single)
@@ -220,15 +252,16 @@ class ModelExplainer:
             # Compute SHAP values
             shap_values = self.explainer.shap_values(X_transformed)
             if isinstance(shap_values, list):
+                # List of arrays per class — pick positive class
                 shap_values = shap_values[1]
+            elif isinstance(shap_values, np.ndarray) and shap_values.ndim == 3:
+                # Shape (n_samples, n_features, n_classes) — pick positive class
+                shap_values = shap_values[:, :, 1]
 
             shap_values = shap_values.flatten()
 
-            # Map to feature names
-            if self.feature_names and len(self.feature_names) == len(shap_values):
-                contributions = dict(zip(self.feature_names, shap_values))
-            else:
-                contributions = {f"feature_{i}": float(v) for i, v in enumerate(shap_values)}
+            # Map SHAP values back to original feature names
+            contributions = self._aggregate_to_original(shap_values)
 
             # Sort contributions
             sorted_contribs = sorted(contributions.items(), key=lambda x: x[1], reverse=True)
@@ -261,6 +294,35 @@ class ModelExplainer:
                 "explanation_type": "fallback",
             }
 
+    def _aggregate_to_original(self, values: np.ndarray) -> Dict[str, float]:
+        """Map transformed feature values back to original feature names.
+
+        Sums contributions from one-hot columns (e.g. Geography_Germany +
+        Geography_Spain → Geography) so the API returns original feature names.
+        """
+        # Direct mapping if lengths match
+        if self.feature_names and len(self.feature_names) == len(values):
+            return dict(zip(self.feature_names, [float(v) for v in values]))
+
+        # Aggregate transformed → original using prefix matching
+        if self._transformed_feature_names and len(self._transformed_feature_names) == len(values):
+            agg: Dict[str, float] = {}
+            for tname, val in zip(self._transformed_feature_names, values):
+                # Match against known original feature names
+                matched = False
+                if self.feature_names:
+                    for orig in self.feature_names:
+                        if tname == orig or tname.startswith(orig + "_"):
+                            agg[orig] = agg.get(orig, 0.0) + float(val)
+                            matched = True
+                            break
+                if not matched:
+                    agg[tname] = agg.get(tname, 0.0) + float(val)
+            return agg
+
+        # Last resort: indexed names
+        return {f"feature_{i}": float(v) for i, v in enumerate(values)}
+
     def _fallback_feature_importance(self) -> Dict[str, float]:
         """Fallback feature importance based on model coefficients or importances."""
         try:
@@ -269,6 +331,9 @@ class ModelExplainer:
             else:
                 classifier = self.model
 
+            # Unwrap meta-classifiers (e.g. ResampleClassifier)
+            classifier = self._unwrap_classifier(classifier)
+
             if hasattr(classifier, "feature_importances_"):
                 importances = classifier.feature_importances_
             elif hasattr(classifier, "coef_"):
@@ -276,9 +341,8 @@ class ModelExplainer:
             else:
                 return {"no_importance_available": 1.0}
 
-            if self.feature_names and len(self.feature_names) == len(importances):
-                return dict(zip(self.feature_names, importances))
-            return {f"feature_{i}": float(imp) for i, imp in enumerate(importances)}
+            # Use aggregation to map transformed importances to original names
+            return self._aggregate_to_original(importances)
 
         except Exception:
             return {"no_importance_available": 1.0}
@@ -294,8 +358,8 @@ class ModelExplainer:
         if "no_importance_available" in importance:
             return {col: 0.0 for col in X.columns}
 
+        # Return importance values for columns present in X
         contributions = {}
         for col in X.columns:
-            weight = importance.get(col, 0.0)
-            contributions[col] = float(weight)
+            contributions[col] = float(importance.get(col, 0.0))
         return contributions
