@@ -61,6 +61,11 @@ ipython_config.py
 
 # ML artifacts and models
 **/artifacts/
+!CarVision-Market-Intelligence/artifacts/
+CarVision-Market-Intelligence/artifacts/*
+!CarVision-Market-Intelligence/artifacts/metrics_val.json
+!CarVision-Market-Intelligence/artifacts/model_comparison.json
+!CarVision-Market-Intelligence/artifacts/feature_columns.json
 **/mlruns/
 **/mlartifacts/
 
