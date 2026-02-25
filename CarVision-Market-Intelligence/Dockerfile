@@ -69,11 +69,8 @@ COPY --chown=appuser:appuser app/ ./app/
 COPY --chown=appuser:appuser monitoring/ ./monitoring/
 COPY --chown=appuser:appuser main.py ./
 
-# Copy artifact metadata (metrics, feature columns — needed by Streamlit)
-COPY --chown=appuser:appuser artifacts/*.json ./artifacts/
-
-# Create directories (only those not already populated)
-RUN mkdir -p logs data/raw data/processed models && \
+# Create directories (artifacts populated at runtime by download-metrics init container)
+RUN mkdir -p logs data/raw data/processed models artifacts && \
     chown -R appuser:appuser /app
 
 USER appuser
