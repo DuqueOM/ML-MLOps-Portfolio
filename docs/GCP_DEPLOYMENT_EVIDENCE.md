@@ -2208,14 +2208,14 @@ Luego ve a GitHub → Actions y observa el workflow ejecutándose.
 **Tu portafolio en Codecov:**
 - **URL**: `https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio`
 - **Branch**: `main`
-- **Coverage total**: 86.68% (1510 de 1742 líneas cubiertas)
+- **Coverage total**: ~93% (1588 de 1742 líneas cubiertas)
 
 | Proyecto | Tracked Lines | Covered | Missed | Coverage |
 |----------|:------------:|:-------:|:------:|:--------:|
-| BankChurn-Predictor/src | 811 | 692 | 119 | **85.33%** |
-| CarVision-Market-Intelligence/src/carvision | 579 | 498 | 81 | **86.01%** |
-| TelecomAI-Customer-Intelligence/src/telecom | 352 | 320 | 32 | **90.91%** |
-| **Subtotal** | **1742** | **1510** | **232** | **86.68%** |
+| BankChurn-Predictor/src | 811 | 701 | 110 | **86.44%** |
+| CarVision-Market-Intelligence/src/carvision | 579 | 551 | 28 | **95.16%** |
+| TelecomAI-Customer-Intelligence/src/telecom | 352 | 336 | 16 | **95.45%** |
+| **Subtotal** | **1742** | **1588** | **154** | **~91.16%** |
 
 ---
 
@@ -2231,7 +2231,7 @@ Luego ve a GitHub → Actions y observa el workflow ejecutándose.
 >
 > - **Archivo**: `docs/media/screenshots/cicd/68-codecov-dashboard.png`
 > - **URL**: `https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio`
-> - **Qué debe verse**: Dashboard de Codecov mostrando 86.68% coverage total, gráfica de evolución temporal (nov 2025 → feb 2026), donut chart por proyecto, y tabla con BankChurn 85%, CarVision 86%, TelecomAI 91%
+> - **Qué debe verse**: Dashboard de Codecov mostrando ~91% coverage total, gráfica de evolución temporal (nov 2025 → feb 2026), donut chart por proyecto, y tabla con BankChurn 86%, CarVision 95%, TelecomAI 95%
 > - **Por qué importa**: Es verificación independiente de terceros del coverage — no son números auto-reportados, son datos verificados por Codecov en cada push
 
 ---
@@ -2260,7 +2260,7 @@ El badge se genera automáticamente. Puedes añadirlo al README:
 [![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/graph/badge.svg)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)
 ```
 
-> 💡 **Tip para entrevistas**: "Mi portafolio tiene 86.68% de test coverage verificado por Codecov, integrado en el CI pipeline de GitHub Actions. Cada push genera un reporte de coverage que se sube automáticamente. BankChurn tiene 85%, CarVision 86%, y TelecomAI 91%."
+> 💡 **Tip para entrevistas**: "Mi portafolio tiene ~91% de test coverage verificado por Codecov, integrado en el CI pipeline de GitHub Actions. Cada push genera un reporte de coverage que se sube automáticamente. BankChurn tiene 86%, CarVision 95%, y TelecomAI 95%."
 
 ---
 
@@ -3375,7 +3375,7 @@ Usa siempre el formato: `##-descripcion-corta.png`
 | 75 | `monitoring/` | `75-prometheus-latency-p95.png` | PromQL: histogram_quantile latencia |
 | 76 | `monitoring/` | `76-prometheus-targets-detail.png` | Targets con scrape duration |
 | 77 | `monitoring/` | `77-metrics-endpoint-raw.png` | Endpoint /metrics instrumentado |
-| 68 | `cicd/` | `68-codecov-dashboard.png` | Coverage verificado por terceros (86.68%) |
+| 68 | `cicd/` | `68-codecov-dashboard.png` | Coverage verificado por terceros (~91%) |
 | 69 | `cicd/` | `69-codecov-bankchurn-detail.png` | Desglose de coverage por archivo |
 
 ### GIFs por Prioridad
@@ -5011,7 +5011,7 @@ La diferencia con GCP: se usan acciones de AWS (`aws-actions/configure-aws-crede
 >
 > - **Archivo**: `docs/media/screenshots/aws-cicd/A74-codecov-dashboard.png`
 > - **URL**: `app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio`
-> - **Qué debe verse**: Dashboard de Codecov mostrando: Overall 86.68%, BankChurn 85.33%, CarVision 86.01%, TelecomAI 90.91%. Con el gráfico de coverage over time
+> - **Qué debe verse**: Dashboard de Codecov mostrando: Overall ~91%, BankChurn 86.44%, CarVision 95.16%, TelecomAI 95.45%. Con el gráfico de coverage over time
 > - **Por qué importa**: Equivalente a #85 de GCP — métricas de calidad del código
 
 ---
@@ -5470,7 +5470,7 @@ This video demonstrates the **same ML portfolio** deployed on **two major clouds
 >
 > "Here's the architecture. On the left, Google Cloud Platform. On the right, Amazon Web Services. Both running the exact same stack.
 >
-> The core consists of three machine learning services: BankChurn Predictor — a customer churn model for banking with eighty-five percent test coverage. CarVision Market Intelligence — a vehicle price prediction model with a Streamlit dashboard. And TelecomAI Customer Intelligence — a telecom churn model achieving ninety-one percent test coverage.
+> The core consists of three machine learning services: BankChurn Predictor — a customer churn model for banking with eighty-six percent test coverage. CarVision Market Intelligence — a vehicle price prediction model with a Streamlit dashboard achieving ninety-five percent coverage. And TelecomAI Customer Intelligence — a telecom churn model achieving ninety-five percent test coverage.
 >
 > Each service is containerized with Docker, orchestrated by Kubernetes, and monitored with Prometheus and Grafana.
 >
@@ -5682,11 +5682,11 @@ This video demonstrates the **same ML portfolio** deployed on **two major clouds
 
 > **SCRIPT:**
 >
-> "The CI/CD pipeline runs on GitHub Actions. The main workflow has ten jobs: linting, type checking, security scanning with Bandit, unit tests for all three projects with coverage reporting to Codecov — currently at eighty-six-point-six-eight percent overall.
+> "The CI/CD pipeline runs on GitHub Actions. The main workflow has ten jobs: linting, type checking, security scanning with Bandit, unit tests for all three projects with coverage reporting to Codecov — currently at approximately ninety-one percent overall.
 >
 > For deployment, there are separate workflow files for GCP and AWS. The GCP workflow authenticates with a service account key, pushes to Artifact Registry, and deploys to GKE. The AWS workflow uses access key credentials, pushes to ECR, and deploys to EKS.
 >
-> The test suite is cloud-agnostic — the same eighty-five to ninety-one percent coverage validates the code before deploying to either cloud. The deployment steps are the only cloud-specific parts of the pipeline."
+> The test suite is cloud-agnostic — the same eighty-six to ninety-five percent coverage validates the code before deploying to either cloud. The deployment steps are the only cloud-specific parts of the pipeline."
 
 **[SCREEN: GitHub Secrets page showing both GCP and AWS secrets]**
 
@@ -5706,7 +5706,7 @@ This video demonstrates the **same ML portfolio** deployed on **two major clouds
 >
 > "Let me summarize what we've seen:
 >
-> Three machine learning models — BankChurn, CarVision, and TelecomAI — serving real-time predictions with eighty-five to ninety-one percent test coverage.
+> Three machine learning models — BankChurn, CarVision, and TelecomAI — serving real-time predictions with eighty-six to ninety-five percent test coverage.
 >
 > Deployed on two major clouds — GCP and AWS — with identical results.
 >
