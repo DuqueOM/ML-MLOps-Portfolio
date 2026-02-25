@@ -14,3 +14,5 @@ resources:
   - ../../ml-workload-serviceaccount.yaml
   - ../../download-script-configmap.yaml
   - ../../model-configmaps.yaml
+  - ../../dataset-configmaps.yaml
+  - ../../metrics-configmap.yaml

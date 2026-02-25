@@ -1,6 +1,17 @@
-"""Tests for advanced model implementations (XGBoost, LightGBM, PyTorch)."""
+"""Tests for advanced model implementations (XGBoost, LightGBM, PyTorch).
+
+Covers:
+- Model factory: build_model for all supported model types.
+- Sklearn models: fit/predict for LR, RF, MLP, Ensemble.
+- XGBoost/LightGBM: build, fit, predict (skipped if not installed).
+- PyTorch: TorchTabularClassifier fit/predict/predict_proba.
+- ImportError guards: verify helpful errors when optional deps are missing.
+- Pipeline integration: models work inside sklearn Pipelines.
+"""
 
 from __future__ import annotations
+
+from unittest.mock import patch
 
 import numpy as np
 import pytest
@@ -8,7 +19,12 @@ from sklearn.datasets import make_classification
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from src.bankchurn.models_advanced import build_model, get_available_models
+from src.bankchurn.models_advanced import (
+    build_lightgbm_classifier,
+    build_model,
+    build_xgboost_classifier,
+    get_available_models,
+)
 
 
 @pytest.fixture
@@ -165,6 +181,13 @@ class TestLightGBM:
         proba = model.predict_proba(X)
         assert proba.shape == (len(y), 2)
 
+    def test_lightgbm_custom_params(self, binary_classification_data):
+        X, y = binary_classification_data
+        model = build_model("lightgbm", params={"n_estimators": 10, "max_depth": 3}, seed=42)
+        model.fit(X, y)
+        preds = model.predict(X)
+        assert len(preds) == len(y)
+
 
 class TestNeuralNetwork:
     """Tests for PyTorch TabularNet classifier (skipped if not installed)."""
@@ -221,3 +244,22 @@ class TestNeuralNetwork:
         model = build_model("neural_network", seed=42)
         with pytest.raises(RuntimeError, match="not fitted"):
             model.predict(np.zeros((5, 10)))
+
+
+class TestImportErrorGuards:
+    """Test that helpful ImportError is raised when optional deps are missing."""
+
+    def test_xgboost_unavailable_raises(self):
+        with patch("src.bankchurn.models_advanced.XGBOOST_AVAILABLE", False):
+            with pytest.raises(ImportError, match="xgboost"):
+                build_xgboost_classifier()
+
+    def test_lightgbm_unavailable_raises(self):
+        with patch("src.bankchurn.models_advanced.LIGHTGBM_AVAILABLE", False):
+            with pytest.raises(ImportError, match="lightgbm"):
+                build_lightgbm_classifier()
+
+    def test_torch_unavailable_in_build_model(self):
+        with patch("src.bankchurn.models_advanced.TORCH_AVAILABLE", False):
+            with pytest.raises(ImportError, match="torch"):
+                build_model("neural_network")
