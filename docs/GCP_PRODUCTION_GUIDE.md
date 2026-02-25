@@ -740,27 +740,85 @@ kubectl get configmap -n ml-portfolio -l component=dataset-download
 | CarVision | `vehicles_us.csv` | `carvision/v1/vehicles_us.csv` | ~63 MB |
 | TelecomAI | `WA_Fn-UseC_-Telco-Customer-Churn.csv` | `telecom/v1/WA_Fn-UseC_-...csv` | ~977 KB |
 
-### 9.4 Updating a Model Version
+### 9.4 Metrics ConfigMap (CarVision)
+
+CarVision has a third init container (`download-metrics`) that downloads evaluation artifacts from GCS for the Streamlit dashboard:
+
+```bash
+# Apply metrics ConfigMap
+kubectl apply -f k8s/metrics-configmap.yaml
+
+# Verify
+kubectl get configmap carvision-metrics-config -n ml-portfolio
+```
+
+| Artifact | GCS Path | Purpose |
+|----------|----------|--------|
+| `metrics_val.json` | `carvision/metrics_val.json` | RMSE, MAE, R², MAPE for Model Metrics tab |
+| `model_comparison.json` | `carvision/model_comparison.json` | Model vs baseline comparison |
+| `feature_columns.json` | `carvision/feature_columns.json` | Feature list for predictions |
+
+> **Why a separate init container?** Metrics are model artifacts that change with each retrain. Storing them in GCS (not baked in Docker) means Streamlit always shows the latest evaluation results after a rollout restart.
+
+### 9.5 Updating a Model Version
 
 To deploy a new model version **without rebuilding the Docker image**:
 
 ```bash
-# 1. Upload new model to GCS
-gsutil cp new-model.joblib gs://${MODELS_BUCKET}/bankchurn/model-v3.joblib
-
-# 2. Update the ConfigMap to point to the new path
-kubectl patch configmap bankchurn-model-config -n ml-portfolio \
-  -p '{"data":{"GCS_MODEL_PATH":"bankchurn/model-v3.joblib"}}'
-
-# 3. Restart the deployment (init container re-downloads)
+# Option A: Manual upload
+gsutil cp new-model.joblib gs://${MODELS_BUCKET}/bankchurn/model.joblib
 kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio
 
-# 4. Verify the new model is loaded
-kubectl logs -n ml-portfolio deployment/bankchurn-predictor -c download-model
-# OK: Downloaded 4.12 MB (attempt 1/3)
+# Option B: Automated via promote_model.py (recommended)
+# This validates metrics → registers in MLflow → uploads to GCS
+GCS_MODELS_BUCKET=${MODELS_BUCKET} python scripts/promote_model.py \
+  --project carvision --promote --upload-gcs
+kubectl rollout restart deployment/carvision-intelligence -n ml-portfolio
+
+# Verify the new model is loaded
+kubectl logs -n ml-portfolio deployment/carvision-intelligence -c download-model
 ```
 
-> **Key Advantage**: This is a **config-only operation** — no CI/CD pipeline, no Docker build, no image push. The init container downloads the new model on pod startup.
+> **Key Advantage**: This is a **config-only operation** — no Docker build needed. The init container downloads the new model on pod startup.
+
+### 9.6 Integration: DVC ↔ MLflow ↔ GCS
+
+The three data/model management tools serve different stages of the ML lifecycle:
+
+```
+┌────────────────────────────────────────────────────────────────────┐
+│  DEVELOPMENT               TRACKING              PRODUCTION         │
+│  ┌─────────────┐          ┌─────────────┐    ┌──────────────┐   │
+│  │    DVC      │          │   MLflow    │    │  GCS Buckets  │   │
+│  │ (local/CI) │          │  (cluster)  │    │ (production) │   │
+│  │            │          │             │    │              │   │
+│  │ • Raw CSV  │  train   │ • Metrics   │    │ • Models     │   │
+│  │ • .dvc     │────────▶│ • Params    │    │ • Datasets   │   │
+│  │ • dvc pull │  logs    │ • Artifacts │    │ • Metrics    │   │
+│  └─────────────┘          │ • Registry  │    └─────┬────────┘   │
+│                           └──────┬──────┘          │              │
+│                                │   promote       │              │
+│                                │   --upload-gcs  │              │
+│                                └───────────────▶│              │
+│                                                 │              │
+│                                           init containers    │
+│                                           download to pod    │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+| Tool | Stage | What it Stores | Location |
+|------|-------|----------------|----------|
+| **DVC** | Development | Raw CSV datasets, `.dvc` metadata | Local + `.dvc-storage/` |
+| **MLflow** | Training | Metrics, params, model artifacts, registry | Cluster (`mlflow-server` pod) |
+| **GCS** | Production | Models, datasets, metrics for serving | `*-ml-models-production`, `*-datasets-production` |
+
+**Full promotion flow** (`scripts/promote_model.py --promote --upload-gcs`):
+1. Load local metrics from `artifacts/metrics_val.json`
+2. Validate against thresholds (R² > 0.70, RMSE < 6000, etc.)
+3. Register model + metrics in MLflow Model Registry
+4. Promote to "Production" stage in MLflow
+5. Upload `model.joblib` + `metrics_val.json` + extra artifacts to GCS
+6. User runs `kubectl rollout restart` → init containers download fresh artifacts
 
 ---
 

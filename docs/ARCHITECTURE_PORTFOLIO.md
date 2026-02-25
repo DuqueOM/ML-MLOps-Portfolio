@@ -418,12 +418,15 @@ gs://ml-portfolio-duque-om-202602-datasets-production/telecom/v1/WA_Fn-UseC_-Tel
 
 **Init Container Architecture:**
 
-Each pod runs **two init containers** before the main application starts:
+Each pod runs **2–3 init containers** before the main application starts:
 
 1. `download-model` → Downloads model from `*-ml-models-production` bucket
 2. `download-data` → Downloads dataset from `*-datasets-production` bucket
+3. `download-metrics` (CarVision only) → Downloads evaluation artifacts (metrics, model comparison, feature columns) from `*-ml-models-production` bucket for the Streamlit dashboard
 
-Both use the same generic download script (`download-script` ConfigMap) with different environment variables, following the DRY principle.
+Init containers 1–2 use the same generic download script (`download-script` ConfigMap) with different environment variables, following the DRY principle. The metrics init container uses an inline multi-file download script since it handles multiple artifacts.
+
+**Integration flow**: `train → MLflow logs → promote_model.py --upload-gcs → GCS → rollout restart → init containers download fresh artifacts`
 
 ---
 
