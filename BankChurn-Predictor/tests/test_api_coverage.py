@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 
-from app.fastapi_app import app
+from app.fastapi_app import FEATURE_COLUMNS, _load_background_data, app
 
 client = TestClient(app)
 
@@ -115,3 +115,42 @@ def test_predict_model_not_loaded():
         }
         response = client.post("/predict", json=customer)
         assert response.status_code == 503
+
+
+# --- Tests for _load_background_data ---
+
+
+def test_load_background_data_with_valid_csv(tmp_path):
+    """Should return DataFrame when a valid CSV with enough feature columns exists."""
+    csv_dir = tmp_path / "data" / "raw"
+    csv_dir.mkdir(parents=True)
+    df = pd.DataFrame({col: [1.0] * 10 for col in FEATURE_COLUMNS})
+    df.to_csv(csv_dir / "Churn.csv", index=False)
+
+    with patch("app.fastapi_app.BASE_DIR", tmp_path):
+        result = _load_background_data(max_samples=5)
+
+    assert result is not None
+    assert len(result) == 5
+    assert set(result.columns).issubset(set(FEATURE_COLUMNS))
+
+
+def test_load_background_data_no_directories(tmp_path):
+    """Should return None when no data directories exist."""
+    with patch("app.fastapi_app.BASE_DIR", tmp_path):
+        result = _load_background_data()
+
+    assert result is None
+
+
+def test_load_background_data_insufficient_columns(tmp_path):
+    """Should return None when CSV has fewer than 8 matching feature columns."""
+    csv_dir = tmp_path / "data" / "raw"
+    csv_dir.mkdir(parents=True)
+    df = pd.DataFrame({"CreditScore": [600], "Age": [40], "Unrelated": [1]})
+    df.to_csv(csv_dir / "bad.csv", index=False)
+
+    with patch("app.fastapi_app.BASE_DIR", tmp_path):
+        result = _load_background_data()
+
+    assert result is None

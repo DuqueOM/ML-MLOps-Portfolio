@@ -180,10 +180,12 @@ jobs:
           # Apply shared resources
           kubectl apply -f k8s/storage.yaml
 
-          # Apply AWS-specific overlay
+          # Apply AWS-specific overlay (ConfigMaps must be before deployments — init containers depend on them)
           kubectl apply -f k8s/overlays/aws/serviceaccount-aws.yaml
           kubectl apply -f k8s/overlays/aws/download-script-aws.yaml
           kubectl apply -f k8s/overlays/aws/model-configmaps-aws.yaml
+          kubectl apply -f k8s/overlays/aws/dataset-configmaps-aws.yaml
+          kubectl apply -f k8s/overlays/aws/metrics-configmap-aws.yaml
 
           # Deploy ML services (AWS versions)
           kubectl apply -f k8s/overlays/aws/bankchurn-deployment-aws.yaml
