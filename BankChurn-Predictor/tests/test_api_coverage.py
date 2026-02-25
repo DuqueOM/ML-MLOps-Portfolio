@@ -1,3 +1,12 @@
+"""Tests for BankChurn FastAPI application and SHAP background data loading.
+
+Covers:
+- API endpoints: /health, /predict, /model/info, /model/reload.
+- Prediction logic: valid requests, missing fields, model-not-loaded (503).
+- SHAP background data: _load_background_data() with valid CSV, no directories,
+  and insufficient feature columns — ensures graceful degradation.
+"""
+
 from unittest.mock import MagicMock, patch
 
 import pandas as pd

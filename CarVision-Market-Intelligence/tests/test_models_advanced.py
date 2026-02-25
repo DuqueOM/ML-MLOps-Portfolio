@@ -1,6 +1,17 @@
-"""Tests for advanced model implementations (XGBoost, LightGBM, PyTorch) for CarVision."""
+"""Tests for advanced model implementations (XGBoost, LightGBM, PyTorch) for CarVision.
+
+Covers:
+- Model factory: build_model() for all supported model types.
+- Sklearn models: RandomForest, MLP fit/predict with synthetic data.
+- XGBoost/LightGBM: fit/predict (skipped if not installed).
+- PyTorch neural network: TorchTabularRegressor fit/predict (skipped if not installed).
+- ImportError guards: verifies graceful failure when optional deps are unavailable.
+- Pipeline integration: models work inside sklearn Pipeline.
+"""
 
 from __future__ import annotations
+
+from unittest.mock import patch
 
 import numpy as np
 import pytest
@@ -8,7 +19,12 @@ from sklearn.datasets import make_regression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from src.carvision.models_advanced import build_model, get_available_models
+from src.carvision.models_advanced import (
+    build_lightgbm_regressor,
+    build_model,
+    build_xgboost_regressor,
+    get_available_models,
+)
 
 
 @pytest.fixture
@@ -138,3 +154,29 @@ class TestNeuralNetwork:
         pipe.fit(X, y)
         preds = pipe.predict(X)
         assert preds.shape == y.shape
+
+
+class TestImportErrorGuards:
+    """Verify graceful ImportError when optional dependencies are unavailable.
+
+    Each test mocks the availability flag to False and asserts that the
+    corresponding builder raises ImportError with a helpful message.
+    """
+
+    def test_xgboost_unavailable_raises(self):
+        """build_xgboost_regressor raises ImportError when xgboost is missing."""
+        with patch("src.carvision.models_advanced.XGBOOST_AVAILABLE", False):
+            with pytest.raises(ImportError, match="xgboost"):
+                build_xgboost_regressor()
+
+    def test_lightgbm_unavailable_raises(self):
+        """build_lightgbm_regressor raises ImportError when lightgbm is missing."""
+        with patch("src.carvision.models_advanced.LIGHTGBM_AVAILABLE", False):
+            with pytest.raises(ImportError, match="lightgbm"):
+                build_lightgbm_regressor()
+
+    def test_neural_network_unavailable_raises(self):
+        """build_model('neural_network') raises ImportError when torch is missing."""
+        with patch("src.carvision.models_advanced.TORCH_AVAILABLE", False):
+            with pytest.raises(ImportError, match="torch"):
+                build_model("neural_network")
