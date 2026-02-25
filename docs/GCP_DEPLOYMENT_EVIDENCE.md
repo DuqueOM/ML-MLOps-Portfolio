@@ -323,7 +323,7 @@ ls docs/media/screenshots/
 > **📸 CAPTURA #06 — Detalle de Workload BankChurn**
 >
 > - **Archivo**: `docs/media/screenshots/gcp-console/06-workload-bankchurn-detalle.png`
-> - **Qué debe verse**: Detalle del deployment: imagen Docker de Artifact Registry, pods running, recursos CPU/memoria, **2 init containers** (download-model + download-data), volumes (models + data + logs)
+> - **Qué debe verse**: Detalle del deployment: imagen Docker de Artifact Registry, pods running, recursos CPU/memoria, **2–3 init containers** (download-model + download-data + download-metrics para CarVision), volumes (models + data + artifacts + logs)
 > - **Por qué importa**: Muestra la configuración técnica de un servicio ML en producción con todos sus componentes, incluyendo la descarga automatizada de modelos y datasets desde GCS
 
 ---
@@ -394,17 +394,18 @@ ls docs/media/screenshots/
 
 ### 4.7 — Cloud Storage (Modelos ML + Datasets en la Nube)
 
-**¿Qué es Cloud Storage?** Es el sistema de almacenamiento de archivos de GCP. Guardaste aquí los modelos de Machine Learning entrenados **y los datasets de producción**. Cuando una API arranca en Kubernetes, los init containers descargan automáticamente el modelo y el dataset desde GCS. Esto permite actualizar modelos y datos sin reconstruir la imagen Docker — una práctica MLOps fundamental.
+**¿Qué es Cloud Storage?** Es el sistema de almacenamiento de archivos de GCP. Guardaste aquí los modelos de Machine Learning entrenados, **los datasets de producción**, y **las métricas de evaluación**. Cuando una API arranca en Kubernetes, los init containers descargan automáticamente el modelo, el dataset y las métricas desde GCS. Esto permite actualizar modelos, datos y métricas sin reconstruir la imagen Docker — una práctica MLOps fundamental.
 
 **Pasos exactos:**
 
 1. En la barra de búsqueda, escribe: **"Cloud Storage"**
 2. Haz clic en "Cloud Storage" → "Buckets"
 3. Verás **2 buckets de producción**:
-   - **`ml-portfolio-duque-om-202602-ml-models-production`** — Modelos ML (.joblib)
+   - **`ml-portfolio-duque-om-202602-ml-models-production`** — Modelos ML (.joblib) + métricas de evaluación (.json)
    - **`ml-portfolio-duque-om-202602-datasets-production`** — Datasets versionados (.csv)
 4. Haz clic en el bucket de **modelos**
 5. Verás las carpetas: `bankchurn/`, `carvision/`, `telecom/`
+6. Haz clic en `carvision/` y verás: `model.joblib`, `metrics_val.json`, `model_comparison.json`, `feature_columns.json` — las métricas son descargadas dinámicamente por el init container `download-metrics` para el dashboard Streamlit
 
 ---
 
@@ -415,8 +416,8 @@ ls docs/media/screenshots/
 > - **Por qué importa**: Demuestra arquitectura de separación entre código, modelos y datos — práctica profesional de MLOps con buckets dedicados
 > - **Tip**: Asegúrate de que ambos buckets sean visibles en la captura. Si hay más buckets, filtra por `ml-portfolio`
 
-6. Haz clic en el bucket de **modelos** (`*-ml-models-production`) y verás las carpetas: `bankchurn/`, `carvision/`, `telecom/`
-7. Haz clic en `bankchurn/` y verás `model.joblib`
+7. Haz clic en el bucket de **modelos** (`*-ml-models-production`) y verás las carpetas: `bankchurn/`, `carvision/`, `telecom/`
+8. Haz clic en `bankchurn/` y verás `model.joblib`
 
 ---
 
@@ -670,10 +671,8 @@ gcloud artifacts docker images list \
 ### 5.5 — Modelos y Datasets en Cloud Storage desde CLI
 
 ```bash
-# Listar modelos en el bucket de GCS
 gsutil ls -r gs://ml-portfolio-duque-om-202602-ml-models-production/
 
-# Listar datasets en el bucket de GCS
 gsutil ls -r gs://ml-portfolio-duque-om-202602-datasets-production/
 ```
 

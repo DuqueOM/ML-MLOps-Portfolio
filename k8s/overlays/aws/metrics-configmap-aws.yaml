@@ -1,0 +1,19 @@
+# ConfigMap for CarVision metrics/artifacts download from S3 (AWS).
+# These JSON files are generated during training and uploaded to S3.
+# The download-metrics init container fetches them at pod startup.
+# Flow: retrain → upload to S3 → rollout restart → fresh metrics in Streamlit
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: carvision-metrics-config
+  namespace: ml-portfolio
+  labels:
+    app: carvision-intelligence
+    component: metrics-download
+data:
+  S3_BUCKET: "ml-portfolio-ml-models-production"
+  ARTIFACTS: |
+    carvision/metrics_val.json:/artifacts/metrics_val.json
+    carvision/model_comparison.json:/artifacts/model_comparison.json
+    carvision/feature_columns.json:/artifacts/feature_columns.json

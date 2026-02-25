@@ -39,7 +39,8 @@ PROJECT_CONFIGS = {
         "dir": "CarVision-Market-Intelligence",
         "model_name": "CarVision-Regressor",
         "model_path": "models/model.joblib",
-        "metrics_path": "artifacts/metrics.json",
+        "metrics_path": "artifacts/metrics_val.json",
+        "extra_artifacts": ["artifacts/model_comparison.json", "artifacts/feature_columns.json"],
         "default_thresholds": {"r2": 0.70, "rmse": 6000},
     },
     "telecom": {
@@ -100,6 +101,63 @@ def validate_metrics(metrics: dict, thresholds: dict) -> tuple[bool, list[str]]:
             logger.warning(f"Metric '{threshold_name}' not found in metrics")
 
     return len(failures) == 0, failures
+
+
+def upload_to_gcs(project_key: str, project_config: dict) -> bool:
+    """Upload model + metrics artifacts to GCS for production serving.
+
+    This closes the loop: train → MLflow → GCS → init container → pod.
+    After upload, run: kubectl rollout restart deployment/<service> -n ml-portfolio
+    """
+    try:
+        from google.cloud import storage
+    except ImportError:
+        logger.error("google-cloud-storage not installed. Run: pip install google-cloud-storage")
+        return False
+
+    bucket_name = os.getenv("GCS_MODELS_BUCKET")
+    if not bucket_name:
+        logger.error("GCS_MODELS_BUCKET env var not set. Example: ml-portfolio-duque-om-202602-ml-models-production")
+        return False
+
+    project_dir = Path(project_config["dir"])
+    model_path = project_dir / project_config["model_path"]
+    metrics_path = project_dir / project_config["metrics_path"]
+
+    if not model_path.exists():
+        logger.error(f"Model not found: {model_path}")
+        return False
+
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    uploaded = []
+
+    # Upload model
+    gcs_model_path = f"{project_key}/model.joblib"
+    blob = bucket.blob(gcs_model_path)
+    blob.upload_from_filename(str(model_path))
+    uploaded.append(gcs_model_path)
+    logger.info(f"Uploaded {model_path} → gs://{bucket_name}/{gcs_model_path}")
+
+    # Upload metrics
+    if metrics_path.exists():
+        gcs_metrics_path = f"{project_key}/{metrics_path.name}"
+        bucket.blob(gcs_metrics_path).upload_from_filename(str(metrics_path))
+        uploaded.append(gcs_metrics_path)
+        logger.info(f"Uploaded {metrics_path} → gs://{bucket_name}/{gcs_metrics_path}")
+
+    # Upload extra artifacts (e.g., model_comparison.json, feature_columns.json)
+    for extra in project_config.get("extra_artifacts", []):
+        extra_path = project_dir / extra
+        if extra_path.exists():
+            gcs_extra_path = f"{project_key}/{extra_path.name}"
+            bucket.blob(gcs_extra_path).upload_from_filename(str(extra_path))
+            uploaded.append(gcs_extra_path)
+            logger.info(f"Uploaded {extra_path} → gs://{bucket_name}/{gcs_extra_path}")
+
+    logger.info(f"✅ Uploaded {len(uploaded)} artifacts to gs://{bucket_name}/{project_key}/")
+    logger.info("Next: kubectl rollout restart deployment/<service> -n ml-portfolio")
+    return True
 
 
 def register_model(project_config: dict, metrics: dict, promote: bool = False) -> bool:
@@ -203,6 +261,11 @@ def main():
         action="store_true",
         help="Only validate metrics, don't register",
     )
+    parser.add_argument(
+        "--upload-gcs",
+        action="store_true",
+        help="Upload model + metrics to GCS after promotion (requires GCS_MODELS_BUCKET env)",
+    )
 
     args = parser.parse_args()
 
@@ -260,6 +323,15 @@ def main():
     else:
         logger.error("❌ Model registration failed")
         sys.exit(1)
+
+    # Upload to GCS for production serving
+    if args.upload_gcs:
+        logger.info("Uploading artifacts to GCS for production serving...")
+        gcs_success = upload_to_gcs(args.project, config)
+        if not gcs_success:
+            logger.error("❌ GCS upload failed")
+            sys.exit(1)
+        logger.info("✅ GCS upload complete! Run: kubectl rollout restart deployment/<service> -n ml-portfolio")
 
 
 if __name__ == "__main__":

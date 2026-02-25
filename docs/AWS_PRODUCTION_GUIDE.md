@@ -632,9 +632,10 @@ Trigger options:
 
 ## Phase 9: Init Containers — S3 Model & Dataset Download Pattern
 
-Each pod runs **two init containers** before the main application starts:
+Each pod runs init containers before the main application starts:
 1. **download-model** — downloads the ML model from S3
 2. **download-data** — downloads the dataset from S3
+3. **download-metrics** (CarVision only) — downloads evaluation artifacts from S3 for Streamlit
 
 ### Architecture (AWS Version)
 
@@ -687,26 +688,51 @@ Each service has a dataset-specific ConfigMap in `k8s/overlays/aws/dataset-confi
 | Env vars | `GCS_BUCKET`, `GCS_MODEL_PATH` | `S3_BUCKET`, `S3_MODEL_PATH` |
 | Download | `storage.Client().bucket().blob().download_to_filename()` | `boto3.client("s3").download_file()` |
 | Auth | Workload Identity (auto) | IRSA (auto) |
-| Init containers per pod | 2 (model + data) | 2 (model + data) |
+| Init containers per pod | 2–3 (model + data + metrics) | 2–3 (model + data + metrics) |
 | Dataset bucket | `{project}-datasets-production` | `ml-portfolio-datasets-production` |
+
+### Metrics ConfigMap (CarVision — AWS)
+
+CarVision has a third init container that downloads evaluation artifacts for the Streamlit dashboard:
+
+```bash
+# Apply metrics ConfigMap
+kubectl apply -f k8s/overlays/aws/metrics-configmap-aws.yaml
+```
+
+| Artifact | S3 Path | Purpose |
+|----------|---------|--------|
+| `metrics_val.json` | `carvision/metrics_val.json` | RMSE, MAE, R², MAPE for Model Metrics tab |
+| `model_comparison.json` | `carvision/model_comparison.json` | Model vs baseline comparison |
+| `feature_columns.json` | `carvision/feature_columns.json` | Feature list for predictions |
 
 ### Updating a Model Version (AWS)
 
 ```bash
-# 1. Upload new model to S3
-aws s3 cp new-model.joblib s3://${MODELS_BUCKET}/bankchurn/model-v3.joblib
-
-# 2. Update the ConfigMap
-kubectl patch configmap bankchurn-model-config -n ml-portfolio \
-  -p '{"data":{"S3_MODEL_PATH":"bankchurn/model-v3.joblib"}}'
-
-# 3. Restart the deployment
+# Option A: Manual upload
+aws s3 cp new-model.joblib s3://${MODELS_BUCKET}/bankchurn/model.joblib
 kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio
 
-# 4. Verify
-kubectl logs -n ml-portfolio deployment/bankchurn-predictor -c download-model
-# OK: Downloaded 4.12 MB (attempt 1/3)
+# Option B: Automated via promote_model.py (recommended)
+# Validates metrics → registers in MLflow → uploads to S3/GCS
+GCS_MODELS_BUCKET=${MODELS_BUCKET} python scripts/promote_model.py \
+  --project carvision --promote --upload-gcs
+kubectl rollout restart deployment/carvision-intelligence -n ml-portfolio
 ```
+
+### Integration: DVC ↔ MLflow ↔ S3
+
+| Tool | Stage | What it Stores | Location |
+|------|-------|----------------|----------|
+| **DVC** | Development | Raw CSV datasets, `.dvc` metadata | Local + `.dvc-storage/` |
+| **MLflow** | Training | Metrics, params, model artifacts, registry | Cluster (`mlflow-server` pod) |
+| **S3** | Production | Models, datasets, metrics for serving | `*-ml-models-production`, `*-datasets-production` |
+
+**Full promotion flow** (`scripts/promote_model.py --promote --upload-gcs`):
+1. Load local metrics → validate against thresholds
+2. Register model + metrics in MLflow Model Registry
+3. Upload `model.joblib` + metrics artifacts to S3
+4. `kubectl rollout restart` → init containers download fresh artifacts
 
 ---
 
