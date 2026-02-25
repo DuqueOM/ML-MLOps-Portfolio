@@ -1,4 +1,13 @@
-"""Tests for CLI module."""
+"""Tests for CLI module.
+
+Covers:
+- setup_logging: file + stream handlers, custom log levels.
+- create_parser: argument parser structure and subcommands.
+- train_command: success path and exception-handling path.
+- evaluate_command: success path with fairness metrics and exception path.
+- predict_command: success path and exception path.
+- cli_main: routing to train/evaluate/predict, seed setting, unknown command.
+"""
 
 import argparse
 import logging
@@ -12,7 +21,7 @@ import pandas as pd
 import pytest
 
 from src.bankchurn import cli
-from src.bankchurn.cli import create_parser, evaluate_command, predict_command, setup_logging, train_command
+from src.bankchurn.cli import cli_main, create_parser, evaluate_command, predict_command, setup_logging, train_command
 
 
 def test_main_help():
@@ -198,3 +207,191 @@ def test_predict_command(mock_read_csv, mock_predictor_cls, mock_args, mock_data
     # Verify
     assert exit_code == 0
     mock_predictor.predict_batch.assert_called_once()
+
+
+# ===================================================================
+# Error-handling paths (lines 96-98, 148-150, 182-184)
+# ===================================================================
+
+
+def test_train_command_error_returns_1(mock_args):
+    """Train command returns 1 when an exception is raised."""
+    with patch("src.bankchurn.cli.BankChurnConfig") as mock_cfg:
+        mock_cfg.from_yaml.side_effect = FileNotFoundError("config not found")
+        assert train_command(mock_args) == 1
+
+
+def test_evaluate_command_error_returns_1(mock_args):
+    """Evaluate command returns 1 when an exception is raised."""
+    with patch("src.bankchurn.cli.ModelEvaluator") as mock_eval:
+        mock_eval.from_files.side_effect = FileNotFoundError("model not found")
+        assert evaluate_command(mock_args) == 1
+
+
+def test_predict_command_error_returns_1(mock_args):
+    """Predict command returns 1 when an exception is raised."""
+    with patch("src.bankchurn.cli.ChurnPredictor") as mock_pred:
+        mock_pred.from_files.side_effect = FileNotFoundError("model not found")
+        assert predict_command(mock_args) == 1
+
+
+# ===================================================================
+# cli_main (lines 251-277)
+# ===================================================================
+
+
+@patch("src.bankchurn.cli.train_command", return_value=0)
+@patch("src.bankchurn.cli.setup_logging")
+def test_cli_main_train(mock_logging, mock_train):
+    """cli_main routes 'train' subcommand correctly."""
+    exit_code = cli_main(["--log-level", "DEBUG", "train", "--config", "c.yaml", "--input", "d.csv"])
+    assert exit_code == 0
+    mock_train.assert_called_once()
+
+
+@patch("src.bankchurn.cli.evaluate_command", return_value=0)
+@patch("src.bankchurn.cli.setup_logging")
+def test_cli_main_evaluate(mock_logging, mock_eval):
+    """cli_main routes 'evaluate' subcommand correctly."""
+    exit_code = cli_main(
+        [
+            "evaluate",
+            "--config",
+            "c.yaml",
+            "--input",
+            "d.csv",
+            "--model",
+            "m.joblib",
+        ]
+    )
+    assert exit_code == 0
+    mock_eval.assert_called_once()
+
+
+@patch("src.bankchurn.cli.predict_command", return_value=0)
+@patch("src.bankchurn.cli.setup_logging")
+def test_cli_main_predict(mock_logging, mock_pred):
+    """cli_main routes 'predict' subcommand correctly."""
+    exit_code = cli_main(
+        [
+            "predict",
+            "--input",
+            "d.csv",
+            "--output",
+            "out.csv",
+            "--model",
+            "m.joblib",
+        ]
+    )
+    assert exit_code == 0
+    mock_pred.assert_called_once()
+
+
+@patch("src.bankchurn.cli.train_command", return_value=0)
+@patch("src.bankchurn.cli.setup_logging")
+def test_cli_main_with_seed_import_error(mock_logging, mock_train):
+    """cli_main handles --seed when common_utils.seed is not available."""
+    exit_code = cli_main(["--seed", "123", "train", "--config", "c.yaml", "--input", "d.csv"])
+    assert exit_code == 0
+
+
+@patch("src.bankchurn.cli.train_command", return_value=0)
+@patch("src.bankchurn.cli.setup_logging")
+def test_cli_main_with_seed_success(mock_logging, mock_train):
+    """cli_main successfully calls set_seed when common_utils.seed is available."""
+    import types
+
+    fake_module = types.ModuleType("common_utils.seed")
+    fake_module.set_seed = MagicMock()
+    with patch.dict(
+        "sys.modules", {"common_utils.seed": fake_module, "common_utils": types.ModuleType("common_utils")}
+    ):
+        exit_code = cli_main(["--seed", "42", "train", "--config", "c.yaml", "--input", "d.csv"])
+    assert exit_code == 0
+    fake_module.set_seed.assert_called_once_with(42)
+
+
+@patch("src.bankchurn.cli.evaluate_command", return_value=0)
+@patch("src.bankchurn.cli.setup_logging")
+def test_cli_main_evaluate_no_fairness(mock_logging, mock_eval, mock_data):
+    """Evaluate without fairness features."""
+    exit_code = cli_main(
+        [
+            "evaluate",
+            "--config",
+            "c.yaml",
+            "--input",
+            "d.csv",
+            "--model",
+            "m.joblib",
+        ]
+    )
+    assert exit_code == 0
+
+
+def test_train_command_saves_metrics(mock_args, mock_data, tmp_path):
+    """Train command saves metrics JSON when metrics_output is set."""
+    metrics_file = tmp_path / "metrics.json"
+    mock_args.metrics_output = str(metrics_file)
+
+    with (
+        patch("src.bankchurn.cli.BankChurnConfig") as mock_cfg,
+        patch("src.bankchurn.cli.ChurnTrainer") as mock_trainer_cls,
+    ):
+        mock_config = MagicMock()
+        mock_cfg.from_yaml.return_value = mock_config
+        mock_trainer = mock_trainer_cls.return_value
+        mock_trainer.load_data.return_value = mock_data
+        mock_trainer.prepare_features.return_value = (
+            mock_data.drop("Exited", axis=1),
+            mock_data["Exited"],
+        )
+        mock_trainer.train.return_value = (MagicMock(), {"f1": 0.85})
+
+        exit_code = train_command(mock_args)
+
+    assert exit_code == 0
+    assert metrics_file.exists()
+
+
+def test_train_command_no_metrics_output(mock_args, mock_data):
+    """Train command succeeds when metrics_output is None."""
+    mock_args.metrics_output = None
+
+    with (
+        patch("src.bankchurn.cli.BankChurnConfig") as mock_cfg,
+        patch("src.bankchurn.cli.ChurnTrainer") as mock_trainer_cls,
+    ):
+        mock_config = MagicMock()
+        mock_cfg.from_yaml.return_value = mock_config
+        mock_trainer = mock_trainer_cls.return_value
+        mock_trainer.load_data.return_value = mock_data
+        mock_trainer.prepare_features.return_value = (
+            mock_data.drop("Exited", axis=1),
+            mock_data["Exited"],
+        )
+        mock_trainer.train.return_value = (MagicMock(), {"f1": 0.85})
+
+        exit_code = train_command(mock_args)
+
+    assert exit_code == 0
+
+
+def test_evaluate_command_no_fairness(mock_args, mock_data):
+    """Evaluate command without fairness features."""
+    mock_args.fairness_features = None
+
+    with (
+        patch("src.bankchurn.cli.BankChurnConfig") as mock_cfg,
+        patch("src.bankchurn.cli.ModelEvaluator") as mock_eval_cls,
+        patch("pandas.read_csv", return_value=mock_data),
+    ):
+        mock_config = MagicMock()
+        mock_config.data.target_column = "Exited"
+        mock_cfg.from_yaml.return_value = mock_config
+        mock_eval = mock_eval_cls.from_files.return_value
+
+        exit_code = evaluate_command(mock_args)
+
+    assert exit_code == 0
+    mock_eval.compute_fairness_metrics.assert_not_called()

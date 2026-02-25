@@ -11,6 +11,8 @@ resources:
   - serviceaccount-aws.yaml
   - download-script-aws.yaml
   - model-configmaps-aws.yaml
+  - dataset-configmaps-aws.yaml
+  - metrics-configmap-aws.yaml
   - bankchurn-deployment-aws.yaml
   - carvision-deployment-aws.yaml
   - telecom-deployment-aws.yaml

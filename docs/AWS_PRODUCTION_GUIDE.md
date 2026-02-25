@@ -441,6 +441,10 @@ kubectl apply -f k8s/overlays/aws/serviceaccount-aws.yaml
 kubectl apply -f k8s/overlays/aws/download-script-aws.yaml
 kubectl apply -f k8s/overlays/aws/model-configmaps-aws.yaml
 kubectl apply -f k8s/overlays/aws/dataset-configmaps-aws.yaml
+kubectl apply -f k8s/overlays/aws/metrics-configmap-aws.yaml
+
+# Or use Kustomize to apply everything at once:
+# kubectl apply -k k8s/overlays/aws/
 
 # Deploy ML services (AWS versions with ECR images + S3 init containers)
 kubectl apply -f k8s/overlays/aws/bankchurn-deployment-aws.yaml
