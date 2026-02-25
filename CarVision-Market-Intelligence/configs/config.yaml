@@ -6,7 +6,7 @@ paths:
   data_path: "data/raw/vehicles_us.csv"
   artifacts_dir: "artifacts"
   model_path: "models/model.joblib"
-  metrics_path: "artifacts/metrics.json"
+  metrics_path: "artifacts/metrics_val.json"
   baseline_metrics_path: "artifacts/metrics_baseline.json"
   split_indices_path: "artifacts/split_indices.json"
 
