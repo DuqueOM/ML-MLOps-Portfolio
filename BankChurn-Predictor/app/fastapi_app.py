@@ -68,6 +68,47 @@ total_prediction_time: float = 0.0
 start_time = time.time()
 
 
+FEATURE_COLUMNS = [
+    "CreditScore",
+    "Geography",
+    "Gender",
+    "Age",
+    "Tenure",
+    "Balance",
+    "NumOfProducts",
+    "HasCrCard",
+    "IsActiveMember",
+    "EstimatedSalary",
+]
+
+
+def _load_background_data(max_samples: int = 100) -> Optional[pd.DataFrame]:
+    """Load a small background sample for SHAP explainer initialization.
+
+    Searches data directories populated by the init container (production)
+    or available locally (development).
+    """
+    data_dirs = [
+        BASE_DIR / "data" / "raw",  # Local dev
+        Path("/app/data/raw"),  # Production (init container mount)
+        BASE_DIR / "data",
+    ]
+    for data_dir in data_dirs:
+        if not data_dir.is_dir():
+            continue
+        for csv_file in sorted(data_dir.glob("*.csv")):
+            try:
+                df = pd.read_csv(csv_file, nrows=max_samples)
+                available = [c for c in FEATURE_COLUMNS if c in df.columns]
+                if len(available) >= 8:  # Need most features to be useful
+                    logger.info(f"Loaded {len(df)} background samples from {csv_file}")
+                    return df[available]
+            except Exception as e:
+                logger.debug(f"Could not load {csv_file}: {e}")
+    logger.warning("No background data found for SHAP initialization")
+    return None
+
+
 def load_model_logic() -> bool:
     """Internal logic to load model."""
     global predictor, model_explainer, model_metadata
@@ -86,9 +127,18 @@ def load_model_logic() -> bool:
         predictor = ChurnPredictor.from_files(model_path, prep_arg)
 
         # Initialize SHAP-based explainer for real feature contributions
+        # Background data is needed for SHAP; loaded from data dir (init container in prod)
         try:
-            model_explainer = ModelExplainer(predictor.model)
-            logger.info("ModelExplainer initialized for feature contributions")
+            X_background = _load_background_data()
+            model_explainer = ModelExplainer(
+                predictor.model,
+                X_background=X_background,
+                feature_names=list(X_background.columns) if X_background is not None else None,
+            )
+            if X_background is not None:
+                logger.info(f"ModelExplainer initialized with {len(X_background)} background samples")
+            else:
+                logger.warning("ModelExplainer initialized without background data (contributions may be zero)")
         except Exception as e:
             logger.warning(f"ModelExplainer init failed (contributions will be empty): {e}")
             model_explainer = None
