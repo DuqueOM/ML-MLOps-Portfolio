@@ -173,6 +173,12 @@ jobs:
           # Apply storage
           kubectl apply -f k8s/storage.yaml
 
+          # Apply ConfigMaps (must be before deployments — init containers depend on them)
+          kubectl apply -f k8s/download-script-configmap.yaml
+          kubectl apply -f k8s/model-configmaps.yaml
+          kubectl apply -f k8s/dataset-configmaps.yaml
+          kubectl apply -f k8s/metrics-configmap.yaml
+
           # Deploy ML services
           kubectl apply -f k8s/bankchurn-deployment.yaml
           kubectl apply -f k8s/carvision-deployment.yaml
