@@ -1372,7 +1372,7 @@ kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio
 >
 > | Job | Réplicas | Motivo |
 > |-----|----------|--------|
-> | `bankchurn-predictor` | 1–3 | HPA con CPU 70% + memoria 80% (ensemble model consume ~77% del request) |
+> | `bankchurn-predictor` | 1–3 | HPA con CPU 70% + memoria 80% (ensemble model consume ~67% del request de 448Mi) |
 > | `carvision-intelligence` | 1–3 | HPA con CPU 70% + memoria 80% (modelo + Streamlit sidecar) |
 > | `telecom-intelligence` | 1–3 | HPA con CPU 75% + memoria 80% |
 > | `prometheus` | 1 | Self-scrape, siempre 1 |
@@ -1405,6 +1405,61 @@ Luego haz clic en **"Execute"** y luego en la pestaña **"Graph"** para ver la g
 > - **URL**: `http://localhost:9090/graph`
 > - **Qué debe verse**: La gráfica de `bankchurn_requests_total` mostrando el número de requests a las APIs a lo largo del tiempo
 > - **Por qué importa**: Demuestra capacidad de consultar métricas con PromQL — el lenguaje de consulta de Prometheus
+
+---
+
+### 7.2b — Optimización de Recursos y Autoscaling Estandarizado
+
+**¿Por qué es importante?** En producción, los recursos mal calibrados generan dos problemas: (1) requests demasiado bajos causan OOMKill o scheduling failures, (2) requests demasiado altos desperdician recursos y confunden al HPA (el autoscaler no puede escalar correctamente si la utilización reportada no refleja el uso real).
+
+**Metodología de calibración** — basada en `kubectl top pods` en estado estable:
+
+```bash
+# Ver uso real de CPU y memoria por pod
+kubectl top pods -n ml-portfolio
+
+# Ver estado del HPA (réplicas actuales, métricas observadas)
+kubectl get hpa -n ml-portfolio -o wide
+```
+
+**Configuración final de recursos (calibrados a uso real + headroom):**
+
+| Servicio | Uso Real | Request | Limit | Utilización | Headroom |
+|----------|----------|---------|-------|-------------|----------|
+| **BankChurn** (ensemble 5 modelos) | ~300Mi / 5m CPU | 448Mi / 250m | 1Gi / 1000m | 67% mem | 33% |
+| **CarVision** API | ~550Mi / 8m CPU | 640Mi / 250m | 1Gi / 1000m | 86% mem | 14% |
+| **CarVision** Streamlit sidecar | ~200Mi / 3m CPU | 256Mi / 100m | 512Mi / 500m | 78% mem | 22% |
+| **TelecomAI** | ~140Mi / 4m CPU | 384Mi / 200m | 768Mi / 800m | 36% mem | 64% |
+
+> **Nota sobre CarVision y Prometheus**: CarVision tiene 2 contenedores (API + Streamlit), pero solo la API expone `/metrics`. Streamlit es un sidecar de UI sin endpoint de métricas. Por eso Prometheus muestra **1 solo target** para CarVision — esto es correcto.
+
+**HPA estandarizado — los 3 servicios ML usan la misma estrategia:**
+
+| Config | BankChurn | CarVision | TelecomAI |
+|--------|-----------|-----------|-----------|
+| **CPU target** | 70% | 70% | 75% |
+| **Memory target** | 80% | 80% | 80% |
+| **Réplicas** | 1–3 | 1–3 | 1–3 |
+| **scaleDown** | 300s estabilización, max -50%/min | ídem | ídem |
+| **scaleUp** | 60s estabilización, max(100%, +2 pods) | ídem | ídem |
+
+**¿Por qué 60s de estabilización en scaleUp?** Evita escalar por picos transitorios (ej: un burst de 10 requests en 5 segundos). Sin esto, el HPA puede crear réplicas innecesarias que luego tardan 5 minutos en bajar (scaleDown stabilization). Antes BankChurn tenía `scaleUp.stabilizationWindowSeconds: 0` — esto causaba que escalara a 3 réplicas por cualquier micro-spike de memoria y quedara atascado en 3.
+
+**Archivos modificados:**
+- `k8s/bankchurn-deployment.yaml` — memory request 512Mi→448Mi, scaleUp stabilization 0→60s
+- `k8s/carvision-deployment.yaml` — memory request 512Mi→640Mi, HPA añadido (antes no tenía)
+- `k8s/telecom-deployment.yaml` — memory metric añadida al HPA, behavior definido
+- `k8s/overlays/aws/*` — sincronizados con los cambios GCP
+
+**Resultado esperado** — `kubectl get hpa -n ml-portfolio`:
+```
+NAME             TARGETS                        MINPODS  MAXPODS  REPLICAS
+bankchurn-hpa    cpu: 2%/70%, memory: 67%/80%   1        3        1
+carvision-hpa    cpu: 2%/70%, memory: 24%/80%   1        3        1
+telecom-hpa      cpu: 2%/75%, memory: 37%/80%   1        3        1
+```
+
+Todos en 1 réplica cuando idle — escalando automáticamente bajo carga.
 
 ---
 
