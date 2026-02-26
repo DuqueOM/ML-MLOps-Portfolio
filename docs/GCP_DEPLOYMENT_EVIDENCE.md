@@ -1276,9 +1276,9 @@ Forwarding from 127.0.0.1:3000 -> 3000
 
 1. Ve a: **http://localhost:3000**
 2. Verás la pantalla de login de Grafana
-3. Ingresa las credenciales:
+3. Ingresa las credenciales (definidas en el secret `grafana-credentials`):
    - **Usuario**: `admin`
-   - **Contraseña**: `admin`
+   - **Contraseña**: `MLPortfolio2026!`
 4. Si te pide cambiar la contraseña, puedes saltarlo haciendo clic en "Skip"
 
 ---
@@ -1372,9 +1372,9 @@ kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio
 >
 > | Job | Réplicas | Motivo |
 > |-----|----------|--------|
-> | `bankchurn-predictor` | 3 | HPA escaló por uso de memoria (ensemble model ~58% del límite) |
-> | `carvision-intelligence` | 1 | Sin HPA — deployment fijo en 1 réplica |
-> | `telecom-intelligence` | 1 | HPA configurado pero CPU/memoria en mínimo (2% CPU) |
+> | `bankchurn-predictor` | 1–3 | HPA con CPU 70% + memoria 80% (ensemble model consume ~77% del request) |
+> | `carvision-intelligence` | 1–3 | HPA con CPU 70% + memoria 80% (modelo + Streamlit sidecar) |
+> | `telecom-intelligence` | 1–3 | HPA con CPU 75% + memoria 80% |
 > | `prometheus` | 1 | Self-scrape, siempre 1 |
 >
 > Verificar estado del HPA: `kubectl get hpa -n ml-portfolio`
@@ -3467,7 +3467,7 @@ flameshot gui
 
 Antes de publicar cualquier captura, verifica que NO contenga:
 - Tokens de API o claves privadas (usa blur de Flameshot)
-- Contraseñas (aunque sean de demo como `admin/admin`)
+- Contraseñas (aunque sean de demo — las credenciales están en el secret `grafana-credentials`)
 - Números de tarjeta de crédito en el billing dashboard
 - Direcciones de email personales
 - Números de teléfono
@@ -4650,8 +4650,8 @@ done &
 
 **Paso a paso:**
 1. Abre `http://localhost:3000`
-2. Login: `admin/admin` (o las credenciales que configuraste)
-3. Navega al dashboard "ML Services"
+2. Login: `admin / MLPortfolio2026!` (secret `grafana-credentials`)
+3. Navega al dashboard "ML Portfolio Metrics"
 
 ---
 

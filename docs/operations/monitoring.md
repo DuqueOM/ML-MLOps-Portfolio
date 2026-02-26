@@ -116,7 +116,7 @@ docker compose -f docker-compose.demo.yml --profile monitoring up -d
 
 # Access Grafana
 open http://localhost:3000
-# Default credentials: admin / admin
+# Credentials (secret grafana-credentials): admin / MLPortfolio2026!
 ```
 
 ### Pre-built Dashboard
