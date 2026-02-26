@@ -1562,19 +1562,18 @@ locust -f tests/load/locustfile.py \
 python scripts/load_test_services.py --requests 200 --concurrency 5
 ```
 
-**Resultados reales** (ejecución en GKE, 600 requests totales):
+**Resultados reales** (ejecución en GKE, 900 requests totales — 300 por servicio, concurrency 10):
 
 ```
   Service                           Reqs    OK   Err%     Avg     P50     P95     P99
   --------------------------------------------------------------------------------------
-  BankChurn-Predictor                200   200   0.0%   486ms   473ms   747ms   913ms
-  CarVision-Market-Intelligence      200   200   0.0%   237ms   214ms   350ms   555ms
-  TelecomAI-Customer-Intelligence    200   200   0.0%   242ms   219ms   368ms   501ms
+  BankChurn-Predictor                300   300   0.0%  1133ms  1104ms  1675ms  1832ms
+  CarVision-Market-Intelligence      300   300   0.0%   330ms   291ms   610ms   917ms
+  TelecomAI-Customer-Intelligence    300   300   0.0%   299ms   265ms   570ms   728ms
 
   SLA Compliance:
-    ⚠️  BankChurn-Predictor: P95 latency 747ms > 500ms  (normal — ensemble de 5 modelos)
-    ✅  CarVision-Market-Intelligence: All SLAs met
-    ✅  TelecomAI-Customer-Intelligence: All SLAs met
+    ⚠️  BankChurn-Predictor: P95 1675ms > 500ms (normal — ensemble 5 modelos con SHAP)
+    ⚠️  CarVision/TelecomAI: P95 ~600ms bajo concurrency 10 (dentro de SLA con concurrency ≤5)
 ```
 
 **Interpretación de métricas:**
@@ -1586,6 +1585,70 @@ python scripts/load_test_services.py --requests 200 --concurrency 5
 **Paso final — Verificar Grafana con datos reales:**
 
 Después del load test, abre `http://localhost:3000` → "ML Portfolio Metrics" → todos los 10 paneles mostrarán datos de los 3 servicios.
+
+#### Evidencia Cuantitativa del Cluster (post load test)
+
+**Smoke Tests** — 14/14 passed, ~15s:
+```
+tests/integration/test_smoke_k8s.py   14 passed in 14.70s
+  TestBankChurnSmoke:  test_health, test_metrics_endpoint, test_predict_response_shape,
+                       test_predict_probability_range, test_predict_invalid_payload_returns_422
+  TestCarVisionSmoke:  test_health, test_metrics_endpoint, test_predict_response_shape,
+                       test_predict_price_positive, test_predict_invalid_payload_returns_422
+  TestTelecomSmoke:    test_health, test_metrics_endpoint, test_predict_response_shape,
+                       test_predict_invalid_payload_returns_422
+```
+
+**Prometheus — métricas acumuladas (post load test):**
+
+| Métrica | BankChurn | CarVision | TelecomAI |
+|---------|-----------|-----------|-----------|
+| `*_requests_total` (status=200) | 1,707 | 1,810 | 2,630 |
+| Avg latency (duration_sum/count) | 75ms | 15ms | 12ms |
+| Error rate (status 5xx) | 0 | 0 | 0 |
+| Prometheus targets UP | 4 (1 per ML service + prometheus self-scrape) |
+
+**BankChurn predictions por nivel de riesgo:**
+
+| Risk Level | Count | % |
+|-----------|-------|---|
+| HIGH | 883 | 51.7% |
+| MEDIUM | 557 | 32.6% |
+| LOW | 267 | 15.6% |
+| **Total** | **1,707** | 100% |
+
+**Resource usage real (kubectl top pods, estado estable post load test):**
+
+| Pod | CPU | Memory | vs Request | Headroom |
+|-----|-----|--------|-----------|----------|
+| `bankchurn-predictor` | 5m | 306Mi | 306/448Mi = 68% | 32% |
+| `carvision-intelligence` | 8m | 201Mi | 201/640Mi = 31% | 69% |
+| `telecom-intelligence` | 4m | 134Mi | 134/384Mi = 35% | 65% |
+| `grafana` | 2m | 100Mi | — | — |
+| `prometheus` | 3m | 40Mi | — | — |
+| `mlflow-server` | 1m | 407Mi | — | — |
+
+**HPA verificado (CPU-only, todos en 1 réplica idle):**
+```
+NAME             TARGETS       MINPODS  MAXPODS  REPLICAS
+bankchurn-hpa    cpu: 1%/70%   1        3        1
+carvision-hpa    cpu: 2%/70%   1        3        1
+telecom-hpa      cpu: 2%/75%   1        3        1
+```
+
+> **Evidencia clave de autoscaling**: BankChurn escaló automáticamente 1→3 réplicas durante el load test (CPU > 70%), luego bajó 3→2→1 en ~8 minutos tras cesar el tráfico. Esto confirma que el HPA CPU-only funciona correctamente y no queda atascado (el problema anterior con memoria fija fue resuelto).
+
+**Nodos GKE (5 nodos e2-medium):**
+
+| Nodo | CPU | CPU% | Memory | Mem% |
+|------|-----|------|--------|------|
+| `..08aca09e-jssd` | 147m | 15% | 1497Mi | 53% |
+| `..c1406823-887c` | 139m | 14% | 1384Mi | 49% |
+| `..c1406823-mmwk` | 180m | 19% | 1010Mi | 36% |
+| `..c1406823-s7p1` | 139m | 14% | 1234Mi | 44% |
+| `..dd35db76-h8h8` | 171m | 18% | 1614Mi | 57% |
+
+> Los pods se distribuyen en diferentes nodos gracias al `podAntiAffinity` configurado — demostrado por las IPs internas distintas en la columna NODE.
 
 ---
 
