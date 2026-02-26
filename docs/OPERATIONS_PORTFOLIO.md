@@ -599,9 +599,8 @@ Real cost data from the live GCP (GKE) deployment. Values originally billed in C
 ## Scaling Recommendations
 
 ### Horizontal Scaling
-- All 3 ML services use standardized HPA with **dual metrics** (CPU + memory)
+- All 3 ML services use standardized HPA with **CPU-only** scaling (memory is fixed in ML inference services)
 - CPU targets: 70% (BankChurn/CarVision), 75% (TelecomAI)
-- Memory target: 80% for all services
 - Max replicas: 3 per service (1–3 range)
 - Conservative scale-down: 300s stabilization, max 50% reduction/min
 - Scale-up: 60s stabilization to filter transient spikes

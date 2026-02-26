@@ -183,7 +183,7 @@ The portfolio runs 6 services: 3 ML APIs (BankChurn ~384Mi, CarVision ~640Mi+256
 
 **Why not preemptible/spot instances for production**: Preemptible VMs save 60–80% but can be terminated with 30 seconds notice. For a portfolio demonstration that needs to be reliably accessible for recruiters and reviewers, availability takes priority over the ~$15/month savings. The Terraform configuration correctly sets `preemptible = false` for production while enabling it for dev/staging environments.
 
-**Autoscaling design**: All 3 ML services have standardized HPA with dual metrics (CPU + memory). BankChurn/CarVision target 70% CPU and 80% memory; TelecomAI targets 75% CPU and 80% memory. Conservative scale-down (300s stabilization, max 50% reduction/min) prevents thrashing, while scale-up uses 60s stabilization to filter transient spikes. Memory requests are calibrated to `kubectl top pods` steady-state usage + headroom, ensuring the HPA scales down to 1 replica when idle.
+**Autoscaling design**: All 3 ML services use CPU-only HPA (memory metric removed — ML models have fixed RAM footprint that prevents HPA scale-down). BankChurn/CarVision target 70% CPU; TelecomAI targets 75%. Conservative scale-down (300s stabilization, max 50% reduction/min) prevents thrashing, while scale-up uses 60s stabilization to filter transient spikes. Memory requests are calibrated to `kubectl top pods` steady-state + headroom for resource scheduling (not autoscaling).
 
 ### Cost Impact
 

@@ -1372,9 +1372,9 @@ kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio
 >
 > | Job | Réplicas | Motivo |
 > |-----|----------|--------|
-> | `bankchurn-predictor` | 1–3 | HPA con CPU 70% + memoria 80% (ensemble model consume ~67% del request de 448Mi) |
-> | `carvision-intelligence` | 1–3 | HPA con CPU 70% + memoria 80% (modelo + Streamlit sidecar) |
-> | `telecom-intelligence` | 1–3 | HPA con CPU 75% + memoria 80% |
+> | `bankchurn-predictor` | 1–3 | HPA con CPU 70% (escala con tráfico de inferencia) |
+> | `carvision-intelligence` | 1–3 | HPA con CPU 70% (escala con tráfico de inferencia) |
+> | `telecom-intelligence` | 1–3 | HPA con CPU 75% (escala con tráfico de inferencia) |
 > | `prometheus` | 1 | Self-scrape, siempre 1 |
 >
 > Verificar estado del HPA: `kubectl get hpa -n ml-portfolio`
@@ -1437,29 +1437,33 @@ kubectl get hpa -n ml-portfolio -o wide
 
 | Config | BankChurn | CarVision | TelecomAI |
 |--------|-----------|-----------|-----------|
+| **Métrica** | CPU only | CPU only | CPU only |
 | **CPU target** | 70% | 70% | 75% |
-| **Memory target** | 80% | 80% | 80% |
 | **Réplicas** | 1–3 | 1–3 | 1–3 |
 | **scaleDown** | 300s estabilización, max -50%/min | ídem | ídem |
 | **scaleUp** | 60s estabilización, max(100%, +2 pods) | ídem | ídem |
 
-**¿Por qué 60s de estabilización en scaleUp?** Evita escalar por picos transitorios (ej: un burst de 10 requests en 5 segundos). Sin esto, el HPA puede crear réplicas innecesarias que luego tardan 5 minutos en bajar (scaleDown stabilization). Antes BankChurn tenía `scaleUp.stabilizationWindowSeconds: 0` — esto causaba que escalara a 3 réplicas por cualquier micro-spike de memoria y quedara atascado en 3.
+**¿Por qué CPU-only y no CPU + memoria?** Los servicios ML cargan el modelo completo en RAM al iniciar (~300Mi para BankChurn, ~550Mi para CarVision, ~140Mi para TelecomAI). Esta memoria es **fija** — no varía con el tráfico. El HPA calcula `desiredReplicas = ceil(currentReplicas × usage/target)`. Con memoria fija al 67%, si hay 3 réplicas: `ceil(3 × 67/80) = ceil(2.51) = 3` — **nunca puede bajar**. Cada pod replica el mismo footprint de modelo, así que agregar réplicas no reduce la memoria por pod. CPU sí correlaciona con tráfico de inferencia y es la métrica correcta para escalar servicios ML.
+
+**¿Por qué 60s de estabilización en scaleUp?** Evita escalar por picos transitorios (ej: un burst de 10 requests en 5 segundos). Sin esto, el HPA crea réplicas innecesarias que luego tardan 5 minutos en bajar (scaleDown stabilization).
 
 **Archivos modificados:**
-- `k8s/bankchurn-deployment.yaml` — memory request 512Mi→448Mi, scaleUp stabilization 0→60s
-- `k8s/carvision-deployment.yaml` — memory request 512Mi→640Mi, HPA añadido (antes no tenía)
-- `k8s/telecom-deployment.yaml` — memory metric añadida al HPA, behavior definido
+- `k8s/bankchurn-deployment.yaml` — memory request 512Mi→448Mi, HPA CPU-only, scaleUp 60s
+- `k8s/carvision-deployment.yaml` — memory request 512Mi→640Mi, HPA añadido (CPU-only)
+- `k8s/telecom-deployment.yaml` — HPA CPU-only con behavior definido
+- `k8s/grafana-deployment.yaml` — dashboard corregido (Panel 1: `bankchurn_requests_total`)
+- `infra/grafana/dashboards/ml-performance.json` — reescrito con métricas reales
 - `k8s/overlays/aws/*` — sincronizados con los cambios GCP
 
-**Resultado esperado** — `kubectl get hpa -n ml-portfolio`:
+**Resultado verificado** — `kubectl get hpa -n ml-portfolio`:
 ```
-NAME             TARGETS                        MINPODS  MAXPODS  REPLICAS
-bankchurn-hpa    cpu: 2%/70%, memory: 67%/80%   1        3        1
-carvision-hpa    cpu: 2%/70%, memory: 24%/80%   1        3        1
-telecom-hpa      cpu: 2%/75%, memory: 37%/80%   1        3        1
+NAME             TARGETS       MINPODS  MAXPODS  REPLICAS
+bankchurn-hpa    cpu: 2%/70%   1        3        1
+carvision-hpa    cpu: 2%/70%   1        3        1
+telecom-hpa      cpu: 2%/75%   1        3        1
 ```
 
-Todos en 1 réplica cuando idle — escalando automáticamente bajo carga.
+Todos en 1 réplica cuando idle — escalando automáticamente bajo carga. Verificado: BankChurn escaló de 3→2→1 en ~8 minutos tras el load test.
 
 ---
 

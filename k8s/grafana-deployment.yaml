@@ -163,7 +163,7 @@ data:
             "overrides": []
           },
           "targets": [
-            { "expr": "sum(rate(bankchurn_predictions_total[5m]))", "legendFormat": "BankChurn", "refId": "A" },
+            { "expr": "sum(rate(bankchurn_requests_total[5m]))", "legendFormat": "BankChurn", "refId": "A" },
             { "expr": "sum(rate(carvision_requests_total[5m]))", "legendFormat": "CarVision", "refId": "B" },
             { "expr": "sum(rate(telecom_requests_total[5m]))", "legendFormat": "TelecomAI", "refId": "C" }
           ]

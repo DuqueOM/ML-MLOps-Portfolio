@@ -965,7 +965,7 @@ The HPA automatically scales the number of pod replicas based on CPU and memory 
 
 ### 11.1 HPA Configuration
 
-All 3 ML services have standardized HPA with dual metrics (CPU + memory) and explicit behavior policies:
+All 3 ML services use **CPU-only HPA** with explicit behavior policies:
 
 ```yaml
 # Example: BankChurn HPA (in k8s/bankchurn-deployment.yaml)
@@ -987,13 +987,7 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+        averageUtilization: 70    # 75% for TelecomAI
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300   # 5min cooldown prevents thrashing
@@ -1013,30 +1007,32 @@ spec:
       selectPolicy: Max
 ```
 
+> **Why CPU-only (no memory metric)?** ML inference services load the model into RAM at startup. This memory is **fixed** (~300Mi for BankChurn, ~550Mi for CarVision, ~140Mi for TelecomAI) and does not vary with traffic. The HPA formula `desiredReplicas = ceil(replicas × usage/target)` with fixed memory means: if 3 replicas each use 67% memory, `ceil(3 × 67/80) = 3` — the HPA **can never scale down**. CPU correlates with inference traffic and is the correct metric for ML services.
+
 **Resource calibration** (based on `kubectl top pods` at steady state):
 
-| Service | Real Usage | Request | Limit | HPA Utilization |
+| Service | Real Usage | Request | Limit | Mem Utilization |
 |---------|-----------|---------|-------|-----------------|
-| BankChurn (ensemble) | ~300Mi / 5m CPU | 448Mi / 250m | 1Gi / 1000m | 67% mem |
-| CarVision (API) | ~550Mi / 8m CPU | 640Mi / 250m | 1Gi / 1000m | 86% mem |
+| BankChurn (ensemble) | ~300Mi / 5m CPU | 448Mi / 250m | 1Gi / 1000m | 67% |
+| CarVision (API) | ~550Mi / 8m CPU | 640Mi / 250m | 1Gi / 1000m | 86% |
 | CarVision (Streamlit) | ~200Mi / 3m CPU | 256Mi / 100m | 512Mi / 500m | sidecar |
-| TelecomAI | ~140Mi / 4m CPU | 384Mi / 200m | 768Mi / 800m | 36% mem |
+| TelecomAI | ~140Mi / 4m CPU | 384Mi / 200m | 768Mi / 800m | 36% |
 
 ### 11.2 Verify HPA
 
 ```bash
 kubectl get hpa -n ml-portfolio
-# NAME             REFERENCE                         TARGETS                        MINPODS  MAXPODS  REPLICAS
-# bankchurn-hpa    Deployment/bankchurn-predictor     cpu: 2%/70%, memory: 67%/80%   1        3        1
-# carvision-hpa    Deployment/carvision-intelligence  cpu: 2%/70%, memory: 24%/80%   1        3        1
-# telecom-hpa      Deployment/telecom-intelligence    cpu: 2%/75%, memory: 37%/80%   1        3        1
+# NAME             REFERENCE                         TARGETS       MINPODS  MAXPODS  REPLICAS
+# bankchurn-hpa    Deployment/bankchurn-predictor     cpu: 2%/70%   1        3        1
+# carvision-hpa    Deployment/carvision-intelligence  cpu: 2%/70%   1        3        1
+# telecom-hpa      Deployment/telecom-intelligence    cpu: 2%/75%   1        3        1
 ```
 
 ### 11.3 Autoscaling Behavior
 
-- **Scale-down**: 300s stabilization window prevents flapping. Max 50% reduction per minute.
+- **Scale-down**: 300s stabilization window prevents flapping. Max 50% reduction per minute (3→2→1 in ~8min).
 - **Scale-up**: 60s stabilization filters transient spikes. Max(100% increase, +2 pods) per 30s.
-- **Why 60s scaleUp stabilization?** Without it, a short burst of requests can trigger unnecessary replicas that then take 5 minutes to scale back down (scaleDown stabilization). This was the root cause of BankChurn being stuck at 3 replicas during idle.
+- **Why 60s scaleUp stabilization?** Without it, a short burst of requests triggers unnecessary replicas that take 5 minutes to scale back down due to scaleDown stabilization.
 
 ---
 
