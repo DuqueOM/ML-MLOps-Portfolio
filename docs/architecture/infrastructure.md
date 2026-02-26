@@ -400,13 +400,7 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+        averageUtilization: 70    # 75% for TelecomAI
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300   # 5min cooldown prevents thrashing
@@ -426,13 +420,15 @@ spec:
       selectPolicy: Max
 ```
 
-**HPA standardization** — all 3 ML services use identical autoscaling behavior:
+> **Why CPU-only?** ML inference services have fixed memory footprint (model loaded in RAM). Memory-based HPA prevents scale-down: `ceil(3 × 67%/80%) = 3`. CPU correlates with traffic.
 
-| Service | CPU Target | Memory Target | Min | Max | scaleDown | scaleUp |
-|---------|-----------|---------------|-----|-----|-----------|--------|
-| BankChurn | 70% | 80% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
-| CarVision | 70% | 80% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
-| TelecomAI | 75% | 80% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
+**HPA standardization** — all 3 ML services use CPU-only autoscaling:
+
+| Service | CPU Target | Min | Max | scaleDown | scaleUp |
+|---------|-----------|-----|-----|-----------|--------|
+| BankChurn | 70% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
+| CarVision | 70% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
+| TelecomAI | 75% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
 
 ### Ingress
 

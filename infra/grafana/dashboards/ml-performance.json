@@ -3,75 +3,103 @@
     "title": "ML Model Performance Dashboard",
     "tags": ["mlops", "performance", "predictions"],
     "timezone": "browser",
+    "schemaVersion": 39,
     "panels": [
       {
         "id": 1,
-        "title": "Prediction Latency (ms)",
-        "type": "graph",
+        "title": "Request Rate — All Services (req/s)",
+        "type": "timeseries",
         "targets": [
-          {
-            "expr": "histogram_quantile(0.95, rate(prediction_duration_seconds_bucket[5m])) * 1000",
-            "legendFormat": "p95"
-          },
-          {
-            "expr": "histogram_quantile(0.50, rate(prediction_duration_seconds_bucket[5m])) * 1000",
-            "legendFormat": "p50"
-          }
+          { "expr": "sum(rate(bankchurn_requests_total[5m]))", "legendFormat": "BankChurn" },
+          { "expr": "sum(rate(carvision_requests_total[5m]))", "legendFormat": "CarVision" },
+          { "expr": "sum(rate(telecom_requests_total[5m]))", "legendFormat": "TelecomAI" }
         ],
+        "fieldConfig": { "defaults": { "unit": "reqps" } },
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
       },
       {
         "id": 2,
-        "title": "Requests per Second",
-        "type": "graph",
+        "title": "Latency P95 — All Services",
+        "type": "timeseries",
         "targets": [
-          {
-            "expr": "rate(http_requests_total[5m])",
-            "legendFormat": "{{method}} {{endpoint}}"
-          }
+          { "expr": "histogram_quantile(0.95, sum(rate(bankchurn_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "BankChurn P95" },
+          { "expr": "histogram_quantile(0.95, sum(rate(carvision_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "CarVision P95" },
+          { "expr": "histogram_quantile(0.95, sum(rate(telecom_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "TelecomAI P95" }
         ],
+        "fieldConfig": { "defaults": { "unit": "s" } },
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
       },
       {
         "id": 3,
-        "title": "Model Memory Usage (MB)",
-        "type": "graph",
+        "title": "Total Requests — All Services",
+        "type": "stat",
         "targets": [
-          {
-            "expr": "process_resident_memory_bytes / 1024 / 1024",
-            "legendFormat": "Memory"
-          }
+          { "expr": "sum(bankchurn_requests_total)", "legendFormat": "BankChurn" },
+          { "expr": "sum(carvision_requests_total)", "legendFormat": "CarVision" },
+          { "expr": "sum(telecom_requests_total)", "legendFormat": "TelecomAI" }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+        "gridPos": {"h": 4, "w": 12, "x": 0, "y": 8}
       },
       {
         "id": 4,
-        "title": "Cache Hit Rate",
+        "title": "Prometheus Targets UP",
         "type": "stat",
         "targets": [
-          {
-            "expr": "rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m])) * 100",
-            "legendFormat": "Hit Rate %"
-          }
+          { "expr": "count(up == 1)", "legendFormat": "Targets UP" }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 8}
       },
       {
         "id": 5,
-        "title": "Prediction Distribution",
-        "type": "heatmap",
+        "title": "Model Memory Usage (MB)",
+        "type": "timeseries",
         "targets": [
-          {
-            "expr": "rate(prediction_value_bucket[5m])",
-            "format": "heatmap"
-          }
+          { "expr": "process_resident_memory_bytes{job='bankchurn-predictor'} / 1024 / 1024", "legendFormat": "BankChurn" },
+          { "expr": "process_resident_memory_bytes{job='carvision-intelligence'} / 1024 / 1024", "legendFormat": "CarVision" },
+          { "expr": "process_resident_memory_bytes{job='telecom-intelligence'} / 1024 / 1024", "legendFormat": "TelecomAI" }
         ],
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
+        "fieldConfig": { "defaults": { "unit": "decmbytes" } },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12}
+      },
+      {
+        "id": 6,
+        "title": "Avg Latency — All Services",
+        "type": "timeseries",
+        "targets": [
+          { "expr": "rate(bankchurn_request_duration_seconds_sum[5m]) / rate(bankchurn_request_duration_seconds_count[5m])", "legendFormat": "BankChurn Avg" },
+          { "expr": "rate(carvision_request_duration_seconds_sum[5m]) / rate(carvision_request_duration_seconds_count[5m])", "legendFormat": "CarVision Avg" },
+          { "expr": "rate(telecom_request_duration_seconds_sum[5m]) / rate(telecom_request_duration_seconds_count[5m])", "legendFormat": "TelecomAI Avg" }
+        ],
+        "fieldConfig": { "defaults": { "unit": "s" } },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12}
+      },
+      {
+        "id": 7,
+        "title": "BankChurn — Predictions by Risk Level",
+        "type": "timeseries",
+        "targets": [
+          { "expr": "bankchurn_predictions_total{risk_level=\"HIGH\"}", "legendFormat": "HIGH risk" },
+          { "expr": "bankchurn_predictions_total{risk_level=\"MEDIUM\"}", "legendFormat": "MEDIUM risk" },
+          { "expr": "bankchurn_predictions_total{risk_level=\"LOW\"}", "legendFormat": "LOW risk" }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20}
+      },
+      {
+        "id": 8,
+        "title": "Error Rate — All Services",
+        "type": "timeseries",
+        "targets": [
+          { "expr": "sum(rate(bankchurn_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "BankChurn errors" },
+          { "expr": "sum(rate(carvision_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "CarVision errors" },
+          { "expr": "sum(rate(telecom_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "TelecomAI errors" }
+        ],
+        "fieldConfig": { "defaults": { "unit": "reqps" } },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20}
       }
     ],
     "refresh": "10s",
     "time": {
-      "from": "now-1h",
+      "from": "now-30m",
       "to": "now"
     }
   }
