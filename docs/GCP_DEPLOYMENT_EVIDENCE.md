@@ -1368,13 +1368,17 @@ kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio
 
 > **Nota sobre múltiples targets por servicio**: Prometheus usa `kubernetes_sd_configs` para descubrir pods individualmente — **no** el Service de Kubernetes. Si el HPA escala un servicio a N réplicas, verás N targets con IPs distintas (una por pod). Esto es correcto y deseable: permite detectar si una réplica específica tiene latencia alta o errores, lo que sería imposible monitorizando solo el servicio agregado.
 >
-> Ejemplo con BankChurn escalado a 3 réplicas por HPA:
-> ```
-> http://10.244.1.9:8000/metrics   UP  ← Pod réplica 1
-> http://10.244.0.48:8000/metrics  UP  ← Pod réplica 2
-> http://10.244.4.9:8000/metrics   UP  ← Pod réplica 3
-> ```
-> Verificar réplicas activas: `kubectl get pods -n ml-portfolio -l app=bankchurn-predictor`
+> El número de targets varía según las réplicas activas en cada momento:
+>
+> | Job | Réplicas | Motivo |
+> |-----|----------|--------|
+> | `bankchurn-predictor` | 3 | HPA escaló por uso de memoria (ensemble model ~58% del límite) |
+> | `carvision-intelligence` | 1 | Sin HPA — deployment fijo en 1 réplica |
+> | `telecom-intelligence` | 1 | HPA configurado pero CPU/memoria en mínimo (2% CPU) |
+> | `prometheus` | 1 | Self-scrape, siempre 1 |
+>
+> Verificar estado del HPA: `kubectl get hpa -n ml-portfolio`
+> Verificar réplicas por servicio: `kubectl get pods -n ml-portfolio`
 
 ---
 
