@@ -286,21 +286,38 @@ curl http://localhost:5000/health
 
 ### Metrics Collection
 
-**Prometheus Metrics**:
+**Prometheus Metrics** (scrapes all 3 ML services):
 ```bash
 # Access Prometheus
 open http://localhost:9090
 
-# Example queries:
-# - Request rate: rate(http_requests_total[5m])
-# - Error rate: rate(http_requests_total{status=~"5.."}[5m])
+# Example queries (real metric names):
+# - BankChurn request rate: rate(bankchurn_requests_total[5m])
+# - CarVision request rate: rate(carvision_requests_total[5m])
+# - TelecomAI request rate: rate(telecom_requests_total[5m])
+# - Latency P95: histogram_quantile(0.95, sum(rate(bankchurn_request_duration_seconds_bucket[5m])) by (le))
+# - Error rate: sum(rate(bankchurn_requests_total{status=~"5.."}[5m]))
 ```
 
-**Grafana Dashboards**:
+**Grafana Dashboards** (auto-provisioned "ML Portfolio Metrics" — 10 panels):
 ```bash
 # Access Grafana
 open http://localhost:3000
 # Default credentials: admin/admin
+# Dashboard: "ML Portfolio Metrics" (auto-provisioned via ConfigMap)
+```
+
+### Production Load Testing
+
+```bash
+# Full test (smoke + load + SLA report)
+python scripts/load_test_services.py
+
+# Quick validation
+python scripts/load_test_services.py --smoke-only
+
+# Custom parameters
+python scripts/load_test_services.py --requests 200 --concurrency 5
 ```
 
 ### Logs

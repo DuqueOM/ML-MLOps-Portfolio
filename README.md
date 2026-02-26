@@ -114,7 +114,7 @@ Strategic plan optimization reducing **$6.9M/year** revenue leakage per 100K cus
 | **MLOps** | MLflow (9 experiments), DVC, Docker, Kubernetes, Terraform |
 | **API & Dashboard** | FastAPI, Pydantic, Streamlit, Plotly |
 | **Cloud & IaC** | GCP (GKE, GCS, AR, Cloud SQL), AWS (EKS, S3, ECR, RDS), Terraform, K8s |
-| **Monitoring** | Prometheus, Grafana, Evidently (drift detection), CloudWatch |
+| **Monitoring** | Prometheus (multi-service scraping), Grafana (10-panel dashboard), Load Testing (SRE methodology), Evidently |
 | **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy), Artifact Registry, ECR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Testing** | pytest (85-91% coverage), Codecov, pre-commit hooks |

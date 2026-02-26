@@ -604,19 +604,59 @@ kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio &
 
 The deployment includes a **"ML Portfolio Metrics"** dashboard auto-provisioned via ConfigMap (`grafana-dashboards` in `k8s/grafana-deployment.yaml`). No manual dashboard creation needed — it appears automatically when Grafana starts.
 
-**Dashboard panels** (using real Prometheus metrics from BankChurn):
+**Dashboard panels** (10 panels monitoring all 3 ML services):
 
-| Panel | PromQL | Type |
+| Panel | PromQL (example) | Type |
 |-------|--------|------|
-| Prediction Rate | `rate(bankchurn_predictions_total[5m])` | Time series |
-| Latency P95/P50 | `histogram_quantile(0.95, rate(bankchurn_request_duration_seconds_bucket[5m]))` | Time series |
-| Total Predictions | `bankchurn_predictions_total` | Stat |
-| Avg Request Duration | `rate(bankchurn_request_duration_seconds_sum[5m]) / rate(bankchurn_request_duration_seconds_count[5m])` | Stat |
-| Total Requests | `bankchurn_requests_total` | Stat |
+| Prediction Rate — All Services | `sum(rate(bankchurn_predictions_total[5m]))`, `sum(rate(carvision_requests_total[5m]))`, `sum(rate(telecom_requests_total[5m]))` | Time series |
+| Latency P95 — All Services | `histogram_quantile(0.95, sum(rate(<service>_request_duration_seconds_bucket[5m])) by (le))` | Time series |
+| Total Requests — BankChurn | `sum(bankchurn_requests_total)` | Stat |
+| Total Requests — CarVision | `sum(carvision_requests_total)` | Stat |
+| Total Requests — TelecomAI | `sum(telecom_requests_total)` | Stat |
 | Targets UP | `count(up == 1)` | Stat |
-| Duration Distribution | P99/P95/P50 histogram_quantile | Time series |
+| Avg Latency — All Services | `rate(<service>_request_duration_seconds_sum[5m]) / rate(..._count[5m])` | Time series |
+| Latency Distribution P99/P95/P50 | `histogram_quantile(0.99/0.95/0.50, ...)` per service | Time series |
+| BankChurn — Predictions by Risk Level | `bankchurn_predictions_total{risk_level="HIGH/MEDIUM/LOW"}` | Time series |
+| Error Rate — All Services | `sum(rate(<service>_requests_total{status=~"5.."}[5m]))` | Time series |
 
-> **Note**: The dashboard JSON is defined in the base `k8s/grafana-deployment.yaml`, shared between GCP and AWS overlays. To customize, edit the `grafana-dashboards` ConfigMap → apply → restart Grafana.
+**Prometheus scrape configuration** (`k8s/prometheus-deployment.yaml`) includes jobs for all 3 services:
+- `bankchurn-predictor` — scrapes pods with label `app: bankchurn-predictor`
+- `carvision-intelligence` — scrapes pods with label `app: carvision-intelligence`
+- `telecom-intelligence` — scrapes pods with label `app: telecom-intelligence`
+
+> **Note**: Both the dashboard JSON and Prometheus config are in the base `k8s/` directory, shared between GCP and AWS overlays. The monitoring stack is 100% cloud-agnostic.
+
+### 7.4 Production Load Testing
+
+A professional load testing script validates all ML services and populates Prometheus/Grafana metrics:
+
+```bash
+# Prerequisites: port-forward all services
+kubectl port-forward svc/bankchurn-service 8000:80 -n ml-portfolio &
+kubectl port-forward svc/carvision-service 8001:80 -n ml-portfolio &
+kubectl port-forward svc/telecom-service   8002:80 -n ml-portfolio &
+
+# Run full test (smoke + load + report)
+python scripts/load_test_services.py
+
+# Quick validation only
+python scripts/load_test_services.py --smoke-only
+
+# Custom parameters
+python scripts/load_test_services.py --requests 200 --concurrency 5
+```
+
+**Test phases:**
+
+| Phase | Description |
+|-------|-------------|
+| **Smoke Tests** | Health check + single prediction per service (fast fail) |
+| **Load Tests** | Sustained traffic with varied payloads (200 req × 3 services) |
+| **Report** | Latency percentiles (P50/P95/P99), error rates, SLA compliance |
+
+**SLA thresholds**: Error rate < 1%, P95 < 500ms, P99 < 1s.
+
+> **Note**: The load test script is cloud-agnostic — identical procedure on GKE and EKS. Only the port-forward service names need to match.
 
 ---
 
