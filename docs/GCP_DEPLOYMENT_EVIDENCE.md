@@ -1295,8 +1295,8 @@ Forwarding from 127.0.0.1:3000 -> 3000
 Una vez dentro de Grafana:
 1. En el menú izquierdo, busca el ícono de cuadrícula (⊞) o "Dashboards"
 2. Haz clic en **"Dashboards"**
-3. Verás los dashboards disponibles. Si hay uno llamado "ML Portfolio Metrics" o similar, haz clic en él
-4. Si no hay dashboards preconfigurados, ve a **"Explore"** para ver los datos crudos
+3. Verás el dashboard **"ML Portfolio Metrics"** auto-provisionado — haz clic en él
+4. El dashboard tiene 7 paneles: Prediction Rate, Latency P95, Total Predictions, Avg Duration, Total Requests, Targets UP, y Request Duration Distribution
 
 ---
 
@@ -1304,8 +1304,8 @@ Una vez dentro de Grafana:
 >
 > - **Archivo**: `docs/media/screenshots/monitoring/34-grafana-dashboard.png`
 > - **URL**: `http://localhost:3000/dashboards`
-> - **Qué debe verse**: El dashboard de Grafana con gráficas de métricas (CPU, memoria, requests por segundo, latencia)
-> - **Por qué importa**: **Captura de alto impacto** — un dashboard de monitoreo en tiempo real es evidencia visual poderosa de un sistema production-ready
+> - **Qué debe verse**: El dashboard "ML Portfolio Metrics" con paneles de Prediction Rate, Latency P95, Total Predictions, Avg Duration, Total Requests, Targets UP, y Request Duration Distribution
+> - **Por qué importa**: **Captura de alto impacto** — un dashboard de monitoreo en tiempo real con métricas ML reales es evidencia visual poderosa de un sistema production-ready
 > - **Tip**: Si las gráficas están vacías, primero genera algo de tráfico haciendo varias predicciones con curl, luego espera 30 segundos y recarga
 
 **Paso 4 — Ver la configuración de Data Sources:**
@@ -1371,7 +1371,7 @@ kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio
 
 En el campo de expresión de la página principal de Prometheus, escribe:
 ```
-http_requests_total
+bankchurn_requests_total
 ```
 Luego haz clic en **"Execute"** y luego en la pestaña **"Graph"** para ver la gráfica.
 
@@ -1381,7 +1381,7 @@ Luego haz clic en **"Execute"** y luego en la pestaña **"Graph"** para ver la g
 >
 > - **Archivo**: `docs/media/screenshots/monitoring/38-prometheus-query-graph.png`
 > - **URL**: `http://localhost:9090/graph`
-> - **Qué debe verse**: La gráfica de `http_requests_total` mostrando el número de requests a las APIs a lo largo del tiempo
+> - **Qué debe verse**: La gráfica de `bankchurn_requests_total` mostrando el número de requests a las APIs a lo largo del tiempo
 > - **Por qué importa**: Demuestra capacidad de consultar métricas con PromQL — el lenguaje de consulta de Prometheus
 
 ---
@@ -1724,36 +1724,52 @@ En Grafana (`http://localhost:3000`):
 2. Nombre: **"ML Portfolio — Production Metrics"**
 3. Añade los siguientes paneles uno por uno (botón **"Add panel"**):
 
-**Panel 1 — Request Rate por Servicio** (Tipo: Time series)
-```promql
-rate(predictions_total[5m])
-```
-- Legend: `{{model}}` — Muestra el nombre de cada servicio
-- Esto grafica el número de predicciones por segundo en cada API
+> 💡 **Nota**: El dashboard ya está auto-provisionado vía ConfigMap (`grafana-dashboards` en `k8s/grafana-deployment.yaml`). No necesitas crearlo manualmente — aparece automáticamente al desplegar Grafana. Si quieres personalizarlo, puedes editarlo en Grafana y luego exportar el JSON actualizado al ConfigMap.
 
-**Panel 2 — Latencia P95** (Tipo: Time series)
-```promql
-histogram_quantile(0.95, sum(rate(prediction_latency_seconds_bucket[5m])) by (le, model))
-```
-- Unit: seconds → Muestra la latencia del percentil 95
-- Threshold: línea roja en 0.2s (200ms) — tu SLA
+El dashboard **"ML Portfolio Metrics"** incluye estos paneles con las métricas reales de Prometheus:
 
-**Panel 3 — Error Rate** (Tipo: Stat o Gauge)
+**Panel 1 — Prediction Rate (req/s)** (Tipo: Time series)
 ```promql
-sum(rate(http_requests_total{status=~"5.."}[5m])) by (service)
-/ sum(rate(http_requests_total[5m])) by (service)
+rate(bankchurn_predictions_total[5m])
+rate(bankchurn_requests_total[5m])
 ```
-- Unit: percent (0-1) — Porcentaje de errores 5xx
-- Color: verde < 1%, amarillo 1-5%, rojo > 5%
+- Muestra predicciones por segundo y requests totales por segundo
 
-**Panel 4 — Distribución de Predicciones (Drift Visual)** (Tipo: Histogram)
+**Panel 2 — Latency P95 (seconds)** (Tipo: Time series)
 ```promql
-histogram_quantile(0.5, rate(prediction_probability_bucket[1h]))
+histogram_quantile(0.95, rate(bankchurn_request_duration_seconds_bucket[5m]))
+histogram_quantile(0.50, rate(bankchurn_request_duration_seconds_bucket[5m]))
 ```
-- Esto muestra si la distribución de predicciones está cambiando con el tiempo
+- Muestra latencia P95 y P50 — Threshold amarillo en 0.2s, rojo en 1.0s
 
-4. Organiza los 4 paneles en un grid 2×2
-5. Guarda el dashboard: **Ctrl+S** → "ML Portfolio — Production Metrics"
+**Panel 3 — Total Predictions** (Tipo: Stat)
+```promql
+bankchurn_predictions_total
+```
+- Contador acumulativo de predicciones realizadas
+
+**Panel 4 — Avg Request Duration** (Tipo: Stat)
+```promql
+rate(bankchurn_request_duration_seconds_sum[5m]) / rate(bankchurn_request_duration_seconds_count[5m])
+```
+- Latencia promedio — verde < 100ms, amarillo < 500ms, rojo > 500ms
+
+**Panel 5 — Total Requests** (Tipo: Stat)
+```promql
+bankchurn_requests_total
+```
+
+**Panel 6 — Prometheus Targets UP** (Tipo: Stat)
+```promql
+count(up == 1)
+```
+
+**Panel 7 — Request Duration Distribution** (Tipo: Time series, full width)
+```promql
+histogram_quantile(0.99, rate(bankchurn_request_duration_seconds_bucket[5m]))  -- P99
+histogram_quantile(0.95, rate(bankchurn_request_duration_seconds_bucket[5m]))  -- P95
+histogram_quantile(0.50, rate(bankchurn_request_duration_seconds_bucket[5m]))  -- P50
+```
 
 ---
 
@@ -1761,8 +1777,8 @@ histogram_quantile(0.5, rate(prediction_probability_bucket[1h]))
 >
 > - **Archivo**: `docs/media/screenshots/monitoring/70-grafana-ml-dashboard-full.png`
 > - **URL**: `http://localhost:3000/d/ml-portfolio`
-> - **Qué debe verse**: Dashboard con 4 paneles visibles: Request Rate (gráfica temporal), Latencia P95 (con línea threshold), Error Rate (gauge verde), y Distribución de Predicciones. Las gráficas deben tener datos reales (no vacías).
-> - **Por qué importa**: **Esta es la captura de monitoreo más valiosa** — demuestra que no solo instalaste Grafana, sino que configuraste paneles PromQL específicos para ML con las 4 señales de oro
+> - **Qué debe verse**: Dashboard "ML Portfolio Metrics" con 7 paneles visibles: Prediction Rate, Latency P95, Total Predictions, Avg Duration, Total Requests, Targets UP, y Request Duration Distribution. Las gráficas deben tener datos reales (no vacías).
+> - **Por qué importa**: **Esta es la captura de monitoreo más valiosa** — demuestra que no solo instalaste Grafana, sino que configuraste paneles PromQL específicos para ML auto-provisionados via ConfigMap (Infrastructure as Code)
 
 ---
 
@@ -1778,7 +1794,7 @@ histogram_quantile(0.5, rate(prediction_probability_bucket[1h]))
 >
 > - **Archivo**: `docs/media/screenshots/monitoring/71-grafana-latency-p95-detail.png`
 > - **URL**: `http://localhost:3000/d/ml-portfolio` (panel expandido)
-> - **Qué debe verse**: Gráfica de latencia P95 expandida mostrando 3 líneas (una por servicio ML), con tooltip visible mostrando valores como "bankchurn: 42ms, carvision: 85ms, telecom: 38ms". Línea threshold roja en 200ms.
+> - **Qué debe verse**: Gráfica de latencia P95 expandida mostrando BankChurn P95 y P50, con tooltip visible mostrando valores reales. Línea threshold amarilla en 200ms, roja en 1s.
 > - **Por qué importa**: Demuestra que monitorizas la latencia real de predicción — no solo que el servicio responde, sino que responde rápido
 
 ---
@@ -1794,7 +1810,7 @@ histogram_quantile(0.5, rate(prediction_probability_bucket[1h]))
 >
 > - **Archivo**: `docs/media/screenshots/monitoring/72-grafana-error-rate.png`
 > - **URL**: `http://localhost:3000/d/ml-portfolio` (panel expandido)
-> - **Qué debe verse**: Gauge o stat panel mostrando error rate por servicio, todos en verde (< 1%). Formato: "bankchurn: 0.0%, carvision: 0.2%, telecom: 0.0%"
+> - **Qué debe verse**: Stat panels mostrando Total Predictions, Avg Request Duration (verde si < 100ms), Total Requests, y Targets UP (verde si ≥ 1)
 > - **Por qué importa**: Error rate es una de las 4 señales de oro — demuestra que tus APIs son confiables
 
 ---
@@ -1825,7 +1841,7 @@ Las capturas anteriores (#36-38) muestran Prometheus básico. Ahora documenta la
 En Prometheus (`http://localhost:9090`), en el campo de expresión escribe:
 
 ```promql
-rate(predictions_total[5m])
+rate(bankchurn_predictions_total[5m])
 ```
 
 1. Haz clic en **"Execute"**
@@ -1838,7 +1854,7 @@ rate(predictions_total[5m])
 >
 > - **Archivo**: `docs/media/screenshots/monitoring/74-prometheus-prediction-rate.png`
 > - **URL**: `http://localhost:9090/graph`
-> - **Qué debe verse**: Gráfica temporal con 3 series (bankchurn, carvision, telecom) mostrando predictions/segundo. La query `rate(predictions_total[5m])` visible en el campo de expresión.
+> - **Qué debe verse**: Gráfica temporal mostrando predictions/segundo de BankChurn. La query `rate(bankchurn_predictions_total[5m])` visible en el campo de expresión.
 > - **Por qué importa**: Demuestra que sabes usar PromQL para monitorear el throughput de predicciones — no solo requests HTTP genéricos
 
 ---
@@ -1846,7 +1862,7 @@ rate(predictions_total[5m])
 **Paso 2 — Query: Latencia Percentil 95 (histogram_quantile):**
 
 ```promql
-histogram_quantile(0.95, sum(rate(prediction_latency_seconds_bucket[5m])) by (le, model))
+histogram_quantile(0.95, rate(bankchurn_request_duration_seconds_bucket[5m]))
 ```
 
 ---
@@ -1855,7 +1871,7 @@ histogram_quantile(0.95, sum(rate(prediction_latency_seconds_bucket[5m])) by (le
 >
 > - **Archivo**: `docs/media/screenshots/monitoring/75-prometheus-latency-p95.png`
 > - **URL**: `http://localhost:9090/graph`
-> - **Qué debe verse**: Gráfica con latencia P95 por modelo. La query `histogram_quantile(...)` visible. Valores típicos: 30-100ms.
+> - **Qué debe verse**: Gráfica con latencia P95 de BankChurn. La query `histogram_quantile(0.95, rate(bankchurn_request_duration_seconds_bucket[5m]))` visible. Valores típicos: 30-100ms.
 > - **Por qué importa**: `histogram_quantile` es una de las funciones PromQL más avanzadas — demuestra que entiendes percentiles y SLAs de latencia
 
 ---
@@ -1871,7 +1887,7 @@ histogram_quantile(0.95, sum(rate(prediction_latency_seconds_bucket[5m])) by (le
 >
 > - **Archivo**: `docs/media/screenshots/monitoring/76-prometheus-targets-detail.png`
 > - **URL**: `http://localhost:9090/targets`
-> - **Qué debe verse**: Targets expandidos mostrando: endpoint URL (`http://bankchurn-service:8000/metrics`), estado UP, último scrape (ej: "3.2s ago"), duración del scrape (ej: "12.4ms"), labels. Todos los 3 servicios ML + prometheus-self visibles.
+> - **Qué debe verse**: Targets expandidos mostrando: endpoint URL del pod BankChurn, estado UP, último scrape (ej: "3.2s ago"), duración del scrape (ej: "12.4ms"), labels. BankChurn-predictor + prometheus-self visibles.
 > - **Por qué importa**: Muestra la configuración completa del scraping — qué endpoints monitorea, con qué frecuencia, y que no hay errores
 
 ---
@@ -1892,12 +1908,12 @@ Esto muestra las métricas Prometheus en formato texto plano que las APIs expone
 >
 > - **Archivo**: `docs/media/screenshots/monitoring/77-metrics-endpoint-raw.png`
 > - **Captura de**: Terminal
-> - **Qué debe verse**: Output de `curl http://localhost:8001/metrics` mostrando métricas Prometheus en formato texto: `# HELP predictions_total`, `# TYPE predictions_total counter`, `predictions_total{model="bankchurn"} 127`, `prediction_latency_seconds_bucket{...}`, etc.
+> - **Qué debe verse**: Output de `curl http://localhost:8001/metrics` mostrando métricas Prometheus en formato texto: `# HELP bankchurn_predictions_total`, `# TYPE bankchurn_predictions_total counter`, `bankchurn_predictions_total X.X`, `bankchurn_request_duration_seconds_bucket{...}`, etc.
 > - **Por qué importa**: Demuestra que implementaste instrumentación Prometheus en el código de las APIs (no solo que Prometheus scrape algo genérico)
 
 ---
 
-> 💡 **Tip para entrevistas**: "Implementé observabilidad con las 4 señales de oro en Grafana: request rate con `rate(predictions_total[5m])`, latencia P95 con `histogram_quantile`, error rate con filtro de status 5xx, y distribución de predicciones para detectar drift visual. Prometheus scrape cada 15 segundos via ServiceMonitor con auto-discovery de las APIs ML."
+> 💡 **Tip para entrevistas**: "Implementé observabilidad completa en Grafana con dashboard auto-provisionado vía ConfigMap: prediction rate con `rate(bankchurn_predictions_total[5m])`, latencia P95/P50 con `histogram_quantile`, contadores de predicciones y requests, y distribución de duración P99/P95/P50. Prometheus scrape cada 15 segundos con kubernetes_sd_configs para auto-discovery de los pods ML."
 
 ---
 

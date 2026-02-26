@@ -600,6 +600,24 @@ kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio &
 > **Note**: Prometheus and Grafana use `emptyDir` volumes (same as GCP).
 > The monitoring stack is 100% cloud-agnostic — identical configs on GKE and EKS.
 
+### 7.3 Auto-Provisioned Grafana Dashboard
+
+The deployment includes a **"ML Portfolio Metrics"** dashboard auto-provisioned via ConfigMap (`grafana-dashboards` in `k8s/grafana-deployment.yaml`). No manual dashboard creation needed — it appears automatically when Grafana starts.
+
+**Dashboard panels** (using real Prometheus metrics from BankChurn):
+
+| Panel | PromQL | Type |
+|-------|--------|------|
+| Prediction Rate | `rate(bankchurn_predictions_total[5m])` | Time series |
+| Latency P95/P50 | `histogram_quantile(0.95, rate(bankchurn_request_duration_seconds_bucket[5m]))` | Time series |
+| Total Predictions | `bankchurn_predictions_total` | Stat |
+| Avg Request Duration | `rate(bankchurn_request_duration_seconds_sum[5m]) / rate(bankchurn_request_duration_seconds_count[5m])` | Stat |
+| Total Requests | `bankchurn_requests_total` | Stat |
+| Targets UP | `count(up == 1)` | Stat |
+| Duration Distribution | P99/P95/P50 histogram_quantile | Time series |
+
+> **Note**: The dashboard JSON is defined in the base `k8s/grafana-deployment.yaml`, shared between GCP and AWS overlays. To customize, edit the `grafana-dashboards` ConfigMap → apply → restart Grafana.
+
 ---
 
 ## Phase 8: CI/CD Integration (GitHub Actions → AWS)
