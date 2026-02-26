@@ -261,23 +261,29 @@ services:
 
 ### Observability Stack
 
-The portfolio includes a **production-ready observability stack**:
+The portfolio includes a **production-ready observability stack** monitoring all 3 ML services:
 
 | Component | Purpose | Configuration |
 |-----------|---------|---------------|
-| **Prometheus** | Metrics collection (15s scrape) | `infra/prometheus-config.yaml` |
-| **Grafana** | Visualization & dashboards | `infra/grafana/dashboards/ml-portfolio-dashboard.json` |
-| **Alertmanager** | Alert routing & notifications | `infra/prometheus-rules.yaml` |
+| **Prometheus** | Metrics collection (15s scrape, 3 service jobs) | `k8s/prometheus-deployment.yaml` |
+| **Grafana** | Auto-provisioned dashboard (10 panels) | `k8s/grafana-deployment.yaml` |
+| **Load Testing** | SRE-methodology validation (smoke + load + SLA) | `scripts/load_test_services.py` |
 | **Evidently** | ML drift detection | Integrated in BankChurn monitoring |
 
-**Pre-built Dashboard Panels**:
-- 🎯 **Service Health**: UP/DOWN status for all 4 services
-- 📈 **Request Metrics**: Rate (req/s), Latency (P50, P95)
-- 🤖 **ML Predictions**: Predictions/hour, price distribution
-- ⚠️ **Model Drift**: Drift score gauges (green/yellow/red)
-- 💻 **Resources**: CPU utilization, memory usage
+**"ML Portfolio Metrics" Dashboard** (auto-provisioned via ConfigMap):
+- 📈 **Prediction Rate — All Services**: BankChurn, CarVision, TelecomAI req/s
+- ⏱️ **Latency P95 — All Services**: 95th percentile per service
+- � **Total Requests** (×3): Individual counters per service
+- 🎯 **Targets UP**: Prometheus scrape targets in healthy state
+- 📊 **Avg Latency + Distribution P99/P95/P50**: Comparative across services
+- 🏦 **BankChurn Risk Levels**: HIGH/MEDIUM/LOW prediction breakdown
+- ⚠️ **Error Rate — All Services**: HTTP 5xx rate per service
+
+**Prometheus Scrape Jobs**: `bankchurn-predictor`, `carvision-intelligence`, `telecom-intelligence`
 
 **Metrics Endpoints**: All APIs expose `/metrics` (Prometheus format)
+
+**Load Testing**: Professional 3-phase validation (smoke tests → sustained load → SLA compliance report with P50/P95/P99 percentiles)
 
 ## CI/CD Pipeline Architecture
 

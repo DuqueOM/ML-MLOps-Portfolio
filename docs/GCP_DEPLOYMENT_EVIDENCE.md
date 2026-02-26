@@ -1296,7 +1296,15 @@ Una vez dentro de Grafana:
 1. En el menú izquierdo, busca el ícono de cuadrícula (⊞) o "Dashboards"
 2. Haz clic en **"Dashboards"**
 3. Verás el dashboard **"ML Portfolio Metrics"** auto-provisionado — haz clic en él
-4. El dashboard tiene 7 paneles: Prediction Rate, Latency P95, Total Predictions, Avg Duration, Total Requests, Targets UP, y Request Duration Distribution
+4. El dashboard tiene **10 paneles** que monitorean los 3 servicios ML:
+   - **Prediction Rate — All Services**: BankChurn, CarVision y TelecomAI req/s
+   - **Latency P95 — All Services**: Percentil 95 de latencia por servicio
+   - **Total Requests** (×3): Contadores individuales por servicio
+   - **Prometheus Targets UP**: Targets activos en estado UP
+   - **Avg Latency — All Services**: Latencia promedio comparativa
+   - **Latency Distribution P99/P95/P50**: Percentiles de los 3 servicios
+   - **BankChurn — Predictions by Risk Level**: HIGH/MEDIUM/LOW
+   - **Error Rate — All Services**: Tasa de errores 5xx por servicio
 
 ---
 
@@ -1304,9 +1312,9 @@ Una vez dentro de Grafana:
 >
 > - **Archivo**: `docs/media/screenshots/monitoring/34-grafana-dashboard.png`
 > - **URL**: `http://localhost:3000/dashboards`
-> - **Qué debe verse**: El dashboard "ML Portfolio Metrics" con paneles de Prediction Rate, Latency P95, Total Predictions, Avg Duration, Total Requests, Targets UP, y Request Duration Distribution
+> - **Qué debe verse**: El dashboard "ML Portfolio Metrics" con 10 paneles mostrando métricas de BankChurn, CarVision y TelecomAI: Prediction Rate, Latency P95, Total Requests (×3), Targets UP, Avg Latency, Latency Distribution, Risk Level y Error Rate
 > - **Por qué importa**: **Captura de alto impacto** — un dashboard de monitoreo en tiempo real con métricas ML reales es evidencia visual poderosa de un sistema production-ready
-> - **Tip**: Si las gráficas están vacías, primero genera algo de tráfico haciendo varias predicciones con curl, luego espera 30 segundos y recarga
+> - **Tip**: Para poblar las gráficas, ejecuta el script de load testing profesional: `python scripts/load_test_services.py` (ver sección 7.4)
 
 **Paso 4 — Ver la configuración de Data Sources:**
 
@@ -1386,7 +1394,117 @@ Luego haz clic en **"Execute"** y luego en la pestaña **"Graph"** para ver la g
 
 ---
 
-### 7.3 — MLflow: Tracking de Experimentos ML
+### 7.3 — Load Testing Profesional: Validación de Servicios ML
+
+**¿Qué es el Load Testing?** Es el proceso de enviar tráfico controlado a tus servicios para verificar su estabilidad, medir su rendimiento bajo carga, y poblar las métricas de monitoreo (Prometheus/Grafana). En producción real, los equipos de SRE ejecutan load tests antes de cada release para validar SLAs.
+
+**¿Por qué importa para el portafolio?** Demuestra que no solo desplegaste los servicios — los validaste profesionalmente con pruebas de humo (smoke tests), carga sostenida, y análisis de percentiles de latencia. Esto es exactamente lo que hacen equipos de ML en empresas como Google, Netflix y Uber.
+
+**Metodología profesional implementada:**
+
+| Fase | Descripción | Propósito |
+|------|------------|-----------|
+| **Phase 1 — Smoke Tests** | Health check + 1 predicción por servicio | Detección rápida de fallos (fast fail) |
+| **Phase 2 — Load Tests** | 200 requests × 3 servicios, concurrency=5 | Generar métricas y validar estabilidad |
+| **Phase 3 — Report** | Percentiles P50/P95/P99, error rate, throughput | Análisis de SLA compliance |
+
+**Paso 1 — Establecer port-forwards a todos los servicios:**
+
+```bash
+# Port-forwards para las 3 APIs ML + Prometheus + Grafana
+kubectl port-forward svc/bankchurn-service 8000:80 -n ml-portfolio &
+kubectl port-forward svc/carvision-service 8001:80 -n ml-portfolio &
+kubectl port-forward svc/telecom-service   8002:80 -n ml-portfolio &
+kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio &
+kubectl port-forward svc/grafana-service 3000:3000 -n ml-portfolio &
+```
+
+**Paso 2 — Ejecutar el script de load testing:**
+
+```bash
+# Test completo (smoke + load + report)
+python scripts/load_test_services.py
+
+# Solo smoke test (validación rápida)
+python scripts/load_test_services.py --smoke-only
+
+# Parámetros personalizados
+python scripts/load_test_services.py --requests 200 --concurrency 5 --ramp-up 3
+
+# Un solo servicio
+python scripts/load_test_services.py --service bankchurn
+```
+
+**Paso 3 — Interpretar los resultados:**
+
+Ejemplo de output real del load test:
+
+```
+======================================================================
+  PHASE 3 — RESULTS REPORT
+======================================================================
+
+  Service                           Reqs    OK   Err%     Avg     P50     P95     P99
+  --------------------------------------------------------------------------------------
+  BankChurn-Predictor                200   200   0.0%   491ms   475ms   727ms   801ms
+  CarVision-Market-Intelligence      200   200   0.0%   237ms   219ms   356ms   417ms
+  TelecomAI-Customer-Intelligence    200   200   0.0%   239ms   220ms   357ms   410ms
+
+  SLA Compliance:
+    ⚠️  BankChurn-Predictor: P95 latency 727ms > 500ms
+    ✅  CarVision-Market-Intelligence: All SLAs met (err<1%, P95<500ms, P99<1s)
+    ✅  TelecomAI-Customer-Intelligence: All SLAs met (err<1%, P95<500ms, P99<1s)
+```
+
+**Interpretación de métricas:**
+- **P50 (median)**: La latencia típica — la mitad de los requests son más rápidos que esto
+- **P95**: El 95% de los requests responden antes de este tiempo — usado para SLAs
+- **P99**: Peor caso realista — solo 1% de requests son más lentos
+- **Err%**: Porcentaje de errores HTTP 5xx — debe ser < 1% en producción
+- **SLA**: Error rate < 1%, P95 < 500ms, P99 < 1s (estándares de la industria)
+
+**Paso 4 — Verificar métricas en Prometheus:**
+
+El script automáticamente verifica que Prometheus tiene métricas incrementadas:
+
+```
+  PROMETHEUS METRICS CHECK
+
+  [BankChurn-Predictor]
+    bankchurn_requests_total{endpoint="/predict",method="POST",status="200"} 504.0
+    bankchurn_predictions_total{risk_level="HIGH"} 247.0
+    bankchurn_predictions_total{risk_level="MEDIUM"} 165.0
+    bankchurn_predictions_total{risk_level="LOW"} 92.0
+
+  [CarVision-Market-Intelligence]
+    carvision_requests_total{endpoint="/predict",method="POST",status="200"} 503.0
+
+  [TelecomAI-Customer-Intelligence]
+    telecom_requests_total{endpoint="/predict",method="POST",status="200"} 503.0
+```
+
+**Paso 5 — Verificar Grafana con datos reales:**
+
+Después del load test, abre Grafana (`http://localhost:3000`) → dashboard "ML Portfolio Metrics". Ahora todos los 10 paneles mostrarán datos de los 3 servicios.
+
+---
+
+> **📸 CAPTURA #38b — Load Test Results (Terminal Output)**
+>
+> - **Archivo**: `docs/media/screenshots/monitoring/38b-load-test-results.png`
+> - **Qué debe verse**: El output completo del load test con la tabla de resultados, SLA compliance, y Prometheus metrics check
+> - **Por qué importa**: Demuestra validación profesional de servicios ML con metodología de SRE — smoke tests, carga sostenida, percentiles de latencia y verificación de SLAs
+
+> **📸 CAPTURA #38c — Grafana Dashboard con Datos de Load Test**
+>
+> - **Archivo**: `docs/media/screenshots/monitoring/38c-grafana-after-loadtest.png`
+> - **URL**: `http://localhost:3000/d/ml-portfolio`
+> - **Qué debe verse**: El dashboard "ML Portfolio Metrics" con gráficas pobladas de los 3 servicios después del load test
+> - **Por qué importa**: **Captura clave** — muestra el sistema completo de observabilidad funcionando end-to-end: load test → Prometheus → Grafana
+
+---
+
+### 7.4 — MLflow: Tracking de Experimentos ML
 
 **¿Qué es MLflow?** Es la plataforma de gestión del ciclo de vida de modelos ML. Registra cada experimento de entrenamiento con sus parámetros, métricas y artefactos. Permite comparar diferentes versiones de modelos y reproducir experimentos.
 

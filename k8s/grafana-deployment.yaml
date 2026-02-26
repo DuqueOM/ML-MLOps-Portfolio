@@ -147,14 +147,14 @@ data:
       "tags": ["ml", "production"],
       "timezone": "browser",
       "schemaVersion": 39,
-      "version": 1,
+      "version": 2,
       "refresh": "10s",
       "time": { "from": "now-30m", "to": "now" },
       "panels": [
         {
           "id": 1,
-          "title": "Prediction Rate (req/s)",
-          "description": "Predictions per second by service",
+          "title": "Prediction Rate — All Services (req/s)",
+          "description": "Predictions per second across all ML services",
           "type": "timeseries",
           "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
@@ -163,22 +163,15 @@ data:
             "overrides": []
           },
           "targets": [
-            {
-              "expr": "rate(bankchurn_predictions_total[5m])",
-              "legendFormat": "BankChurn",
-              "refId": "A"
-            },
-            {
-              "expr": "rate(bankchurn_requests_total[5m])",
-              "legendFormat": "BankChurn (all requests)",
-              "refId": "B"
-            }
+            { "expr": "sum(rate(bankchurn_predictions_total[5m]))", "legendFormat": "BankChurn", "refId": "A" },
+            { "expr": "sum(rate(carvision_requests_total[5m]))", "legendFormat": "CarVision", "refId": "B" },
+            { "expr": "sum(rate(telecom_requests_total[5m]))", "legendFormat": "TelecomAI", "refId": "C" }
           ]
         },
         {
           "id": 2,
-          "title": "Latency P95 (seconds)",
-          "description": "95th percentile request duration",
+          "title": "Latency P95 — All Services",
+          "description": "95th percentile request duration per service",
           "type": "timeseries",
           "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
@@ -198,102 +191,45 @@ data:
             "overrides": []
           },
           "targets": [
-            {
-              "expr": "histogram_quantile(0.95, rate(bankchurn_request_duration_seconds_bucket[5m]))",
-              "legendFormat": "BankChurn P95",
-              "refId": "A"
-            },
-            {
-              "expr": "histogram_quantile(0.50, rate(bankchurn_request_duration_seconds_bucket[5m]))",
-              "legendFormat": "BankChurn P50",
-              "refId": "B"
-            }
+            { "expr": "histogram_quantile(0.95, sum(rate(bankchurn_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "BankChurn P95", "refId": "A" },
+            { "expr": "histogram_quantile(0.95, sum(rate(carvision_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "CarVision P95", "refId": "B" },
+            { "expr": "histogram_quantile(0.95, sum(rate(telecom_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "TelecomAI P95", "refId": "C" }
           ]
         },
         {
           "id": 3,
-          "title": "Total Predictions",
-          "description": "Cumulative prediction count",
+          "title": "Total Requests — BankChurn",
+          "description": "Cumulative requests to BankChurn",
           "type": "stat",
           "gridPos": { "h": 4, "w": 6, "x": 0, "y": 8 },
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "fieldConfig": {
-            "defaults": {
-              "color": { "mode": "thresholds" },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  { "color": "blue", "value": null },
-                  { "color": "green", "value": 100 }
-                ]
-              }
-            },
-            "overrides": []
-          },
+          "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "green", "value": 100 }] } }, "overrides": [] },
           "targets": [
-            {
-              "expr": "bankchurn_predictions_total",
-              "legendFormat": "BankChurn",
-              "refId": "A"
-            }
+            { "expr": "sum(bankchurn_requests_total)", "legendFormat": "BankChurn", "refId": "A" }
           ]
         },
         {
           "id": 4,
-          "title": "Avg Request Duration",
-          "description": "Average request latency",
+          "title": "Total Requests — CarVision",
+          "description": "Cumulative requests to CarVision",
           "type": "stat",
           "gridPos": { "h": 4, "w": 6, "x": 6, "y": 8 },
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "s",
-              "color": { "mode": "thresholds" },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  { "color": "green", "value": null },
-                  { "color": "yellow", "value": 0.1 },
-                  { "color": "red", "value": 0.5 }
-                ]
-              }
-            },
-            "overrides": []
-          },
+          "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "green", "value": 100 }] } }, "overrides": [] },
           "targets": [
-            {
-              "expr": "rate(bankchurn_request_duration_seconds_sum[5m]) / rate(bankchurn_request_duration_seconds_count[5m])",
-              "legendFormat": "BankChurn Avg",
-              "refId": "A"
-            }
+            { "expr": "sum(carvision_requests_total)", "legendFormat": "CarVision", "refId": "A" }
           ]
         },
         {
           "id": 5,
-          "title": "Total Requests",
-          "description": "Cumulative HTTP requests",
+          "title": "Total Requests — TelecomAI",
+          "description": "Cumulative requests to TelecomAI",
           "type": "stat",
           "gridPos": { "h": 4, "w": 6, "x": 12, "y": 8 },
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "fieldConfig": {
-            "defaults": {
-              "color": { "mode": "thresholds" },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  { "color": "blue", "value": null },
-                  { "color": "green", "value": 50 }
-                ]
-              }
-            },
-            "overrides": []
-          },
+          "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "green", "value": 100 }] } }, "overrides": [] },
           "targets": [
-            {
-              "expr": "bankchurn_requests_total",
-              "legendFormat": "BankChurn",
-              "refId": "A"
-            }
+            { "expr": "sum(telecom_requests_total)", "legendFormat": "TelecomAI", "refId": "A" }
           ]
         },
         {
@@ -303,54 +239,80 @@ data:
           "type": "stat",
           "gridPos": { "h": 4, "w": 6, "x": 18, "y": 8 },
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-          "fieldConfig": {
-            "defaults": {
-              "color": { "mode": "thresholds" },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  { "color": "red", "value": null },
-                  { "color": "green", "value": 1 }
-                ]
-              }
-            },
-            "overrides": []
-          },
+          "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 3 }] } }, "overrides": [] },
           "targets": [
-            {
-              "expr": "count(up == 1)",
-              "legendFormat": "Targets UP",
-              "refId": "A"
-            }
+            { "expr": "count(up == 1)", "legendFormat": "Targets UP", "refId": "A" }
           ]
         },
         {
           "id": 7,
-          "title": "Request Duration Distribution",
-          "description": "Histogram of request durations",
+          "title": "Avg Latency — All Services",
+          "description": "Average request duration per service",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 12 },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
           "fieldConfig": {
             "defaults": { "unit": "s", "color": { "mode": "palette-classic" } },
             "overrides": []
           },
           "targets": [
-            {
-              "expr": "histogram_quantile(0.99, rate(bankchurn_request_duration_seconds_bucket[5m]))",
-              "legendFormat": "P99",
-              "refId": "A"
-            },
-            {
-              "expr": "histogram_quantile(0.95, rate(bankchurn_request_duration_seconds_bucket[5m]))",
-              "legendFormat": "P95",
-              "refId": "B"
-            },
-            {
-              "expr": "histogram_quantile(0.50, rate(bankchurn_request_duration_seconds_bucket[5m]))",
-              "legendFormat": "P50 (median)",
-              "refId": "C"
-            }
+            { "expr": "rate(bankchurn_request_duration_seconds_sum[5m]) / rate(bankchurn_request_duration_seconds_count[5m])", "legendFormat": "BankChurn Avg", "refId": "A" },
+            { "expr": "rate(carvision_request_duration_seconds_sum[5m]) / rate(carvision_request_duration_seconds_count[5m])", "legendFormat": "CarVision Avg", "refId": "B" },
+            { "expr": "rate(telecom_request_duration_seconds_sum[5m]) / rate(telecom_request_duration_seconds_count[5m])", "legendFormat": "TelecomAI Avg", "refId": "C" }
+          ]
+        },
+        {
+          "id": 8,
+          "title": "Latency Distribution P99/P95/P50 — All Services",
+          "description": "Request duration percentiles across all services",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": { "unit": "s", "color": { "mode": "palette-classic" } },
+            "overrides": []
+          },
+          "targets": [
+            { "expr": "histogram_quantile(0.99, sum(rate(bankchurn_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "BankChurn P99", "refId": "A" },
+            { "expr": "histogram_quantile(0.99, sum(rate(carvision_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "CarVision P99", "refId": "B" },
+            { "expr": "histogram_quantile(0.99, sum(rate(telecom_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "TelecomAI P99", "refId": "C" },
+            { "expr": "histogram_quantile(0.50, sum(rate(bankchurn_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "BankChurn P50", "refId": "D" },
+            { "expr": "histogram_quantile(0.50, sum(rate(carvision_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "CarVision P50", "refId": "E" },
+            { "expr": "histogram_quantile(0.50, sum(rate(telecom_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "TelecomAI P50", "refId": "F" }
+          ]
+        },
+        {
+          "id": 9,
+          "title": "BankChurn — Predictions by Risk Level",
+          "description": "Churn predictions broken down by risk level",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": { "color": { "mode": "palette-classic" } },
+            "overrides": []
+          },
+          "targets": [
+            { "expr": "bankchurn_predictions_total{risk_level=\"HIGH\"}", "legendFormat": "HIGH risk", "refId": "A" },
+            { "expr": "bankchurn_predictions_total{risk_level=\"MEDIUM\"}", "legendFormat": "MEDIUM risk", "refId": "B" },
+            { "expr": "bankchurn_predictions_total{risk_level=\"LOW\"}", "legendFormat": "LOW risk", "refId": "C" }
+          ]
+        },
+        {
+          "id": 10,
+          "title": "Error Rate — All Services",
+          "description": "HTTP 5xx error rate per service",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": { "unit": "reqps", "color": { "mode": "palette-classic" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.01 }] } },
+            "overrides": []
+          },
+          "targets": [
+            { "expr": "sum(rate(bankchurn_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "BankChurn errors", "refId": "A" },
+            { "expr": "sum(rate(carvision_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "CarVision errors", "refId": "B" },
+            { "expr": "sum(rate(telecom_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "TelecomAI errors", "refId": "C" }
           ]
         }
       ],
