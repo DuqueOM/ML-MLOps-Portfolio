@@ -1364,7 +1364,17 @@ kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio
 1. En el menú superior de Prometheus, haz clic en **"Status"** → **"Targets"**
 2. Verás la lista de todos los servicios que Prometheus está monitoreando
 3. Cada target debe tener estado **"UP"** (en verde)
-4. Los targets incluyen: bankchurn, carvision, telecom, y el propio prometheus
+4. Los jobs visibles son: `bankchurn-predictor`, `carvision-intelligence`, `telecom-intelligence`, `prometheus`
+
+> **Nota sobre múltiples targets por servicio**: Prometheus usa `kubernetes_sd_configs` para descubrir pods individualmente — **no** el Service de Kubernetes. Si el HPA escala un servicio a N réplicas, verás N targets con IPs distintas (una por pod). Esto es correcto y deseable: permite detectar si una réplica específica tiene latencia alta o errores, lo que sería imposible monitorizando solo el servicio agregado.
+>
+> Ejemplo con BankChurn escalado a 3 réplicas por HPA:
+> ```
+> http://10.244.1.9:8000/metrics   UP  ← Pod réplica 1
+> http://10.244.0.48:8000/metrics  UP  ← Pod réplica 2
+> http://10.244.4.9:8000/metrics   UP  ← Pod réplica 3
+> ```
+> Verificar réplicas activas: `kubectl get pods -n ml-portfolio -l app=bankchurn-predictor`
 
 ---
 
@@ -1372,8 +1382,8 @@ kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio
 >
 > - **Archivo**: `docs/media/screenshots/monitoring/37-prometheus-targets-up.png`
 > - **URL**: `http://localhost:9090/targets`
-> - **Qué debe verse**: Todos los targets en estado UP (verde) con el timestamp de la última scrape exitosa
-> - **Por qué importa**: Demuestra que el monitoreo está activo y recolectando datos de todos los servicios ML en tiempo real
+> - **Qué debe verse**: Todos los targets en estado UP (verde). BankChurn puede mostrar múltiples targets si el HPA tiene >1 réplica — esto es correcto y esperado
+> - **Por qué importa**: Demuestra monitoreo activo con descubrimiento automático de pods vía `kubernetes_sd_configs` — cada réplica es un target independiente, permitiendo observabilidad a nivel de pod
 
 **Paso 4 — Ejecutar una consulta de métricas:**
 
