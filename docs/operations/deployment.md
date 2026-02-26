@@ -57,7 +57,7 @@ docker compose -f docker-compose.demo.yml --profile monitoring up -d
 
 Access monitoring:
 - Prometheus: http://localhost:9090
-- Grafana: http://localhost:3000 (admin/admin)
+- Grafana: http://localhost:3000 (admin / MLPortfolio2026!)
 
 ### Stop Services
 
@@ -162,7 +162,7 @@ kubectl port-forward svc/carvision-service 8002:80 -n ml-portfolio
 # TelecomAI API
 kubectl port-forward svc/telecom-service 8003:80 -n ml-portfolio
 
-# Grafana (admin/admin)
+# Grafana (admin / MLPortfolio2026!)
 kubectl port-forward svc/grafana-service 3000:3000 -n ml-portfolio
 
 # Prometheus

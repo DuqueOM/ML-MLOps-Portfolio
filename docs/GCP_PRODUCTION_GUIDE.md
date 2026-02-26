@@ -518,7 +518,7 @@ kubectl apply -f k8s/grafana-deployment.yaml
 ### 7.2 Access Dashboards
 
 ```bash
-# Grafana (default: admin/admin)
+# Grafana (credentials in secret grafana-credentials: admin / MLPortfolio2026!)
 kubectl port-forward svc/grafana-service 3000:3000 -n ml-portfolio &
 # Open http://localhost:3000
 
@@ -707,7 +707,7 @@ kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio &
 
 # 6. Grafana dashboards
 kubectl port-forward svc/grafana-service 3000:3000 -n ml-portfolio &
-# Open http://localhost:3000 (admin/admin)
+# Open http://localhost:3000 (admin / MLPortfolio2026!)
 
 # 7. Prometheus targets
 kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio &

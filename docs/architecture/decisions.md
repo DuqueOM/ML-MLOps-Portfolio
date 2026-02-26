@@ -165,7 +165,7 @@ The download script retries up to 3 times with 10-second intervals between attem
 
 ### Context
 
-The portfolio runs 6 services: 3 ML APIs (~512Mi each), MLflow, Prometheus, and Grafana. Total memory footprint is approximately 3–3.5GB under normal operation.
+The portfolio runs 6 services: 3 ML APIs (BankChurn ~384Mi, CarVision ~640Mi+256Mi sidecar, TelecomAI ~384Mi), MLflow, Prometheus, and Grafana. Total memory footprint is approximately 3–3.5GB under normal operation.
 
 ### Decision
 
