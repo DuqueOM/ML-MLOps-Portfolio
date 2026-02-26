@@ -324,34 +324,37 @@ All Kubernetes manifests are located in `k8s/`:
 ### Sample Deployment
 
 ```yaml
-# k8s/bankchurn-deployment.yaml
+# k8s/bankchurn-deployment.yaml (simplified — see actual file for full config)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bankchurn-api
+  name: bankchurn-predictor
   namespace: ml-portfolio
 spec:
-  replicas: 2
+  replicas: 1  # HPA manages actual replica count
   selector:
     matchLabels:
-      app: bankchurn-api
+      app: bankchurn-predictor
   template:
     metadata:
       labels:
-        app: bankchurn-api
+        app: bankchurn-predictor
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
     spec:
       containers:
         - name: bankchurn-api
-          image: ghcr.io/duqueom/ml-portfolio-bankchurn:latest
+          image: <REGION>-docker.pkg.dev/<PROJECT>/ml-portfolio-images/bankchurn-predictor:latest
           ports:
             - containerPort: 8000
           resources:
             requests:
-              memory: "256Mi"
+              memory: "448Mi"   # Calibrated: ~300Mi real + headroom
               cpu: "250m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "1Gi"
+              cpu: "1000m"
           livenessProbe:
             httpGet:
               path: /health
@@ -362,17 +365,23 @@ spec:
             httpGet:
               path: /health
               port: 8000
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10
             periodSeconds: 5
-          env:
-            - name: MLFLOW_TRACKING_URI
-              value: "http://mlflow:5000"
 ```
+
+**Resource calibration per service** (based on `kubectl top pods` at steady state):
+
+| Service | Real Usage | Request | Limit | Utilization |
+|---------|-----------|---------|-------|-------------|
+| BankChurn (ensemble) | ~300Mi / 5m CPU | 448Mi / 250m | 1Gi / 1000m | 67% mem |
+| CarVision (API) | ~550Mi / 8m CPU | 640Mi / 250m | 1Gi / 1000m | 86% mem |
+| CarVision (Streamlit) | ~200Mi / 3m CPU | 256Mi / 100m | 512Mi / 500m | 78% mem |
+| TelecomAI | ~140Mi / 4m CPU | 384Mi / 200m | 768Mi / 800m | 36% mem |
 
 ### Horizontal Pod Autoscaler
 
 ```yaml
-# k8s/hpa.yaml
+# HPA embedded in each *-deployment.yaml (all 3 ML services)
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -382,17 +391,48 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: bankchurn-api
-  minReplicas: 2
-  maxReplicas: 10
+    name: bankchurn-predictor
+  minReplicas: 1
+  maxReplicas: 3
   metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 70
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300   # 5min cooldown prevents thrashing
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60    # 1min delay avoids transient spikes
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 30
+      - type: Pods
+        value: 2
+        periodSeconds: 30
+      selectPolicy: Max
 ```
+
+**HPA standardization** — all 3 ML services use identical autoscaling behavior:
+
+| Service | CPU Target | Memory Target | Min | Max | scaleDown | scaleUp |
+|---------|-----------|---------------|-----|-----|-----------|--------|
+| BankChurn | 70% | 80% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
+| CarVision | 70% | 80% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
+| TelecomAI | 75% | 80% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
 
 ### Ingress
 

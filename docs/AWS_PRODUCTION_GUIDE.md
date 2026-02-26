@@ -914,14 +914,26 @@ kubectl exec -n ml-portfolio deployment/bankchurn-predictor -c bankchurn-api -- 
 
 ## Phase 11: Horizontal Pod Autoscaler (HPA)
 
-Same configuration as GCP — HPA is a Kubernetes-native feature (cloud-agnostic).
+Same configuration as GCP — HPA is a Kubernetes-native feature (cloud-agnostic). All 3 ML services have standardized HPA with dual metrics (CPU + memory) and explicit behavior policies. AWS overlays in `k8s/overlays/aws/` mirror GCP configs exactly.
+
+**Resource calibration** (identical to GCP — model sizes are the same):
+
+| Service | Request | Limit | CPU Target | Memory Target | Replicas |
+|---------|---------|-------|-----------|--------------|----------|
+| BankChurn (ensemble) | 448Mi / 250m | 1Gi / 1000m | 70% | 80% | 1–3 |
+| CarVision (API) | 640Mi / 250m | 1Gi / 1000m | 70% | 80% | 1–3 |
+| CarVision (Streamlit) | 256Mi / 100m | 512Mi / 500m | — | — | sidecar |
+| TelecomAI | 384Mi / 200m | 768Mi / 800m | 75% | 80% | 1–3 |
+
+**Behavior**: scaleDown 300s stabilization (max -50%/min), scaleUp 60s stabilization (max 100% or +2 pods).
 
 ```bash
 # Verify HPAs
 kubectl get hpa -n ml-portfolio
-# NAME            REFERENCE                      TARGETS          MINPODS   MAXPODS
-# bankchurn-hpa   Deployment/bankchurn-predictor  12%/70%, 34%/80%  1         3
-# telecom-hpa     Deployment/telecom-intelligence 8%/75%            1         3
+# NAME             REFERENCE                         TARGETS                        MINPODS  MAXPODS  REPLICAS
+# bankchurn-hpa    Deployment/bankchurn-predictor     cpu: 2%/70%, memory: 67%/80%   1        3        1
+# carvision-hpa    Deployment/carvision-intelligence  cpu: 2%/70%, memory: 24%/80%   1        3        1
+# telecom-hpa      Deployment/telecom-intelligence    cpu: 2%/75%, memory: 37%/80%   1        3        1
 ```
 
 > **Note**: The Kubernetes Metrics Server must be installed on EKS for HPA to work. It's included in the EKS managed node groups by default.

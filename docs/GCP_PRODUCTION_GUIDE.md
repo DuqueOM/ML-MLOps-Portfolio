@@ -965,7 +965,7 @@ The HPA automatically scales the number of pod replicas based on CPU and memory 
 
 ### 11.1 HPA Configuration
 
-Each ML service has an HPA defined in its deployment YAML:
+All 3 ML services have standardized HPA with dual metrics (CPU + memory) and explicit behavior policies:
 
 ```yaml
 # Example: BankChurn HPA (in k8s/bankchurn-deployment.yaml)
@@ -994,20 +994,49 @@ spec:
       target:
         type: Utilization
         averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300   # 5min cooldown prevents thrashing
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60    # 1min delay avoids transient spikes
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 30
+      - type: Pods
+        value: 2
+        periodSeconds: 30
+      selectPolicy: Max
 ```
+
+**Resource calibration** (based on `kubectl top pods` at steady state):
+
+| Service | Real Usage | Request | Limit | HPA Utilization |
+|---------|-----------|---------|-------|-----------------|
+| BankChurn (ensemble) | ~300Mi / 5m CPU | 448Mi / 250m | 1Gi / 1000m | 67% mem |
+| CarVision (API) | ~550Mi / 8m CPU | 640Mi / 250m | 1Gi / 1000m | 86% mem |
+| CarVision (Streamlit) | ~200Mi / 3m CPU | 256Mi / 100m | 512Mi / 500m | sidecar |
+| TelecomAI | ~140Mi / 4m CPU | 384Mi / 200m | 768Mi / 800m | 36% mem |
 
 ### 11.2 Verify HPA
 
 ```bash
 kubectl get hpa -n ml-portfolio
-# NAME            REFERENCE                      TARGETS          MINPODS   MAXPODS
-# bankchurn-hpa   Deployment/bankchurn-predictor  12%/70%, 34%/80%  1         3
-# telecom-hpa     Deployment/telecom-intelligence 8%/75%            1         3
+# NAME             REFERENCE                         TARGETS                        MINPODS  MAXPODS  REPLICAS
+# bankchurn-hpa    Deployment/bankchurn-predictor     cpu: 2%/70%, memory: 67%/80%   1        3        1
+# carvision-hpa    Deployment/carvision-intelligence  cpu: 2%/70%, memory: 24%/80%   1        3        1
+# telecom-hpa      Deployment/telecom-intelligence    cpu: 2%/75%, memory: 37%/80%   1        3        1
 ```
 
-### 11.3 Scale-Down Behavior
+### 11.3 Autoscaling Behavior
 
-The HPA has a **stabilization window** of 300 seconds (5 minutes) for scale-down. This prevents flapping (rapid scale-up/scale-down cycles). Scale-up has no stabilization window for fast response.
+- **Scale-down**: 300s stabilization window prevents flapping. Max 50% reduction per minute.
+- **Scale-up**: 60s stabilization filters transient spikes. Max(100% increase, +2 pods) per 30s.
+- **Why 60s scaleUp stabilization?** Without it, a short burst of requests can trigger unnecessary replicas that then take 5 minutes to scale back down (scaleDown stabilization). This was the root cause of BankChurn being stuck at 3 replicas during idle.
 
 ---
 

@@ -53,7 +53,7 @@ spec:
             optional: true
         resources:
           requests:
-            memory: "384Mi"
+            memory: "448Mi"
             cpu: "250m"
           limits:
             memory: "1Gi"

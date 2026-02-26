@@ -599,14 +599,19 @@ Real cost data from the live GCP (GKE) deployment. Values originally billed in C
 ## Scaling Recommendations
 
 ### Horizontal Scaling
-- Use Kubernetes HPA (Horizontal Pod Autoscaler)
-- Target: CPU 75% (configured in all ML service deployments)
-- Max replicas: 3 per service (configurable per workload)
+- All 3 ML services use standardized HPA with **dual metrics** (CPU + memory)
+- CPU targets: 70% (BankChurn/CarVision), 75% (TelecomAI)
+- Memory target: 80% for all services
+- Max replicas: 3 per service (1–3 range)
+- Conservative scale-down: 300s stabilization, max 50% reduction/min
+- Scale-up: 60s stabilization to filter transient spikes
 
 ### Vertical Scaling
-- Increase container resources in K8s manifests
-- Monitor with Prometheus/Grafana
-- Current limits: 768 Mi–1 Gi memory, 500m–800m CPU per service
+- Resource requests calibrated to `kubectl top pods` steady-state + headroom
+- BankChurn: 448Mi request (ensemble ~300Mi real)
+- CarVision API: 640Mi request (~550Mi real) + Streamlit sidecar: 256Mi
+- TelecomAI: 384Mi request (~140Mi real)
+- Current limits: 768Mi–1Gi memory, 800m–1000m CPU per service
 
 ### Database Scaling
 - Move MLflow to PostgreSQL for production (Cloud SQL already provisioned)
