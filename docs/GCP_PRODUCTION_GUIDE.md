@@ -530,6 +530,26 @@ kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio &
 > **Note**: Prometheus and Grafana use `emptyDir` volumes (non-persistent).
 > Data is lost on pod restart. For production, use PVCs with `standard-rwo`.
 
+### 7.3 Auto-Provisioned Grafana Dashboard
+
+The deployment includes a **"ML Portfolio Metrics"** dashboard auto-provisioned via ConfigMap (`grafana-dashboards` in `k8s/grafana-deployment.yaml`). No manual dashboard creation needed — it appears automatically when Grafana starts.
+
+**Dashboard panels** (using real Prometheus metrics from BankChurn):
+
+| Panel | PromQL | Type |
+|-------|--------|------|
+| Prediction Rate | `rate(bankchurn_predictions_total[5m])` | Time series |
+| Latency P95/P50 | `histogram_quantile(0.95, rate(bankchurn_request_duration_seconds_bucket[5m]))` | Time series |
+| Total Predictions | `bankchurn_predictions_total` | Stat |
+| Avg Request Duration | `rate(bankchurn_request_duration_seconds_sum[5m]) / rate(bankchurn_request_duration_seconds_count[5m])` | Stat |
+| Total Requests | `bankchurn_requests_total` | Stat |
+| Targets UP | `count(up == 1)` | Stat |
+| Duration Distribution | P99/P95/P50 histogram_quantile | Time series |
+
+**To customize the dashboard**: edit the JSON in `k8s/grafana-deployment.yaml` → `grafana-dashboards` ConfigMap → apply → restart Grafana.
+
+**To add metrics for other services**: When CarVision and TelecomAI expose Prometheus metrics, add their scrape jobs to `prometheus-config` in `k8s/prometheus-deployment.yaml` and new panels to the dashboard JSON.
+
 ---
 
 ## Phase 8: CI/CD Integration (GitHub Actions → GCP)

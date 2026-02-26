@@ -139,40 +139,229 @@ metadata:
   name: grafana-dashboards
   namespace: ml-portfolio
 data:
-  ml-services-overview.json: |
+  ml-portfolio-metrics.json: |
     {
-      "dashboard": {
-        "title": "ML Services Overview",
-        "panels": [
-          {
-            "title": "Request Rate",
-            "targets": [
-              {
-                "expr": "sum(rate(http_requests_total[5m])) by (service)",
-                "legendFormat": "{{ service }}"
-              }
-            ],
-            "type": "graph"
+      "id": null,
+      "uid": "ml-portfolio",
+      "title": "ML Portfolio Metrics",
+      "tags": ["ml", "production"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "10s",
+      "time": { "from": "now-30m", "to": "now" },
+      "panels": [
+        {
+          "id": 1,
+          "title": "Prediction Rate (req/s)",
+          "description": "Predictions per second by service",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": { "unit": "reqps", "color": { "mode": "palette-classic" } },
+            "overrides": []
           },
-          {
-            "title": "Error Rate",
-            "targets": [
-              {
-                "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) by (service)",
-                "legendFormat": "{{ service }}"
+          "targets": [
+            {
+              "expr": "rate(bankchurn_predictions_total[5m])",
+              "legendFormat": "BankChurn",
+              "refId": "A"
+            },
+            {
+              "expr": "rate(bankchurn_requests_total[5m])",
+              "legendFormat": "BankChurn (all requests)",
+              "refId": "B"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "Latency P95 (seconds)",
+          "description": "95th percentile request duration",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "color": { "mode": "palette-classic" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 0.2 },
+                  { "color": "red", "value": 1.0 }
+                ]
               }
-            ],
-            "type": "graph"
+            },
+            "overrides": []
           },
-          {
-            "title": "Response Time (95th percentile)",
-            "targets": [
-              {
-                "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service))",
-                "legendFormat": "{{ service }}"
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, rate(bankchurn_request_duration_seconds_bucket[5m]))",
+              "legendFormat": "BankChurn P95",
+              "refId": "A"
+            },
+            {
+              "expr": "histogram_quantile(0.50, rate(bankchurn_request_duration_seconds_bucket[5m]))",
+              "legendFormat": "BankChurn P50",
+              "refId": "B"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "title": "Total Predictions",
+          "description": "Cumulative prediction count",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "blue", "value": null },
+                  { "color": "green", "value": 100 }
+                ]
               }
-            ],
-            "type": "graph"
+            },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "expr": "bankchurn_predictions_total",
+              "legendFormat": "BankChurn",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "title": "Avg Request Duration",
+          "description": "Average request latency",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "color": { "mode": "thresholds" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 0.1 },
+                  { "color": "red", "value": 0.5 }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "expr": "rate(bankchurn_request_duration_seconds_sum[5m]) / rate(bankchurn_request_duration_seconds_count[5m])",
+              "legendFormat": "BankChurn Avg",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "title": "Total Requests",
+          "description": "Cumulative HTTP requests",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "blue", "value": null },
+                  { "color": "green", "value": 50 }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "expr": "bankchurn_requests_total",
+              "legendFormat": "BankChurn",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "title": "Prometheus Targets UP",
+          "description": "Number of scrape targets in UP state",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "red", "value": null },
+                  { "color": "green", "value": 1 }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "expr": "count(up == 1)",
+              "legendFormat": "Targets UP",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "title": "Request Duration Distribution",
+          "description": "Histogram of request durations",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 12 },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "fieldConfig": {
+            "defaults": { "unit": "s", "color": { "mode": "palette-classic" } },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, rate(bankchurn_request_duration_seconds_bucket[5m]))",
+              "legendFormat": "P99",
+              "refId": "A"
+            },
+            {
+              "expr": "histogram_quantile(0.95, rate(bankchurn_request_duration_seconds_bucket[5m]))",
+              "legendFormat": "P95",
+              "refId": "B"
+            },
+            {
+              "expr": "histogram_quantile(0.50, rate(bankchurn_request_duration_seconds_bucket[5m]))",
+              "legendFormat": "P50 (median)",
+              "refId": "C"
+            }
+          ]
+        }
+      ],
+      "templating": {
+        "list": [
+          {
+            "name": "DS_PROMETHEUS",
+            "type": "datasource",
+            "query": "prometheus",
+            "current": { "text": "Prometheus", "value": "Prometheus" },
+            "hide": 2
           }
         ]
       }
