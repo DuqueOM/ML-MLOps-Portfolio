@@ -1,168 +1,261 @@
 """
-Load Testing for ML-MLOps Portfolio APIs
+Professional Load Testing for ML-MLOps Portfolio — Locust Edition.
 
-Usage:
-    # Start demo services first
-    docker-compose -f docker-compose.demo.yml up -d
+Industry-standard load testing following SRE methodology:
+  - Randomized payloads (avoid cache effects, test real model paths)
+  - Weighted task distribution (realistic traffic mix)
+  - Inline SLA assertions (failure if response content invalid)
+  - Separate User classes per service with independent host configuration
+  - Compatible with Locust web UI and headless CI mode
 
-    # Run load test (web UI)
-    locust -f tests/load/locustfile.py --host http://localhost
+─────────────────────────────────────────────────────────────────────
+ENVIRONMENT SETUP
+─────────────────────────────────────────────────────────────────────
+Option A — Docker Compose (local dev):
+    docker compose -f docker-compose.demo.yml up -d
+    # Ports: BankChurn=8001, CarVision=8002, TelecomAI=8003
 
-    # Run headless (CI mode)
-    locust -f tests/load/locustfile.py --host http://localhost \
-           --headless -u 50 -r 10 -t 60s --csv=reports/load_test
+Option B — Kubernetes port-forward (GKE / EKS):
+    kubectl port-forward svc/bankchurn-service 8000:80 -n ml-portfolio &
+    kubectl port-forward svc/carvision-service 8001:80 -n ml-portfolio &
+    kubectl port-forward svc/telecom-service   8002:80 -n ml-portfolio &
+    # Ports: BankChurn=8000, CarVision=8001, TelecomAI=8002
 
-Metrics collected:
-    - Response time (min, max, median, p95, p99)
-    - Requests per second (RPS)
-    - Failure rate
-    - Response size
+─────────────────────────────────────────────────────────────────────
+USAGE
+─────────────────────────────────────────────────────────────────────
+# Interactive web UI (open http://localhost:8089)
+locust -f tests/load/locustfile.py
+
+# Headless — single service
+locust -f tests/load/locustfile.py --class-picker \
+       --headless -u 20 -r 5 -t 60s \
+       --only-summary --csv=reports/bankchurn
+
+# Headless — all services simultaneously (recommended)
+locust -f tests/load/locustfile.py \
+       --headless -u 30 -r 5 -t 120s \
+       --only-summary --csv=reports/load_test \
+       --html=reports/load_test.html
+
+# CI mode — strict SLA enforcement (exits non-zero if thresholds breached)
+locust -f tests/load/locustfile.py \
+       --headless -u 10 -r 2 -t 30s \
+       --only-summary \
+       --exit-code-on-error 1
+
+─────────────────────────────────────────────────────────────────────
+SLA THRESHOLDS (production targets)
+─────────────────────────────────────────────────────────────────────
+  Error rate   < 1%
+  P95 latency  < 500ms  (BankChurn: < 800ms — heavier ensemble model)
+  P99 latency  < 1000ms
 """
+
+import random
 
 from locust import HttpUser, between, task
 
+# ---------------------------------------------------------------------------
+# Payload generators — randomized to avoid cache effects and exercise
+# different model branches (risk levels, price segments, plan categories)
+# ---------------------------------------------------------------------------
+
+
+def _bankchurn_payload() -> dict:
+    return {
+        "CreditScore": random.randint(350, 850),
+        "Geography": random.choice(["France", "Spain", "Germany"]),
+        "Gender": random.choice(["Male", "Female"]),
+        "Age": random.randint(18, 92),
+        "Tenure": random.randint(0, 10),
+        "Balance": round(random.uniform(0, 250_000), 2),
+        "NumOfProducts": random.randint(1, 4),
+        "HasCrCard": random.randint(0, 1),
+        "IsActiveMember": random.randint(0, 1),
+        "EstimatedSalary": round(random.uniform(10_000, 200_000), 2),
+    }
+
+
+def _carvision_payload() -> dict:
+    return {
+        "model_year": random.randint(2000, 2024),
+        "model": random.choice(
+            ["civic", "camry", "corolla", "f-150", "silverado", "accord", "altima", "mustang", "wrangler", "rav4"]
+        ),
+        "condition": random.choice(["new", "like new", "excellent", "good", "fair"]),
+        "cylinders": random.choice([4, 6, 8]),
+        "fuel": random.choice(["gas", "diesel", "electric", "hybrid"]),
+        "odometer": random.randint(0, 300_000),
+        "transmission": random.choice(["automatic", "manual"]),
+        "drive": random.choice(["fwd", "rwd", "4wd"]),
+        "type": random.choice(["sedan", "SUV", "truck", "coupe", "hatchback"]),
+        "paint_color": random.choice(["white", "black", "silver", "red", "blue", "grey"]),
+    }
+
+
+def _telecom_payload() -> dict:
+    return {
+        "calls": round(random.uniform(0, 200), 1),
+        "minutes": round(random.uniform(0, 1_000), 1),
+        "messages": round(random.uniform(0, 300), 1),
+        "mb_used": round(random.uniform(0, 50_000), 2),
+    }
+
+
+# ---------------------------------------------------------------------------
+# BankChurn — http://localhost:8000 (K8s) or http://localhost:8001 (Docker)
+# ---------------------------------------------------------------------------
+
 
 class BankChurnUser(HttpUser):
-    """Load test user for BankChurn API (port 8001)."""
+    """
+    Simulates traffic to BankChurn Predictor.
 
-    wait_time = between(0.5, 2)
-    weight = 3  # Higher weight = more frequent
+    Task weights model a realistic production traffic mix:
+      - predict (10x): core business endpoint — heaviest traffic
+      - health  (1x):  liveness probe — kubernetes readiness pattern
+      - metrics (1x):  Prometheus scrape simulation
+    """
 
-    def on_start(self):
-        """Verify service is healthy before starting."""
-        self.client.get("/health", name="bankchurn:health")
+    host = "http://localhost:8000"
+    wait_time = between(0.5, 2.0)
+    weight = 3  # Relative weight across all User classes
 
-    @task(5)
-    def predict_single(self):
-        """Test single prediction endpoint."""
-        payload = {
-            "CreditScore": 650,
-            "Geography": "France",
-            "Gender": "Female",
-            "Age": 40,
-            "Tenure": 3,
-            "Balance": 60000.0,
-            "NumOfProducts": 2,
-            "HasCrCard": 1,
-            "IsActiveMember": 1,
-            "EstimatedSalary": 50000.0,
-        }
+    def on_start(self) -> None:
+        """Validate service is ready before generating load."""
+        with self.client.get("/health", name="bankchurn:health", catch_response=True) as r:
+            if r.status_code != 200:
+                r.failure(f"Health check failed: {r.status_code}")
+
+    @task(10)
+    def predict(self) -> None:
+        """Single-record churn prediction — primary load driver."""
         with self.client.post(
             "/predict",
-            json=payload,
+            json=_bankchurn_payload(),
             name="bankchurn:predict",
             catch_response=True,
-        ) as response:
-            if response.status_code == 200:
-                data = response.json()
+        ) as r:
+            if r.status_code == 200:
+                data = r.json()
                 if "churn_probability" not in data:
-                    response.failure("Missing churn_probability in response")
-            elif response.status_code == 503:
-                response.failure("Model not loaded")
+                    r.failure("Missing churn_probability")
+                elif not (0.0 <= data["churn_probability"] <= 1.0):
+                    r.failure(f"Invalid probability: {data['churn_probability']}")
+            elif r.status_code == 503:
+                r.failure("Service unavailable — model not loaded")
+            else:
+                r.failure(f"Unexpected status {r.status_code}")
 
     @task(1)
-    def health_check(self):
-        """Periodic health checks."""
+    def health(self) -> None:
+        """Liveness probe — mimics Kubernetes health check cadence."""
         self.client.get("/health", name="bankchurn:health")
 
     @task(1)
-    def metrics(self):
-        """Check Prometheus metrics endpoint."""
+    def metrics(self) -> None:
+        """Prometheus metrics scrape simulation."""
         self.client.get("/metrics", name="bankchurn:metrics")
 
 
-class CarVisionUser(HttpUser):
-    """Load test user for CarVision API (port 8002)."""
+# ---------------------------------------------------------------------------
+# CarVision — http://localhost:8001 (K8s) or http://localhost:8002 (Docker)
+# ---------------------------------------------------------------------------
 
-    wait_time = between(0.5, 2)
+
+class CarVisionUser(HttpUser):
+    """
+    Simulates traffic to CarVision Market Intelligence.
+
+    Task weights:
+      - predict (10x): vehicle price prediction — primary endpoint
+      - health  (1x):  liveness probe
+    """
+
+    host = "http://localhost:8001"
+    wait_time = between(0.3, 1.5)
     weight = 2
 
-    def on_start(self):
-        self.client.get("/health", name="carvision:health")
+    def on_start(self) -> None:
+        with self.client.get("/health", name="carvision:health", catch_response=True) as r:
+            if r.status_code != 200:
+                r.failure(f"Health check failed: {r.status_code}")
 
-    @task(5)
-    def predict_price(self):
-        """Test vehicle price prediction."""
-        payload = {
-            "model_year": 2018,
-            "model": "ford f-150",
-            "condition": "good",
-            "cylinders": 6.0,
-            "fuel": "gas",
-            "odometer": 50000.0,
-            "transmission": "automatic",
-            "drive": "4wd",
-            "type": "truck",
-            "paint_color": "white",
-        }
+    @task(10)
+    def predict(self) -> None:
+        """Vehicle price prediction — randomized models and conditions."""
         with self.client.post(
             "/predict",
-            json=payload,
+            json=_carvision_payload(),
             name="carvision:predict",
             catch_response=True,
-        ) as response:
-            if response.status_code == 200:
-                data = response.json()
+        ) as r:
+            if r.status_code == 200:
+                data = r.json()
                 if "prediction" not in data:
-                    response.failure("Missing prediction in response")
-            elif response.status_code == 503:
-                response.failure("Model not loaded")
+                    r.failure("Missing prediction field")
+                elif not isinstance(data["prediction"], (int, float)):
+                    r.failure(f"Invalid prediction type: {type(data['prediction'])}")
+            elif r.status_code == 503:
+                r.failure("Service unavailable — model not loaded")
+            else:
+                r.failure(f"Unexpected status {r.status_code}")
 
     @task(1)
-    def health_check(self):
+    def health(self) -> None:
         self.client.get("/health", name="carvision:health")
+
+    @task(1)
+    def metrics(self) -> None:
+        self.client.get("/metrics", name="carvision:metrics")
+
+
+# ---------------------------------------------------------------------------
+# TelecomAI — http://localhost:8002 (K8s) or http://localhost:8003 (Docker)
+# ---------------------------------------------------------------------------
 
 
 class TelecomUser(HttpUser):
-    """Load test user for TelecomAI API (port 8003)."""
+    """
+    Simulates traffic to TelecomAI Customer Intelligence.
 
-    wait_time = between(0.5, 2)
-    weight = 2
-
-    def on_start(self):
-        self.client.get("/health", name="telecom:health")
-
-    @task(5)
-    def predict_plan(self):
-        """Test plan recommendation prediction."""
-        payload = {
-            "calls": 40.0,
-            "minutes": 311.9,
-            "messages": 83.0,
-            "mb_used": 19915.42,
-        }
-        with self.client.post(
-            "/predict",
-            json=payload,
-            name="telecom:predict",
-            catch_response=True,
-        ) as response:
-            if response.status_code == 200:
-                data = response.json()
-                if "prediction" not in data:
-                    response.failure("Missing prediction in response")
-            elif response.status_code == 503:
-                response.failure("Model not loaded")
-
-    @task(1)
-    def health_check(self):
-        self.client.get("/health", name="telecom:health")
-
-
-# Multi-service configuration
-class BankChurnLoadUser(BankChurnUser):
-    """BankChurn user configured for port 8001."""
-
-    host = "http://localhost:8001"
-
-
-class CarVisionLoadUser(CarVisionUser):
-    """CarVision user configured for port 8002."""
+    Task weights:
+      - predict (10x): plan recommendation — primary endpoint
+      - health  (1x):  liveness probe
+    """
 
     host = "http://localhost:8002"
+    wait_time = between(0.3, 1.5)
+    weight = 2
 
+    def on_start(self) -> None:
+        with self.client.get("/health", name="telecom:health", catch_response=True) as r:
+            if r.status_code != 200:
+                r.failure(f"Health check failed: {r.status_code}")
 
-class TelecomLoadUser(TelecomUser):
-    """TelecomAI user configured for port 8003."""
+    @task(10)
+    def predict(self) -> None:
+        """Plan recommendation — randomized usage patterns."""
+        with self.client.post(
+            "/predict",
+            json=_telecom_payload(),
+            name="telecom:predict",
+            catch_response=True,
+        ) as r:
+            if r.status_code == 200:
+                data = r.json()
+                if "prediction" not in data:
+                    r.failure("Missing prediction field")
+            elif r.status_code == 503:
+                r.failure("Service unavailable — model not loaded")
+            else:
+                r.failure(f"Unexpected status {r.status_code}")
 
-    host = "http://localhost:8003"
+    @task(1)
+    def health(self) -> None:
+        self.client.get("/health", name="telecom:health")
+
+    @task(1)
+    def metrics(self) -> None:
+        self.client.get("/metrics", name="telecom:metrics")

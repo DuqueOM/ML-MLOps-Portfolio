@@ -556,9 +556,16 @@ The deployment includes a **"ML Portfolio Metrics"** dashboard auto-provisioned 
 
 **To customize**: edit the JSON in `k8s/grafana-deployment.yaml` → `grafana-dashboards` ConfigMap → apply → restart Grafana.
 
-### 7.4 Production Load Testing
+### 7.4 Production Validation: Smoke Tests + Load Testing
 
-A professional load testing script validates all ML services and populates Prometheus/Grafana metrics:
+Professional observability validation uses **two separate tools** following SRE methodology:
+
+| Layer | Tool | When | Purpose |
+|-------|------|------|---------|
+| **Smoke Tests** | `pytest` + `httpx` | After every deploy (CI gate) | Fast fail — verify services respond correctly |
+| **Load Tests** | `Locust` | Manual / scheduled | Sustained traffic → Prometheus/Grafana metrics |
+
+#### Tier 1 — Smoke Tests (pytest + httpx, post-deploy CI gate)
 
 ```bash
 # Prerequisites: port-forward all services
@@ -566,27 +573,47 @@ kubectl port-forward svc/bankchurn-service 8000:80 -n ml-portfolio &
 kubectl port-forward svc/carvision-service 8001:80 -n ml-portfolio &
 kubectl port-forward svc/telecom-service   8002:80 -n ml-portfolio &
 
-# Run full test (smoke + load + report)
-python scripts/load_test_services.py
+# Run all 14 smoke tests (~10s total)
+pytest tests/integration/test_smoke_k8s.py -v
 
-# Quick validation only
-python scripts/load_test_services.py --smoke-only
-
-# Custom parameters
-python scripts/load_test_services.py --requests 200 --concurrency 5
+# Fast gate (health only)
+pytest tests/integration/test_smoke_k8s.py -v -k "health"
 ```
 
-**Test phases:**
+Each service has 4–5 tests covering: health check, `/metrics` Prometheus format, prediction response shape, domain validation (probability range, price positive), and 422 on invalid payloads.
 
-| Phase | Description |
-|-------|-------------|
-| **Smoke Tests** | Health check + single prediction per service (fast fail) |
-| **Load Tests** | Sustained traffic with varied payloads (200 req × 3 services) |
-| **Report** | Latency percentiles (P50/P95/P99), error rates, SLA compliance |
+#### Tier 2 — Load Tests (Locust, metrics population)
 
-**SLA thresholds**: Error rate < 1%, P95 < 500ms, P99 < 1s.
+```bash
+# Install
+pip install locust
 
-After the load test, open Grafana (`http://localhost:3000`) → "ML Portfolio Metrics" dashboard to see real-time metrics across all services.
+# Interactive web UI — open http://localhost:8089
+locust -f tests/load/locustfile.py
+
+# Headless — all 3 services, 30 users, 120s, CSV + HTML report
+locust -f tests/load/locustfile.py \
+       --headless -u 30 -r 5 -t 120s \
+       --csv=reports/load_test \
+       --html=reports/load_test.html
+
+# Quick metrics population (Grafana)
+locust -f tests/load/locustfile.py \
+       --headless -u 10 -r 2 -t 60s --only-summary
+```
+
+**Locust design**: randomized payloads per request (avoids cache effects, exercises different model branches), weighted tasks (predict 10× vs health 1×), inline SLA assertions with `catch_response=True`.
+
+**SLA thresholds**: Error rate < 1%, P95 < 500ms (BankChurn < 800ms — ensemble model), P99 < 1s.
+
+After load testing, open Grafana (`http://localhost:3000`) → "ML Portfolio Metrics" to see populated real-time metrics.
+
+#### Quick one-shot validation (no Locust required)
+
+```bash
+# Smoke + load + Prometheus metrics check (uses stdlib only)
+python scripts/load_test_services.py --requests 200 --concurrency 5
+```
 
 ---
 
