@@ -193,10 +193,29 @@ class CarVisionUser(HttpUser):
         ) as r:
             if r.status_code == 200:
                 data = r.json()
-                if "prediction" not in data:
-                    r.failure("Missing prediction field")
-                elif not isinstance(data["prediction"], (int, float)):
-                    r.failure(f"Invalid prediction type: {type(data['prediction'])}")
+                if "predicted_price" not in data:
+                    r.failure("Missing predicted_price field")
+                elif not isinstance(data["predicted_price"], (int, float)):
+                    r.failure(f"Invalid predicted_price type: {type(data['predicted_price'])}")
+            elif r.status_code == 503:
+                r.failure("Service unavailable — model not loaded")
+            else:
+                r.failure(f"Unexpected status {r.status_code}")
+
+    @task(2)
+    def predict_batch(self) -> None:
+        """Batch vehicle price prediction — 5 vehicles per request."""
+        payload = {"vehicles": [_carvision_payload() for _ in range(5)]}
+        with self.client.post(
+            "/predict_batch",
+            json=payload,
+            name="carvision:predict_batch",
+            catch_response=True,
+        ) as r:
+            if r.status_code == 200:
+                data = r.json()
+                if data.get("total_vehicles") != 5:
+                    r.failure(f"Expected 5 vehicles, got {data.get('total_vehicles')}")
             elif r.status_code == 503:
                 r.failure("Service unavailable — model not loaded")
             else:
@@ -247,6 +266,27 @@ class TelecomUser(HttpUser):
                 data = r.json()
                 if "prediction" not in data:
                     r.failure("Missing prediction field")
+                if "plan" not in data:
+                    r.failure("Missing plan field")
+            elif r.status_code == 503:
+                r.failure("Service unavailable — model not loaded")
+            else:
+                r.failure(f"Unexpected status {r.status_code}")
+
+    @task(2)
+    def predict_batch(self) -> None:
+        """Batch plan recommendation — 5 customers per request."""
+        payload = {"customers": [_telecom_payload() for _ in range(5)]}
+        with self.client.post(
+            "/predict_batch",
+            json=payload,
+            name="telecom:predict_batch",
+            catch_response=True,
+        ) as r:
+            if r.status_code == 200:
+                data = r.json()
+                if data.get("total_customers") != 5:
+                    r.failure(f"Expected 5 customers, got {data.get('total_customers')}")
             elif r.status_code == 503:
                 r.failure("Service unavailable — model not loaded")
             else:
