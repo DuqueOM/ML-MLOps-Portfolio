@@ -1,0 +1,285 @@
+name: Promote Images to Cloud Registries
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Image Promotion Pipeline — "Build once, promote everywhere"
+#
+# Triggered after CI/CD pipeline completes successfully on main.
+# Pulls tested images from GHCR (source of truth) and promotes them to
+# cloud-native registries for each deployment target:
+#   - Google Artifact Registry (GCP/GKE)
+#   - Amazon ECR (AWS/EKS)
+#
+# This ensures deployment uses the exact same image that passed all CI checks.
+# ─────────────────────────────────────────────────────────────────────────────
+on:
+  workflow_run:
+    workflows: ["CI/CD MLOps Portfolio"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Image tag to promote (default: latest)'
+        required: false
+        default: 'latest'
+        type: string
+
+env:
+  GHCR_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  GCP_REGION: ${{ secrets.GCP_REGION || 'us-central1' }}
+  GCP_AR_REPO: ${{ secrets.GCP_REGION || 'us-central1' }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ml-portfolio-images
+  AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+  AWS_ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION || 'us-east-1' }}.amazonaws.com
+
+jobs:
+  # ───────────────────────────────────────────────────────────────────────────
+  # Gate: Only promote if CI passed
+  # ───────────────────────────────────────────────────────────────────────────
+  gate:
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+    outputs:
+      tag: ${{ steps.resolve-tag.outputs.tag }}
+    steps:
+      - name: Resolve image tag
+        id: resolve-tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag || 'latest' }}"
+          else
+            TAG="latest"
+          fi
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "Promoting tag: ${TAG}"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Promote to Google Artifact Registry
+  # ───────────────────────────────────────────────────────────────────────────
+  promote-gcp:
+    name: Promote to Artifact Registry (GCP)
+    needs: gate
+    runs-on: ubuntu-latest
+    if: ${{ secrets.GCP_SA_KEY != '' }}
+    permissions:
+      contents: read
+      packages: read
+    strategy:
+      matrix:
+        include:
+          - ghcr_image: bankchurn-predictor
+            ar_image: bankchurn-predictor
+          - ghcr_image: carvision-market-intelligence
+            ar_image: carvision-market-intelligence
+          - ghcr_image: telecomai-customer-intelligence
+            ar_image: telecomai-customer-intelligence
+      fail-fast: false
+    steps:
+      - name: Log in to GHCR (source)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Pull from GHCR and push to Artifact Registry
+        run: |
+          SOURCE="${{ env.GHCR_REGISTRY }}/${{ matrix.ghcr_image }}:${{ needs.gate.outputs.tag }}"
+          TARGET="${{ env.GCP_AR_REPO }}/${{ matrix.ar_image }}"
+          SHA_TAG="sha-${GITHUB_SHA::8}"
+
+          echo "Pulling ${SOURCE}..."
+          docker pull "${SOURCE}"
+
+          echo "Tagging for Artifact Registry..."
+          docker tag "${SOURCE}" "${TARGET}:${SHA_TAG}"
+          docker tag "${SOURCE}" "${TARGET}:latest"
+
+          echo "Pushing to Artifact Registry..."
+          docker push "${TARGET}:${SHA_TAG}"
+          docker push "${TARGET}:latest"
+
+          echo "✓ Promoted ${{ matrix.ghcr_image }} → Artifact Registry (${SHA_TAG})"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Promote to Amazon ECR
+  # ───────────────────────────────────────────────────────────────────────────
+  promote-aws:
+    name: Promote to ECR (AWS)
+    needs: gate
+    runs-on: ubuntu-latest
+    if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+    permissions:
+      contents: read
+      packages: read
+    strategy:
+      matrix:
+        include:
+          - ghcr_image: bankchurn-predictor
+            ecr_image: ml-portfolio/bankchurn-predictor
+          - ghcr_image: carvision-market-intelligence
+            ecr_image: ml-portfolio/carvision-intelligence
+          - ghcr_image: telecomai-customer-intelligence
+            ecr_image: ml-portfolio/telecom-intelligence
+      fail-fast: false
+    steps:
+      - name: Log in to GHCR (source)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Pull from GHCR and push to ECR
+        run: |
+          SOURCE="${{ env.GHCR_REGISTRY }}/${{ matrix.ghcr_image }}:${{ needs.gate.outputs.tag }}"
+          TARGET="${{ env.AWS_ECR_REGISTRY }}/${{ matrix.ecr_image }}"
+          SHA_TAG="sha-${GITHUB_SHA::8}"
+
+          echo "Pulling ${SOURCE}..."
+          docker pull "${SOURCE}"
+
+          echo "Tagging for ECR..."
+          docker tag "${SOURCE}" "${TARGET}:${SHA_TAG}"
+          docker tag "${SOURCE}" "${TARGET}:latest"
+
+          echo "Pushing to ECR..."
+          docker push "${TARGET}:${SHA_TAG}"
+          docker push "${TARGET}:latest"
+
+          echo "✓ Promoted ${{ matrix.ghcr_image }} → ECR (${SHA_TAG})"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Rolling restart on GKE
+  # ───────────────────────────────────────────────────────────────────────────
+  restart-gke:
+    name: Rolling Restart (GKE)
+    needs: promote-gcp
+    runs-on: ubuntu-latest
+    if: ${{ secrets.GCP_SA_KEY != '' }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
+          location: ${{ env.GCP_REGION }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Rolling restart deployments
+        run: |
+          echo "Restarting deployments in ml-portfolio namespace..."
+          kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio
+          kubectl rollout restart deployment/carvision-intelligence -n ml-portfolio
+          kubectl rollout restart deployment/telecom-intelligence -n ml-portfolio
+
+      - name: Wait for rollouts
+        run: |
+          for DEP in bankchurn-predictor carvision-intelligence telecom-intelligence; do
+            echo "Waiting for ${DEP}..."
+            kubectl rollout status deployment/${DEP} -n ml-portfolio --timeout=300s || true
+          done
+
+      - name: Smoke test health endpoints
+        run: |
+          for SVC in bankchurn-service carvision-service telecom-service; do
+            echo "Testing ${SVC}..."
+            kubectl run smoke-${SVC}-${{ github.run_number }} \
+              --namespace=ml-portfolio \
+              --image=curlimages/curl:latest \
+              --restart=Never \
+              --rm -i --timeout=30s \
+              -- curl -sf http://${SVC}/health || echo "⚠ ${SVC} health check failed"
+          done
+
+      - name: Deployment summary
+        run: |
+          echo "## GKE Deployment ✓" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag**: sha-${GITHUB_SHA::8}" >> $GITHUB_STEP_SUMMARY
+          kubectl get pods -n ml-portfolio --no-headers | \
+            awk '{print "- **" $1 "**: " $3 " (" $4 " restarts)"}' >> $GITHUB_STEP_SUMMARY
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Rolling restart on EKS
+  # ───────────────────────────────────────────────────────────────────────────
+  restart-eks:
+    name: Rolling Restart (EKS)
+    needs: promote-aws
+    runs-on: ubuntu-latest
+    if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig \
+            --region ${{ env.AWS_REGION }} \
+            --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+      - name: Rolling restart deployments
+        run: |
+          echo "Restarting deployments in ml-portfolio namespace..."
+          kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio
+          kubectl rollout restart deployment/carvision-intelligence -n ml-portfolio
+          kubectl rollout restart deployment/telecom-intelligence -n ml-portfolio
+
+      - name: Wait for rollouts
+        run: |
+          for DEP in bankchurn-predictor carvision-intelligence telecom-intelligence; do
+            echo "Waiting for ${DEP}..."
+            kubectl rollout status deployment/${DEP} -n ml-portfolio --timeout=300s || true
+          done
+
+      - name: Smoke test health endpoints
+        run: |
+          for SVC in bankchurn-service carvision-service telecom-service; do
+            echo "Testing ${SVC}..."
+            kubectl run smoke-${SVC}-${{ github.run_number }} \
+              --namespace=ml-portfolio \
+              --image=curlimages/curl:latest \
+              --restart=Never \
+              --rm -i --timeout=30s \
+              -- curl -sf http://${SVC}/health || echo "⚠ ${SVC} health check failed"
+          done
+
+      - name: Deployment summary
+        run: |
+          echo "## EKS Deployment ✓" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag**: sha-${GITHUB_SHA::8}" >> $GITHUB_STEP_SUMMARY
+          kubectl get pods -n ml-portfolio --no-headers | \
+            awk '{print "- **" $1 "**: " $3 " (" $4 " restarts)"}' >> $GITHUB_STEP_SUMMARY
