@@ -81,8 +81,8 @@ def test_carvision_prediction():
     response = requests.post(url, json=payload)
     assert response.status_code == 200, f"CarVision failed: {response.text}"
     data = response.json()
-    assert "prediction" in data
-    assert isinstance(data["prediction"], (int, float))
+    assert "predicted_price" in data
+    assert isinstance(data["predicted_price"], (int, float))
 
 
 def test_telecom_prediction():
@@ -93,3 +93,4 @@ def test_telecom_prediction():
     assert response.status_code == 200, f"TelecomAI failed: {response.text}"
     data = response.json()
     assert "prediction" in data
+    assert "plan" in data

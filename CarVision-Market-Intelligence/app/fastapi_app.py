@@ -155,11 +155,32 @@ class BatchPredictionResponse(BaseModel):
     processing_time_seconds: float
 
 
+def _prepare_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """Add training-time columns not exposed in the API schema.
+
+    The pipeline was trained with raw columns (date_posted, days_listed,
+    is_4wd) that are not meaningful at inference time.  We derive or
+    default them so sklearn's ColumnTransformer does not raise.
+    """
+    if "is_4wd" not in df.columns:
+        df["is_4wd"] = df["drive"].apply(lambda x: 1.0 if x == "4wd" else 0.0) if "drive" in df.columns else 0.0
+    if "date_posted" not in df.columns:
+        df["date_posted"] = pd.Timestamp.now().strftime("%Y-%m-%d")
+    if "days_listed" not in df.columns:
+        df["days_listed"] = 0
+    # Safety net: fill any remaining columns the pipeline expects
+    if feature_columns:
+        for col in feature_columns:
+            if col not in df.columns:
+                df[col] = 0
+    return df
+
+
 def _predict_single(data: Dict[str, Any]) -> float:
     """Run prediction for a single vehicle through the pipeline."""
     if pipeline is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
-    df = pd.DataFrame([data])
+    df = _prepare_dataframe(pd.DataFrame([data]))
     return float(pipeline.predict(df)[0])
 
 
@@ -219,7 +240,7 @@ async def predict_batch(batch_data: BatchVehicleData):
 
     try:
         vehicles_list = [v.model_dump() for v in batch_data.vehicles]
-        df = pd.DataFrame(vehicles_list)
+        df = _prepare_dataframe(pd.DataFrame(vehicles_list))
         preds = pipeline.predict(df)
 
         predictions = [
