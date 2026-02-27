@@ -93,7 +93,7 @@ docker-demo: ## Start full demo stack
 
 docker-demo-up: ## Start demo without tests (docker-compose up)
 	@echo "$(GREEN)Starting demo services...$(NC)"
-	docker-compose -f docker-compose.demo.yml up -d
+	docker compose -f docker-compose.demo.yml up -d
 	@echo "$(GREEN)✓ Services started$(NC)"
 	@echo "$(YELLOW)MLflow UI:$(NC)      http://localhost:5000"
 	@echo "$(YELLOW)BankChurn API:$(NC)  http://localhost:8001"
@@ -102,11 +102,11 @@ docker-demo-up: ## Start demo without tests (docker-compose up)
 
 docker-demo-down: ## Stop demo stack
 	@echo "$(YELLOW)Stopping demo stack...$(NC)"
-	docker-compose -f docker-compose.demo.yml down
+	docker compose -f docker-compose.demo.yml down
 	@echo "$(GREEN)✓ Demo stopped$(NC)"
 
 docker-logs: ## View logs from demo stack
-	docker-compose -f docker-compose.demo.yml logs -f
+	docker compose -f docker-compose.demo.yml logs -f
 
 docker-scan: ## Run Trivy security scan on images
 	@echo "$(GREEN)Scanning Docker images...$(NC)"
@@ -177,7 +177,7 @@ clean: ## Clean temporary files
 
 clean-docker: ## Remove all Docker containers and images
 	@echo "$(RED)Removing Docker containers and images...$(NC)"
-	docker-compose -f docker-compose.demo.yml down -v --remove-orphans
+	docker compose -f docker-compose.demo.yml down -v --remove-orphans
 	@for project in $(PROJECTS); do \
 		IMAGE=$$(echo $$project | tr '[:upper:]' '[:lower:]'); \
 		docker rmi $$IMAGE:latest 2>/dev/null || true; \

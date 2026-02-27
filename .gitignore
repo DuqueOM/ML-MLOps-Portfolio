@@ -134,6 +134,7 @@ docs/media/videos/
 
 # Private deployment guides (not for public repo)
 docs/GCP_DEPLOYMENT_EVIDENCE.md
+docs/.GCP_DEPLOYMENT_EVIDENCE_internal.md
 docs/GCP_PRODUCTION_GUIDE.md
 docs/AWS_PRODUCTION_GUIDE.md
 docs/CI_CD_FIXES.md
