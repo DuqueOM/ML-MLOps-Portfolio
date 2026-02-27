@@ -35,6 +35,12 @@
 
 <div align="center">
 
+**API Demo (Running on GKE):**
+
+![TelecomAI Demo](../docs/media/screenshots/apis/25-fastapi-swagger-bankchurn.png)
+
+**Real-time Prediction:**
+
 ![BankChurn Demo](../docs/media/gifs/01-demo-prediccion.gif)
 
 </div>

@@ -35,6 +35,8 @@
 
 <div align="center">
 
+**API Demo (Running on GKE):**
+
 ![TelecomAI Demo](../docs/media/screenshots/apis/29-fastapi-swagger-telecom.png)
 
 </div>
