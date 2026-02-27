@@ -39,6 +39,24 @@
 
 ![CarVision API Demo](../docs/media/screenshots/apis/27-fastapi-swagger-carvision.png)
 
+**Streamlit Dashboard:**
+
+![Streamlit Dashboard](../docs/media/screenshots/apis/81-streamlit-full-dashboard.png)
+
+<details>
+<summary><strong>More Dashboard Views (click to expand)</strong></summary>
+
+![Data Explorer](../docs/media/screenshots/apis/78-streamlit-data-explorer.png)
+*Data Explorer: dataset statistics, filtering, and distribution charts*
+
+![Price Predictor](../docs/media/screenshots/apis/79-streamlit-prediction.png)
+*Price Predictor: interactive vehicle valuation form*
+
+![Model Performance](../docs/media/screenshots/apis/80-streamlit-model-performance.png)
+*Model Metrics: R²=0.77, RMSE=$4,396, actual vs predicted plot*
+
+</details>
+
 **Real-time Monitoring:**
 
 ![Grafana Monitoring](../docs/media/gifs/03-grafana-monitoring.gif)

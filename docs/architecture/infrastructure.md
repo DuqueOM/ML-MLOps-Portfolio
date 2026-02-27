@@ -199,7 +199,8 @@ terraform state list
 terraform output
 ```
 
-![Terraform Plan](../media/screenshots/terraform/53-terraform-plan-no-changes.png)
+![Terraform Outputs](../media/screenshots/terminal/22-terraform-outputs.png)
+*Terraform outputs: cluster endpoint, registry URL, bucket names*
 
 ### CI/CD: GitHub Actions → GKE
 
@@ -211,7 +212,8 @@ The deployment pipeline (`.github/workflows/deploy-gcp.yml`) automates:
 4. **Deploy to GKE** — `kubectl apply` with rolling updates
 5. **Smoke tests** — verify health endpoints
 
-![CI/CD Pipeline](../media/screenshots/cicd/46-workflow-completado.png)
+![Cloud Build History](../media/screenshots/gcp-console/13-cloud-build-history.png)
+*Cloud Build: automated Docker image builds for all 3 services*
 
 ---
 

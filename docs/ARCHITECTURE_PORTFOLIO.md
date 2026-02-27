@@ -452,7 +452,7 @@ All 9 experiments (3 per project) tracked in the MLflow server deployed on GKE:
 
 Automated deployment pipeline: detect changes, build Docker images, push to Artifact Registry, deploy to GKE:
 
-![GitHub Actions CI/CD](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/cicd/46-workflow-completado.png)
+![Cloud Build CI/CD](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/gcp-console/13-cloud-build-history.png)
 
 ### API Documentation (Swagger UI) — Running on GKE
 
@@ -470,7 +470,7 @@ Real-time monitoring dashboard with metrics from all 3 ML APIs:
 
 All GCP resources managed by Terraform (`No changes` = perfectly synchronized):
 
-![Terraform Plan](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/terraform/53-terraform-plan-no-changes.png)
+![Terraform Outputs](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/terminal/22-terraform-outputs.png)
 
 ---
 
