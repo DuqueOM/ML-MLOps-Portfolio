@@ -44,6 +44,9 @@
 
 > **MLflow Run**: `BC-2_RandomForest_Tuned` — Best of 3 tracked experiments
 
+![MLflow Run Detail](../media/screenshots/monitoring/40-mlflow-run-detalle.png)
+*MLflow UI: BC-2_RandomForest_Tuned run showing metrics, parameters, tags, and dataset*
+
 ### Architecture
 
 ```python

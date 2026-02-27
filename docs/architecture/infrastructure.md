@@ -52,7 +52,17 @@ This portfolio is **actively deployed on Google Cloud Platform**. The infrastruc
 <details>
 <summary><strong>GCP Console Evidence (click to expand)</strong></summary>
 
+#### Project Overview
+![GCP Project Dashboard](../media/screenshots/gcp-console/01-project-dashboard.png)
+*GCP project dashboard: ml-portfolio-duque-om-202602*
+
+![APIs Enabled](../media/screenshots/gcp-console/02-apis-habilitadas.png)
+*Enabled APIs: Kubernetes Engine, Cloud Storage, Artifact Registry, Cloud SQL, Cloud Build*
+
 #### GKE Cluster
+![GKE Clusters List](../media/screenshots/gcp-console/03-gke-clusters-lista.png)
+*GKE clusters list: ml-portfolio-gke-production running in us-central1*
+
 ![GKE Cluster Detail](../media/screenshots/gcp-console/04-gke-cluster-detalle.png)
 *GKE cluster configuration: 3 nodes, e2-medium, us-central1*
 
