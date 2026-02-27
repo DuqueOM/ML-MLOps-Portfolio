@@ -80,7 +80,7 @@ BankChurn-Predictor is a **production-grade Machine Learning service** designed 
 | **Precision** | **0.72** | 0.60-0.70 | ✅ Good |
 | **Recall** | **0.58** | 0.50-0.60 | ✅ Acceptable |
 | **API Latency** | **<50ms p95** | <100ms | ✅ Fast |
-| **Test Coverage** | **87%** | 70%+ | ✅ Excellent |
+| **Test Coverage** | **88%** | 70%+ | ✅ Excellent |
 | **Uptime SLA** | **99.9%** | 99.5% | ✅ Enterprise-grade |
 
 ---
@@ -1058,7 +1058,7 @@ make lint
 
 # Testing
 make test
-# Runs: pytest with coverage report (minimum 79%, current 87%)
+# Runs: pytest with coverage report (minimum 79%, current 88%)
 
 # Pre-commit hooks
 pre-commit install
@@ -1181,7 +1181,7 @@ async def predict_batch_stream(file: UploadFile):
 
 <div align="center">
 
-**Status**: ✅ Production-Ready | **Coverage**: 86% | **Last Updated**: February 2026
+**Status**: ✅ Production-Ready | **Coverage**: 88% | **Last Updated**: February 2026
 
 ⭐ **Star this project if you find it useful!** ⭐
 

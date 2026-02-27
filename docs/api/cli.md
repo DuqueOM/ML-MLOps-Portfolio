@@ -99,11 +99,11 @@ python -m bankchurn.cli evaluate \
 === Model Evaluation Results ===
 
 Metrics:
-  AUC-ROC:   0.853
-  Accuracy:  0.857
-  Precision: 0.692
-  Recall:    0.536
-  F1 Score:  0.604
+  AUC-ROC:   0.8652
+  Accuracy:  0.843
+  Precision: 0.5983
+  Recall:    0.6953
+  F1 Score:  0.6432
 
 Confusion Matrix:
               Predicted
@@ -203,8 +203,8 @@ python main.py evaluate [OPTIONS]
 === CarVision Model Evaluation ===
 
 Regression Metrics:
-  R²:   0.766
-  RMSE: $4,794.27
+  R²:   0.7692
+  RMSE: $4,396.00
   MAE:  $2,370.70
   MAPE: 27.6%
 

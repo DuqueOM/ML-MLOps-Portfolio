@@ -14,11 +14,11 @@ Customer churn prediction system for banking institutions.
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **AUC-ROC** | 0.853 | Area under ROC curve |
-| **Accuracy** | 85.7% | Overall classification accuracy |
-| **Precision** | 69.2% | Positive predictive value |
-| **Recall** | 53.6% | True positive rate |
-| **F1 Score** | 0.604 | Harmonic mean of precision/recall |
+| **AUC-ROC** | 0.8652 | Area under ROC curve |
+| **Accuracy** | 84.3% | Overall classification accuracy |
+| **Precision** | 59.83% | Positive predictive value |
+| **Recall** | 69.53% | True positive rate |
+| **F1 Score** | 0.6432 | Harmonic mean of precision/recall |
 
 ### Cross-Validation Results (5-Fold)
 
@@ -38,13 +38,29 @@ Actual Neg   1496    97
        Pos    189   218
 ```
 
+### MLflow Experiments
+
+| Run | Model | Test F1 | Test AUC | Purpose |
+|-----|-------|---------|----------|---------|
+| BC-1_Baseline | LogisticRegression | 0.2873 | 0.7749 | Linear baseline |
+| **BC-2_RF_Tuned** | **RandomForest (balanced)** | **0.6432** | **0.8652** | **Production model** |
+| BC-3_Overfit_Demo | RF (no regularization) | 0.5793 | 0.8524 | Overfitting demonstration |
+
 ### Operational Metrics
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **Test Coverage** | 87% | Unit + integration tests |
+| **Test Coverage** | 88% | 168 tests ([Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)) |
 | **P95 Latency** | <50ms | Inference time |
-| **Model Size** | ~2 MB | Serialized pipeline |
+| **Model Size** | ~3.3 MB | Serialized pipeline |
+
+### Production Monitoring
+
+![BankChurn API](../media/screenshots/apis/25-fastapi-swagger-bankchurn.png)
+*BankChurn FastAPI Swagger UI with prediction endpoint*
+
+![BankChurn Prediction](../media/screenshots/apis/26-bankchurn-prediccion-real.png)
+*Real prediction response showing churn probability and risk level*
 
 ## Quick Start
 
@@ -211,6 +227,22 @@ BankChurn-Predictor/
 │   └── model_card.md       # Model documentation
 └── Dockerfile              # Multi-stage build
 ```
+
+## Monitoring
+
+![Prometheus Targets](../media/screenshots/monitoring/37-prometheus-targets-up.png)
+*Prometheus scraping BankChurn metrics (bankchurn_requests_total, bankchurn_request_duration_seconds)*
+
+![Grafana Dashboard](../media/screenshots/monitoring/34-grafana-dashboard.png)
+*Grafana dashboard showing BankChurn request rate and latency panels*
+
+## Explainability (SHAP)
+
+![SHAP Response](../media/screenshots/apis/82-shap-prediction-response.png)
+*SHAP feature importance values returned with each prediction*
+
+![SHAP Swagger](../media/screenshots/apis/83-swagger-shap-response.png)
+*Swagger UI showing SHAP explainability endpoint response*
 
 ## Known Limitations
 

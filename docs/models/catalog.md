@@ -6,11 +6,11 @@
 
 ## 📊 Overview
 
-| Project | Model ID | Algorithm | Version | Status | Primary Metric | Last Updated |
-|---------|----------|-----------|---------|--------|----------------|--------------|
-| **BankChurn** | `bankchurn-voting-v1.5.0` | VotingClassifier (LR + RF) | 1.5.0 | ✅ Production | AUC-ROC: 0.853 | February 2026 |
-| **CarVision** | `carvision-rf-v1.5.0` | RandomForestRegressor | 1.5.0 | ✅ Production | R²: 0.766 | February 2026 |
-| **TelecomAI** | `telecomai-voting-v1.5.0` | VotingClassifier (3 models) | 1.5.0 | ✅ Production | AUC-ROC: 0.84 | February 2026 |
+| Project | Model ID | Algorithm | Version | Status | Primary Metric | Coverage | Last Updated |
+|---------|----------|-----------|---------|--------|----------------|----------|--------|
+| **BankChurn** | `bankchurn-voting-v1.5.0` | VotingClassifier (LR + RF) | 1.5.0 | ✅ Production | AUC-ROC: 0.87 | 88% | February 2026 |
+| **CarVision** | `carvision-rf-v1.5.0` | RandomForestRegressor | 1.5.0 | ✅ Production | R²: 0.77 | 95% | February 2026 |
+| **TelecomAI** | `telecomai-voting-v1.5.0` | VotingClassifier (3 models) | 1.5.0 | ✅ Production | AUC-ROC: 0.84 | 95% | February 2026 |
 
 ---
 
@@ -35,12 +35,14 @@
 
 | Metric | Value | Business Impact |
 |--------|-------|-----------------|
-| **AUC-ROC** | **0.853** | Excellent discrimination |
-| **Accuracy** | 85.7% | Overall correctness |
-| **Precision (Churn)** | 69.2% | 31% false alarms |
-| **Recall (Churn)** | 53.6% | Catches 54% of churners |
-| **F1-Score (Churn)** | **0.604** | Balanced metric |
+| **AUC-ROC** | **0.8652** | Excellent discrimination |
+| **Accuracy** | 84.3% | Overall correctness |
+| **Precision (Churn)** | 59.83% | Positive predictive value |
+| **Recall (Churn)** | 69.53% | Catches 70% of churners |
+| **F1-Score (Churn)** | **0.6432** | Balanced metric |
 | **Precision@10%** | 84% | Top 10% contains 84% churners |
+
+> **MLflow Run**: `BC-2_RandomForest_Tuned` — Best of 3 tracked experiments
 
 ### Architecture
 
@@ -89,16 +91,16 @@ Full documentation: [BankChurn Model Card](https://github.com/DuqueOM/ML-MLOps-P
 | **Created** | February 2026 |
 | **Last Updated** | February 2026 |
 
-### Performance Metrics (Test Set, n=9,566)
+### Performance Metrics (Test Set, n=9,231)
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **R²** | **0.766** | Explains 77% of variance |
-| **RMSE** | **$4,794** | Average prediction error |
-| **MAE** | $3,450 | Median absolute error |
-| **MAPE** | 17.8% | Percentage error |
-| **Cross-Validation R²** | 0.758 ± 0.023 | 5-fold stability |
-| **Bootstrap 95% CI** | $4,512 - $5,076 | RMSE confidence interval |
+| **R²** | **0.7692** | Explains 77% of variance |
+| **RMSE** | **$4,396** | Average prediction error |
+| **MAE** | $3,124 | Mean absolute error |
+| **MAPE** | 18.2% | Percentage error |
+
+> **MLflow Run**: `CV-2_RandomForest_Tuned` — Best of 3 tracked experiments
 
 ### Architecture
 
@@ -157,11 +159,13 @@ Full documentation: [CarVision Model Card](https://github.com/DuqueOM/ML-MLOps-P
 | Metric | Value | Business Impact |
 |--------|-------|-----------------|
 | **AUC-ROC** | **0.84** | Strong discrimination |
-| **Accuracy** | **82%** | Overall correctness |
+| **Accuracy** | **81.8%** | Overall correctness |
 | **Precision (Ultra)** | 72% | 28% false upgrades |
 | **Recall (Ultra)** | 56% | Catches 56% of Ultra candidates |
-| **F1-Score (Ultra)** | **0.63** | Balanced metric |
+| **F1-Score (Ultra)** | **0.6309** | Balanced metric |
 | **Cross-Validation Acc** | 0.818 ± 0.012 | 5-fold stability |
+
+> **MLflow Run**: `TL-3_RandomForest` — Best of 3 tracked experiments
 
 ### Architecture
 
@@ -200,8 +204,8 @@ Full documentation: [TelecomAI Model Card](https://github.com/DuqueOM/ML-MLOps-P
 
 | Project | v1.0.0 | v1.5.0 (Current) | Changes |
 |---------|--------|------------------|---------|
-| **BankChurn** | Sep 2025 (AUC=0.78) | **February 2026** (AUC=0.853) | Ensemble weights tuning, SHAP integration |
-| **CarVision** | Sep 2025 (R²=0.72) | **February 2026** (R²=0.766) | FeatureEngineer centralization, bootstrap CI |
+| **BankChurn** | Sep 2025 (AUC=0.78) | **February 2026** (AUC=0.87) | Ensemble weights tuning, SHAP integration |
+| **CarVision** | Sep 2025 (R²=0.72) | **February 2026** (R²=0.77) | FeatureEngineer centralization, bootstrap CI |
 | **TelecomAI** | Sep 2025 (Acc=0.78) | **February 2026** (Acc=82%) | Added GradientBoosting, threshold optimization |
 
 ### Promotion Criteria (Staging → Production)
@@ -272,11 +276,20 @@ open http://localhost:5000
 
 For each run, MLflow tracks:
 
-- ✅ **Parameters**: Hyperparameters, config file
-- ✅ **Metrics**: Performance metrics (AUC, RMSE, accuracy, etc.)
-- ✅ **Artifacts**: Model file, preprocessor, config.yaml
-- ✅ **System Info**: Python version, library versions
-- ✅ **Metadata**: Training duration, dataset version (DVC SHA)
+- ✅ **Parameters**: All hyperparameters + train_size, test_size, n_features
+- ✅ **Metrics**: Accuracy, F1, precision, recall, AUC-ROC (classification); RMSE, MAE, R² (regression)
+- ✅ **Datasets**: Training dataset metadata (name, source path, target column)
+- ✅ **Tags**: Project name, run type, framework (scikit-learn), task type
+- ✅ **System Info**: Python version, library versions, git commit
+
+### Experiment Runner
+
+All experiments are executed via `scripts/run_experiments.py`, which trains 9 models (3 per project) and logs everything to the MLflow server:
+
+```bash
+# Run all experiments
+python scripts/run_experiments.py
+```
 
 ---
 

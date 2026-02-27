@@ -16,10 +16,10 @@ Vehicle price prediction platform with interactive dashboard.
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **R²** | 0.766 | Coefficient of determination |
-| **RMSE** | $4,794 | Root mean squared error |
-| **MAE** | $2,371 | Mean absolute error |
-| **MAPE** | 27.6% | Mean absolute percentage error |
+| **R²** | 0.7692 | Coefficient of determination |
+| **RMSE** | $4,396 | Root mean squared error |
+| **MAE** | $3,124 | Mean absolute error |
+| **MAPE** | 18.2% | Mean absolute percentage error |
 
 ### Performance Analysis
 
@@ -36,13 +36,29 @@ graph LR
     - Higher errors on luxury/collector vehicles (>$100K)
     - Odometer and model year are top predictors
 
+### MLflow Experiments
+
+| Run | Model | Test RMSE | Test R² | Purpose |
+|-----|-------|-----------|----------|---------|
+| CV-1_Baseline_Ridge | Ridge Regression | $5,591 | 0.6266 | Linear baseline |
+| **CV-2_RF_Tuned** | **RandomForest** | **$4,396** | **0.7692** | **Production model** |
+| CV-3_GradientBoosting | GradientBoosting | $4,416 | 0.7671 | Ensemble comparison |
+
 ### Operational Metrics
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **Test Coverage** | 94% | Unit + integration tests |
-| **P95 Latency** | <100ms | Inference time |
-| **Model Size** | ~5 MB | Serialized pipeline |
+| **Test Coverage** | 95% | 37 tests ([Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)) |
+| **P95 Latency** | <30ms | Inference time |
+| **Model Size** | ~968 KB | Serialized pipeline |
+
+### Production Screenshots
+
+![CarVision API](../media/screenshots/apis/27-fastapi-swagger-carvision.png)
+*CarVision FastAPI Swagger UI*
+
+![CarVision Prediction](../media/screenshots/apis/28-carvision-prediccion-real.png)
+*Real vehicle price prediction response*
 
 ## Quick Start
 
@@ -98,6 +114,23 @@ The Streamlit dashboard provides four main sections:
 2. **Market Analysis**: Brand comparisons, price distributions
 3. **Model Metrics**: Performance visualization, feature importance
 4. **Price Predictor**: Interactive prediction interface
+
+![Streamlit Dashboard](../media/screenshots/apis/81-streamlit-full-dashboard.png)
+*Full Streamlit dashboard with 4 interactive tabs*
+
+<details>
+<summary><strong>Dashboard Screenshots (click to expand)</strong></summary>
+
+![Data Explorer](../media/screenshots/apis/78-streamlit-data-explorer.png)
+*Data Explorer tab: dataset statistics, filtering, and distribution charts*
+
+![Price Predictor](../media/screenshots/apis/79-streamlit-prediction.png)
+*Price Predictor tab: interactive vehicle valuation form*
+
+![Model Performance](../media/screenshots/apis/80-streamlit-model-performance.png)
+*Model Metrics tab: R²=0.77, RMSE=$4,396, actual vs predicted plot*
+
+</details>
 
 ## Architecture
 
@@ -176,6 +209,11 @@ CarVision-Market-Intelligence/
 ├── configs/
 └── Dockerfile
 ```
+
+## Monitoring
+
+![Grafana Dashboard](../media/screenshots/monitoring/34-grafana-dashboard.png)
+*Grafana dashboard showing CarVision request rate panel*
 
 ## Known Limitations
 

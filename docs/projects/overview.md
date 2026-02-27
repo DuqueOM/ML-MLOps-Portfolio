@@ -20,9 +20,9 @@ Watch the complete portfolio demonstration:
 | **Business Domain** | Banking (Customer Retention) | Automotive (Pricing) | Telecom (Plan Optimization) |
 | **Target Variable** | Customer Churn (`Exited`) | Vehicle Price (USD) | Plan Upgrade (`is_ultra`) |
 | **Best Model** | VotingClassifier (LR + RF) | XGBRegressor | VotingClassifier (3 models) |
-| **Primary Metric** | **AUC=0.853**, F1=0.604 | **R²=0.766**, RMSE=$4,794 | **AUC=0.84**, Accuracy=82% |
+| **Primary Metric** | **AUC=0.87**, F1=0.64 | **R²=0.77**, RMSE=$4,396 | **AUC=0.84**, Accuracy=82% |
 | **MLflow Experiments** | 3 tracked runs | 3 tracked runs | 3 tracked runs |
-| **Test Coverage** | 85% | 86% | 91% |
+| **Test Coverage** | 88% | 95% | 95% |
 | **Interface** | REST API (FastAPI) | REST API + **Streamlit Dashboard** | REST API (FastAPI) |
 | **Special Features** | SHAP explainability, drift detection | 4-tab dashboard, bootstrap CI | Threshold tuning, ROI analysis |
 
@@ -35,7 +35,7 @@ Watch the complete portfolio demonstration:
 ```mermaid
 graph LR
     subgraph "Classification Performance"
-        BC["BankChurn<br/>AUC: 0.853<br/>F1: 0.604<br/>Precision: 69.2%"]
+        BC["BankChurn<br/>AUC: 0.87<br/>F1: 0.64<br/>Precision: 60%"]
         TC["TelecomAI<br/>AUC: 0.84<br/>Accuracy: 82%<br/>F1: 0.63"]
     end
     
@@ -48,7 +48,7 @@ graph LR
 ```mermaid
 graph LR
     subgraph "Regression Performance"
-        CV["CarVision<br/>R²: 0.766<br/>RMSE: $4,794<br/>MAPE: 17.8%"]
+        CV["CarVision<br/>R²: 0.77<br/>RMSE: $4,396<br/>MAPE: 18.2%"]
     end
     
     CV -->|Price Prediction| CU[Business Impact:<br/>Inventory valuation]
@@ -122,7 +122,7 @@ project/
 3. **Data Versioning**: DVC for dataset lineage
 4. **Containerization**: Multi-stage Docker builds (<500MB images)
 5. **API Design**: FastAPI with automatic OpenAPI docs
-6. **Testing**: pytest with >80% coverage target (85-91% actual, Codecov verified)
+6. **Testing**: pytest with >80% coverage target (88-95% actual, Codecov verified)
 7. **CI/CD**: Unified GitHub Actions workflow
 
 ---
@@ -173,7 +173,7 @@ project/
 
 | Component | Technology |
 |-----------|-----------|
-| **Testing** | pytest, pytest-cov (85-91% coverage), Codecov |
+| **Testing** | pytest, pytest-cov (88-95% coverage), Codecov |
 | **Linting** | Black, Flake8, isort |
 | **Type Checking** | Mypy (strict mode) |
 | **Security** | Bandit, Gitleaks, pip-audit, Trivy |

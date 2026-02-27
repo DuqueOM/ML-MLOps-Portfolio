@@ -9,7 +9,7 @@
 
 Comprehensive model card following MLOps Staff best practices:
 - RandomForest regression architecture
-- Performance metrics (R²=0.766, RMSE=$4,794)
+- Performance metrics (R²=0.77, RMSE=$4,396)
 - Feature engineering (centralized FeatureEngineer class)
 - Deployment instructions (API + Streamlit Dashboard)
 - Monitoring and drift detection

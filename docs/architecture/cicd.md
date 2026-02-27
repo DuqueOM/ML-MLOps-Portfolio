@@ -2,6 +2,12 @@
 
 GitHub Actions workflows for testing, building, and deployment of the ML-MLOps Portfolio.
 
+![Cloud Build History](../media/screenshots/gcp-console/13-cloud-build-history.png)
+*Google Cloud Build history showing successful image builds*
+
+![Cloud Build Logs](../media/screenshots/gcp-console/14-cloud-build-logs.png)
+*Build logs: multi-stage Docker build completing successfully*
+
 ---
 
 ## Pipeline Overview
@@ -259,7 +265,7 @@ Recommended settings for `main` branch:
 | Metric | Target | Current |
 |--------|--------|---------|
 | Build Time | <10 min | ~8 min |
-| Test Coverage | >80% | 85-91% (Codecov) |
+| Test Coverage | >80% | 88-95% (Codecov) |
 | Security Findings | 0 critical | ✅ Pass |
 | Docker Size | <1 GB | ~500 MB |
 

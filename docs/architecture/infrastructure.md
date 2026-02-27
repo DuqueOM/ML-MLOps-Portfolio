@@ -42,11 +42,71 @@ graph TB
 
 ---
 
-## GCP Production Deployment (Live) ✅
+## GCP Production Deployment (Live) 
 
 This portfolio is **actively deployed on Google Cloud Platform**. The infrastructure below was created with Terraform and is currently running.
 
 ![GKE Workloads](../media/screenshots/gcp-console/05-gke-workloads-running.png)
+*6 workloads running on GKE: 3 ML APIs + MLflow + Prometheus + Grafana*
+
+<details>
+<summary><strong>GCP Console Evidence (click to expand)</strong></summary>
+
+#### GKE Cluster
+![GKE Cluster Detail](../media/screenshots/gcp-console/04-gke-cluster-detalle.png)
+*GKE cluster configuration: 3 nodes, e2-medium, us-central1*
+
+#### Artifact Registry
+![Artifact Registry](../media/screenshots/gcp-console/09-artifact-registry-imagenes.png)
+*3 Docker images versioned in Artifact Registry*
+
+![Artifact Registry Tags](../media/screenshots/gcp-console/10-artifact-registry-tags.png)
+*Image tags: v1.0.0 + latest for each project*
+
+#### Cloud Storage
+![GCS Models Bucket](../media/screenshots/gcp-console/11-gcs-bucket-modelos.png)
+*GCS bucket with production models (model.joblib per project)*
+
+![GCS Datasets Bucket](../media/screenshots/gcp-console/12b-gcs-datasets-bucket.png)
+*GCS bucket with versioned datasets*
+
+#### IAM & Billing
+![IAM Service Account](../media/screenshots/gcp-console/15-iam-service-account.png)
+*Workload Identity service account for GKE pods*
+
+![Billing Dashboard](../media/screenshots/gcp-console/16-billing-dashboard.png)
+*Monthly cost ~$51 USD for full production stack*
+
+#### GKE Services & Ingress
+![GKE Services](../media/screenshots/gcp-console/07-gke-services.png)
+*K8s services listed in GCP Console*
+
+![GKE Ingress](../media/screenshots/gcp-console/08-gke-ingress-ip.png)
+*Ingress with public external IP for load balancing*
+
+#### Terminal Verification
+![kubectl pods](../media/screenshots/terminal/17-kubectl-pods-running.png)
+*All pods running and healthy (0 restarts)*
+
+![kubectl services](../media/screenshots/terminal/18-kubectl-services-ingress.png)
+*K8s services with external IP via Ingress*
+
+![kubectl top](../media/screenshots/terminal/19-kubectl-top-pods.png)
+*Resource usage: CPU and memory per pod*
+
+![Artifact Registry CLI](../media/screenshots/terminal/20-artifact-registry-cli.png)
+*Docker images listed in Artifact Registry via gcloud CLI*
+
+![GCS Models CLI](../media/screenshots/terminal/21-gcs-modelos-cli.png)
+*GCS bucket contents: model.joblib files per project*
+
+![GCS Datasets CLI](../media/screenshots/terminal/21b-gcs-datasets-cli.png)
+*GCS bucket contents: versioned dataset files*
+
+![Terraform Outputs](../media/screenshots/terminal/22-terraform-outputs.png)
+*Terraform output showing cluster name, registry URL, bucket names*
+
+</details>
 
 ### GCP Resources (Terraform-managed)
 

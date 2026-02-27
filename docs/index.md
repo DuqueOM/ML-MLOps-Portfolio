@@ -50,7 +50,7 @@ This is a **production-grade MLOps platform** showcasing enterprise best practic
 
     ---
 
-    85-91% coverage ([Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)) with Pytest, integration tests, security scans
+    88-95% coverage ([Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)) with Pytest, integration tests, security scans
 
 -   📚 **Comprehensive Docs**
 
@@ -124,9 +124,9 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
 
 | Project | Domain | Type | Best Metrics | Key Features |
 |---------|--------|------|--------------|--------------|
-| **[BankChurn Predictor](projects/bankchurn.md)** | Banking | Classification | AUC=0.85, F1=0.60 | SHAP explainability, drift detection, 85% coverage |
-| **[CarVision Market Intelligence](projects/carvision.md)** | Automotive | Regression | R²=0.77, RMSE=$4,794 | Interactive dashboard, 4 tabs, 86% coverage |
-| **[TelecomAI Customer Intelligence](projects/telecom.md)** | Telecom | Classification | AUC=0.84, Acc=82% | Plan optimization, threshold tuning, 91% coverage |
+| **[BankChurn Predictor](projects/bankchurn.md)** | Banking | Classification | AUC=0.87, F1=0.64 | SHAP explainability, drift detection, 88% coverage |
+| **[CarVision Market Intelligence](projects/carvision.md)** | Automotive | Regression | R²=0.77, RMSE=$4,396 | Interactive dashboard, 4 tabs, 95% coverage |
+| **[TelecomAI Customer Intelligence](projects/telecom.md)** | Telecom | Classification | AUC=0.84, Acc=82% | Plan optimization, threshold tuning, 95% coverage |
 
 ---
 
@@ -142,7 +142,7 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
 
 ### MLOps & DevOps
 
-- ✅ **Experiment Tracking**: MLflow server with 9 tracked runs (3 per project)
+- ✅ **Experiment Tracking**: MLflow server on K8s with 9 tracked runs (3 per project), dataset logging, precision/recall metrics
 - ✅ **Data Versioning**: DVC for dataset management and lineage
 - ✅ **CI/CD Pipeline**: Unified GitHub Actions workflow
   - Matrix testing (3 projects × 2 Python versions)
@@ -155,7 +155,7 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
 ### Software Engineering
 
 - ✅ **Modern Python**: `src/` layout, Pydantic config, type hints
-- ✅ **Testing**: Comprehensive suites (unit, integration, e2e) with 85-91% coverage (Codecov verified)
+- ✅ **Testing**: Comprehensive suites (unit, integration, e2e) with 88-95% coverage (Codecov verified)
 - ✅ **Code Quality**: Pre-commit hooks, automated linting, security scanning
 - ✅ **Documentation**: Model cards, data cards, API docs, operations runbooks
 
@@ -228,7 +228,7 @@ docker compose -f docker-compose.demo.yml ps
 |-----------|-----------|
 | **Code Quality** | Black, Flake8, Mypy, isort |
 | **Security Scanning** | Bandit, Gitleaks, pip-audit, Trivy |
-| **Testing** | pytest, pytest-cov (85-91% coverage), Codecov |
+| **Testing** | pytest, pytest-cov (88-95% coverage), Codecov |
 | **Pre-commit** | Automated hooks for quality gates |
 
 ---
@@ -239,7 +239,7 @@ docker compose -f docker-compose.demo.yml ps
 
 | Metric | BankChurn | CarVision | TelecomAI | Target |
 |--------|-----------|-----------|-----------|--------|
-| **Test Coverage** | 85% | 86% | 91% | >80% ✅ |
+| **Test Coverage** | 88% | 95% | 95% | >80% ✅ |
 | **Linting** | Clean | Clean | Clean | 100% ✅ |
 | **Type Checking** | Strict | Strict | Strict | 100% ✅ |
 | **Security Scan** | 0 HIGH | 0 HIGH | 0 HIGH | 0 ✅ |
@@ -284,7 +284,7 @@ ML-MLOps-Portfolio/
 ├── BankChurn-Predictor/           # 🏦 Customer Churn Prediction
 │   ├── src/bankchurn/             # Core package
 │   ├── app/fastapi_app.py         # REST API
-│   ├── tests/                     # 85% coverage (Codecov)
+│   ├── tests/                     # 88% coverage (Codecov)
 │   ├── monitoring/check_drift.py  # Drift detection (KS + PSI)
 │   ├── scripts/run_mlflow.py      # MLflow experiment runner
 │   ├── models/model_card.md       # Model documentation v2.0
@@ -297,7 +297,7 @@ ML-MLOps-Portfolio/
 │   ├── app/
 │   │   ├── fastapi_app.py         # REST API
 │   │   └── streamlit_app.py       # Dashboard (4 tabs)
-│   ├── tests/                     # 86% coverage (Codecov)
+│   ├── tests/                     # 95% coverage (Codecov)
 │   ├── monitoring/check_drift.py  # Drift detection
 │   ├── scripts/run_mlflow.py      # MLflow experiment runner
 │   ├── models/model_card.md       # Model documentation v2.0
@@ -308,7 +308,7 @@ ML-MLOps-Portfolio/
 ├── TelecomAI-Customer-Intelligence/ # 📱 Plan Recommendation
 │   ├── src/telecom/              # Core package
 │   ├── app/fastapi_app.py         # REST API
-│   ├── tests/                     # 91% coverage (Codecov)
+│   ├── tests/                     # 95% coverage (Codecov)
 │   ├── monitoring/check_drift.py  # Drift detection
 │   ├── scripts/run_mlflow.py      # MLflow experiment runner
 │   ├── models/model_card.md       # Model documentation v2.0

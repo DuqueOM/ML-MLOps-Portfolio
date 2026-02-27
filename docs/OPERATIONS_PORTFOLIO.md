@@ -303,7 +303,7 @@ open http://localhost:9090
 ```bash
 # Access Grafana
 open http://localhost:3000
-# Credentials (secret grafana-credentials): admin / MLPortfolio2026!
+# Credentials: stored in K8s secret 'grafana-credentials'
 # Dashboard: "ML Portfolio Metrics" (auto-provisioned via ConfigMap)
 ```
 
