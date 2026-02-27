@@ -131,6 +131,9 @@ open http://localhost:3000
 # Credentials: stored in K8s secret 'grafana-credentials'
 ```
 
+![Grafana Login](../media/screenshots/monitoring/33-grafana-login.png)
+*Grafana login page — credentials stored in K8s secret `grafana-credentials`*
+
 ### Pre-built Dashboard
 
 The portfolio includes a **production-ready Grafana dashboard** with service-specific panels:

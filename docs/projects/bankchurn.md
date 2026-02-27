@@ -228,6 +228,14 @@ BankChurn-Predictor/
 └── Dockerfile              # Multi-stage build
 ```
 
+## Production Deployment
+
+![BankChurn Workload Detail](../media/screenshots/gcp-console/06-workload-bankchurn-detalle.png)
+*GKE workload detail: BankChurn deployment with rolling updates, resource limits, and health checks*
+
+![GCS Model BankChurn](../media/screenshots/gcp-console/12-gcs-modelo-bankchurn.png)
+*Production model artifact stored in Google Cloud Storage*
+
 ## Monitoring
 
 ![Prometheus Targets](../media/screenshots/monitoring/37-prometheus-targets-up.png)
