@@ -16,6 +16,7 @@ from pathlib import Path
 import mlflow
 import numpy as np
 import pandas as pd
+from mlflow.data.pandas_dataset import from_pandas
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import (
     GradientBoostingClassifier,
@@ -25,7 +26,16 @@ from sklearn.ensemble import (
 )
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression, Ridge
-from sklearn.metrics import accuracy_score, f1_score, mean_absolute_error, mean_squared_error, r2_score, roc_auc_score
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    mean_absolute_error,
+    mean_squared_error,
+    precision_score,
+    r2_score,
+    recall_score,
+    roc_auc_score,
+)
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -64,6 +74,9 @@ def run_bankchurn_experiments():
 
     df = pd.read_csv(data_path)
     print(f"📊 Loaded {len(df)} rows")
+
+    # Create MLflow dataset for logging
+    bc_dataset = from_pandas(df, source=str(data_path), name="Churn_Modelling", targets="Exited")
 
     # Features
     cat_features = ["Geography", "Gender"]
@@ -163,6 +176,9 @@ def run_bankchurn_experiments():
         with mlflow.start_run(run_name=exp["run_name"]):
             mlflow.set_tags(exp["tags"])
             mlflow.set_tag("mlflow.note.content", exp["description"])
+            mlflow.set_tag("framework", "scikit-learn")
+            mlflow.set_tag("task", "binary_classification")
+            mlflow.log_input(bc_dataset, context="training")
 
             # Build pipeline
             pipeline = Pipeline([("preprocessor", preprocessor), ("classifier", exp["model"])])
@@ -170,6 +186,9 @@ def run_bankchurn_experiments():
             # Log params
             model_params = exp["model"].get_params()
             mlflow.log_params({k: v for k, v in model_params.items() if not callable(v) and k != "n_jobs"})
+            mlflow.log_param("train_size", len(X_train))
+            mlflow.log_param("test_size", len(X_test))
+            mlflow.log_param("n_features", X_train.shape[1])
 
             # Train
             pipeline.fit(X_train, y_train)
@@ -179,13 +198,15 @@ def run_bankchurn_experiments():
             y_test_pred = pipeline.predict(X_test)
             y_test_proba = pipeline.predict_proba(X_test)[:, 1]
 
-            # Metrics
+            # Metrics (rounded to 4 decimals)
             metrics = {
-                "train_accuracy": accuracy_score(y_train, y_train_pred),
-                "test_accuracy": accuracy_score(y_test, y_test_pred),
-                "train_f1": f1_score(y_train, y_train_pred),
-                "test_f1": f1_score(y_test, y_test_pred),
-                "test_roc_auc": roc_auc_score(y_test, y_test_proba),
+                "train_accuracy": round(accuracy_score(y_train, y_train_pred), 4),
+                "test_accuracy": round(accuracy_score(y_test, y_test_pred), 4),
+                "train_f1": round(f1_score(y_train, y_train_pred), 4),
+                "test_f1": round(f1_score(y_test, y_test_pred), 4),
+                "test_precision": round(precision_score(y_test, y_test_pred), 4),
+                "test_recall": round(recall_score(y_test, y_test_pred), 4),
+                "test_roc_auc": round(roc_auc_score(y_test, y_test_proba), 4),
             }
 
             mlflow.log_metrics(metrics)
@@ -226,6 +247,9 @@ def run_carvision_experiments():
         df["model_year"] = df["year"]
 
     print(f" Loaded {len(df)} rows after cleaning")
+
+    # Create MLflow dataset for logging
+    cv_dataset = from_pandas(df.head(1000), source=str(data_path), name="vehicles_us", targets="price")
 
     # Features
     cat_features = ["fuel", "transmission", "type"]
@@ -315,12 +339,18 @@ def run_carvision_experiments():
         with mlflow.start_run(run_name=exp["run_name"]):
             mlflow.set_tags(exp["tags"])
             mlflow.set_tag("mlflow.note.content", exp["description"])
+            mlflow.set_tag("framework", "scikit-learn")
+            mlflow.set_tag("task", "regression")
+            mlflow.log_input(cv_dataset, context="training")
 
             pipeline = Pipeline([("preprocessor", preprocessor), ("regressor", exp["model"])])
 
             # Log params
             model_params = exp["model"].get_params()
             mlflow.log_params({k: v for k, v in model_params.items() if not callable(v) and k != "n_jobs"})
+            mlflow.log_param("train_size", len(X_train))
+            mlflow.log_param("test_size", len(X_test))
+            mlflow.log_param("n_features", X_train.shape[1])
 
             pipeline.fit(X_train, y_train)
 
@@ -328,12 +358,12 @@ def run_carvision_experiments():
             y_test_pred = pipeline.predict(X_test)
 
             metrics = {
-                "train_rmse": rmse(y_train, y_train_pred),
-                "test_rmse": rmse(y_test, y_test_pred),
-                "train_mae": mean_absolute_error(y_train, y_train_pred),
-                "test_mae": mean_absolute_error(y_test, y_test_pred),
-                "train_r2": r2_score(y_train, y_train_pred),
-                "test_r2": r2_score(y_test, y_test_pred),
+                "train_rmse": round(rmse(y_train, y_train_pred), 2),
+                "test_rmse": round(rmse(y_test, y_test_pred), 2),
+                "train_mae": round(mean_absolute_error(y_train, y_train_pred), 2),
+                "test_mae": round(mean_absolute_error(y_test, y_test_pred), 2),
+                "train_r2": round(r2_score(y_train, y_train_pred), 4),
+                "test_r2": round(r2_score(y_test, y_test_pred), 4),
             }
 
             mlflow.log_metrics(metrics)
@@ -377,6 +407,9 @@ def run_telecom_experiments():
         df = pd.read_csv(data_path)
 
     print(f" Loaded {len(df)} rows")
+
+    # Create MLflow dataset for logging
+    tl_dataset = from_pandas(df, source=str(data_path), name="users_behavior", targets="is_ultra")
 
     features = ["calls", "minutes", "messages", "mb_used"]
     target = "is_ultra"
@@ -423,11 +456,17 @@ def run_telecom_experiments():
         with mlflow.start_run(run_name=exp["run_name"]):
             mlflow.set_tags(exp["tags"])
             mlflow.set_tag("mlflow.note.content", exp["description"])
+            mlflow.set_tag("framework", "scikit-learn")
+            mlflow.set_tag("task", "binary_classification")
+            mlflow.log_input(tl_dataset, context="training")
 
             pipeline = Pipeline([("preprocessor", preprocessor), ("classifier", exp["model"])])
 
             model_params = exp["model"].get_params()
             mlflow.log_params({k: v for k, v in model_params.items() if not callable(v) and k != "n_jobs"})
+            mlflow.log_param("train_size", len(X_train))
+            mlflow.log_param("test_size", len(X_test))
+            mlflow.log_param("n_features", X_train.shape[1])
 
             pipeline.fit(X_train, y_train)
 
@@ -436,15 +475,17 @@ def run_telecom_experiments():
 
             try:
                 y_test_proba = pipeline.predict_proba(X_test)[:, 1]
-                test_auc = roc_auc_score(y_test, y_test_proba)
+                test_auc = round(roc_auc_score(y_test, y_test_proba), 4)
             except Exception:
                 test_auc = 0.0
 
             metrics = {
-                "train_accuracy": accuracy_score(y_train, y_train_pred),
-                "test_accuracy": accuracy_score(y_test, y_test_pred),
-                "train_f1": f1_score(y_train, y_train_pred),
-                "test_f1": f1_score(y_test, y_test_pred),
+                "train_accuracy": round(accuracy_score(y_train, y_train_pred), 4),
+                "test_accuracy": round(accuracy_score(y_test, y_test_pred), 4),
+                "train_f1": round(f1_score(y_train, y_train_pred), 4),
+                "test_f1": round(f1_score(y_test, y_test_pred), 4),
+                "test_precision": round(precision_score(y_test, y_test_pred), 4),
+                "test_recall": round(recall_score(y_test, y_test_pred), 4),
                 "test_roc_auc": test_auc,
             }
 

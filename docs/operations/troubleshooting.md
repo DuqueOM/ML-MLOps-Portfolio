@@ -2,6 +2,9 @@
 
 Comprehensive troubleshooting guide for Docker, CI/CD, model serving, and dependency issues.
 
+![kubectl logs](../media/screenshots/terminal/24-kubectl-logs.png)
+*Example: viewing pod logs for debugging service issues*
+
 ---
 
 ## Quick Diagnostics

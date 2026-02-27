@@ -88,7 +88,7 @@ CarVision Market Intelligence is a **comprehensive vehicle valuation platform** 
 | **MAE** | **$3,124** | $3,500-4,500 | ✅ Good |
 | **MAPE** | **18.2%** | 20-25% | ✅ Acceptable |
 | **API Latency** | **<30ms p95** | <50ms | ✅ Fast |
-| **Test Coverage** | **94%** | 80%+ | ✅ Excellent |
+| **Test Coverage** | **95%** | 80%+ | ✅ Excellent |
 | **Dashboard Load** | **<2s** | <3s | ✅ UX standard |
 
 ---
@@ -197,7 +197,7 @@ CarVision provides three core capabilities:
 
 - **Experiment tracking**: 3 MLflow runs (Ridge, RandomForest, GradientBoosting)
 - **Reproducible pipelines**: DVC for data versioning
-- **Automated testing**: 94% coverage with unit, integration, e2e tests
+- **Automated testing**: 95% coverage with unit, integration, e2e tests
 - **CI/CD integration**: GitHub Actions for quality gates
 - **Model cards**: Complete documentation of provenance and limitations
 
@@ -1417,7 +1417,7 @@ make train
 
 <div align="center">
 
-**Status**: ✅ Production-Ready | **Coverage**: 94% | **Last Updated**: February 2026
+**Status**: ✅ Production-Ready | **Coverage**: 95% | **Last Updated**: February 2026
 
 ⭐ **Star this project if you find it useful!** ⭐
 

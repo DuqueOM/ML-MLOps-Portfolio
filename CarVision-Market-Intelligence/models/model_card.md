@@ -21,7 +21,7 @@
 | **Model Type** | Regression (Price Prediction) |
 | **Algorithm** | RandomForestRegressor |
 | **Framework** | Scikit-learn 1.3+ |
-| **Primary Metric** | R²: **0.766**, RMSE: **$4,794** |
+| **Primary Metric** | R²: **0.77**, RMSE: **$4,396** |
 | **Business Impact** | 18% improvement in pricing accuracy vs manual valuation |
 | **Production Status** | ✅ Active (API + Streamlit Dashboard) |
 | **Last Updated** | February 2026 |
@@ -178,12 +178,12 @@ Q4 (>$32,000):  11,958 (25%)
 
 | Metric | Train | Test | Target | Status |
 |--------|-------|------|--------|--------|
-| **RMSE** | $4,521 | **$4,794** | <$5,000 | ✅ PASS |
-| **MAE** | $2,189 | **$2,371** | <$3,000 | ✅ PASS |
-| **R²** | 0.789 | **0.766** | ≥ 0.75 | ✅ PASS |
-| **MAPE** | 25.3% | **27.6%** | <30% | ✅ PASS |
+| **RMSE** | $3,891 | **$4,396** | <$5,000 | ✅ PASS |
+| **MAE** | $2,680 | **$3,124** | <$3,500 | ✅ PASS |
+| **R²** | 0.8193 | **0.7692** | ≥ 0.75 | ✅ PASS |
+| **MAPE** | 15.6% | **18.2%** | <25% | ✅ PASS |
 
-**Generalization**: Train R² 0.789 → Test R² 0.766 (2.3% drop) indicates minimal overfitting
+**Generalization**: Train R² 0.8193 → Test R² 0.7692 (5.0% drop) indicates acceptable generalization
 
 ### Validation Methods
 

@@ -52,10 +52,10 @@
 ## 📊 Key Metrics
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
-|---------|------|-------------|----------|-------------|--------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 85% | <50ms p95 | Ensemble, XGBoost, LightGBM, PyTorch MLP, SHAP |
-| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.70**, RMSE $4.4K | 86% | <30ms p95 | LightGBM, XGBoost, PyTorch MLP, Streamlit |
-| [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **Acc 82%**, AUC 0.84 | 91% | <25ms p95 | XGBoost, LightGBM, PyTorch MLP, Revenue Opt |
+|---------|------|-------------|----------|-------------|---------------|
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 88% | <50ms p95 | Ensemble, SHAP Explainability, Drift Detection |
+| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.77**, RMSE $4.4K | 95% | <30ms p95 | FeatureEngineer, Streamlit Dashboard (4 tabs) |
+| [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **Acc 82%**, AUC 0.84 | 95% | <25ms p95 | VotingClassifier, Threshold Optimization, Revenue Opt |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
@@ -75,8 +75,8 @@
 Production-grade churn prediction enabling proactive retention campaigns with **87% AUC** discrimination. VotingClassifier ensemble with SHAP explainability, SMOTE handling, and MLflow tracking (3 experiments).
 
 | AUC-ROC | F1 | Precision | Recall | Coverage | Latency |
-|---------|-----|-----------|--------|----------|---------|
-| **0.87** | 0.64 | 0.72 | 0.58 | 85% | <50ms p95 |
+|---------|-----|-----------|--------|----------|----------|
+| **0.87** | 0.64 | 0.60 | 0.70 | 88% | <50ms p95 |
 
 [📂 Project](BankChurn-Predictor/) · [📄 Model Card](BankChurn-Predictor/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
@@ -87,8 +87,8 @@ Production-grade churn prediction enabling proactive retention campaigns with **
 End-to-end vehicle valuation platform with **Streamlit BI Dashboard** (4 tabs) and REST API. Centralized `FeatureEngineer` prevents train-serve skew. Advanced validation with bootstrap CIs and temporal backtesting.
 
 | R² | RMSE | MAE | MAPE | Coverage | Dashboard |
-|----|------|-----|------|----------|-----------|
-| **0.70** | $4,396 | $3,124 | 18.2% | 86% | <2s load |
+|----|------|-----|------|----------|------------|
+| **0.77** | $4,396 | $3,124 | 18.2% | 95% | <2s load |
 
 [📂 Project](CarVision-Market-Intelligence/) · [📄 Model Card](CarVision-Market-Intelligence/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
@@ -99,8 +99,8 @@ End-to-end vehicle valuation platform with **Streamlit BI Dashboard** (4 tabs) a
 Strategic plan optimization reducing **$6.9M/year** revenue leakage per 100K customers. Ensemble of LogReg + GradientBoosting + RandomForest with threshold tuning for business-aligned predictions. 1,200 RPS throughput.
 
 | Accuracy | AUC-ROC | F1 | Precision | Coverage | Throughput |
-|----------|---------|-----|-----------|----------|------------|
-| **82%** | 0.84 | 0.63 | 0.72 | 91% | 1,200 RPS |
+|----------|---------|-----|-----------|----------|-------------|
+| **82%** | 0.84 | 0.63 | 0.72 | 95% | 1,200 RPS |
 
 [📂 Project](TelecomAI-Customer-Intelligence/) · [📄 Model Card](TelecomAI-Customer-Intelligence/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
@@ -117,7 +117,7 @@ Strategic plan optimization reducing **$6.9M/year** revenue leakage per 100K cus
 | **Monitoring** | Prometheus (multi-service scraping), Grafana (10-panel dashboard), Load Testing (SRE methodology), Evidently |
 | **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy), Artifact Registry, ECR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
-| **Testing** | pytest (85-91% coverage), Codecov, pre-commit hooks |
+| **Testing** | pytest (88-95% coverage), Codecov, pre-commit hooks |
 
 > **v6.0+ Performance Optimizations**: Joblib compression (-76% model size), Pandas dtype optimization (-56% memory), sklearn parallelization (2-4x faster), vectorized batch predictions (-84% time). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
@@ -234,9 +234,6 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 |----------|-------------|
 | **[Quick Start](QUICK_START.md)** | 5-minute demo with API examples and health checks |
 | **[Architecture](docs/ARCHITECTURE_PORTFOLIO.md)** | System design, Mermaid diagrams, infrastructure, CI/CD workflow |
-| **[GCP Production Guide](docs/GCP_PRODUCTION_GUIDE.md)** | Full GKE deployment walkthrough (12 phases) |
-| **[AWS Production Guide](docs/AWS_PRODUCTION_GUIDE.md)** | Full EKS deployment walkthrough (11 phases) |
-| **[Deployment Evidence](docs/GCP_DEPLOYMENT_EVIDENCE.md)** | 168+ screenshots, 13 GIFs, multi-cloud video script |
 | **[Operations Runbook](RUNBOOK.md)** | Day-to-day commands, Docker, K8s, Terraform deployment |
 | **[Features & Changelog](docs/FEATURES.md)** | Performance optimizations, new features (v6.0–v6.1) |
 | **[Release Process](docs/RELEASE.md)** | GHCR publishing, blue/green deployments, rollback procedures |

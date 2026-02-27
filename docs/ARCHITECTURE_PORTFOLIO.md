@@ -129,7 +129,7 @@ graph TD
 **Domain**: Customer Churn Prediction (Banking)  
 **ML Framework**: VotingClassifier (Logistic Regression + RandomForest)  
 **Version**: 1.5.0 (Production)  
-**Performance**: AUC-ROC=0.853, F1=0.604
+**Performance**: AUC-ROC=0.87, F1=0.64
 
 **Pipeline Architecture**:
 ```
@@ -161,13 +161,13 @@ Pipeline([
 - ✅ SHAP explainability for feature importance
 - ✅ Drift detection with Evidently AI (PSI monitoring)
 - ✅ Fairness analysis by geography and age
-- ✅ 86% test coverage
+- ✅ 88% test coverage
 
 ### CarVision-Market-Intelligence
 **Domain**: Vehicle Price Prediction (Automotive)  
 **ML Framework**: XGBRegressor (auto-selected)  
 **Version**: 1.5.0 (Production)  
-**Performance**: R²=0.766, RMSE=$4,794, MAPE=17.8%
+**Performance**: R²=0.77, RMSE=$4,396, MAPE=18.2%
 
 **Pipeline Architecture**:
 ```

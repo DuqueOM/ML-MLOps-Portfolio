@@ -14,11 +14,11 @@ Strategic customer intelligence for telecommunications.
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **AUC-ROC** | 0.840 | Area under ROC curve |
-| **Accuracy** | 81.2% | Overall classification accuracy |
-| **Precision** | 81.7% | Positive predictive value |
-| **Recall** | 49.7% | True positive rate |
-| **F1 Score** | 0.618 | Harmonic mean of precision/recall |
+| **AUC-ROC** | 0.84 | Area under ROC curve |
+| **Accuracy** | 81.8% | Overall classification accuracy |
+| **Precision** | 72% | Positive predictive value |
+| **Recall** | 56% | True positive rate |
+| **F1 Score** | 0.6309 | Harmonic mean of precision/recall |
 
 ### Model Interpretation
 
@@ -40,13 +40,29 @@ graph TD
     recommending upgrades—reducing the risk of recommending expensive plans to 
     customers who won't benefit.
 
+### MLflow Experiments
+
+| Run | Model | Test Accuracy | Test F1 | Purpose |
+|-----|-------|---------------|---------|-------|
+| TL-1_Baseline_LogReg | LogisticRegression | 0.7387 | 0.3000 | Linear baseline |
+| TL-2_GradientBoosting | GradientBoosting | 0.8149 | 0.6293 | Tuned ensemble |
+| **TL-3_RandomForest** | **RandomForest** | **0.8180** | **0.6309** | **Production model** |
+
 ### Operational Metrics
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **Test Coverage** | 96% | Unit + integration tests |
-| **P95 Latency** | <30ms | Inference time |
-| **Model Size** | ~1.5 MB | Serialized pipeline |
+| **Test Coverage** | 95% | 59 tests ([Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)) |
+| **P95 Latency** | <25ms | Inference time |
+| **Model Size** | ~66 KB | Serialized pipeline |
+
+### Production Screenshots
+
+![TelecomAI API](../media/screenshots/apis/29-fastapi-swagger-telecom.png)
+*TelecomAI FastAPI Swagger UI*
+
+![TelecomAI Prediction](../media/screenshots/apis/30-telecom-prediccion-real.png)
+*Real plan recommendation response*
 
 ## Quick Start
 
@@ -146,6 +162,11 @@ TelecomAI-Customer-Intelligence/
 ├── configs/
 └── Dockerfile
 ```
+
+## Monitoring
+
+![Grafana Dashboard](../media/screenshots/monitoring/34-grafana-dashboard.png)
+*Grafana dashboard showing TelecomAI request rate panel*
 
 ## Known Limitations
 

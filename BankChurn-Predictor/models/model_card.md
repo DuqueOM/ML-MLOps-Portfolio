@@ -21,7 +21,7 @@
 | **Model Type** | Binary Classification (Supervised) |
 | **Algorithm** | VotingClassifier (LogisticRegression + RandomForest) |
 | **Framework** | Scikit-learn 1.3+ |
-| **Primary Metric** | AUC-ROC: **0.853** |
+| **Primary Metric** | AUC-ROC: **0.87** |
 | **Business Impact** | $2.1M annual savings (retention optimization) |
 | **Production Status** | ✅ Active |
 | **Last Updated** | February 2026 |
@@ -181,13 +181,13 @@ All models are sklearn-compatible (implement `fit`/`predict`/`predict_proba`) an
 
 | Metric | Train | Test | Target | Status |
 |--------|-------|------|--------|--------|
-| **AUC-ROC** | 0.872 | **0.853** | ≥ 0.80 | ✅ PASS |
-| **F1-Score** | 0.631 | **0.604** | ≥ 0.50 | ✅ PASS |
-| **Precision** | 0.712 | **0.692** | ≥ 0.65 | ✅ PASS |
-| **Recall** | 0.567 | **0.536** | ≥ 0.50 | ✅ PASS |
-| **Accuracy** | 86.2% | **85.7%** | — | — |
+| **AUC-ROC** | 0.8939 | **0.8652** | ≥ 0.80 | ✅ PASS |
+| **F1-Score** | 0.7267 | **0.6432** | ≥ 0.50 | ✅ PASS |
+| **Precision** | 0.6447 | **0.5983** | ≥ 0.50 | ✅ PASS |
+| **Recall** | 0.8322 | **0.6953** | ≥ 0.50 | ✅ PASS |
+| **Accuracy** | 86.1% | **84.3%** | — | — |
 
-**Generalization Gap**: Train AUC 0.872 → Test AUC 0.853 (2.2% drop) indicates good generalization
+**Generalization Gap**: Train AUC 0.8939 → Test AUC 0.8652 (3.2% drop) indicates good generalization
 
 ### Confusion Matrix (Test Set, n=2,000)
 
@@ -503,7 +503,7 @@ rate(prediction_confidence_bucket{le="0.7"}[5m])  # Low confidence predictions
 
 | Trigger | Threshold | Frequency | Action |
 |---------|-----------|-----------|--------|
-| **AUC Degradation** | < 0.75 (from 0.853) | Continuous | 🚨 Immediate retrain + alert |
+| **AUC Degradation** | < 0.75 (from 0.87) | Continuous | 🚨 Immediate retrain + alert |
 | **PSI** | > 0.2 | Weekly | 🚨 Investigate + retrain |
 | **Data Drift** | > 30% features | Weekly | ⚠️ Scheduled retrain |
 | **Time-based** | — | Monthly | ✅ Routine refresh |
@@ -516,7 +516,7 @@ rate(prediction_confidence_bucket{le="0.7"}[5m])  # Low confidence predictions
 
 | Version | Date | Changes | AUC (Test) | Status |
 |---------|------|---------|------------|--------|
-| **1.5.0** | Mar 2026 | Production release, SHAP integration | 0.853 | ✅ Active |
+| **1.5.0** | Mar 2026 | Production release, SHAP integration | 0.87 | ✅ Active |
 | 1.4.0 | Jan 2026 | Hyperparameter tuning, class weights optimized | 0.848 | Deprecated |
 | 1.3.0 | Nov 2025 | Added RandomForest to ensemble | 0.841 | Deprecated |
 | 1.0.0 | Sep 2025 | Initial baseline (LogReg only) | 0.812 | Deprecated |

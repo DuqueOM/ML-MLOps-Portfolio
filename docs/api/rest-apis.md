@@ -2,6 +2,9 @@
 
 All projects expose REST APIs via FastAPI with automatic OpenAPI documentation.
 
+![Metrics Endpoint](../media/screenshots/apis/32-metrics-endpoint.png)
+*Prometheus metrics endpoint (`/metrics`) exposed by each service*
+
 ## Common Endpoints
 
 All APIs share these standard endpoints:

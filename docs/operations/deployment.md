@@ -57,7 +57,7 @@ docker compose -f docker-compose.demo.yml --profile monitoring up -d
 
 Access monitoring:
 - Prometheus: http://localhost:9090
-- Grafana: http://localhost:3000 (admin / MLPortfolio2026!)
+- Grafana: http://localhost:3000 (credentials in K8s secret `grafana-credentials`)
 
 ### Stop Services
 
@@ -70,11 +70,18 @@ docker compose -f docker-compose.demo.yml down -v
 
 ---
 
-## Production Deployment (GCP GKE) ✅
+## Production Deployment (GCP GKE) 
 
 This portfolio is **deployed on Google Cloud Platform** with a GKE cluster running 6 services.
 
 ![GKE Workloads](../media/screenshots/gcp-console/05-gke-workloads-running.png)
+*6 services running on GKE: 3 ML APIs + MLflow + Prometheus + Grafana*
+
+![Health Checks](../media/screenshots/terminal/23-health-checks-apis.png)
+*All 3 API health checks returning healthy status*
+
+![3 APIs Tabs](../media/screenshots/apis/31-tres-apis-pestanas.png)
+*All 3 FastAPI Swagger UIs accessible simultaneously*
 
 ### Prerequisites
 
@@ -162,7 +169,7 @@ kubectl port-forward svc/carvision-service 8002:80 -n ml-portfolio
 # TelecomAI API
 kubectl port-forward svc/telecom-service 8003:80 -n ml-portfolio
 
-# Grafana (admin / MLPortfolio2026!)
+# Grafana (credentials in K8s secret)
 kubectl port-forward svc/grafana-service 3000:3000 -n ml-portfolio
 
 # Prometheus

@@ -87,9 +87,9 @@ python -m bankchurn.cli evaluate \
 
 | Metric | Expected Value | Tolerance |
 |--------|----------------|-----------|
-| AUC-ROC | 0.853 | ±0.02 |
-| Accuracy | 0.857 | ±0.02 |
-| F1 Score | 0.604 | ±0.03 |
+| AUC-ROC | 0.8652 | ±0.02 |
+| Accuracy | 0.843 | ±0.02 |
+| F1 Score | 0.6432 | ±0.03 |
 
 ### Step 5: Run Tests
 
@@ -147,9 +147,9 @@ python main.py evaluate --config configs/config.yaml
 
 | Metric | Expected Value | Tolerance |
 |--------|----------------|-----------|
-| R² | 0.766 | ±0.02 |
-| RMSE | $4,794 | ±$500 |
-| MAPE | 27.6% | ±2% |
+| R² | 0.7692 | ±0.02 |
+| RMSE | $4,396 | ±$500 |
+| MAPE | 18.2% | ±2% |
 
 ### Step 5: Run Tests
 

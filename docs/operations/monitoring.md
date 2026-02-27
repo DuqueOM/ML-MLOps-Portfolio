@@ -1,6 +1,9 @@
 # Monitoring Guide
 
-Comprehensive monitoring for ML services in production using Prometheus, Grafana, and Evidently.
+Comprehensive monitoring for ML services in production using Prometheus, Grafana, MLflow, and Evidently.
+
+![Grafana Dashboard](../media/screenshots/monitoring/34-grafana-dashboard.png)
+*Production Grafana dashboard showing request rates, latency, and resource usage across all ML services*
 
 ---
 
@@ -48,61 +51,70 @@ graph TB
 
 ### Exposed Metrics
 
-All APIs expose metrics at the `/metrics` endpoint:
+Each ML API exposes project-specific metrics at the `/metrics` endpoint:
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `http_requests_total` | Counter | Total HTTP requests |
-| `http_request_duration_seconds` | Histogram | Request latency |
-| `http_request_size_bytes` | Histogram | Request body size |
-| `http_response_size_bytes` | Histogram | Response body size |
-| `model_prediction_duration_seconds` | Histogram | Model inference time |
-| `model_predictions_total` | Counter | Total predictions |
-| `model_prediction_errors_total` | Counter | Prediction errors |
+| Metric | Type | Description | Services |
+|--------|------|-------------|----------|
+| `bankchurn_requests_total` | Counter | Total HTTP requests | BankChurn |
+| `bankchurn_predictions_total` | Counter | Total predictions made | BankChurn |
+| `bankchurn_request_duration_seconds` | Histogram | Request latency | BankChurn |
+| `carvision_requests_total` | Counter | Total HTTP requests | CarVision |
+| `telecom_requests_total` | Counter | Total HTTP requests | TelecomAI |
+
+![Prometheus UI](../media/screenshots/monitoring/36-prometheus-ui.png)
+*Prometheus web UI for ad-hoc metric queries*
+
+![Prometheus Targets](../media/screenshots/monitoring/37-prometheus-targets-up.png)
+*All Prometheus scrape targets UP and healthy*
 
 ### Example Metric Output
 
 ```
-# HELP http_requests_total Total HTTP requests
-# TYPE http_requests_total counter
-http_requests_total{method="POST",endpoint="/predict",status="200"} 1523
-http_requests_total{method="POST",endpoint="/predict",status="422"} 12
-http_requests_total{method="GET",endpoint="/health",status="200"} 45678
+# HELP bankchurn_requests_total Total HTTP requests
+# TYPE bankchurn_requests_total counter
+bankchurn_requests_total{method="POST",endpoint="/predict",status="200"} 802
 
-# HELP model_prediction_duration_seconds Model inference time
-# TYPE model_prediction_duration_seconds histogram
-model_prediction_duration_seconds_bucket{model="bankchurn",le="0.01"} 1200
-model_prediction_duration_seconds_bucket{model="bankchurn",le="0.05"} 1500
-model_prediction_duration_seconds_bucket{model="bankchurn",le="0.1"} 1520
-model_prediction_duration_seconds_bucket{model="bankchurn",le="+Inf"} 1523
+# HELP bankchurn_request_duration_seconds Request latency
+# TYPE bankchurn_request_duration_seconds histogram
+bankchurn_request_duration_seconds_bucket{le="0.01"} 650
+bankchurn_request_duration_seconds_bucket{le="0.05"} 790
+bankchurn_request_duration_seconds_bucket{le="+Inf"} 802
+
+# HELP carvision_requests_total Total HTTP requests
+# TYPE carvision_requests_total counter
+carvision_requests_total{method="POST",endpoint="/predict",status="200"} 300
 ```
 
-### Prometheus Configuration
+### Prometheus Configuration (Kubernetes)
 
 ```yaml
-# prometheus.yml
+# infra/prometheus-config.yaml (deployed via ConfigMap)
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
-rule_files:
-  - "alerts.yml"
-
-alerting:
-  alertmanagers:
-    - static_configs:
-        - targets: ['alertmanager:9093']
-
 scrape_configs:
-  - job_name: 'ml-apis'
+  - job_name: 'bankchurn-predictor'
     static_configs:
-      - targets:
-          - 'bankchurn-api:8000'
-          - 'carvision-api:8000'
-          - 'telecom-api:8000'
+      - targets: ['bankchurn-predictor-service:8000']
     metrics_path: /metrics
-    scrape_interval: 10s
+    scrape_interval: 15s
+
+  - job_name: 'carvision-intelligence'
+    static_configs:
+      - targets: ['carvision-intelligence-service:8000']
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  - job_name: 'telecom-intelligence'
+    static_configs:
+      - targets: ['telecom-intelligence-service:8000']
+    metrics_path: /metrics
+    scrape_interval: 15s
 ```
+
+![Prometheus Query](../media/screenshots/monitoring/38-prometheus-query-graph.png)
+*Prometheus query graph showing request rate over time*
 
 ---
 
@@ -116,85 +128,57 @@ docker compose -f docker-compose.demo.yml --profile monitoring up -d
 
 # Access Grafana
 open http://localhost:3000
-# Credentials (secret grafana-credentials): admin / MLPortfolio2026!
+# Credentials: stored in K8s secret 'grafana-credentials'
 ```
 
 ### Pre-built Dashboard
 
-The portfolio includes a **production-ready Grafana dashboard** with the following panels:
+The portfolio includes a **production-ready Grafana dashboard** with service-specific panels:
 
-| Section | Panels | Description |
-|---------|--------|-------------|
-| **🎯 Service Health** | 4 stat panels | UP/DOWN status for BankChurn, CarVision, TelecomAI, MLflow |
-| **📈 Request Metrics** | 2 timeseries | Request rate (req/s), Latency percentiles (P50, P95) |
-| **🤖 ML Predictions** | 3 bar charts | Predictions/hour per project, price distribution |
-| **⚠️ Model Drift** | 3 gauges | Drift score per model (green/yellow/red thresholds) |
-| **💻 Resources** | 2 timeseries | CPU utilization (%), Memory usage (bytes) |
+| Panel | PromQL Query | Description |
+|-------|-------------|-------------|
+| **BankChurn Requests** | `rate(bankchurn_requests_total[5m])` | Request rate over time |
+| **CarVision Requests** | `rate(carvision_requests_total[5m])` | Request rate over time |
+| **TelecomAI Requests** | `rate(telecom_requests_total[5m])` | Request rate over time |
+| **BankChurn Latency** | `bankchurn_request_duration_seconds` | P50/P95 latency |
 
-**Dashboard Location**: `infra/grafana/dashboards/ml-portfolio-dashboard.json`
+![Grafana After Load Test](../media/screenshots/monitoring/38d-grafana-after-loadtest.png)
+*Grafana dashboard showing traffic spike during load testing (900 requests, 0% errors)*
 
-**Provisioning Config**: `infra/grafana/provisioning/`
-- `dashboards/dashboards.yaml` — Dashboard auto-provisioning
-- `datasources/prometheus.yaml` — Prometheus datasource config
+**Dashboard Locations**:
+
+- `k8s/grafana-deployment.yaml` — Grafana deployment with embedded dashboard JSON
+- `infra/grafana/dashboards/ml-performance.json` — Standalone dashboard file
+
+**Provisioning**: Grafana auto-provisions the Prometheus datasource and dashboard via ConfigMaps in the K8s deployment.
+
+![Grafana Datasources](../media/screenshots/monitoring/35-grafana-datasources.png)
+*Prometheus datasource auto-provisioned in Grafana*
 
 ### Dashboard Panels
 
 #### 1. Request Rate Panel
 
-```sql
--- PromQL query
-rate(http_requests_total{job="ml-apis"}[5m])
+```promql
+# Per-service request rate
+rate(bankchurn_requests_total[5m])
+rate(carvision_requests_total[5m])
+rate(telecom_requests_total[5m])
 ```
 
-#### 2. Latency Percentiles Panel
+#### 2. Latency Panel
 
-```sql
--- P50, P95, P99 latencies
-histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))
-histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))
-histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))
+```promql
+# BankChurn P95 latency
+histogram_quantile(0.95, rate(bankchurn_request_duration_seconds_bucket[5m]))
 ```
 
 #### 3. Error Rate Panel
 
-```sql
--- Error percentage
-sum(rate(http_requests_total{status=~"5.."}[5m])) 
-/ sum(rate(http_requests_total[5m])) * 100
-```
-
-#### 4. Model Inference Time Panel
-
-```sql
--- Average inference time per model
-avg(rate(model_prediction_duration_seconds_sum[5m]) 
-/ rate(model_prediction_duration_seconds_count[5m])) by (model)
-```
-
-### Dashboard JSON Export
-
-```json
-{
-  "dashboard": {
-    "title": "ML-MLOps Portfolio",
-    "panels": [
-      {
-        "title": "Requests per Second",
-        "type": "graph",
-        "targets": [
-          {"expr": "rate(http_requests_total[5m])", "legendFormat": "{{endpoint}}"}
-        ]
-      },
-      {
-        "title": "P95 Latency",
-        "type": "stat",
-        "targets": [
-          {"expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))"}
-        ]
-      }
-    ]
-  }
-}
+```promql
+# BankChurn error rate
+sum(rate(bankchurn_requests_total{status=~"5.."}[5m]))
+/ sum(rate(bankchurn_requests_total[5m])) * 100
 ```
 
 ---
@@ -324,6 +308,69 @@ def check_drift():
 
 ---
 
+## MLflow Experiment Tracking
+
+MLflow runs as a dedicated service in the K8s cluster, tracking experiments for all 3 projects.
+
+![MLflow Experiments](../media/screenshots/monitoring/39-mlflow-experiments.png)
+*MLflow UI showing 3 experiments with 9 total runs across BankChurn, CarVision, and TelecomAI*
+
+### MLflow Experiments Summary
+
+| Experiment | Runs | Best Model | Key Metric |
+|------------|------|------------|------------|
+| **BankChurn-Predictor** | 3 | BC-2_RandomForest_Tuned | AUC 0.8652, F1 0.6432 |
+| **CarVision-Market-Intelligence** | 3 | CV-2_RandomForest_Tuned | R² 0.7692, RMSE $4,396 |
+| **TelecomAI-Customer-Intelligence** | 3 | TL-3_RandomForest | Acc 0.818, F1 0.6309 |
+
+### What Gets Tracked
+
+- **Parameters**: All model hyperparameters, train/test sizes, feature counts
+- **Metrics**: Accuracy, F1, precision, recall, AUC-ROC (classification); RMSE, MAE, R² (regression)
+- **Datasets**: Training dataset metadata (name, source, target column)
+- **Tags**: Project name, run type (baseline/tuned/alternative), framework, task type
+
+### Running Experiments
+
+```bash
+# Port-forward to MLflow (if on K8s)
+kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio
+
+# Run all 9 experiments
+python scripts/run_experiments.py
+
+# View results
+open http://localhost:5000
+```
+
+---
+
+## Smoke & Load Testing
+
+The portfolio includes automated testing infrastructure for production validation.
+
+### Smoke Tests (pytest)
+
+![Smoke Tests](../media/screenshots/monitoring/38b-smoke-tests-pytest.png)
+*14/14 smoke tests passing — health checks, predictions, and metrics for all services*
+
+```bash
+# Run smoke tests against live cluster
+pytest tests/integration/test_smoke_k8s.py -v
+```
+
+### Load Tests
+
+![Load Test Results](../media/screenshots/monitoring/38c-load-test-results.png)
+*Load test results: 900 requests, 0% error rate, ~50ms average latency*
+
+```bash
+# Run load tests (Locust-based)
+python scripts/load_test_services.py
+```
+
+---
+
 ## Log Monitoring
 
 ### Log Format
@@ -332,7 +379,7 @@ All services use structured JSON logging:
 
 ```json
 {
-  "timestamp": "2025-11-25T12:00:00Z",
+  "timestamp": "2026-02-26T20:00:00Z",
   "level": "INFO",
   "service": "bankchurn-api",
   "message": "Prediction request processed",
@@ -449,6 +496,20 @@ done
 2. Check resource limits: OOM kills
 3. Check dependencies: MLflow, databases
 4. Review restart count: Crash loops
+
+---
+
+## HPA Autoscaling
+
+All ML services use CPU-only Horizontal Pod Autoscaling. Memory-based scaling was removed because ML models have fixed memory footprints (model loaded in RAM).
+
+| Service | CPU Target | Min Pods | Max Pods | Memory Footprint |
+|---------|-----------|----------|----------|------------------|
+| **BankChurn** | 70% | 1 | 3 | ~300Mi (fixed) |
+| **CarVision** | 70% | 1 | 3 | ~550Mi (fixed) |
+| **TelecomAI** | 75% | 1 | 3 | ~140Mi (fixed) |
+
+> **Design Decision**: ML inference services load models into RAM at startup. Memory usage is constant regardless of traffic, so memory-based HPA would never scale down. CPU scales proportionally with request volume, making it the correct scaling signal.
 
 ---
 
