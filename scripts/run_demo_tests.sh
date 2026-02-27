@@ -122,7 +122,7 @@ RESPONSE=$(curl -s -X POST "$CARVISION_URL/predict" \
        "paint_color": "white"
      }')
 
-if echo "$RESPONSE" | grep -q "prediction"; then
+if echo "$RESPONSE" | grep -q "predicted_price"; then
     echo -e "${GREEN}SUCCESS${NC}"
 else
     echo -e "${RED}FAILED${NC}"
