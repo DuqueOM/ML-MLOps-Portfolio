@@ -63,8 +63,6 @@ logger = logging.getLogger(__name__)
 predictor: Optional[ChurnPredictor] = None
 model_explainer: Optional[ModelExplainer] = None
 model_metadata: Dict[str, Any] = {}
-request_count: int = 0
-total_prediction_time: float = 0.0
 start_time = time.time()
 
 
@@ -333,10 +331,9 @@ async def get_metrics():
     if PROMETHEUS_AVAILABLE:
         return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
     # Fallback to JSON metrics if prometheus_client not installed
-    avg_time = (total_prediction_time / request_count * 1000) if request_count > 0 else 0
     return ModelMetrics(
-        total_predictions=request_count,
-        average_prediction_time_ms=avg_time,
+        total_predictions=0,
+        average_prediction_time_ms=0.0,
         model_accuracy=model_metadata.get("test_accuracy"),
         model_f1_score=model_metadata.get("test_f1_score"),
         model_auc_roc=model_metadata.get("test_auc_roc"),
@@ -345,8 +342,6 @@ async def get_metrics():
 
 @app.post("/predict", response_model=PredictionResponse)
 async def predict_churn(customer: CustomerData):
-    global request_count, total_prediction_time
-
     if predictor is None:
         if PROMETHEUS_AVAILABLE:
             REQUEST_COUNT.labels(method="POST", endpoint="/predict", status="503").inc()
@@ -365,8 +360,6 @@ async def predict_churn(customer: CustomerData):
         risk_level = determine_risk_level(prob)
 
         pred_time = time.time() - start_pred
-        request_count += 1
-        total_prediction_time += pred_time
 
         # Track Prometheus metrics
         if PROMETHEUS_AVAILABLE:
@@ -419,10 +412,6 @@ async def predict_batch(batch_data: BatchCustomerData, background_tasks: Backgro
         ]
 
         processing_time = time.time() - start_batch
-
-        global request_count, total_prediction_time
-        request_count += len(batch_data.customers)
-        total_prediction_time += processing_time
 
         return BatchPredictionResponse(
             predictions=predictions,

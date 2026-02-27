@@ -187,56 +187,38 @@ curl -X POST "http://localhost:8002/predict" \
 ```json
 {
   "predicted_price": 35420.50,
-  "currency": "USD",
-  "confidence": {
-    "lower_bound": 32500.00,
-    "upper_bound": 38340.00
-  },
-  "model_version": "1.0.0"
+  "prediction_timestamp": "2026-02-27T16:00:00Z"
 }
 ```
 
-#### Error Responses
+### POST /predict_batch
 
-**422 Validation Error**
-
-```json
-{
-  "detail": [
-    {
-      "loc": ["body", "model_year"],
-      "msg": "ensure this value is greater than 1900",
-      "type": "value_error.number.not_gt"
-    }
-  ]
-}
-```
-
-### GET /analyze/market
-
-Get market analysis summary.
+Predict prices for multiple vehicles (max 500).
 
 #### Example Request
 
 ```bash
-curl -X GET "http://localhost:8002/analyze/market"
+curl -X POST "http://localhost:8002/predict_batch" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "vehicles": [
+      {"model_year": 2020, "model": "ford f-150", "condition": "excellent", "odometer": 25000},
+      {"model_year": 2018, "model": "toyota camry", "condition": "good", "odometer": 45000}
+    ]
+  }'
 ```
 
 #### Success Response
 
 ```json
 {
-  "total_vehicles": 51525,
-  "average_price": 18543.21,
-  "price_range": {
-    "min": 1000,
-    "max": 450000
-  },
-  "top_brands": [
-    {"brand": "ford", "count": 8234},
-    {"brand": "chevrolet", "count": 7123},
-    {"brand": "toyota", "count": 5432}
-  ]
+  "predictions": [
+    {"predicted_price": 35420.50, "prediction_timestamp": "2026-02-27T16:00:00Z"},
+    {"predicted_price": 22150.00, "prediction_timestamp": "2026-02-27T16:00:00Z"}
+  ],
+  "batch_id": "batch_1740700800",
+  "total_vehicles": 2,
+  "processing_time_seconds": 0.045
 }
 ```
 
@@ -254,11 +236,10 @@ Predict plan upgrade recommendation.
 
 | Field | Type | Required | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| `calls` | integer | Yes | Number of calls made | ≥0 |
+| `calls` | float | Yes | Number of calls made | ≥0 |
 | `minutes` | float | Yes | Total call minutes | ≥0 |
-| `messages` | integer | Yes | Number of SMS sent | ≥0 |
+| `messages` | float | Yes | Number of SMS sent | ≥0 |
 | `mb_used` | float | Yes | Data usage in MB | ≥0 |
-| `is_ultimate` | integer | Yes | Current plan type | 0=Smart, 1=Ultimate |
 
 #### Example Request
 
@@ -269,8 +250,7 @@ curl -X POST "http://localhost:8003/predict" \
     "calls": 50,
     "minutes": 500.0,
     "messages": 100,
-    "mb_used": 20000.0,
-    "is_ultimate": 0
+    "mb_used": 20000.0
   }'
 ```
 
@@ -279,27 +259,55 @@ curl -X POST "http://localhost:8003/predict" \
 ```json
 {
   "prediction": 1,
-  "probability": 0.78,
-  "recommendation": "upgrade_recommended",
-  "confidence": "high"
+  "plan": "Ultra",
+  "probability_is_ultra": 0.78,
+  "feature_importance": {
+    "calls": 0.15,
+    "minutes": 0.35,
+    "messages": 0.12,
+    "mb_used": 0.38
+  },
+  "prediction_timestamp": "2026-02-27T16:00:00Z"
 }
 ```
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `prediction` | integer | 0 = Keep current, 1 = Upgrade |
-| `probability` | float | Upgrade probability (0-1) |
-| `recommendation` | string | Human-readable recommendation |
-| `confidence` | string | low, medium, high |
+| `prediction` | integer | 0 = Standard, 1 = Ultra |
+| `plan` | string | Human-readable plan name |
+| `probability_is_ultra` | float | Ultra plan probability (0-1) |
+| `feature_importance` | object | Feature importance scores from the model |
 
-#### Interpretation Guide
+### POST /predict_batch
 
-| Probability Range | Confidence | Recommendation |
-|-------------------|------------|----------------|
-| 0.0 - 0.3 | High | Keep current plan |
-| 0.3 - 0.5 | Low | Consider reviewing usage |
-| 0.5 - 0.7 | Medium | Upgrade may be beneficial |
-| 0.7 - 1.0 | High | Upgrade recommended |
+Predict plan for multiple customers (max 500).
+
+#### Example Request
+
+```bash
+curl -X POST "http://localhost:8003/predict_batch" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customers": [
+      {"calls": 50, "minutes": 500.0, "messages": 100, "mb_used": 20000.0},
+      {"calls": 10, "minutes": 100.0, "messages": 20, "mb_used": 5000.0}
+    ]
+  }'
+```
+
+#### Success Response
+
+```json
+{
+  "predictions": [
+    {"prediction": 1, "plan": "Ultra", "probability_is_ultra": 0.78, "feature_importance": {}, "prediction_timestamp": "2026-02-27T16:00:00Z"},
+    {"prediction": 0, "plan": "Standard", "probability_is_ultra": 0.22, "feature_importance": {}, "prediction_timestamp": "2026-02-27T16:00:00Z"}
+  ],
+  "batch_id": "batch_1740700800",
+  "total_customers": 2,
+  "processing_time_seconds": 0.012
+}
+```
 
 ---
 
