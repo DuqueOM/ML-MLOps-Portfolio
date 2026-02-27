@@ -86,7 +86,7 @@ nav:
     - CLI Tools: api/cli.md
   - Operations:
     - Deployment Guide: operations/deployment.md
-    - Operations Runbook: OPERATIONS_PORTFOLIO.md
+    - Deployment Evidence: DEPLOYMENT_EVIDENCE.md
     - Monitoring: operations/monitoring.md
     - Troubleshooting: operations/troubleshooting.md
   - Models:
@@ -95,9 +95,7 @@ nav:
   - Reference:
     - Features & Changelog: FEATURES.md
     - Release Process: RELEASE.md
-    - Dependency Conflicts: DEPENDENCY_CONFLICTS.md
     - Security Policy: SECURITY.md
-    - Media Assets: media/README.md
   - Contributing:
     - Guidelines: contributing/guidelines.md
 
