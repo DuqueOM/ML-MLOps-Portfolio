@@ -60,6 +60,11 @@ output "mlflow_artifacts_bucket" {
   value       = aws_s3_bucket.mlflow_artifacts.id
 }
 
+output "ml_datasets_bucket" {
+  description = "S3 bucket for versioned ML datasets"
+  value       = aws_s3_bucket.ml_datasets.id
+}
+
 output "ecr_repositories" {
   description = "ECR repository URLs for each ML service"
   value = {
@@ -76,7 +81,7 @@ output "cloudwatch_log_group" {
 output "cost_optimization_notes" {
   description = "Summary of cost optimization decisions"
   value = {
-    eks_node_type     = "t3.large (2 vCPU, 8 GiB — cheapest for ML workloads)"
+    eks_node_type     = "t3.medium (2 vCPU burstable, 4 GiB — matches GCP e2-medium; upgrade to t3.large for sustained inference)"
     rds_instance      = "db.t3.micro (burstable, 1 vCPU, 1 GiB — sufficient for MLflow)"
     nat_gateway       = "single (non-production saves ~$32/month vs multi-AZ)"
     s3_lifecycle      = "Glacier after 90 days, expire after 365 days"

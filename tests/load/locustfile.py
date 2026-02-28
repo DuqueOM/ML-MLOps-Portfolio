@@ -21,6 +21,14 @@ Option B — Kubernetes port-forward (GKE / EKS):
     kubectl port-forward svc/telecom-service   8002:80 -n ml-portfolio &
     # Ports: BankChurn=8000, CarVision=8001, TelecomAI=8002
 
+Option C — Ingress IP (production-grade, recommended for real metrics):
+    # GCP: Uses GCE Ingress with public IP
+    export INGRESS_HOST=http://34.120.120.57
+    # AWS: Uses ALB DNS
+    export INGRESS_HOST=http://<alb-dns-name>
+    # Routes: /bankchurn/*, /carvision/*, /telecom/*
+    # No port-forward overhead (~70ms saved per request)
+
 ─────────────────────────────────────────────────────────────────────
 USAGE
 ─────────────────────────────────────────────────────────────────────
@@ -38,6 +46,12 @@ locust -f tests/load/locustfile.py \
        --only-summary --csv=reports/load_test \
        --html=reports/load_test.html
 
+# Production — via Ingress (eliminates port-forward overhead)
+INGRESS_HOST=http://34.120.120.57 locust -f tests/load/locustfile.py \
+       --headless -u 30 -r 5 -t 120s \
+       --only-summary --csv=reports/load_test_ingress \
+       --html=reports/load_test_ingress.html
+
 # CI mode — strict SLA enforcement (exits non-zero if thresholds breached)
 locust -f tests/load/locustfile.py \
        --headless -u 10 -r 2 -t 30s \
@@ -52,9 +66,18 @@ SLA THRESHOLDS (production targets)
   P99 latency  < 1000ms
 """
 
+import os
 import random
 
 from locust import HttpUser, between, task
+
+# ---------------------------------------------------------------------------
+# Ingress-aware host resolution
+# Set INGRESS_HOST to test via real Ingress/LoadBalancer (production-grade).
+# When set, all User classes target the same Ingress IP with path prefixes.
+# When unset, falls back to per-service localhost ports (port-forward mode).
+# ---------------------------------------------------------------------------
+_INGRESS_HOST = os.environ.get("INGRESS_HOST", "").rstrip("/")
 
 # ---------------------------------------------------------------------------
 # Payload generators — randomized to avoid cache effects and exercise
@@ -118,13 +141,14 @@ class BankChurnUser(HttpUser):
       - metrics (1x):  Prometheus scrape simulation
     """
 
-    host = "http://localhost:8000"
+    host = _INGRESS_HOST or "http://localhost:8000"
     wait_time = between(0.5, 2.0)
     weight = 3  # Relative weight across all User classes
+    _prefix = "/bankchurn" if _INGRESS_HOST else ""
 
     def on_start(self) -> None:
         """Validate service is ready before generating load."""
-        with self.client.get("/health", name="bankchurn:health", catch_response=True) as r:
+        with self.client.get(f"{self._prefix}/health", name="bankchurn:health", catch_response=True) as r:
             if r.status_code != 200:
                 r.failure(f"Health check failed: {r.status_code}")
 
@@ -132,7 +156,7 @@ class BankChurnUser(HttpUser):
     def predict(self) -> None:
         """Single-record churn prediction — primary load driver."""
         with self.client.post(
-            "/predict",
+            f"{self._prefix}/predict",
             json=_bankchurn_payload(),
             name="bankchurn:predict",
             catch_response=True,
@@ -151,12 +175,12 @@ class BankChurnUser(HttpUser):
     @task(1)
     def health(self) -> None:
         """Liveness probe — mimics Kubernetes health check cadence."""
-        self.client.get("/health", name="bankchurn:health")
+        self.client.get(f"{self._prefix}/health", name="bankchurn:health")
 
     @task(1)
     def metrics(self) -> None:
         """Prometheus metrics scrape simulation."""
-        self.client.get("/metrics", name="bankchurn:metrics")
+        self.client.get(f"{self._prefix}/metrics", name="bankchurn:metrics")
 
 
 # ---------------------------------------------------------------------------
@@ -173,12 +197,13 @@ class CarVisionUser(HttpUser):
       - health  (1x):  liveness probe
     """
 
-    host = "http://localhost:8001"
+    host = _INGRESS_HOST or "http://localhost:8001"
     wait_time = between(0.3, 1.5)
     weight = 2
+    _prefix = "/carvision" if _INGRESS_HOST else ""
 
     def on_start(self) -> None:
-        with self.client.get("/health", name="carvision:health", catch_response=True) as r:
+        with self.client.get(f"{self._prefix}/health", name="carvision:health", catch_response=True) as r:
             if r.status_code != 200:
                 r.failure(f"Health check failed: {r.status_code}")
 
@@ -186,7 +211,7 @@ class CarVisionUser(HttpUser):
     def predict(self) -> None:
         """Vehicle price prediction — randomized models and conditions."""
         with self.client.post(
-            "/predict",
+            f"{self._prefix}/predict",
             json=_carvision_payload(),
             name="carvision:predict",
             catch_response=True,
@@ -207,7 +232,7 @@ class CarVisionUser(HttpUser):
         """Batch vehicle price prediction — 5 vehicles per request."""
         payload = {"vehicles": [_carvision_payload() for _ in range(5)]}
         with self.client.post(
-            "/predict_batch",
+            f"{self._prefix}/predict_batch",
             json=payload,
             name="carvision:predict_batch",
             catch_response=True,
@@ -223,11 +248,11 @@ class CarVisionUser(HttpUser):
 
     @task(1)
     def health(self) -> None:
-        self.client.get("/health", name="carvision:health")
+        self.client.get(f"{self._prefix}/health", name="carvision:health")
 
     @task(1)
     def metrics(self) -> None:
-        self.client.get("/metrics", name="carvision:metrics")
+        self.client.get(f"{self._prefix}/metrics", name="carvision:metrics")
 
 
 # ---------------------------------------------------------------------------
@@ -244,12 +269,13 @@ class TelecomUser(HttpUser):
       - health  (1x):  liveness probe
     """
 
-    host = "http://localhost:8002"
+    host = _INGRESS_HOST or "http://localhost:8002"
     wait_time = between(0.3, 1.5)
     weight = 2
+    _prefix = "/telecom" if _INGRESS_HOST else ""
 
     def on_start(self) -> None:
-        with self.client.get("/health", name="telecom:health", catch_response=True) as r:
+        with self.client.get(f"{self._prefix}/health", name="telecom:health", catch_response=True) as r:
             if r.status_code != 200:
                 r.failure(f"Health check failed: {r.status_code}")
 
@@ -257,7 +283,7 @@ class TelecomUser(HttpUser):
     def predict(self) -> None:
         """Plan recommendation — randomized usage patterns."""
         with self.client.post(
-            "/predict",
+            f"{self._prefix}/predict",
             json=_telecom_payload(),
             name="telecom:predict",
             catch_response=True,
@@ -278,7 +304,7 @@ class TelecomUser(HttpUser):
         """Batch plan recommendation — 5 customers per request."""
         payload = {"customers": [_telecom_payload() for _ in range(5)]}
         with self.client.post(
-            "/predict_batch",
+            f"{self._prefix}/predict_batch",
             json=payload,
             name="telecom:predict_batch",
             catch_response=True,
@@ -294,8 +320,8 @@ class TelecomUser(HttpUser):
 
     @task(1)
     def health(self) -> None:
-        self.client.get("/health", name="telecom:health")
+        self.client.get(f"{self._prefix}/health", name="telecom:health")
 
     @task(1)
     def metrics(self) -> None:
-        self.client.get("/metrics", name="telecom:metrics")
+        self.client.get(f"{self._prefix}/metrics", name="telecom:metrics")

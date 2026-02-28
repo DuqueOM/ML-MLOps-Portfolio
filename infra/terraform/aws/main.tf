@@ -47,12 +47,12 @@ module "eks" {
     ml_services = {
       name = "ml-services-node-group"
 
-      instance_types = ["t3.large"]
+      instance_types = [var.node_instance_type]
       capacity_type  = "ON_DEMAND"
 
-      min_size     = 2
-      max_size     = 10
-      desired_size = 3
+      min_size     = 1
+      max_size     = 5
+      desired_size = 1
 
       labels = {
         role = "ml-services"
@@ -120,6 +120,35 @@ resource "aws_s3_bucket_versioning" "ml_models" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "ml_models" {
   bucket = aws_s3_bucket.ml_models.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+# S3 Bucket for Datasets (equivalent to GCP datasets-production bucket)
+resource "aws_s3_bucket" "ml_datasets" {
+  bucket = "${var.project_name}-datasets-${var.environment}"
+
+  tags = {
+    Name        = "${var.project_name}-datasets"
+    Purpose     = "Versioned ML Datasets"
+    Environment = var.environment
+  }
+}
+
+resource "aws_s3_bucket_versioning" "ml_datasets" {
+  bucket = aws_s3_bucket.ml_datasets.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "ml_datasets" {
+  bucket = aws_s3_bucket.ml_datasets.id
 
   rule {
     apply_server_side_encryption_by_default {

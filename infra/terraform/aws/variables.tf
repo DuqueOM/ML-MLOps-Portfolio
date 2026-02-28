@@ -39,6 +39,12 @@ variable "public_subnet_cidrs" {
   default     = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 }
 
+variable "node_instance_type" {
+  description = "EC2 instance type for EKS nodes. t3.medium (2 vCPU burstable, 4GB) matches GCP e2-medium. For sustained ML inference, t3.large (2 vCPU, 8GB) eliminates memory pressure with 7+ containers."
+  type        = string
+  default     = "t3.medium"
+}
+
 variable "db_instance_class" {
   description = "RDS instance class for MLflow database"
   type        = string
