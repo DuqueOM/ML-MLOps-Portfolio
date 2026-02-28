@@ -9,7 +9,7 @@
 | Project | Model ID | Algorithm | Version | Status | Primary Metric | Coverage | Last Updated |
 |---------|----------|-----------|---------|--------|----------------|----------|--------|
 | **BankChurn** | `bankchurn-voting-v1.5.0` | VotingClassifier (LR + RF) | 1.5.0 | ✅ Production | AUC-ROC: 0.87 | 88% | February 2026 |
-| **CarVision** | `carvision-rf-v1.5.0` | RandomForestRegressor | 1.5.0 | ✅ Production | R²: 0.77 | 95% | February 2026 |
+| **CarVision** | `carvision-xgb-v1.5.0` | XGBRegressor (auto-selected) | 1.5.0 | ✅ Production | R²: 0.77 | 95% | February 2026 |
 | **TelecomAI** | `telecomai-voting-v1.5.0` | VotingClassifier (3 models) | 1.5.0 | ✅ Production | AUC-ROC: 0.84 | 95% | February 2026 |
 
 ---
@@ -83,10 +83,10 @@ Full documentation: [BankChurn Model Card](https://github.com/DuqueOM/ML-MLOps-P
 
 | Attribute | Value |
 |-----------|-------|
-| **Model ID** | `carvision-rf-v1.5.0` |
+| **Model ID** | `carvision-xgb-v1.5.0` |
 | **Model Name** | CarVision Vehicle Price Predictor |
 | **Version** | 1.5.0 |
-| **Algorithm** | RandomForestRegressor |
+| **Algorithm** | XGBRegressor (auto-selected over RandomForest) |
 | **Framework** | Scikit-learn 1.8+ |
 | **Status** | ✅ **Production** |
 | **Artifact Path** | `models/model.joblib` (full pipeline) |
@@ -109,7 +109,7 @@ Full documentation: [BankChurn Model Card](https://github.com/DuqueOM/ML-MLOps-P
 
 ```python
 Pipeline:
-  [FeatureEngineer] → [Preprocessor] → [RandomForestRegressor]
+  [FeatureEngineer] → [Preprocessor] → [XGBRegressor]
 
 FeatureEngineer (custom class):
   ├─ vehicle_age = 2026 - model_year
@@ -121,8 +121,8 @@ Preprocessor:
   ├─ StandardScaler (numerical features)
   └─ OneHotEncoder (categorical: fuel, transmission, condition, etc.)
 
-RandomForestRegressor:
-  n_estimators=100, max_depth=15, min_samples_split=5,
+XGBRegressor (auto-selected over RandomForest, R² 0.77 vs 0.68):
+  n_estimators=100, max_depth=6, learning_rate=0.1,
   random_state=42
 ```
 
@@ -208,7 +208,7 @@ Full documentation: [TelecomAI Model Card](https://github.com/DuqueOM/ML-MLOps-P
 | Project | v1.0.0 | v1.5.0 (Current) | Changes |
 |---------|--------|------------------|---------|
 | **BankChurn** | Sep 2025 (AUC=0.78) | **February 2026** (AUC=0.87) | Ensemble weights tuning, SHAP integration |
-| **CarVision** | Sep 2025 (R²=0.72) | **February 2026** (R²=0.77) | FeatureEngineer centralization, bootstrap CI |
+| **CarVision** | Sep 2025 (R²=0.72) | **February 2026** (R²=0.77) | Auto-selected XGBRegressor, FeatureEngineer centralization, bootstrap CI |
 | **TelecomAI** | Sep 2025 (Acc=0.78) | **February 2026** (Acc=82%) | Added GradientBoosting, threshold optimization |
 
 ### Promotion Criteria (Staging → Production)

@@ -32,19 +32,19 @@ This is a **production-grade MLOps platform** showcasing enterprise best practic
 
     ---
 
-    Multi-cloud: GCP (GKE, AR, GCS) + AWS (EKS, ECR, S3), Terraform IaC, Docker multi-stage builds
+    Multi-cloud deployed: GCP (GKE, Artifact Registry, GCS) + AWS (EKS, ECR, S3), Terraform IaC for both
 
 -   🔄 **Full CI/CD Pipeline**
 
     ---
 
-    GitHub Actions with matrix testing, security scanning, automated GKE + EKS deployment
+    GitHub Actions with matrix testing, security scanning, automated deployment to GKE and EKS
 
 -   📊 **MLOps Best Practices**
 
     ---
 
-    MLflow tracking (on GKE), DVC versioning, Prometheus + Grafana observability
+    MLflow tracking (on K8s), DVC versioning, Prometheus + Grafana observability on both clouds
 
 -   🧪 **High Test Coverage**
 
@@ -149,8 +149,8 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
   - Quality gates (Black, Flake8, Mypy, Bandit)
   - Security scans (Trivy, Gitleaks, pip-audit)
   - E2E tests with full stack validation
-- ✅ **Containerization**: Multi-stage Docker builds, GCP Artifact Registry
-- ✅ **Orchestration**: GKE cluster (6 pods running), Terraform IaC (10+ resources)
+- ✅ **Containerization**: Multi-stage Docker builds, Artifact Registry (GCP) + ECR (AWS)
+- ✅ **Orchestration**: GKE + EKS clusters (6 pods each), Terraform IaC (10+ resources per cloud)
 
 ### Software Engineering
 
@@ -218,9 +218,9 @@ docker compose -f docker-compose.demo.yml ps
 | **APIs** | FastAPI with automatic OpenAPI docs |
 | **Dashboard** | Streamlit (CarVision) |
 | **Containerization** | Docker (multi-stage builds) |
-| **Orchestration** | Docker Compose (local), GKE (production) |
-| **CI/CD** | GitHub Actions (CI + GCP deploy pipeline) |
-| **IaC** | Terraform (GCP: GKE, Cloud SQL, GCS, VPC, Artifact Registry) |
+| **Orchestration** | Docker Compose (local), GKE + EKS (production) |
+| **CI/CD** | GitHub Actions (CI + multi-cloud deploy pipeline) |
+| **IaC** | Terraform (GCP: GKE, Cloud SQL, GCS; AWS: EKS, RDS, S3) |
 
 ### Security & Quality
 
@@ -253,17 +253,20 @@ docker compose -f docker-compose.demo.yml ps
 | **Memory Usage** | 1.2 GB | 1.8 GB | 1.0 GB | <2GB ✅ |
 | **Model Size** | 4 MB | 6 KB | 156 KB | — |
 
-### Production Infrastructure (GCP — Live)
+### Production Infrastructure (Multi-Cloud — Live)
 
-| Metric | Value | Details |
-|--------|-------|---------|
-| **Running Pods** | 6 | 3 ML APIs + MLflow + Prometheus + Grafana |
-| **GKE Nodes** | 3 | e2-medium instances, us-central1 |
-| **Monthly Cost** | ~$51 USD | Compute 40%, GKE 26%, Networking 12%, Scanning 18% |
-| **Docker Images** | 3 × ~888 MB | Versioned (`v1.0.0` + `latest`), cleanup policy active |
-| **GCS Buckets** | 2 | Models + Datasets (versioned, lifecycle policies, IAM) |
-| **Uptime** | 99.9%+ | Zero unplanned downtime since deployment |
-| **Pod Restarts** | 0 | Stable across all 6 services |
+| Metric | GCP (GKE) | AWS (EKS) |
+|--------|-----------|----------|
+| **Running Pods** | 6 (3 APIs + MLflow + Prometheus + Grafana) | 6 (same topology) |
+| **Nodes** | 3 × e2-medium (us-central1) | 2 × t3.large (us-east-1) |
+| **Monthly Cost** | ~$51 USD | ~$170 USD |
+| **Container Registry** | Artifact Registry (3 images) | ECR (3 images) |
+| **Object Storage** | GCS (2 buckets: models + datasets) | S3 (2 buckets) |
+| **Database** | Cloud SQL (PostgreSQL) | RDS (PostgreSQL) |
+| **Ingress** | GCE LB (`34.120.120.57`) | ALB (DNS) |
+| **IaC** | Terraform GCP (10+ resources) | Terraform AWS (10+ resources) |
+| **Uptime** | 99.9%+ | 99.9%+ |
+| **Pod Restarts** | 0 | 0 |
 
 > Cost breakdown and optimization decisions: see [Architecture Portfolio](ARCHITECTURE_PORTFOLIO.md#-production-infrastructure--cost-analysis)
 
@@ -325,8 +328,8 @@ ML-MLOps-Portfolio/
 │   └── namespace.yaml             # ml-portfolio namespace
 │
 ├── infra/
-│   ├── terraform/aws/             # AWS infrastructure (EKS, RDS, S3)
-│   ├── terraform/gcp/             # GCP infrastructure (GKE, Cloud SQL, GCS)
+│   ├── terraform/aws/             # AWS infrastructure (EKS, RDS, S3) ✅ Live
+│   ├── terraform/gcp/             # GCP infrastructure (GKE, Cloud SQL, GCS) ✅ Live
 │   └── grafana/                   # Grafana dashboards & provisioning
 │
 ├── docs/                          # 📚 GitHub Pages documentation site

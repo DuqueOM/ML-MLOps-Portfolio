@@ -202,15 +202,15 @@ terraform output
 ![Terraform Outputs](../media/screenshots/terminal/22-terraform-outputs.png)
 *Terraform outputs: cluster endpoint, registry URL, bucket names*
 
-### CI/CD: GitHub Actions → GKE
+### CI/CD: GitHub Actions → GKE + EKS
 
-The deployment pipeline (`.github/workflows/deploy-gcp.yml`) automates:
+The deployment pipeline automates deployment to both clouds:
 
 1. **Detect changes** — only build modified projects
 2. **Build Docker images** — multi-stage builds
-3. **Push to Artifact Registry** — versioned with git SHA
-4. **Deploy to GKE** — `kubectl apply` with rolling updates
-5. **Smoke tests** — verify health endpoints
+3. **Push to Artifact Registry (GCP) / ECR (AWS)** — versioned with git SHA
+4. **Deploy to GKE / EKS** — `kubectl apply` with rolling updates
+5. **Smoke tests** — verify health endpoints on both clusters
 
 ![Cloud Build History](../media/screenshots/gcp-console/13-cloud-build-history.png)
 *Cloud Build: automated Docker image builds for all 3 services*
@@ -228,8 +228,8 @@ infra/
 │   │   ├── outputs.tf        # Exported values
 │   │   ├── terraform.tfvars  # Environment-specific values
 │   │   └── terraform.tfvars.example  # Template for new users
-│   ├── aws/                  # AWS configuration (reference)
-│   │   ├── main.tf
+│   ├── aws/                  # AWS configuration (LIVE ✅)
+│   │   ├── main.tf           # EKS, S3, ECR, RDS, VPC
 │   │   ├── variables.tf
 │   │   └── outputs.tf
 │   └── README.md
@@ -243,7 +243,7 @@ infra/
 
 ## Terraform Configuration
 
-### AWS Provider Setup (Reference)
+### AWS Provider Setup (Live ✅)
 
 ```hcl
 # infra/terraform/aws/main.tf
@@ -699,14 +699,14 @@ kubectl logs -f deployment/bankchurn-api -n ml-portfolio
 
 ---
 
-## Security Considerations
+## Security Measures (Implemented)
 
-- [ ] Enable encryption at rest (S3, RDS)
-- [ ] Use IAM roles for service accounts
-- [ ] Implement network policies in Kubernetes
-- [ ] Enable audit logging
-- [ ] Use secrets management (AWS Secrets Manager)
-- [ ] Implement least-privilege access
+- [x] Encryption at rest (GCS, Cloud SQL, S3, RDS)
+- [x] IAM roles for service accounts (Workload Identity on GCP, IRSA on AWS)
+- [x] Non-root containers (UID 1000 for all ML services)
+- [x] Private database networking (VPC peering on GCP, private subnets on AWS)
+- [x] Multi-layer CI/CD scanning (Trivy, Bandit, Gitleaks, pip-audit)
+- [x] Least-privilege access (storage.objectViewer for GKE pods)
 
 ---
 

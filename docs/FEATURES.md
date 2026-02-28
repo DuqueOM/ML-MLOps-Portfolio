@@ -198,11 +198,13 @@ python scripts/mlflow_registry_automation.py latest \
 
 | Feature | Impact | Status |
 |---------|--------|--------|
-| **v6.3 Inference Optimizations** | 0% errors, p95 180ms, lazy SHAP | ✅ Deployed on GKE |
+| **v6.3 Inference Optimizations** | 0% errors, p95 180ms, lazy SHAP | ✅ Deployed on GKE + EKS |
+| **Multi-Cloud Deployment** | GCP (GKE) + AWS (EKS) parity | ✅ Live |
+| **Load Testing (Locust)** | Port-forward + Ingress IP modes | ✅ Implemented |
 | **Performance Optimizations** | 60-84% improvements | ✅ Validated |
 | **Redis Caching** | Reduced latency | ✅ Ready |
 | **MLflow Automation** | Streamlined deployment | ✅ Ready |
-| **Grafana Dashboards** | Better observability | ✅ Ready |
+| **Grafana Dashboards** | Better observability | ✅ Deployed |
 | **Benchmarking** | Measurable improvements | ✅ Ready |
 
 ---
@@ -211,27 +213,34 @@ python scripts/mlflow_registry_automation.py latest \
 
 ### Planned (Next Quarter)
 
-1. **Cloud Deployment Evidence**
-   - GCP deployment with Terraform apply recordings
-   - Grafana dashboards with live cloud metrics
-   - Cost analysis and FinOps documentation
-
-2. **Feature Store Integration**
+1. **Feature Store Integration**
    - Centralized feature serving (e.g., Feast)
    - Consistent versioned features across all 3 projects
 
-3. **Drift-Based Auto-Retraining**
+2. **Drift-Based Auto-Retraining**
    - Automated retraining triggered by Evidently PSI/KS thresholds
    - Controlled opt-in workflow via GitHub Actions
+
+3. **Canary Deployments**
+   - Progressive rollout with traffic splitting
+   - Automated rollback on metric degradation
+
+### Recently Completed
+
+- ✅ **Cloud Deployment Evidence** — 168+ screenshots + GIFs documenting full GCP and AWS deployment
+- ✅ **Load Testing with Locust** — Production-grade load testing via `tests/load/locustfile.py` supporting both port-forward and real Ingress IP modes
+- ✅ **Multi-Cloud Parity** — Full AWS (EKS, ECR, S3, RDS) deployment mirroring GCP stack
 
 ---
 
 ## 📚 Documentation
 
-- Performance Optimizations: See main README
-- Benchmarking Guide: `scripts/benchmark_optimizations.py`
-- MLflow Automation: `scripts/mlflow_registry_automation.py`
-- Grafana Setup: `infra/grafana/`
+- **[Deployment Evidence](DEPLOYMENT_EVIDENCE.md)** — Multi-cloud screenshots and verification
+- **[Architecture Portfolio](ARCHITECTURE_PORTFOLIO.md)** — System design and cost analysis
+- **Benchmarking Guide**: `scripts/benchmark_optimizations.py`
+- **MLflow Automation**: `scripts/mlflow_registry_automation.py`
+- **Grafana Setup**: `infra/grafana/`
+- **Load Testing**: `tests/load/locustfile.py`
 
 ---
 

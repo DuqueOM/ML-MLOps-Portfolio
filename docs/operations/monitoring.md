@@ -1,6 +1,6 @@
 # Monitoring Guide
 
-Comprehensive monitoring for ML services in production using Prometheus, Grafana, MLflow, and Evidently.
+Comprehensive monitoring for ML services in production using Prometheus, Grafana, MLflow, and Evidently. Deployed on both **GCP (GKE)** and **AWS (EKS)**.
 
 ![Grafana Dashboard](../media/screenshots/monitoring/34-grafana-dashboard.png)
 *Production Grafana dashboard showing request rates, latency, and resource usage across all ML services*
@@ -362,15 +362,23 @@ The portfolio includes automated testing infrastructure for production validatio
 pytest tests/integration/test_smoke_k8s.py -v
 ```
 
-### Load Tests
+### Load Tests (Locust)
 
 ![Load Test Results](../media/screenshots/monitoring/38c-load-test-results.png)
 *Load test results: 900 requests, 0% error rate, ~50ms average latency*
 
 ```bash
-# Run load tests (Locust-based)
+# Option 1: Port-forward mode (development)
+locust -f tests/load/locustfile.py --host http://localhost:8001
+
+# Option 2: Real Ingress IP mode (production-grade)
+INGRESS_HOST=34.120.120.57 locust -f tests/load/locustfile.py --host http://34.120.120.57
+
+# Option 3: Legacy smoke + load script
 python scripts/load_test_services.py
 ```
+
+> **Locust modes**: The `tests/load/locustfile.py` supports both `kubectl port-forward` (default) and real Ingress/ALB IP via the `INGRESS_HOST` environment variable. Production mode uses path-based routing (`/bankchurn/*`, `/carvision/*`, `/telecom/*`).
 
 ---
 

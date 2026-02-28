@@ -90,7 +90,7 @@
 ### Recommended (Not Yet Applied)
 - **Terraform GCP**: Upgrade `e2-medium` → `e2-standard-2` (2 dedicated vCPU, 8GB) for ~$24/mo more
 - **Terraform GCP**: Consider `min_node_count = 2` for better pod distribution
-- **Load testing**: Use Ingress or LoadBalancer IP instead of port-forward for accurate metrics
+- **Load testing**: Use Ingress IP mode (`INGRESS_HOST=34.120.120.57 locust -f tests/load/locustfile.py`) for production-grade metrics
 - **CarVision**: Consider separating Streamlit into its own Deployment
 
 ## Screenshots & GIFs
@@ -127,6 +127,8 @@ docs/media/
 
 > **Tip**: 5-8 high-quality GIFs are more impactful than 50+ static screenshots.
 > Record with [Kap](https://getkap.co/) or [peek](https://github.com/phw/peek), optimize with `gifsicle`.
+>
+> For the curated list of which evidence to use where, see the internal guide: `.GCP_DEPLOYMENT_EVIDENCE_internal.md` → **Selección Curada**.
 
 ---
 

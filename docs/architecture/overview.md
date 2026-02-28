@@ -203,7 +203,9 @@ graph LR
 - **Voting Classifier**: Combines multiple base models for robust predictions
 - **Domain Features**: Telecom-specific feature engineering
 
-## Deployment Architecture (GCP Production)
+## Deployment Architecture (Multi-Cloud Production)
+
+### GCP (GKE) — Primary
 
 ```mermaid
 graph TB
@@ -259,6 +261,46 @@ graph TB
     SQL --> MLF
 ```
 
+### AWS (EKS) — Multi-Cloud Parity
+
+```mermaid
+graph TB
+    subgraph "AWS Registry"
+        ECR["ECR<br/>(3 images)"]
+    end
+
+    subgraph "AWS Production (EKS)"
+        EKS["EKS Cluster<br/>(us-east-1)"]
+        BC2["BankChurn Pod"]
+        CV2["CarVision Pod"]
+        TC2["TelecomAI Pod"]
+        MLF2["MLflow Pod"]
+        PROM2["Prometheus Pod"]
+        GRAF2["Grafana Pod"]
+        ALB["ALB Ingress<br/>(DNS)"]
+    end
+
+    subgraph "AWS Storage"
+        S3["S3<br/>(ML Models)"]
+        RDS["RDS PostgreSQL<br/>(MLflow DB)"]
+    end
+
+    ECR -->|pull| EKS
+    EKS --> BC2
+    EKS --> CV2
+    EKS --> TC2
+    EKS --> MLF2
+    EKS --> PROM2
+    EKS --> GRAF2
+    ALB --> BC2
+    ALB --> CV2
+    ALB --> TC2
+    S3 --> BC2
+    S3 --> CV2
+    S3 --> TC2
+    RDS --> MLF2
+```
+
 ## Technology Stack Summary
 
 | Layer | Technologies |
@@ -268,10 +310,10 @@ graph TB
 | **Web Frameworks** | FastAPI, Streamlit |
 | **MLOps** | MLflow, DVC, Evidently |
 | **Containers** | Docker (multi-stage builds) |
-| **Orchestration** | GKE (production), Docker Compose (local) |
-| **Monitoring** | Prometheus, Grafana (on GKE) |
-| **Infrastructure** | Terraform (GCP: GKE, GCS, Artifact Registry, Cloud SQL, VPC) |
-| **CI/CD** | GitHub Actions → Artifact Registry → GKE |
+| **Orchestration** | GKE + EKS (production), Docker Compose (local) |
+| **Monitoring** | Prometheus, Grafana (on both GKE and EKS) |
+| **Infrastructure** | Terraform (GCP: GKE, GCS, AR, Cloud SQL; AWS: EKS, S3, ECR, RDS) |
+| **CI/CD** | GitHub Actions → Artifact Registry / ECR → GKE / EKS |
 
 ---
 

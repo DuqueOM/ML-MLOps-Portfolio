@@ -13,8 +13,8 @@ Thank you for your interest in contributing to this portfolio! This project demo
 ### Recommended Reading
 Before contributing, please review:
 - **[Architecture Documentation](../ARCHITECTURE_PORTFOLIO.md)**: Understand the system design
-- **[Operations Runbook](../OPERATIONS_PORTFOLIO.md)**: Learn deployment and monitoring procedures
-- **[Dependency Management](../DEPENDENCY_CONFLICTS.md)**: Understand dependency strategy
+- **[Deployment Guide](../operations/deployment.md)**: Learn deployment and monitoring procedures
+- **[Deployment Evidence](../DEPLOYMENT_EVIDENCE.md)**: Multi-cloud deployment verification
 
 ### Setup
 1. **Clone the repository**
@@ -77,7 +77,7 @@ make lint
 - **Integration Tests**: Required for API endpoints.
   - Use `tests/integration/test_demo.py` for cross-project validation.
   - Ensure all services pass health checks and prediction tests.
-- **Coverage**: Must remain above 70% (target: 75%+).
+- **Coverage**: Must remain above 80% (actual: 88-95%, [Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)).
 
 **Run integration tests**:
 ```bash

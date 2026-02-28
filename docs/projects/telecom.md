@@ -116,17 +116,17 @@ graph LR
     
     subgraph "Ensemble"
         LR["LogisticRegression"]
+        GB["GradientBoosting"]
         RF["RandomForest"]
-        XGB["XGBoost"]
     end
     
     VC --> LR
+    VC --> GB
     VC --> RF
-    VC --> XGB
     
-    LR --> VOTE["Soft Voting"]
+    LR --> VOTE["Soft Voting<br/>(weights: 1,2,2)"]
+    GB --> VOTE
     RF --> VOTE
-    XGB --> VOTE
     
     VOTE --> PRED["Prediction"]
 ```
@@ -162,6 +162,10 @@ TelecomAI-Customer-Intelligence/
 ├── configs/
 └── Dockerfile
 ```
+
+## Production Deployment (Multi-Cloud)
+
+**Deployed on both GCP (GKE) and AWS (EKS)** with identical configuration.
 
 ## Monitoring
 

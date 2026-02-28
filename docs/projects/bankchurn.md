@@ -129,7 +129,7 @@ curl -X POST "http://localhost:8001/predict" \
 graph LR
     INPUT["Customer Data"] --> VAL["Pydantic Validation"]
     VAL --> PRE["ColumnTransformer<br/>(Imputer + Scaler + OneHot)"]
-    PRE --> ENS["VotingClassifier<br/>(LR + RF + XGB)"]
+    PRE --> ENS["VotingClassifier<br/>(LR + RF)"]
     ENS --> PRED["Churn Probability"]
     PRED --> RISK["Risk Level<br/>(low/medium/high)"]
 ```
@@ -140,10 +140,9 @@ graph LR
    - Numerical: `SimpleImputer(median)` → `StandardScaler`
    - Categorical: `SimpleImputer(constant)` → `OneHotEncoder`
 
-2. **Model (`VotingClassifier`)**
-   - Logistic Regression
-   - Random Forest
-   - XGBoost (optional)
+2. **Model (`VotingClassifier`, soft voting, weights=[1, 2])**
+   - Logistic Regression (C=1.0)
+   - Random Forest (n_estimators=100, max_depth=10, balanced)
 
 3. **Post-processing**
    - Probability → Risk Level mapping
@@ -228,13 +227,15 @@ BankChurn-Predictor/
 └── Dockerfile              # Multi-stage build
 ```
 
-## Production Deployment
+## Production Deployment (Multi-Cloud)
+
+**Deployed on both GCP (GKE) and AWS (EKS)** with identical configuration.
 
 ![BankChurn Workload Detail](../media/screenshots/gcp-console/06-workload-bankchurn-detalle.png)
 *GKE workload detail: BankChurn deployment with rolling updates, resource limits, and health checks*
 
 ![GCS Model BankChurn](../media/screenshots/gcp-console/12-gcs-modelo-bankchurn.png)
-*Production model artifact stored in Google Cloud Storage*
+*Production model artifact stored in Google Cloud Storage (mirrored to S3 for AWS)*
 
 ## Monitoring
 

@@ -309,9 +309,11 @@ jobs:
 | **Tracking** | MLflow |
 | **Monitoring** | Prometheus, Grafana |
 | **Container** | Docker, Docker Compose |
-| **CI/CD** | GitHub Actions |
-| **Security** | Trivy, Bandit, Gitleaks |
-| **Testing** | pytest, pytest-cov |
+| **Orchestration** | GKE (GCP), EKS (AWS), Terraform IaC |
+| **CI/CD** | GitHub Actions (10-job pipeline) |
+| **Security** | Trivy, Bandit, Gitleaks, pip-audit |
+| **Testing** | pytest, pytest-cov (88-95% coverage) |
+| **Load Testing** | Locust (port-forward + Ingress IP modes) |
 
 ---
 
@@ -319,20 +321,20 @@ jobs:
 
 - **Feature Store Layer**  
   Introduce a centralized Feature Store (e.g., Feast) to serve consistent, versioned features
-  across BankChurn, CarVision y TelecomAI. El diseño actual ya usa Pipelines de sklearn
-  y separación clara `data`/`features`, lo que facilita mapear features existentes a una
-  entidad de Feature Store sin romper los proyectos.
+  across BankChurn, CarVision, and TelecomAI. The current design already uses sklearn Pipelines
+  and clear `data`/`features` separation, making it straightforward to map existing features
+  to a Feature Store entity without breaking the projects.
 
 - **Drift-Based Auto-Retraining**  
-  BankChurn ya incluye `monitoring/check_drift.py` y un workflow dedicado
-  `retrain-bankchurn.yml`. Un workflow adicional de "Drift Monitoring" puede consumir
-  el JSON de Evidently, calcular PSI/KS y, si el drift supera un umbral, disparar el
-  retraining de forma controlada (opt-in) sin impactar el CI principal.
+  BankChurn already includes `monitoring/check_drift.py` and a dedicated workflow
+  `retrain-bankchurn.yml`. An additional "Drift Monitoring" workflow can consume
+  the Evidently JSON output, compute PSI/KS, and if drift exceeds a threshold, trigger
+  retraining in a controlled (opt-in) manner without impacting the main CI pipeline.
 
 - **FinOps / Cost Awareness**  
   Extend the production cost analysis below with per-environment budgets (dev/staging/prod),
-  auto-scaling spend limits, and resource tagging policies. The current GCP deployment already
-  demonstrates cost-conscious infrastructure choices (see section below).
+  auto-scaling spend limits, and resource tagging policies. The current multi-cloud deployment
+  already demonstrates cost-conscious infrastructure choices (see section below).
 
 ---
 
@@ -442,6 +444,10 @@ Init containers 1–2 use the same generic download script (`download-script` Co
 
 ![GKE Workloads Running](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/gcp-console/05-gke-workloads-running.png)
 
+### AWS Production Deployment — 6 Services Running on EKS
+
+![EKS Workloads Running](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/aws-console/A05-eks-workloads-running.png)
+
 ### MLflow Experiment Tracking (Running on GKE)
 
 All 9 experiments (3 per project) tracked in the MLflow server deployed on GKE:
@@ -477,7 +483,8 @@ All GCP resources managed by Terraform (`No changes` = perfectly synchronized):
 ## 🔗 Related Documentation
 
 - **[Architectural Decisions](architecture/decisions.md)** — ADRs with deep technical rationale for every infrastructure, ML, and cost decision
-- **[Operations Guide](OPERATIONS_PORTFOLIO.md)** — Deployment, monitoring, troubleshooting
+- **[Deployment Evidence](DEPLOYMENT_EVIDENCE.md)** — Multi-cloud deployment verification (GCP + AWS)
+- **[Operations Guide](operations/deployment.md)** — Deployment, monitoring, troubleshooting
 - **[Model Catalog](models/catalog.md)** — Registry of trained models
 - **[API Reference](api/rest-apis.md)** — Complete REST API documentation
 - **[Quick Start](getting-started/quickstart.md)** — Get running in 5 minutes

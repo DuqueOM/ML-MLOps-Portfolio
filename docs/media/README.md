@@ -1,6 +1,6 @@
-# Media Assets — GCP Production Deployment
+# Media Assets — Multi-Cloud Production Deployment
 
-Visual evidence of the ML-MLOps Portfolio running in production on Google Cloud Platform.
+Visual evidence of the ML-MLOps Portfolio running in production on **Google Cloud Platform (GKE)** and **Amazon Web Services (EKS)**.
 
 ## 📺 Video Demo
 
@@ -163,7 +163,7 @@ media/
 
 **GCP Total**: 86 screenshots across 10 sessions + 5 GIFs + 1 video
 
-### AWS Screenshots (Planned — Sessions 14-24)
+### AWS Screenshots (Live — Sessions 14-24)
 
 | Folder | Count | Description |
 |--------|-------|-------------|
@@ -193,7 +193,7 @@ media/
 | `04-cicd-pipeline.gif` | GitHub Actions pipeline execution | ~12s | Architecture docs |
 | `05-tres-apis-simultaneas.gif` | 3 APIs responding simultaneously | ~20s | Main README |
 
-### AWS GIFs (Planned)
+### AWS GIFs
 
 | GIF | Description | Duration | Used In |
 |-----|-------------|----------|---------|
@@ -203,7 +203,7 @@ media/
 | `aws-04-s3-models.gif` | S3 bucket with model artifacts | ~10s | Architecture docs |
 | `aws-05-deploy-workflow.gif` | deploy-aws.yml running | ~15s | CI/CD docs |
 
-### Multi-Cloud Comparison GIFs (Planned)
+### Multi-Cloud Comparison GIFs
 
 | GIF | Description | Duration | Used In |
 |-----|-------------|----------|---------|
@@ -256,18 +256,18 @@ Source video files are in `videos/` (gitignored — too large for Git).
 | **Ingress** | GCE Load Balancer (IP: 34.120.120.57) | ✅ Active |
 | **Monitoring** | Prometheus scraping 3 APIs, Grafana dashboards | ✅ Active |
 
-### AWS (Ready)
+### AWS (Live)
 
 | Component | Technology | Status |
 |-----------|-----------|--------|
-| **Cluster** | EKS (`ml-portfolio-eks-production`, us-east-1) | 🟡 Ready |
-| **Pods** | 6 services (same as GCP, AWS overlay) | 🟡 Ready |
-| **Registry** | ECR (3 repos with lifecycle policies) | 🟡 Ready |
-| **Storage** | S3 (versioned, encrypted, Glacier lifecycle) | 🟡 Ready |
-| **IaC** | Terraform (25+ resources: VPC, EKS, RDS, S3, ECR) | 🟡 Ready |
-| **CI/CD** | GitHub Actions → ECR → EKS | 🟡 Ready |
-| **Ingress** | ALB (Application Load Balancer) | 🟡 Ready |
-| **Monitoring** | Same Prometheus + Grafana stack (cloud-agnostic) | 🟡 Ready |
+| **Cluster** | EKS (`ml-portfolio-eks-production`, us-east-1) | ✅ Running |
+| **Pods** | 6 services (same as GCP, AWS overlay) | ✅ 6/6 Running |
+| **Registry** | ECR (3 repos with lifecycle policies) | ✅ Ready |
+| **Storage** | S3 (versioned, encrypted, Glacier lifecycle) | ✅ Uploaded |
+| **IaC** | Terraform (25+ resources: VPC, EKS, RDS, S3, ECR) | ✅ Synchronized |
+| **CI/CD** | GitHub Actions → ECR → EKS | ✅ Configured |
+| **Ingress** | ALB (Application Load Balancer) | ✅ Active |
+| **Monitoring** | Same Prometheus + Grafana stack (cloud-agnostic) | ✅ Active |
 
 ---
 

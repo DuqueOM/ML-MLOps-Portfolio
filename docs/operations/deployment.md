@@ -70,9 +70,9 @@ docker compose -f docker-compose.demo.yml down -v
 
 ---
 
-## Production Deployment (GCP GKE) 
+## Production Deployment (Multi-Cloud) 
 
-This portfolio is **deployed on Google Cloud Platform** with a GKE cluster running 6 services.
+This portfolio is **deployed on both Google Cloud Platform (GKE) and Amazon Web Services (EKS)**, each running 6 services.
 
 ![GKE Workloads](../media/screenshots/gcp-console/05-gke-workloads-running.png)
 *6 services running on GKE: 3 ML APIs + MLflow + Prometheus + Grafana*
@@ -354,16 +354,16 @@ docker compose up -d --build bankchurn-api
 
 ## Production Checklist
 
-- [ ] All health checks passing
-- [ ] Resource limits configured (CPU, memory)
-- [ ] Secrets stored securely (not in code)
-- [ ] Logging configured and accessible
-- [ ] Monitoring dashboards set up
-- [ ] Alerting rules defined
-- [ ] Backup strategy in place
-- [ ] Rollback procedure tested
-- [ ] Load testing completed
-- [ ] Security scanning passed
+- [x] All health checks passing (GKE + EKS)
+- [x] Resource limits configured (CPU, memory) — calibrated per service
+- [x] Secrets stored securely (GitHub Secrets, K8s Secrets)
+- [x] Logging configured and accessible
+- [x] Monitoring dashboards set up (Grafana auto-provisioned)
+- [x] Alerting rules defined (ServiceDown alert)
+- [x] Rollback procedure tested (`kubectl rollout undo`)
+- [x] Load testing completed (Locust — 0% errors, p95 <200ms)
+- [x] Security scanning passed (Trivy, Bandit, Gitleaks, pip-audit)
+- [ ] Backup strategy for MLflow data
 
 ---
 

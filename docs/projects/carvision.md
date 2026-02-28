@@ -140,7 +140,7 @@ graph TB
         CSV["Raw Data"] --> CLEAN["clean_data()<br/>(filtering)"]
         CLEAN --> FEAT["FeatureEngineer<br/>(centralized)"]
         FEAT --> PREP["Preprocessor"]
-        PREP --> MODEL["XGBRegressor"]
+        PREP --> MODEL["XGBRegressor<br/>(auto-selected)"]
     end
 
     subgraph "Serving"
@@ -209,6 +209,10 @@ CarVision-Market-Intelligence/
 ├── configs/
 └── Dockerfile
 ```
+
+## Production Deployment (Multi-Cloud)
+
+**Deployed on both GCP (GKE) and AWS (EKS)** with identical configuration.
 
 ## Monitoring
 

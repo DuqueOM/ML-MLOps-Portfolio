@@ -15,7 +15,7 @@ We follow [Semantic Versioning](https://semver.org/) (SemVer):
 #### 1. Pre-Release Preparation
 
 - [ ] All tests passing on `develop` branch
-- [ ] Code coverage >= 75% for all projects
+- [ ] Code coverage >= 80% for all projects (actual: 88-95%)
 - [ ] Security scans clean (no CRITICAL/HIGH vulnerabilities)
 - [ ] Documentation updated (README, CHANGELOG)
 - [ ] Model performance meets thresholds
@@ -145,12 +145,15 @@ docker push ghcr.io/duqueom/telecom-api:latest
 sed -i 's/latest/1.2.0/g' k8s/*-deployment.yaml
 
 # Apply to production
-kubectl apply -f k8s/ -n ml-production
+kubectl apply -f k8s/ -n ml-portfolio
 
-# Verify rollout
-kubectl rollout status deployment/bankchurn -n ml-production
-kubectl rollout status deployment/carvision -n ml-production
-kubectl rollout status deployment/telecom -n ml-production
+# Verify rollout (GCP)
+kubectl rollout status deployment/bankchurn -n ml-portfolio
+kubectl rollout status deployment/carvision -n ml-portfolio
+kubectl rollout status deployment/telecom -n ml-portfolio
+
+# Deploy to AWS (EKS) — apply overlays
+kubectl apply -k k8s/overlays/aws/ -n ml-portfolio
 ```
 
 **Docker Compose** (staging):
@@ -266,11 +269,11 @@ jobs:
 
 ```bash
 # Rollback to previous version
-kubectl rollout undo deployment/bankchurn -n ml-production
+kubectl rollout undo deployment/bankchurn -n ml-portfolio
 
 # Rollback to specific revision
-kubectl rollout history deployment/bankchurn -n ml-production
-kubectl rollout undo deployment/bankchurn --to-revision=3 -n ml-production
+kubectl rollout history deployment/bankchurn -n ml-portfolio
+kubectl rollout undo deployment/bankchurn --to-revision=3 -n ml-portfolio
 ```
 
 ### Docker Compose Rollback

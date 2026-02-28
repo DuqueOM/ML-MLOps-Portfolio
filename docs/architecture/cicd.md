@@ -37,7 +37,7 @@ graph TB
     
     subgraph "Deploy"
         PAGES["GitHub Pages"]
-        REG["Container Registry"]
+        REG["Container Registry<br/>(AR + ECR + GHCR)"]
     end
     
     PUSH --> LINT
@@ -315,12 +315,13 @@ docker build -t myproject .
 
 ---
 
-## Future Enhancements
+## Enhancements Status
 
-- [ ] Add model performance regression tests
-- [ ] Implement canary deployments
-- [ ] Add load testing with Locust
-- [ ] Integrate MLflow model registry promotion
+- [x] Load testing with Locust (port-forward + Ingress IP modes) — `tests/load/locustfile.py`
+- [x] MLflow model registry automation — `scripts/mlflow_registry_automation.py`
+- [x] Multi-cloud deployment (GKE + EKS)
+- [ ] Model performance regression tests in CI
+- [ ] Canary deployments with traffic splitting
 
 ---
 

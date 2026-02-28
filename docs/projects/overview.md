@@ -167,7 +167,7 @@ project/
 | **Containerization** | Docker (multi-stage builds) |
 | **Orchestration** | Docker Compose, Kubernetes (HPA, services) |
 | **CI/CD** | GitHub Actions (matrix testing, 10 jobs) |
-| **IaC** | Terraform (GCP: GKE, Cloud SQL, GCS, Artifact Registry) ✅ Live |
+| **IaC** | Terraform (GCP: GKE, Cloud SQL, GCS; AWS: EKS, RDS, S3) ✅ Live |
 
 ### Quality & Security
 
