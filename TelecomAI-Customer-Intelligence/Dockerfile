@@ -1,6 +1,6 @@
 # Multi-stage Dockerfile for TelecomAI Customer Intelligence
 # Stage 1: Builder
-FROM python:3.11-slim-bookworm AS builder
+FROM python:3.13-slim-bookworm AS builder
 
 # Metadata
 LABEL maintainer="Duque Ortega Mutis (DuqueOM) <DuqueOrtegaMutis@gmail.com>"
@@ -34,7 +34,7 @@ RUN python -m venv /opt/venv && \
     pip install --no-cache-dir -r requirements_clean.txt
 
 # Stage 2: Runtime
-FROM python:3.11-slim-bookworm AS runtime
+FROM python:3.13-slim-bookworm AS runtime
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
