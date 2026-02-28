@@ -74,10 +74,11 @@ start_time = time.time()
 
 # Global state
 pipeline = None
+_cached_feature_importance: Dict[str, float] = {}
 
 
-def _get_feature_importance() -> Dict[str, float]:
-    """Extract feature importance from the trained pipeline."""
+def _compute_feature_importance() -> Dict[str, float]:
+    """Extract feature importance from the trained pipeline (called once at startup)."""
     if pipeline is None:
         return {}
     try:
@@ -93,6 +94,11 @@ def _get_feature_importance() -> Dict[str, float]:
         return {}
 
 
+def _get_feature_importance() -> Dict[str, float]:
+    """Return cached feature importance (computed once at model load)."""
+    return _cached_feature_importance
+
+
 def load_model_logic() -> bool:
     """Load model pipeline."""
     global pipeline
@@ -103,6 +109,8 @@ def load_model_logic() -> bool:
     try:
         pipeline = load_model(model_path)
         logger.info(f"Model loaded from {model_path}")
+        # Cache feature importance once at startup (static, never changes)
+        _cached_feature_importance.update(_compute_feature_importance())
         return True
     except Exception as e:
         logger.error(f"Failed to load model from {model_path}: {e}")

@@ -341,7 +341,7 @@ async def get_metrics():
 
 
 @app.post("/predict", response_model=PredictionResponse)
-async def predict_churn(customer: CustomerData):
+async def predict_churn(customer: CustomerData, explain: bool = False):
     if predictor is None:
         if PROMETHEUS_AVAILABLE:
             REQUEST_COUNT.labels(method="POST", endpoint="/predict", status="503").inc()
@@ -367,12 +367,15 @@ async def predict_churn(customer: CustomerData):
             REQUEST_LATENCY.labels(endpoint="/predict").observe(pred_time)
             PREDICTION_COUNT.labels(risk_level=risk_level).inc()
 
+        # SHAP is expensive (~700ms); only compute when explicitly requested
+        contributions = calculate_feature_contributions(customer_dict) if explain else {k: 0.0 for k in customer_dict}
+
         return PredictionResponse(
             churn_probability=prob,
             churn_prediction=pred,
             risk_level=risk_level,
             confidence=calculate_confidence(prob),
-            feature_contributions=calculate_feature_contributions(customer_dict),
+            feature_contributions=contributions,
             model_version=model_metadata.get("version", "1.0.0"),
             prediction_timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ"),
         )
@@ -404,7 +407,7 @@ async def predict_batch(batch_data: BatchCustomerData, background_tasks: Backgro
                 churn_prediction=int(results.iloc[i]["prediction"]),
                 risk_level=determine_risk_level(float(results.iloc[i]["probability"])),
                 confidence=calculate_confidence(float(results.iloc[i]["probability"])),
-                feature_contributions=calculate_feature_contributions(customers_list[i]),
+                feature_contributions={k: 0.0 for k in customers_list[i]},
                 model_version=model_metadata.get("version", "1.0.0"),
                 prediction_timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ"),
             )

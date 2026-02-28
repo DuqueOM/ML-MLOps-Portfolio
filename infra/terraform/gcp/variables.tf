@@ -27,7 +27,7 @@ variable "region" {
 }
 
 variable "machine_type" {
-  description = "Machine type for GKE nodes (e2-medium: 1 shared vCPU, 4GB — sufficient for 6 lightweight ML pods)"
+  description = "Machine type for GKE nodes. e2-medium (1 shared vCPU, 4GB) works for dev. For production load, upgrade to e2-standard-2 (2 dedicated vCPU, 8GB) — ~$24/mo more but eliminates CPU throttling under concurrent inference."
   type        = string
   default     = "e2-medium"
 }
