@@ -33,7 +33,7 @@ spec:
       - name: carvision-api
         image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/ml-portfolio/carvision-intelligence:latest
         imagePullPolicy: Always
-        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
         ports:
         - containerPort: 8000
           name: http
@@ -48,10 +48,10 @@ spec:
             name: carvision-config
         resources:
           requests:
-            memory: "640Mi"
-            cpu: "250m"
+            memory: "768Mi"
+            cpu: "300m"
           limits:
-            memory: "1Gi"
+            memory: "1536Mi"
             cpu: "1000m"
         livenessProbe:
           httpGet:

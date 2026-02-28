@@ -37,7 +37,7 @@ spec:
       - name: bankchurn-api
         image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/ml-portfolio/bankchurn-predictor:latest
         imagePullPolicy: Always
-        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
         ports:
         - containerPort: 8000
           name: http
@@ -57,8 +57,8 @@ spec:
             optional: true
         resources:
           requests:
-            memory: "448Mi"
-            cpu: "250m"
+            memory: "512Mi"
+            cpu: "300m"
           limits:
             memory: "1Gi"
             cpu: "1000m"

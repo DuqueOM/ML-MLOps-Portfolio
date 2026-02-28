@@ -48,11 +48,50 @@
 
 ## Key Metrics
 
-| Service | Avg Latency (p50) | Throughput | Model Size | Memory |
-|---------|-------------------|------------|------------|--------|
-| BankChurn | ~23ms | 40 req/s | 1.2 MB | ~300Mi |
-| CarVision | ~45ms | 22 req/s | 8.5 MB | ~550Mi |
-| TelecomAI | ~12ms | 65 req/s | 0.4 MB | ~140Mi |
+### Single-Request Latency (via port-forward, includes ~70ms network overhead)
+
+| Service | Latency | With SHAP | Model Size | Memory per Worker |
+|---------|---------|-----------|------------|-------------------|
+| BankChurn | ~271ms | ~517ms (`?explain=true`) | 1.2 MB | ~300Mi |
+| CarVision | ~257ms | N/A | 8.5 MB | ~550Mi |
+| TelecomAI | ~299ms | N/A | 0.4 MB | ~140Mi |
+
+### Load Test Results (Locust, 10 users, 2min, via kubectl port-forward)
+
+| Endpoint | p50 | p75 | p95 | p99 | Requests | Errors |
+|----------|-----|-----|-----|-----|----------|--------|
+| bankchurn:predict | 140ms | 140ms | 170ms | 220ms | 251 | 1 (0.4%) |
+| carvision:predict | 88ms | 91ms | 96ms | 99ms | 233 | 0 |
+| telecom:predict | 83ms | 86ms | 87ms | 89ms | 237 | 0 |
+| **Aggregated** | **89ms** | **120ms** | **130ms** | **140ms** | **985** | **1 (0.1%)** |
+
+**SLA Compliance**: Error rate 0.1% < 1% ✅ · P95 130ms < 500ms ✅ · P99 140ms < 1000ms ✅
+
+> **Note**: Port-forward adds ~70ms overhead per request and serializes TCP connections.
+> The single error (`status 0`) was a port-forward connection drop, not an application error.
+> Production latency behind an Ingress/LoadBalancer will be significantly better.
+
+## Performance Optimizations Applied
+
+### Root Causes Identified
+1. **BankChurn SHAP per request**: Explainability computation (~700ms) ran on every `/predict` call
+2. **Single uvicorn worker**: CPU-bound sklearn `predict()` blocked the event loop under concurrency
+3. **e2-medium (1 shared vCPU)**: Burstable CPU with 7+ containers causes starvation under load
+4. **kubectl port-forward**: Not designed for concurrent load testing (serializes TCP connections)
+5. **CarVision dual-container pod**: Streamlit sidecar competes for CPU/RAM with the API
+
+### Fixes Applied
+- **BankChurn**: SHAP is now lazy — skipped by default on `/predict`, available via `?explain=true`
+- **TelecomAI**: Feature importance cached at startup (computed once, reused)
+- **All services**: Uvicorn workers increased from 1 → 2 (K8s manifests + Dockerfiles)
+- **Memory limits**: CarVision API increased to 1536Mi to support 2 workers
+- **CPU requests**: Normalized to 300m across all services
+
+### Recommended (Not Yet Applied)
+- **Terraform GCP**: Upgrade `e2-medium` → `e2-standard-2` (2 dedicated vCPU, 8GB) for ~$24/mo more
+- **Terraform GCP**: Consider `min_node_count = 2` for better pod distribution
+- **Load testing**: Use Ingress or LoadBalancer IP instead of port-forward for accurate metrics
+- **CarVision**: Consider separating Streamlit into its own Deployment
 
 ## Screenshots & GIFs
 
@@ -111,4 +150,4 @@ done
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: February 2026 (performance optimizations applied)

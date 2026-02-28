@@ -37,7 +37,7 @@ spec:
       - name: telecom-api
         image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/ml-portfolio/telecom-intelligence:latest
         imagePullPolicy: Always
-        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
         ports:
         - containerPort: 8000
           name: http
@@ -55,7 +55,7 @@ spec:
         resources:
           requests:
             memory: "384Mi"
-            cpu: "200m"
+            cpu: "300m"
           limits:
             memory: "768Mi"
             cpu: "800m"
