@@ -2,6 +2,43 @@
 
 ## Recent Additions (February 2026)
 
+### 🚀 Inference Performance Optimizations (v6.3.0)
+
+**Status**: ✅ Implemented, Deployed, and Validated on GKE
+
+#### Root Cause Analysis
+Identified 5 root causes for degraded load test metrics:
+1. **BankChurn SHAP per request** — ~700ms overhead per prediction
+2. **Single uvicorn worker** — CPU-bound sklearn blocked event loop under concurrency
+3. **e2-medium (1 shared vCPU)** — burstable CPU with 7+ containers
+4. **kubectl port-forward** — serializes TCP connections (not for load testing)
+5. **CarVision dual-container pod** — Streamlit sidecar competes for CPU/RAM
+
+#### Fixes Applied
+- **BankChurn**: SHAP now lazy — skipped by default on `/predict`, available via `?explain=true`
+- **TelecomAI**: Feature importance cached at startup (computed once, reused on every request)
+- **All services**: Uvicorn workers increased from 1 → 2 (K8s manifests + Dockerfiles)
+- **K8s resources**: CarVision API memory 1Gi → 1536Mi, CPU requests normalized to 300m
+- **AWS overlays**: Synced workers and resource limits with GCP manifests
+
+#### Load Test Results (10 users, 2min, via port-forward)
+
+| Endpoint | p50 | p95 | p99 | Errors |
+|----------|-----|-----|-----|--------|
+| bankchurn:predict | 140ms | 220ms | 290ms | 0 |
+| carvision:predict | 79ms | 130ms | 280ms | 0 |
+| telecom:predict | 78ms | 110ms | 270ms | 0 |
+| **Aggregated** | **83ms** | **180ms** | **280ms** | **0 (0.0%)** |
+
+**SLA Compliance**: Error rate 0.0% < 1% ✅ · P95 180ms < 500ms ✅ · P99 280ms < 1000ms ✅
+
+#### Recommended (Not Yet Applied)
+- Terraform GCP: `e2-medium` → `e2-standard-2` (~$24/mo more, eliminates CPU throttling)
+- Separate CarVision Streamlit into its own Deployment
+- Use Ingress/LoadBalancer for accurate load testing (not port-forward)
+
+---
+
 ### ⚡ Performance Optimizations (v6.0.0)
 
 **Status**: ✅ Implemented and Validated
@@ -161,6 +198,7 @@ python scripts/mlflow_registry_automation.py latest \
 
 | Feature | Impact | Status |
 |---------|--------|--------|
+| **v6.3 Inference Optimizations** | 0% errors, p95 180ms, lazy SHAP | ✅ Deployed on GKE |
 | **Performance Optimizations** | 60-84% improvements | ✅ Validated |
 | **Redis Caching** | Reduced latency | ✅ Ready |
 | **MLflow Automation** | Streamlined deployment | ✅ Ready |

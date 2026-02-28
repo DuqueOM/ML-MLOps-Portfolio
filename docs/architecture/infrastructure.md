@@ -441,14 +441,16 @@ spec:
             periodSeconds: 5
 ```
 
-**Resource calibration per service** (based on `kubectl top pods` at steady state):
+**Resource calibration per service** (based on `kubectl top pods` at steady state, 2 uvicorn workers):
 
-| Service | Real Usage | Request | Limit | Utilization |
-|---------|-----------|---------|-------|-------------|
-| BankChurn (ensemble) | ~300Mi / 5m CPU | 448Mi / 250m | 1Gi / 1000m | 67% mem |
-| CarVision (API) | ~550Mi / 8m CPU | 640Mi / 250m | 1Gi / 1000m | 86% mem |
-| CarVision (Streamlit) | ~200Mi / 3m CPU | 256Mi / 100m | 512Mi / 500m | 78% mem |
-| TelecomAI | ~140Mi / 4m CPU | 384Mi / 200m | 768Mi / 800m | 36% mem |
+| Service | Real Usage | Request | Limit | Workers | Utilization |
+|---------|-----------|---------|-------|---------|-------------|
+| BankChurn (ensemble) | ~300Mi / 5m CPU | 512Mi / 300m | 1Gi / 1000m | 2 | 59% mem |
+| CarVision (API) | ~550Mi / 8m CPU | 768Mi / 300m | 1536Mi / 1000m | 2 | 72% mem |
+| CarVision (Streamlit) | ~200Mi / 3m CPU | 256Mi / 100m | 512Mi / 500m | — | 78% mem |
+| TelecomAI | ~140Mi / 4m CPU | 384Mi / 300m | 768Mi / 800m | 2 | 36% mem |
+
+> **v6.3 Changes**: All ML services now run 2 uvicorn workers (was 1). Memory requests increased to accommodate dual-worker model loading. CPU requests normalized to 300m.
 
 ### Horizontal Pod Autoscaler
 

@@ -16,7 +16,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.demo.yml)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-6.2.1-brightgreen.svg)](docs/FEATURES.md)
+[![Version](https://img.shields.io/badge/Version-6.3.0-brightgreen.svg)](docs/FEATURES.md)
 
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow)](https://mlflow.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
@@ -53,9 +53,9 @@
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|---------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 88% | <50ms p95 | Ensemble, SHAP Explainability, Drift Detection |
-| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.77**, RMSE $4.4K | 95% | <30ms p95 | FeatureEngineer, Streamlit Dashboard (4 tabs) |
-| [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **Acc 82%**, AUC 0.84 | 95% | <25ms p95 | VotingClassifier, Threshold Optimization, Revenue Opt |
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 88% | 140ms p50 | Ensemble, Lazy SHAP (`?explain=true`), Drift Detection |
+| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.77**, RMSE $4.4K | 95% | 79ms p50 | FeatureEngineer, Streamlit Dashboard (4 tabs) |
+| [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **Acc 82%**, AUC 0.84 | 95% | 78ms p50 | VotingClassifier, Cached Feature Importance, Revenue Opt |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
@@ -119,7 +119,7 @@ Strategic plan optimization reducing **$6.9M/year** revenue leakage per 100K cus
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Testing** | pytest (88-95% coverage), Codecov, pre-commit hooks |
 
-> **v6.0+ Performance Optimizations**: Joblib compression (-76% model size), Pandas dtype optimization (-56% memory), sklearn parallelization (2-4x faster), vectorized batch predictions (-84% time). Full details in [docs/FEATURES.md](docs/FEATURES.md).
+> **v6.3 Performance Optimizations**: Lazy SHAP (BankChurn), cached feature importance (TelecomAI), 2 uvicorn workers, optimized K8s resource limits. Load test: 0% error rate, p95 180ms aggregated. Previous: Joblib compression (-76%), Pandas dtypes (-56%), sklearn parallelization (2-4x). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
 For system architecture diagrams, CI/CD pipeline details, and infrastructure specs, see [docs/ARCHITECTURE_PORTFOLIO.md](docs/ARCHITECTURE_PORTFOLIO.md).
 
@@ -268,7 +268,7 @@ The author maintains and operates all systems independently, including CI/CD pip
 
 <div align="center">
 
-**Portfolio Version**: 6.2.1 · **License**: MIT · **Status**: ✅ Production-Ready (GCP) · 🟡 AWS Ready
+**Portfolio Version**: 6.3.0 · **License**: MIT · **Status**: ✅ Production-Ready (GCP) · 🟡 AWS Ready
 
 *Building ML systems that work at 2am* 🌙
 

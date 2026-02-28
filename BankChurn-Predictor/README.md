@@ -572,6 +572,7 @@ Response (200 OK):
 
 ```http
 POST /predict
+POST /predict?explain=true   # Include SHAP feature contributions (slower)
 
 Request Body:
 {
@@ -593,14 +594,12 @@ Response (200 OK):
   "churn_probability": 0.73,
   "risk_level": "HIGH",
   "confidence": 0.85,
-  "top_factors": [
-    {"feature": "Age", "impact": 0.15},
-    {"feature": "IsActiveMember", "impact": 0.12},
-    {"feature": "NumOfProducts", "impact": 0.08}
-  ],
+  "feature_contributions": {"Age": 0.15, ...},  // zeros unless ?explain=true
   "processing_time_ms": 35
 }
 ```
+
+> **Performance Note**: SHAP explainability is **lazy by default** — skipped on `/predict` (returns zero contributions) to keep latency low (~140ms p50). Pass `?explain=true` to compute real SHAP values (~500ms extra). Batch endpoint always skips SHAP.
 
 **Risk Levels**:
 - `LOW`: probability < 0.3
@@ -707,24 +706,6 @@ churn_rate_current 0.18
 {
   "error": "Model not loaded",
   "detail": "Service is starting, please retry in 30 seconds"
-}
-```
-
-### Performance SLAs
-
-| Metric | Target | Measurement | Current |
-|--------|--------|-------------|---------|
-| **Latency p50** | <20ms | Median response time | 18ms |
-| **Latency p95** | <50ms | 95th percentile | 47ms |
-| **Latency p99** | <100ms | 99th percentile | 89ms |
-| **Throughput** | 1000 RPS | Requests per second | 1050 RPS |
-| **Availability** | 99.9% | Monthly uptime | 99.95% |
-| **Error Rate** | <0.1% | Non-5xx responses | 0.01% |
-
----
-
-## 📊 MLflow Experiments
-
 ### Experiment Overview
 
 This project demonstrates **scientific rigor** through 3 tracked MLflow experiments:
@@ -955,20 +936,22 @@ logger.info(json.dumps({
 ```bash
 # Test configuration
 Tool: Locust
-Duration: 10 minutes
-Ramp-up: 1-1000 users over 2 minutes
-Request: POST /predict (single customer)
-Instance: 2 CPU, 4GB RAM
+Duration: 2 minutes
+Users: 10 concurrent (via kubectl port-forward)
+Request: POST /predict (randomized payloads)
+Infra: GKE e2-medium, 2 uvicorn workers
 
-# Results
-Total Requests: 580,000
-Successful: 579,942 (99.99%)
-Failed: 58 (0.01%)
-RPS (peak): 1,050
-Latency p50: 18ms
-Latency p95: 47ms
-Latency p99: 89ms
+# Results (Feb 2026)
+Total Requests: 283
+Successful: 283 (100%)
+Failed: 0 (0.0%)
+Latency p50: 140ms
+Latency p95: 220ms
+Latency p99: 290ms
+SLA: ✅ All thresholds met
 ```
+
+> SHAP is lazy by default — not computed during load tests. With `?explain=true`, expect ~500ms additional latency per request.
 
 ### Horizontal Scalability
 
