@@ -41,6 +41,23 @@ esac
 # ── Helpers ─────────────────────────────────────────────────
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
 
+wait_for_services() {
+  local max_wait=30
+  local interval=2
+  local elapsed=0
+  echo -e "${YELLOW}Waiting for services to become reachable (up to ${max_wait}s)...${NC}"
+  while [ $elapsed -lt $max_wait ]; do
+    if curl -sf "$BANKCHURN_URL/health" >/dev/null 2>&1; then
+      echo -e "${GREEN}Services reachable after ${elapsed}s${NC}\n"
+      return 0
+    fi
+    sleep $interval
+    elapsed=$((elapsed + interval))
+  done
+  echo -e "${RED}WARNING: Services not reachable after ${max_wait}s — running tests anyway${NC}\n"
+  return 0
+}
+
 check() {
   local name="$1" expected="$2" actual="$3"
   TOTAL=$((TOTAL + 1))
@@ -53,6 +70,8 @@ check() {
     FAIL=$((FAIL + 1))
   fi
 }
+
+wait_for_services
 
 # ── BankChurn ───────────────────────────────────────────────
 echo -e "\n${YELLOW}═══ BankChurn Predictor ($BANKCHURN_URL) ═══${NC}"

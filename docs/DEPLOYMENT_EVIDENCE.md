@@ -8,22 +8,22 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  GCP (us-central1)              │  AWS (us-east-1)          │
-│                                 │                           │
-│  GKE Cluster (e2-medium)        │  EKS Cluster (t3.large)   │
-│  ┌──────────┐ ┌──────────┐     │  ┌──────────┐ ┌────────┐  │
-│  │BankChurn │ │CarVision │     │  │BankChurn │ │CarVis. │  │
-│  │  :8000   │ │:8000+8501│     │  │  :8000   │ │  :8000 │  │
-│  └────┬─────┘ └────┬─────┘     │  └────┬─────┘ └───┬────┘  │
-│  ┌────┴─────┐ ┌────┴─────┐     │  ┌────┴─────┐ ┌───┴────┐  │
-│  │TelecomAI │ │ MLflow   │     │  │TelecomAI │ │ MLflow │  │
-│  │  :8000   │ │  :5000   │     │  │  :8000   │ │  :5000 │  │
-│  └──────────┘ └──────────┘     │  └──────────┘ └────────┘  │
-│  Prometheus + Grafana           │  Prometheus + Grafana      │
-│  GCE Ingress (static IP)       │  ALB (DNS)                │
+│  GCP (us-central1)             │  AWS (us-east-1)           │
+│                                │                            │
+│  GKE Cluster (e2-medium)       │  EKS Cluster (t3.large)    │
+│  ┌──────────┐ ┌──────────┐     │  ┌──────────┐ ┌────────┐   │
+│  │BankChurn │ │CarVision │     │  │BankChurn │ │CarVis. │   │
+│  │  :8000   │ │:8000+8501│     │  │  :8000   │ │  :8000 │   │
+│  └────┬─────┘ └────┬─────┘     │  └────┬─────┘ └───┬────┘   │
+│  ┌────┴─────┐ ┌────┴─────┐     │  ┌────┴─────┐ ┌───┴────┐   │
+│  │TelecomAI │ │ MLflow   │     │  │TelecomAI │ │ MLflow │   │
+│  │  :8000   │ │  :5000   │     │  │  :8000   │ │  :5000 │   │
+│  └──────────┘ └──────────┘     │  └──────────┘ └────────┘   │
+│  Prometheus + Grafana          │  Prometheus + Grafana      │
+│  GCE Ingress (static IP)       │  ALB (DNS)                 │
 │  Artifact Registry + GCS       │  ECR + S3                  │
-│  Cloud SQL (PostgreSQL)         │  RDS (PostgreSQL)          │
-│  Terraform IaC                  │  Terraform IaC             │
+│  Cloud SQL (PostgreSQL)        │  RDS (PostgreSQL)          │
+│  Terraform IaC                 │  Terraform IaC             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -95,7 +95,7 @@ docs/media/
 
 ```bash
 # GCP
-gcloud container clusters get-credentials ml-portfolio-cluster --region us-central1
+gcloud container clusters get-credentials ml-portfolio-gke-production --region us-central1
 kubectl get pods -n ml-portfolio
 
 # AWS
