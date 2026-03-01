@@ -1,0 +1,5 @@
+outs:
+- md5: c75e28444c2a5844a24307d81cb8a8bf
+  size: 699704
+  hash: md5
+  path: Churn_Modelling.csv

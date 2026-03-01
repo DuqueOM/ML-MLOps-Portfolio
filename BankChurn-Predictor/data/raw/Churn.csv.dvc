@@ -1,5 +1,6 @@
 md5: 4d5d3a4b5c5e6f7a8b9c0d1e2f3a4b5c
 outs:
-- md5: 4d5d3a4b5c5e6f7a8b9c0d1e2f3a4b5c
+- md5: 92c508e07f2fb7e36f565260ccc4a151
   path: Churn.csv
-  cache: true
+  size: 709705
+  hash: md5

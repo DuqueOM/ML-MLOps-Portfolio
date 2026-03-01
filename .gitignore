@@ -69,15 +69,16 @@ CarVision-Market-Intelligence/artifacts/*
 **/mlruns/
 **/mlartifacts/
 
-# Ignore temporary/experimental models but keep production models
+# Model binaries — tracked via DVC / GCS, never in git
 **/*.pkl
 **/*.h5
 **/*.pth
 **/*.onnx
+**/*.joblib
 
-# Exception: Allow production models in models/ directories
-!**/models/*.joblib
-!**/models/**/*.joblib
+# Raw and processed data — tracked via DVC / GCS, never in git
+**/data/raw/*.csv
+**/data/processed/*.csv
 
 # Environment variables
 .env
