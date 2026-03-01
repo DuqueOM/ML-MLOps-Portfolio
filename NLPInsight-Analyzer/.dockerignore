@@ -1,11 +1,59 @@
+# Version Control
 .git
-.venv
-venv
+.gitignore
+.dvc
+.dvcignore
+*.dvc
+
+# Python
 __pycache__
 *.pyc
-.pytest_cache
-htmlcov
-.mypy_cache
-mlruns
-data/raw/*.csv
-*.egg-info
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Testing & Quality
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+tests/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Project Specific — data/models loaded via init container from GCS
+data/raw/
+data/processed/
+models/
+mlruns/
+notebooks/
+docs/
+scripts/
+monitoring/
+*.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.tmp
+*.bak
