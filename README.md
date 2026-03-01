@@ -55,7 +55,7 @@
 |---------|------|-------------|----------|-------------|---------------|
 | [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 88% | 140ms p50 | Ensemble, Lazy SHAP (`?explain=true`), Drift Detection |
 | [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.77**, RMSE $4.4K | 95% | 79ms p50 | FeatureEngineer, Streamlit Dashboard (4 tabs) |
-| [📱 TelecomAI](TelecomAI-Customer-Intelligence/) | Classification | **Acc 82%**, AUC 0.84 | 95% | 78ms p50 | VotingClassifier, Cached Feature Importance, Revenue Opt |
+| [� NLPInsight](NLPInsight-Analyzer/) | Classification | **Acc 85%** (sentiment) | 95% | 100ms p50 | Dual backend (Transformer + sklearn), Financial PhraseBank |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
@@ -94,15 +94,15 @@ End-to-end vehicle valuation platform with **Streamlit BI Dashboard** (4 tabs) a
 
 ---
 
-### 📱 3. [TelecomAI Customer Intelligence](TelecomAI-Customer-Intelligence/) — Plan Recommendation
+### � 3. [NLPInsight Analyzer](NLPInsight-Analyzer/) — Financial Sentiment Analysis
 
-Strategic plan optimization reducing **$6.9M/year** revenue leakage per 100K customers. Ensemble of LogReg + GradientBoosting + RandomForest with threshold tuning for business-aligned predictions. 1,200 RPS throughput.
+Real-time sentiment analysis on financial text (positive/neutral/negative). Dual inference backend: HuggingFace DistilBERT (production) + TF-IDF sklearn pipeline (lightweight demo). CPU-only torch deployment.
 
-| Accuracy | AUC-ROC | F1 | Precision | Coverage | Throughput |
-|----------|---------|-----|-----------|----------|-------------|
-| **82%** | 0.84 | 0.63 | 0.72 | 95% | 1,200 RPS |
+| Accuracy | F1 (macro) | Labels | Docker Image | Coverage |
+|----------|------------|--------|--------------|----------|
+| **85%** (transformer) | 0.82 | 3 | 2.05 GB (CPU) | 95% |
 
-[📂 Project](TelecomAI-Customer-Intelligence/) · [📄 Model Card](TelecomAI-Customer-Intelligence/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
+[📂 Project](NLPInsight-Analyzer/) · [📄 Model Card](NLPInsight-Analyzer/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
 ---
 
@@ -119,7 +119,7 @@ Strategic plan optimization reducing **$6.9M/year** revenue leakage per 100K cus
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Testing** | pytest (88-95% coverage), Codecov, pre-commit hooks |
 
-> **v6.3 Performance Optimizations**: Lazy SHAP (BankChurn), cached feature importance (TelecomAI), 2 uvicorn workers, optimized K8s resource limits. Load test: 0% error rate, p95 180ms aggregated. Previous: Joblib compression (-76%), Pandas dtypes (-56%), sklearn parallelization (2-4x). Full details in [docs/FEATURES.md](docs/FEATURES.md).
+> **v6.3 Performance Optimizations**: Lazy SHAP (BankChurn), NLPInsight dual backend, 2 uvicorn workers, optimized K8s resource limits. Load test: 0% error rate, p95 180ms aggregated. Previous: Joblib compression (-76%), Pandas dtypes (-56%), sklearn parallelization (2-4x). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
 For system architecture diagrams, CI/CD pipeline details, and infrastructure specs, see [docs/ARCHITECTURE_PORTFOLIO.md](docs/ARCHITECTURE_PORTFOLIO.md).
 
@@ -144,7 +144,7 @@ sleep 60 && bash scripts/run_demo_tests.sh
 #    🏦 BankChurn API:    http://localhost:8001/docs
 #    🚗 CarVision API:    http://localhost:8002/docs
 #    🚗 CarVision UI:     http://localhost:8501
-#    📱 TelecomAI API:    http://localhost:8003/docs
+#    � NLPInsight API:   http://localhost:8003/docs
 #    📊 MLflow:           http://localhost:5000
 ```
 
