@@ -18,20 +18,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc g++ build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements
-COPY requirements.txt requirements.in* ./
+# Copy production requirements (no jupyter, dev tools, shap/torch)
+COPY requirements-prod.txt ./
 
 # Install dependencies in venv
+# xgboost installed with --no-deps to avoid nvidia-nccl-cu12 (~290MB)
 RUN python -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
     pip install --upgrade pip setuptools wheel && \
-    # If requirements.in exists, we try to use it (cleaning it first), else use requirements.txt
-    if [ -f requirements.in ]; then \
-        sed -e '/--hash=/d' -e 's/ \\$//' -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' requirements.in > requirements_clean.txt; \
-    else \
-        sed -e '/--hash=/d' -e 's/ \\$//' -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' requirements.txt > requirements_clean.txt; \
-    fi && \
-    pip install --no-cache-dir -r requirements_clean.txt
+    pip install --no-cache-dir -r requirements-prod.txt && \
+    pip install --no-cache-dir --no-deps "xgboost>=1.5.0,<3.0"
 
 # Stage 2: Runtime
 FROM python:3.11-slim-bookworm AS runtime
