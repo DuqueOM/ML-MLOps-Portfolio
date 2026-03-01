@@ -32,7 +32,8 @@ RUN python -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
     pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements-prod.txt && \
-    pip install --no-cache-dir --no-deps "xgboost>=1.5.0,<3.0"
+    pip install --no-cache-dir --no-deps "xgboost>=1.5.0,<3.0" && \
+    pip install --no-cache-dir --no-deps "shap>=0.42.0"
 
 # Stage 2: Runtime - Imagen final ligera
 FROM python:3.11-slim-bookworm AS runtime

@@ -24,8 +24,15 @@ pyyaml>=6.0
 # Monitoring
 prometheus-client>=0.17.0
 
-# NOTE: shap excluded from prod — pulls torch/CUDA (~2GB).
-# explainability.py degrades gracefully when shap is absent.
+# SHAP explainability (CPU-only, installed with --no-deps in Dockerfile)
+# TreeExplainer works without torch for sklearn/XGBoost models
+# Runtime deps: numba, llvmlite, slicer, cloudpickle, packaging (added below)
+numba>=0.58.0
+llvmlite>=0.41.0
+slicer>=0.0.7
+cloudpickle>=2.0.0
+packaging>=21.0
+tqdm>=4.64.0
 
 # MLflow (imported via __init__.py → training.py)
 mlflow>=2.9

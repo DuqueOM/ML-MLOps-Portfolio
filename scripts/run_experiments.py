@@ -410,7 +410,7 @@ def run_nlpinsight_experiments():
         {
             "run_name": "NL-1_Baseline_LogReg_TfIdf",
             "tags": {"run_type": "baseline", "project": "nlpinsight"},
-            "model": LogisticRegression(max_iter=1000, random_state=42, multi_class="multinomial"),
+            "model": LogisticRegression(max_iter=1000, random_state=42),
             "description": "TF-IDF + Logistic Regression baseline for 3-class sentiment",
         },
         {

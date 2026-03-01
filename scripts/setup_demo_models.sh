@@ -8,10 +8,21 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+# Use Python 3.11 if available (matches Docker image)
+PY311="/home/duque_om/miniconda3/envs/ml-py311/bin/python"
+if [ -x "$PY311" ]; then
+    PYTHON="$PY311"
+    echo -e "${GREEN}Using Python 3.11 (matches Docker): $PYTHON${NC}"
+else
+    PYTHON="python"
+    echo -e "${BLUE}Using system Python: $(python --version)${NC}"
+    echo "  ⚠️  For production, use: conda activate ml-py311"
+fi
+
 # BankChurn: Train quick baseline model
 echo -e "${BLUE}Training BankChurn model...${NC}"
 cd BankChurn-Predictor
-python -c "
+$PYTHON -c "
 import sys
 sys.path.insert(0, '.')
 from pathlib import Path
@@ -68,8 +79,8 @@ model = Pipeline([
 model.fit(X, y)
 
 Path('models').mkdir(exist_ok=True)
-joblib.dump(model, 'models/best_model.pkl')
-print('✅ BankChurn model saved to models/best_model.pkl')
+joblib.dump(model, 'models/model.joblib')
+print('✅ BankChurn model saved to models/model.joblib')
 "
 cd ..
 echo -e "${GREEN}BankChurn model ready${NC}"
@@ -77,7 +88,7 @@ echo -e "${GREEN}BankChurn model ready${NC}"
 # CarVision: Train quick baseline model
 echo -e "${BLUE}Training CarVision model...${NC}"
 cd CarVision-Market-Intelligence
-python -c "
+$PYTHON -c "
 import sys
 import json
 sys.path.insert(0, '.')
@@ -167,7 +178,7 @@ echo -e "${GREEN}CarVision model ready${NC}"
 # NLPInsight: Train quick TF-IDF baseline for sentiment analysis
 echo -e "${BLUE}Training NLPInsight model...${NC}"
 cd NLPInsight-Analyzer
-python -c "
+$PYTHON -c "
 import sys
 sys.path.insert(0, '.')
 from pathlib import Path
@@ -195,7 +206,7 @@ y = df['label_id']
 
 model = Pipeline([
     ('tfidf', TfidfVectorizer(max_features=5000, ngram_range=(1, 2))),
-    ('classifier', LogisticRegression(max_iter=1000, random_state=42, multi_class='multinomial'))
+    ('classifier', LogisticRegression(max_iter=1000, random_state=42))
 ])
 
 model.fit(X, y)
