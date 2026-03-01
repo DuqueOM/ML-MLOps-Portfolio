@@ -16,7 +16,7 @@ Identified 5 root causes for degraded load test metrics:
 
 #### Fixes Applied
 - **BankChurn**: SHAP now lazy — skipped by default on `/predict`, available via `?explain=true`
-- **TelecomAI**: Feature importance cached at startup (computed once, reused on every request)
+- **NLPInsight**: Feature importance cached at startup (computed once, reused on every request)
 - **All services**: Uvicorn workers increased from 1 → 2 (K8s manifests + Dockerfiles)
 - **K8s resources**: CarVision API memory 1Gi → 1536Mi, CPU requests normalized to 300m
 - **AWS overlays**: Synced workers and resource limits with GCP manifests
@@ -27,7 +27,7 @@ Identified 5 root causes for degraded load test metrics:
 |----------|-----|-----|-----|--------|
 | bankchurn:predict | 140ms | 220ms | 290ms | 0 |
 | carvision:predict | 79ms | 130ms | 280ms | 0 |
-| telecom:predict | 78ms | 110ms | 270ms | 0 |
+| nlpinsight:predict | 78ms | 110ms | 270ms | 0 |
 | **Aggregated** | **83ms** | **180ms** | **280ms** | **0 (0.0%)** |
 
 **SLA Compliance**: Error rate 0.0% < 1% ✅ · P95 180ms < 500ms ✅ · P99 280ms < 1000ms ✅

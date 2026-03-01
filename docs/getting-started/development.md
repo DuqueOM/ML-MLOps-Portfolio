@@ -43,10 +43,10 @@ pip install -e ".[dev]"
 pytest tests/ -v
 ```
 
-### TelecomAI Customer Intelligence
+### NLPInsight Analyzer
 
 ```bash
-cd TelecomAI-Customer-Intelligence
+cd NLPInsight-Customer-Intelligence
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"

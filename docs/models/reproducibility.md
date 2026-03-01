@@ -161,12 +161,12 @@ pytest tests/ -v --cov=src/carvision
 
 ---
 
-## TelecomAI Customer Intelligence
+## NLPInsight Analyzer
 
 ### Step 1: Environment Setup
 
 ```bash
-cd TelecomAI-Customer-Intelligence
+cd NLPInsight-Customer-Intelligence
 
 python -m venv .venv
 source .venv/bin/activate
@@ -196,7 +196,7 @@ python main.py evaluate --config configs/config.yaml
 ### Step 4: Run Tests
 
 ```bash
-pytest tests/ -v --cov=src/telecom
+pytest tests/ -v --cov=src/nlpinsight
 ```
 
 **Expected Coverage:** ≥80%

@@ -10,7 +10,7 @@
 |---------|----------|-----------|---------|--------|----------------|----------|--------|
 | **BankChurn** | `bankchurn-voting-v1.5.0` | VotingClassifier (LR + RF) | 1.5.0 | ✅ Production | AUC-ROC: 0.87 | 88% | February 2026 |
 | **CarVision** | `carvision-xgb-v1.5.0` | XGBRegressor (auto-selected) | 1.5.0 | ✅ Production | R²: 0.77 | 95% | February 2026 |
-| **TelecomAI** | `telecomai-voting-v1.5.0` | VotingClassifier (3 models) | 1.5.0 | ✅ Production | AUC-ROC: 0.84 | 95% | February 2026 |
+| **NLPInsight** | `nlpinsight-sentiment-v1.5.0` | DistilBERT / TF-IDF dual | 1.5.0 | ✅ Production | Accuracy: 85% | 95% | March 2026 |
 
 ---
 
@@ -140,64 +140,58 @@ Full documentation: [CarVision Model Card](https://github.com/DuqueOM/ML-MLOps-P
 
 ---
 
-## 📱 TelecomAI Customer Intelligence
+## � NLPInsight Analyzer
 
 ### Production Model
 
 | Attribute | Value |
 |-----------|-------|
-| **Model ID** | `telecomai-voting-v1.5.0` |
-| **Model Name** | TelecomAI Plan Predictor |
+| **Model ID** | `nlpinsight-sentiment-v1.5.0` |
+| **Model Name** | NLPInsight Financial Sentiment Analyzer |
 | **Version** | 1.5.0 |
-| **Algorithm** | VotingClassifier (LR + GB + RF) |
-| **Framework** | Scikit-learn 1.8+ |
+| **Algorithm** | DistilBERT fine-tuned (prod) / TF-IDF + LogReg (demo) |
+| **Framework** | HuggingFace Transformers + Scikit-learn |
 | **Status** | ✅ **Production** |
-| **Artifact Path** | `models/model.joblib` (unified pipeline) |
-| **Model Size** | 66 KB |
-| **Created** | February 2026 |
-| **Last Updated** | February 2026 |
+| **Artifact Path** | `models/model.joblib` (sklearn) or `models/` dir (transformer) |
+| **Model Size** | 316 KB (sklearn) / ~260 MB (transformer) |
+| **Docker Image** | 2.05 GB (torch CPU-only) |
+| **Created** | March 2026 |
+| **Last Updated** | March 2026 |
 
-### Performance Metrics (Test Set, n=643)
+### Performance Metrics (Financial PhraseBank, n=2,264)
 
-| Metric | Value | Business Impact |
-|--------|-------|-----------------|
-| **AUC-ROC** | **0.84** | Strong discrimination |
-| **Accuracy** | **81.8%** | Overall correctness |
-| **Precision (Ultra)** | 72% | 28% false upgrades |
-| **Recall (Ultra)** | 56% | Catches 56% of Ultra candidates |
-| **F1-Score (Ultra)** | **0.6309** | Balanced metric |
-| **Cross-Validation Acc** | 0.818 ± 0.012 | 5-fold stability |
+| Metric | Transformer | TF-IDF Baseline | Business Impact |
+|--------|-------------|-----------------|------------------|
+| **Accuracy** | **~85%** | ~75% | Reliable sentiment signals |
+| **F1 (macro)** | **~0.82** | ~0.70 | Balanced across 3 classes |
+| **Labels** | 3 | 3 | negative, neutral, positive |
 
-> **MLflow Run**: `TL-3_RandomForest` — Best of 3 tracked experiments
+> **MLflow Run**: `NLP-2_DistilBERT` — Best of 2 tracked experiments
 
 ### Architecture
 
 ```python
-Pipeline:
-  [Preprocessor] → [VotingClassifier]
+Dual Backend:
+  SentimentPredictor auto-detects model type:
 
-Preprocessor:
-  └─ StandardScaler() on 4 numerical features
-      (calls, minutes, messages, mb_used)
+  Backend 1 — Transformer (production):
+    AutoTokenizer → AutoModelForSequenceClassification → softmax
 
-VotingClassifier (soft voting, weights=[1, 2, 2]):
-  ├─ LogisticRegression(C=1.0, class_weight={0: 0.4, 1: 0.6})
-  ├─ GradientBoostingClassifier(n_estimators=100, learning_rate=0.1)
-  └─ RandomForestClassifier(n_estimators=100, max_depth=10, 
-                            class_weight='balanced')
+  Backend 2 — sklearn (demo/lightweight):
+    TF-IDF Vectorizer → LogisticRegression → predict_proba
 ```
 
 ### Key Features
 
-- **Threshold Optimization**: Conservative (0.5), Balanced (0.42), Aggressive (0.35)
-- **Business Impact**: $5.4M annual revenue recovery (100K customer base)
-- **Usage Segmentation**: Heavy data users (>30GB), light users (<5GB)
-- **Feature Importance**: `mb_used` (45%), `minutes` (28%), `messages` (18%), `calls` (9%)
-- **Ethical Targeting**: Contact frequency limits, opt-out mechanisms
+- **Dual Backend**: Transformer for accuracy, sklearn for speed/simplicity
+- **Auto-Detection**: Finds `model.joblib` (sklearn) or transformer dir automatically
+- **CPU-Only**: torch installed from `pytorch.org/whl/cpu` (no CUDA overhead)
+- **Batch Support**: Up to 500 texts per request
+- **Financial Domain**: Trained on Financial PhraseBank (Malo et al.)
 
 ### Model Card
 
-Full documentation: [TelecomAI Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/TelecomAI-Customer-Intelligence/models/model_card.md)
+Full documentation: [NLPInsight Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/NLPInsight-Analyzer/models/model_card.md)
 
 ---
 
@@ -209,7 +203,7 @@ Full documentation: [TelecomAI Model Card](https://github.com/DuqueOM/ML-MLOps-P
 |---------|--------|------------------|---------|
 | **BankChurn** | Sep 2025 (AUC=0.78) | **February 2026** (AUC=0.87) | Ensemble weights tuning, SHAP integration |
 | **CarVision** | Sep 2025 (R²=0.72) | **February 2026** (R²=0.77) | Auto-selected XGBRegressor, FeatureEngineer centralization, bootstrap CI |
-| **TelecomAI** | Sep 2025 (Acc=0.78) | **February 2026** (Acc=82%) | Added GradientBoosting, threshold optimization |
+| **NLPInsight** | — (new project) | **March 2026** (Acc=85%) | Dual backend inference, Financial PhraseBank |
 
 ### Promotion Criteria (Staging → Production)
 
@@ -228,12 +222,12 @@ All models must pass these gates:
 
 ### Automated Triggers
 
-| Trigger | BankChurn | CarVision | TelecomAI |
+| Trigger | BankChurn | CarVision | NLPInsight |
 |---------|-----------|-----------|-----------|
-| **Performance Drop** | AUC <0.75 | R² <0.70 | AUC <0.80 |
+| **Performance Drop** | AUC <0.75 | R² <0.70 | Accuracy <0.80 |
 | **Data Drift** | >30% features (Evidently) | >30% features | >30% features |
 | **Time-based** | Quarterly | Quarterly | Quarterly |
-| **Business Event** | Plan pricing change | New model years | Plan pricing change |
+| **Business Event** | Plan pricing change | New model years | New financial terminology |
 
 ### Retraining Pipeline
 
@@ -307,7 +301,7 @@ python scripts/run_experiments.py
 
 - **[BankChurn Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/BankChurn-Predictor/models/model_card.md)** — Comprehensive documentation
 - **[CarVision Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/CarVision-Market-Intelligence/models/model_card.md)** — Comprehensive documentation
-- **[TelecomAI Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/TelecomAI-Customer-Intelligence/models/model_card.md)** — Comprehensive documentation
+- **[NLPInsight Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/NLPInsight-Analyzer/models/model_card.md)** — Comprehensive documentation
 
 ---
 
@@ -326,4 +320,4 @@ python scripts/run_experiments.py
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: March 2026

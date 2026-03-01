@@ -41,7 +41,7 @@ Before contributing, please review:
 The portfolio consists of three main microservices:
 - `BankChurn-Predictor/` (FastAPI + Scikit-learn)
 - `CarVision-Market-Intelligence/` (Streamlit + FastAPI)
-- `TelecomAI-Customer-Intelligence/` (FastAPI + VotingClassifier)
+- `NLPInsight-Customer-Intelligence/` (FastAPI + VotingClassifier)
 
 ### 2. Dependency Management
 We use `requirements.in` for direct dependencies and `pip-compile` for locking.

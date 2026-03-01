@@ -126,7 +126,7 @@ This portfolio showcases **3 production-ready ML systems** demonstrating enterpr
 |---------|--------|------|--------------|--------------|
 | **[BankChurn Predictor](projects/bankchurn.md)** | Banking | Classification | AUC=0.87, F1=0.64 | SHAP explainability, drift detection, 88% coverage |
 | **[CarVision Market Intelligence](projects/carvision.md)** | Automotive | Regression | R²=0.77, RMSE=$4,396 | Interactive dashboard, 4 tabs, 95% coverage |
-| **[TelecomAI Customer Intelligence](projects/telecom.md)** | Telecom | Classification | AUC=0.84, Acc=82% | Plan optimization, threshold tuning, 95% coverage |
+| **[NLPInsight Analyzer](projects/nlpinsight.md)** | Finance/NLP | Classification | Sentiment analysis | Transformer + sklearn dual backend, 95% coverage |
 
 ---
 
@@ -193,7 +193,7 @@ docker compose -f docker-compose.demo.yml ps
 | **🏦 BankChurn API** | [http://localhost:8001/docs](http://localhost:8001/docs) | Churn prediction (Swagger UI) |
 | **🚗 CarVision API** | [http://localhost:8002/docs](http://localhost:8002/docs) | Vehicle pricing (Swagger UI) |
 | **🚗 CarVision Dashboard** | [http://localhost:8501](http://localhost:8501) | Interactive analytics (Streamlit) |
-| **📱 TelecomAI API** | [http://localhost:8003/docs](http://localhost:8003/docs) | Plan recommendation (Swagger UI) |
+| **� NLPInsight API** | [http://localhost:8003/docs](http://localhost:8003/docs) | Sentiment analysis (Swagger UI) |
 | **📊 MLflow UI** | [http://localhost:5000](http://localhost:5000) | Experiment tracking |
 
 ---
@@ -237,8 +237,8 @@ docker compose -f docker-compose.demo.yml ps
 
 ### Code Quality
 
-| Metric | BankChurn | CarVision | TelecomAI | Target |
-|--------|-----------|-----------|-----------|--------|
+| Metric | BankChurn | CarVision | NLPInsight | Target |
+|--------|-----------|-----------|------------|--------|
 | **Test Coverage** | 88% | 95% | 95% | >80% ✅ |
 | **Linting** | Clean | Clean | Clean | 100% ✅ |
 | **Type Checking** | Strict | Strict | Strict | 100% ✅ |
@@ -246,12 +246,12 @@ docker compose -f docker-compose.demo.yml ps
 
 ### Performance Benchmarks
 
-| Metric | BankChurn | CarVision | TelecomAI | Target |
-|--------|-----------|-----------|-----------|--------|
-| **P95 Latency** | <50ms | <30ms | <25ms | <200ms ✅ |
-| **Throughput** | 500 RPS | 300 RPS | 1,200 RPS | >100 ✅ |
+| Metric | BankChurn | CarVision | NLPInsight | Target |
+|--------|-----------|-----------|------------|--------|
+| **P95 Latency** | <50ms | <30ms | <100ms | <200ms ✅ |
+| **Docker Image** | 1.83 GB | 1.76 GB | 2.05 GB | CPU-only ✅ |
 | **Memory Usage** | 1.2 GB | 1.8 GB | 1.0 GB | <2GB ✅ |
-| **Model Size** | 4 MB | 6 KB | 156 KB | — |
+| **Model Size** | 3.3 MB | 968 KB | 316 KB | — |
 
 ### Production Infrastructure (Multi-Cloud — Live)
 
@@ -308,15 +308,15 @@ ML-MLOps-Portfolio/
 │   ├── Dockerfile                 # Multi-stage build
 │   └── data_card.md               # Dataset documentation v2.0
 │
-├── TelecomAI-Customer-Intelligence/ # 📱 Plan Recommendation
-│   ├── src/telecom/              # Core package
+├── NLPInsight-Analyzer/            # � Sentiment Analysis (NLP)
+│   ├── src/nlpinsight/            # Core package (dual backend: transformer + sklearn)
 │   ├── app/fastapi_app.py         # REST API
 │   ├── tests/                     # 95% coverage (Codecov)
 │   ├── monitoring/check_drift.py  # Drift detection
 │   ├── scripts/run_mlflow.py      # MLflow experiment runner
 │   ├── models/model_card.md       # Model documentation v2.0
 │   ├── dvc.yaml                   # DVC pipeline definition
-│   ├── Dockerfile                 # Multi-stage build
+│   ├── Dockerfile                 # Multi-stage build (torch CPU-only)
 │   └── data_card.md               # Dataset documentation v2.0
 │
 ├── k8s/                           # ☸ Kubernetes manifests
@@ -378,7 +378,7 @@ ML-MLOps-Portfolio/
 
 - **[BankChurn Predictor](projects/bankchurn.md)** — Churn prediction with SHAP
 - **[CarVision Market Intelligence](projects/carvision.md)** — Price prediction + dashboard
-- **[TelecomAI Customer Intelligence](projects/telecom.md)** — Plan optimization
+- **[NLPInsight Analyzer](projects/nlpinsight.md)** — Sentiment analysis (NLP)
 
 ---
 
@@ -420,7 +420,7 @@ For full details, see [Contributing Guidelines](contributing/guidelines.md).
 !!! info "Documentation Status"
     This documentation is actively maintained.  
     **Last Updated**: February 2026  
-    **Portfolio Version**: 6.2.1
+    **Portfolio Version**: 6.3.0
 
 !!! tip "Quick Evaluation"
     **For recruiters**: Start with the [5-minute Quick Start](getting-started/quickstart.md) and explore the [Streamlit Dashboard](http://localhost:8501) (after starting demo stack)

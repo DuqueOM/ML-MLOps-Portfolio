@@ -31,7 +31,7 @@ cd BankChurn-Predictor
 cd ../CarVision-Market-Intelligence
 # Update version files
 
-cd ../TelecomAI-Customer-Intelligence
+cd ../NLPInsight-Customer-Intelligence
 # Update version files
 
 # Update CHANGELOG.md
@@ -51,7 +51,7 @@ vim CHANGELOG.md
 - Improved API response times
 
 ### Fixed
-- Bug fix in TelecomAI prediction endpoint
+- Bug fix in NLPInsight prediction endpoint
 
 ### Security
 - Updated dependencies with CVE fixes
@@ -123,8 +123,8 @@ docker build -t ghcr.io/duqueom/bankchurn-api:latest ./BankChurn-Predictor
 docker build -t ghcr.io/duqueom/carvision-api:1.2.0 ./CarVision-Market-Intelligence
 docker build -t ghcr.io/duqueom/carvision-api:latest ./CarVision-Market-Intelligence
 
-docker build -t ghcr.io/duqueom/telecom-api:1.2.0 ./TelecomAI-Customer-Intelligence
-docker build -t ghcr.io/duqueom/telecom-api:latest ./TelecomAI-Customer-Intelligence
+docker build -t ghcr.io/duqueom/nlpinsight-api:1.2.0 ./NLPInsight-Customer-Intelligence
+docker build -t ghcr.io/duqueom/nlpinsight-api:latest ./NLPInsight-Customer-Intelligence
 
 # Push to registry
 docker push ghcr.io/duqueom/bankchurn-api:1.2.0
@@ -133,8 +133,8 @@ docker push ghcr.io/duqueom/bankchurn-api:latest
 docker push ghcr.io/duqueom/carvision-api:1.2.0
 docker push ghcr.io/duqueom/carvision-api:latest
 
-docker push ghcr.io/duqueom/telecom-api:1.2.0
-docker push ghcr.io/duqueom/telecom-api:latest
+docker push ghcr.io/duqueom/nlpinsight-api:1.2.0
+docker push ghcr.io/duqueom/nlpinsight-api:latest
 ```
 
 #### 8. Deploy to Production
@@ -230,7 +230,7 @@ jobs:
         project:
           - BankChurn-Predictor
           - CarVision-Market-Intelligence
-          - TelecomAI-Customer-Intelligence
+          - NLPInsight-Customer-Intelligence
     
     steps:
       - name: Checkout code
@@ -386,11 +386,11 @@ mlflow models download -m "models:/BankChurn-XGBoost/1" -d ./models/
 ### 🚀 New Features
 - **BankChurn**: Added batch prediction endpoint
 - **CarVision**: New market analysis dashboard
-- **TelecomAI**: Improved prediction accuracy (+3% F1-score)
+- **NLPInsight**: Improved prediction accuracy (+3% F1-score)
 
 ### 🐛 Bug Fixes
 - Fixed memory leak in CarVision API
-- Resolved CORS issues in TelecomAI
+- Resolved CORS issues in NLPInsight
 
 ### 📈 Performance
 - 30% faster inference time in BankChurn
@@ -414,7 +414,7 @@ mlflow models download -m "models:/BankChurn-XGBoost/1" -d ./models/
 ### 📦 Docker Images
 - `ghcr.io/duqueom/bankchurn-api:1.2.0`
 - `ghcr.io/duqueom/carvision-api:1.2.0`
-- `ghcr.io/duqueom/telecom-api:1.2.0`
+- `ghcr.io/duqueom/nlpinsight-api:1.2.0`
 
 ### 🙏 Contributors
 - @DuqueOM

@@ -102,7 +102,7 @@ tests:
       project:
         - BankChurn-Predictor
         - CarVision-Market-Intelligence
-        - TelecomAI-Customer-Intelligence
+        - NLPInsight-Customer-Intelligence
       python-version: ['3.11', '3.12']
 ```
 
@@ -204,7 +204,7 @@ The pipeline uses matrix builds for efficiency:
 ```yaml
 strategy:
   matrix:
-    project: [BankChurn, CarVision, TelecomAI]
+    project: [BankChurn, CarVision, NLPInsight]
     python-version: ['3.11', '3.12']
   fail-fast: false
 ```
@@ -253,7 +253,7 @@ Recommended settings for `main` branch:
 - [x] Require status checks to pass
   - [x] `tests (BankChurn-Predictor, 3.12)`
   - [x] `tests (CarVision-Market-Intelligence, 3.12)`
-  - [x] `tests (TelecomAI-Customer-Intelligence, 3.12)`
+  - [x] `tests (NLPInsight-Customer-Intelligence, 3.12)`
   - [x] `security`
 - [x] Require branches to be up to date
 - [x] Do not allow bypassing settings

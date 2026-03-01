@@ -385,7 +385,7 @@ All Kubernetes manifests are located in `k8s/`:
 |------|----------|---------|
 | `bankchurn-deployment.yaml` | Deployment + Service | BankChurn API |
 | `carvision-deployment.yaml` | Deployment + Service | CarVision API |
-| `telecom-deployment.yaml` | Deployment + Service | TelecomAI API |
+| `telecom-deployment.yaml` | Deployment + Service | NLPInsight API |
 | `mlflow-deployment.yaml` | Deployment + Service | MLflow server |
 | `grafana-deployment.yaml` | Deployment + Service | Monitoring dashboard |
 | `prometheus-deployment.yaml` | Deployment + Service | Metrics collection |
@@ -448,7 +448,7 @@ spec:
 | BankChurn (ensemble) | ~300Mi / 5m CPU | 512Mi / 300m | 1Gi / 1000m | 2 | 59% mem |
 | CarVision (API) | ~550Mi / 8m CPU | 768Mi / 300m | 1536Mi / 1000m | 2 | 72% mem |
 | CarVision (Streamlit) | ~200Mi / 3m CPU | 256Mi / 100m | 512Mi / 500m | — | 78% mem |
-| TelecomAI | ~140Mi / 4m CPU | 384Mi / 300m | 768Mi / 800m | 2 | 36% mem |
+| NLPInsight | ~140Mi / 4m CPU | 384Mi / 300m | 768Mi / 800m | 2 | 36% mem |
 
 > **v6.3 Changes**: All ML services now run 2 uvicorn workers (was 1). Memory requests increased to accommodate dual-worker model loading. CPU requests normalized to 300m.
 
@@ -474,7 +474,7 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70    # 75% for TelecomAI
+        averageUtilization: 70    # 75% for NLPInsight
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300   # 5min cooldown prevents thrashing
@@ -502,7 +502,7 @@ spec:
 |---------|-----------|-----|-----|-----------|--------|
 | BankChurn | 70% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
 | CarVision | 70% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
-| TelecomAI | 75% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
+| NLPInsight | 75% | 1 | 3 | 300s / 50% | 60s / max(100%, +2) |
 
 ### Ingress
 
@@ -588,9 +588,9 @@ scrape_configs:
       - targets: ['carvision-api:8000']
     metrics_path: /metrics
     
-  - job_name: 'telecom-api'
+  - job_name: 'nlpinsight-api'
     static_configs:
-      - targets: ['telecom-api:8000']
+      - targets: ['nlpinsight-api:8000']
     metrics_path: /metrics
 ```
 

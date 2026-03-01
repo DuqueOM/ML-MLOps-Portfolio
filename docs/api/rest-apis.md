@@ -224,7 +224,7 @@ curl -X POST "http://localhost:8002/predict_batch" \
 
 ---
 
-## TelecomAI API (Port 8003)
+## NLPInsight API (Port 8003)
 
 **Base URL**: `http://localhost:8003`
 
@@ -405,7 +405,7 @@ Each API provides a complete OpenAPI 3.0 specification:
 
 - **BankChurn**: http://localhost:8001/openapi.json
 - **CarVision**: http://localhost:8002/openapi.json
-- **TelecomAI**: http://localhost:8003/openapi.json
+- **NLPInsight**: http://localhost:8003/openapi.json
 
 Download and import into Postman, Insomnia, or other API clients for interactive testing
 

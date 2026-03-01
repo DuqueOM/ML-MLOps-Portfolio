@@ -165,7 +165,7 @@ The download script retries up to 3 times with 10-second intervals between attem
 
 ### Context
 
-The portfolio runs 6 services: 3 ML APIs (BankChurn ~384Mi, CarVision ~640Mi+256Mi sidecar, TelecomAI ~384Mi), MLflow, Prometheus, and Grafana. Total memory footprint is approximately 3–3.5GB under normal operation.
+The portfolio runs 6 services: 3 ML APIs (BankChurn ~384Mi, CarVision ~640Mi+256Mi sidecar, NLPInsight ~384Mi), MLflow, Prometheus, and Grafana. Total memory footprint is approximately 3–3.5GB under normal operation.
 
 ### Decision
 
@@ -183,7 +183,7 @@ The portfolio runs 6 services: 3 ML APIs (BankChurn ~384Mi, CarVision ~640Mi+256
 
 **Why not preemptible/spot instances for production**: Preemptible VMs save 60–80% but can be terminated with 30 seconds notice. For a portfolio demonstration that needs to be reliably accessible for recruiters and reviewers, availability takes priority over the ~$15/month savings. The Terraform configuration correctly sets `preemptible = false` for production while enabling it for dev/staging environments.
 
-**Autoscaling design**: All 3 ML services use CPU-only HPA (memory metric removed — ML models have fixed RAM footprint that prevents HPA scale-down). BankChurn/CarVision target 70% CPU; TelecomAI targets 75%. Conservative scale-down (300s stabilization, max 50% reduction/min) prevents thrashing, while scale-up uses 60s stabilization to filter transient spikes. Memory requests are calibrated to `kubectl top pods` steady-state + headroom for resource scheduling (not autoscaling).
+**Autoscaling design**: All 3 ML services use CPU-only HPA (memory metric removed — ML models have fixed RAM footprint that prevents HPA scale-down). BankChurn/CarVision target 70% CPU; NLPInsight targets 75%. Conservative scale-down (300s stabilization, max 50% reduction/min) prevents thrashing, while scale-up uses 60s stabilization to filter transient spikes. Memory requests are calibrated to `kubectl top pods` steady-state + headroom for resource scheduling (not autoscaling).
 
 ### Cost Impact
 
@@ -240,7 +240,7 @@ GCE-native Ingress (`kubernetes.io/ingress.class: "gce"`) with `ImplementationSp
 ### Rationale
 
 - **GCE-native**: Uses Google's global HTTP(S) load balancer — fully managed, no additional software to deploy or maintain. Automatic SSL termination, DDoS protection, and CDN integration available.
-- **Path-based routing**: `/bankchurn/*` → BankChurn, `/carvision/*` → CarVision, `/telecom/*` → TelecomAI. Clean URL structure with a single IP (`34.120.120.57`).
+- **Path-based routing**: `/bankchurn/*` → BankChurn, `/carvision/*` → CarVision, `/telecom/*` → NLPInsight. Clean URL structure with a single IP (`34.120.120.57`).
 - **defaultBackend**: Ensures requests to `/` or unmatched paths return a valid response (BankChurn) instead of a 404. Important for health checks and discovery.
 - **NodePort services**: Required by GCE Ingress (it communicates with backends via node ports, not ClusterIP).
 
@@ -301,7 +301,7 @@ Use `joblib.dump(pipeline, path, compress=3)` with `.joblib` extension.
 ### Rationale
 
 - **NumPy optimization**: Joblib is specifically optimized for objects containing large NumPy arrays (common in ML pipelines). It memory-maps arrays during loading, reducing peak memory usage.
-- **Compression**: `compress=3` (zlib) reduces model file size by ~40–60% with negligible load time impact. BankChurn model: ~1.7MB, CarVision: ~4MB, TelecomAI: ~0.8MB.
+- **Compression**: `compress=3` (zlib) reduces model file size by ~40–60% with negligible load time impact. BankChurn model: ~1.7MB, CarVision: ~4MB, NLPInsight: ~0.8MB.
 - **Standardization**: All 3 projects use `models/model.joblib` — uniform path, uniform serialization format, uniform Init Container download logic.
 - **Scikit-learn recommendation**: The official scikit-learn documentation recommends joblib over pickle for scikit-learn models specifically because of the NumPy array handling.
 
@@ -423,7 +423,7 @@ Single workflow (`ci-mlops.yml`) with 8 parallel jobs:
 ### Rationale
 
 - **Matrix strategy**: `fail-fast: false` ensures all project/version combinations are tested even if one fails. Catches Python version-specific issues early.
-- **Coverage thresholds enforced in CI**: BankChurn 79%, CarVision 80%, TelecomAI 80%. Pipeline fails if coverage drops below these gates.
+- **Coverage thresholds enforced in CI**: BankChurn 79%, CarVision 80%, NLPInsight 80%. Pipeline fails if coverage drops below these gates.
 - **Security as first-class citizen**: Gitleaks prevents accidental secret commits. Bandit catches Python security anti-patterns. pip-audit flags vulnerable dependencies. Trivy scans Docker images for OS and library CVEs.
 - **Docker build caching**: `type=gha` (GitHub Actions cache) avoids rebuilding unchanged layers. Scoped per project (`scope=${{ matrix.project }}-v2`).
 - **Conditional jobs**: Integration tests, benchmarks, and image publishing only run on `main` branch pushes — saves CI minutes on feature branches while maintaining thorough validation on merge.
@@ -596,11 +596,11 @@ Multi-layer security approach:
 
 ### Context
 
-The portfolio originally contained three tabular ML projects (BankChurn, CarVision, TelecomAI), all using scikit-learn ensembles. This created a perception of limited ML depth — the infrastructure was more sophisticated than the models.
+The portfolio originally contained three tabular ML projects (BankChurn, CarVision, NLPInsight), all using scikit-learn ensembles. This created a perception of limited ML depth — the infrastructure was more sophisticated than the models.
 
 ### Decision
 
-Replace TelecomAI (churn classification with sklearn) with NLPInsight Analyzer — a sentiment analysis project using fine-tuned DistilBERT transformers via PyTorch and HuggingFace.
+Replace NLPInsight (churn classification with sklearn) with NLPInsight Analyzer — a sentiment analysis project using fine-tuned DistilBERT transformers via PyTorch and HuggingFace.
 
 ### Rationale
 
@@ -624,7 +624,7 @@ Text → AutoTokenizer → input_ids + attention_mask → DistilBERT → Classif
 
 | Alternative | Why Not |
 |---|---|
-| **Keep TelecomAI (sklearn)** | Third tabular project adds no new signal. Recruiters see the same patterns repeated. |
+| **Keep NLPInsight (sklearn)** | Third tabular project adds no new signal. Recruiters see the same patterns repeated. |
 | **Computer Vision (CNN)** | Image data requires significant storage, augmentation pipelines, and GPU for training. Higher infrastructure cost with less MLOps differentiation. |
 | **LLM fine-tuning (GPT-2/LLaMA)** | Generative models require significantly more compute (GPU mandatory) and are harder to evaluate rigorously. DistilBERT is the right scale for a portfolio — fast to train, easy to evaluate, and demonstrates the same HuggingFace skills. |
 | **Traditional NLP (TF-IDF + sklearn)** | Misses the deep learning signal entirely. The whole point is demonstrating PyTorch + Transformers competence. |

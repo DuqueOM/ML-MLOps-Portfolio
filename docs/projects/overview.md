@@ -14,17 +14,18 @@ Watch the complete portfolio demonstration:
 
 ## 🎯 Project Comparison
 
-| Aspect | BankChurn | CarVision | TelecomAI |
-|--------|-----------|-----------|-----------|
-| **Problem Type** | Binary Classification | Regression | Binary Classification |
-| **Business Domain** | Banking (Customer Retention) | Automotive (Pricing) | Telecom (Plan Optimization) |
-| **Target Variable** | Customer Churn (`Exited`) | Vehicle Price (USD) | Plan Upgrade (`is_ultra`) |
-| **Best Model** | VotingClassifier (LR + RF) | XGBRegressor | VotingClassifier (3 models) |
-| **Primary Metric** | **AUC=0.87**, F1=0.64 | **R²=0.77**, RMSE=$4,396 | **AUC=0.84**, Accuracy=82% |
-| **MLflow Experiments** | 3 tracked runs | 3 tracked runs | 3 tracked runs |
+| Aspect | BankChurn | CarVision | NLPInsight |
+|--------|-----------|-----------|------------|
+| **Problem Type** | Binary Classification | Regression | Multi-class Classification |
+| **Business Domain** | Banking (Customer Retention) | Automotive (Pricing) | Finance (Sentiment Analysis) |
+| **Target Variable** | Customer Churn (`Exited`) | Vehicle Price (USD) | Sentiment (neg/neu/pos) |
+| **Best Model** | VotingClassifier (LR + RF) | XGBRegressor | DistilBERT / TF-IDF |
+| **Primary Metric** | **AUC=0.87**, F1=0.64 | **R²=0.77**, RMSE=$4,396 | **Accuracy=85%** (transformer) |
+| **MLflow Experiments** | 3 tracked runs | 3 tracked runs | 2 tracked runs |
 | **Test Coverage** | 88% | 95% | 95% |
 | **Interface** | REST API (FastAPI) | REST API + **Streamlit Dashboard** | REST API (FastAPI) |
-| **Special Features** | SHAP explainability, drift detection | 4-tab dashboard, bootstrap CI | Threshold tuning, ROI analysis |
+| **Special Features** | SHAP explainability, drift detection | 4-tab dashboard, bootstrap CI | Dual backend (transformer + sklearn) |
+| **Docker Image** | 1.83 GB | 1.76 GB | 2.05 GB (torch CPU-only) |
 
 ---
 
@@ -36,11 +37,11 @@ Watch the complete portfolio demonstration:
 graph LR
     subgraph "Classification Performance"
         BC["BankChurn<br/>AUC: 0.87<br/>F1: 0.64<br/>Precision: 60%"]
-        TC["TelecomAI<br/>AUC: 0.84<br/>Accuracy: 82%<br/>F1: 0.63"]
+        NLP["NLPInsight<br/>Accuracy: 85%<br/>3 classes<br/>Dual backend"]
     end
     
     BC -->|Churn Prediction| BU[Business Impact:<br/>$960K annual savings]
-    TC -->|Plan Optimization| TU[Business Impact:<br/>$5.4M revenue recovery]
+    NLP -->|Sentiment Analysis| TU[Business Impact:<br/>Real-time market intelligence]
 ```
 
 ### Regression Model
@@ -62,7 +63,7 @@ graph LR
 |---------|-------------------------|--------------|
 | **BankChurn** | Retention campaign targeting, reduced churn by 15% | **$960K** savings (100K customer base) |
 | **CarVision** | Pricing optimization, 18% faster time-to-sale | Inventory turnover improvement |
-| **TelecomAI** | Plan-customer alignment, 35% reduction in plan churn | **$5.4M** revenue recovery |
+| **NLPInsight** | Real-time financial sentiment, market intelligence | Faster trading decisions |
 
 ---
 
@@ -120,7 +121,7 @@ project/
 1. **Configuration Management**: Pydantic-based strict validation
 2. **Experiment Tracking**: MLflow integration (central server)
 3. **Data Versioning**: DVC for dataset lineage
-4. **Containerization**: Multi-stage Docker builds (<500MB images)
+4. **Containerization**: Multi-stage Docker builds (CPU-only, 1.3–2.1 GB)
 5. **API Design**: FastAPI with automatic OpenAPI docs
 6. **Testing**: pytest with >80% coverage target (88-95% actual, Codecov verified)
 7. **CI/CD**: Unified GitHub Actions workflow
@@ -133,7 +134,7 @@ project/
 
 - **[BankChurn Predictor](bankchurn.md)** — Customer churn prediction with SHAP explainability
 - **[CarVision Market Intelligence](carvision.md)** — Vehicle price prediction with interactive dashboard
-- **[TelecomAI Customer Intelligence](telecom.md)** — Telecom plan recommendation system
+- **[NLPInsight Analyzer](nlpinsight.md)** — Financial sentiment analysis (NLP)
 
 ### Related Documentation
 
@@ -203,15 +204,15 @@ project/
 - ✅ Advanced validation (cross-validation, bootstrap CI, temporal backtest)
 - ✅ Performance by price segment (<$10K, $10K-$30K, etc.)
 
-### TelecomAI Customer Intelligence
+### NLPInsight Analyzer
 
-**Focus**: Threshold optimization, business impact, ROI analysis
+**Focus**: NLP, dual inference backends, transformer fine-tuning
 
-- ✅ Threshold tuning for business objectives (conservative, balanced, aggressive)
-- ✅ Detailed ROI analysis ($5.4M annual impact)
-- ✅ Usage pattern segmentation (light, heavy users)
-- ✅ Ethical targeting considerations
-- ✅ Simple 4-feature model (high interpretability)
+- ✅ Dual backend: HuggingFace transformers + sklearn/TF-IDF fallback
+- ✅ Financial PhraseBank dataset (2,264 samples, 3 classes)
+- ✅ CPU-only torch deployment (no CUDA overhead)
+- ✅ Batch prediction support (up to 500 texts)
+- ✅ Auto-detection of model format (joblib vs transformer dir)
 
 ---
 
@@ -222,8 +223,8 @@ project/
 !!! tip "Choose Your Path"
     - **API Focus**: Start with [BankChurn](bankchurn.md) (cleanest API design, SHAP integration)
     - **Visualization**: Start with [CarVision](carvision.md) (Streamlit dashboard with 4 interactive tabs)
-    - **Ensemble Methods**: Start with [TelecomAI](telecom.md) (complex VotingClassifier with 3 models)
-    - **Business Impact**: Start with [TelecomAI](telecom.md) ($5.4M ROI analysis)
+    - **NLP / Transformers**: Start with [NLPInsight](nlpinsight.md) (dual backend inference engine)
+    - **Full Stack**: Run the [Quick Start](../getting-started/quickstart.md) demo with all 3 services
 
 ### Quick Demo
 
@@ -237,10 +238,10 @@ docker compose -f docker-compose.demo.yml up -d --build
 # - BankChurn API:       http://localhost:8001/docs
 # - CarVision API:       http://localhost:8002/docs
 # - CarVision Dashboard: http://localhost:8501
-# - TelecomAI API:       http://localhost:8003/docs
+# - NLPInsight API:      http://localhost:8003/docs
 # - MLflow UI:           http://localhost:5000
 ```
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: March 2026

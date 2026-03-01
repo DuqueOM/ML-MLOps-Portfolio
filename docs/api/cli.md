@@ -226,12 +226,12 @@ python main.py analyze --config configs/config.yaml --output reports/
 
 ---
 
-## TelecomAI CLI
+## NLPInsight CLI
 
 ### Commands
 
 ```bash
-cd TelecomAI-Customer-Intelligence
+cd NLPInsight-Customer-Intelligence
 
 # Train model
 python main.py train --config configs/config.yaml
@@ -269,7 +269,7 @@ python main.py train \
 **Output:**
 
 ```
-=== TelecomAI Model Evaluation ===
+=== NLPInsight Model Evaluation ===
 
 Classification Metrics:
   AUC-ROC:   0.840

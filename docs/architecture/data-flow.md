@@ -152,7 +152,7 @@ graph LR
     `price_per_mile` and `price_category` are dropped from features because they 
     are derived from the target variable (`price`) and would cause data leakage.
 
-### TelecomAI Customer Intelligence
+### NLPInsight Analyzer
 
 ```mermaid
 graph LR

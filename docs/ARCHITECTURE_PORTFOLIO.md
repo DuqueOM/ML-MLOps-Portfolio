@@ -31,13 +31,13 @@ graph TB
     subgraph "Data Layer"
         D1[BankChurn Data]
         D2[CarVision Data]
-        D3[TelecomAI Data]
+        D3[NLPInsight Data]
     end
     
     subgraph "Training Pipeline"
         T1[BankChurn Training<br/>Ensemble LR+RF]
         T2[CarVision Training<br/>XGBRegressor]
-        T3[TelecomAI Training<br/>Ensemble LR+GB+RF]
+        T3[NLPInsight Training<br/>Ensemble LR+GB+RF]
     end
     
     subgraph "MLflow Tracking"
@@ -47,13 +47,13 @@ graph TB
     subgraph "Model Registry"
         M1[BankChurn Model]
         M2[CarVision Model]
-        M3[TelecomAI Model]
+        M3[NLPInsight Model]
     end
     
     subgraph "Inference Services"
         API1[BankChurn API<br/>:8001]
         API2[CarVision API<br/>:8002]
-        API3[TelecomAI API<br/>:8003]
+        API3[NLPInsight API<br/>:8003]
         DASH[CarVision Dashboard<br/>:8501]
     end
     
@@ -201,7 +201,7 @@ Pipeline([
 - ✅ Advanced validation (CV, bootstrap CI, temporal backtest)
 - ✅ 94% test coverage
 
-### TelecomAI-Customer-Intelligence
+### NLPInsight-Customer-Intelligence
 **Domain**: Telecom Plan Recommendation (Plan Optimization)  
 **ML Framework**: VotingClassifier (LogisticRegression + GradientBoosting + RandomForest)  
 **Version**: 1.5.0 (Production)  
@@ -213,9 +213,9 @@ Raw Data (4 features) → Preprocessing (StandardScaler) → VotingClassifier �
 ```
 
 **Key Components**:
-- `src/telecom/data.py`: Data loading (users_behavior.csv)
-- `src/telecom/training.py`: Model training with class weights
-- `src/telecom/prediction.py`: PlanPredictor class
+- `src/nlpinsight/data.py`: Data loading (users_behavior.csv)
+- `src/nlpinsight/training.py`: Model training with class weights
+- `src/nlpinsight/prediction.py`: PlanPredictor class
 - `app/fastapi_app.py`: REST API (Port 8003)
 
 **Unified Pipeline** (models/model.joblib):
@@ -271,7 +271,7 @@ The portfolio includes a **production-ready observability stack** monitoring all
 | **Evidently** | ML drift detection | Integrated in BankChurn monitoring |
 
 **"ML Portfolio Metrics" Dashboard** (auto-provisioned via ConfigMap):
-- 📈 **Prediction Rate — All Services**: BankChurn, CarVision, TelecomAI req/s
+- 📈 **Prediction Rate — All Services**: BankChurn, CarVision, NLPInsight req/s
 - ⏱️ **Latency P95 — All Services**: 95th percentile per service
 - � **Total Requests** (×3): Individual counters per service
 - 🎯 **Targets UP**: Prometheus scrape targets in healthy state
@@ -321,7 +321,7 @@ jobs:
 
 - **Feature Store Layer**  
   Introduce a centralized Feature Store (e.g., Feast) to serve consistent, versioned features
-  across BankChurn, CarVision, and TelecomAI. The current design already uses sklearn Pipelines
+  across BankChurn, CarVision, and NLPInsight. The current design already uses sklearn Pipelines
   and clear `data`/`features` separation, making it straightforward to map existing features
   to a Feature Store entity without breaking the projects.
 
@@ -462,9 +462,9 @@ Automated deployment pipeline: detect changes, build Docker images, push to Arti
 
 ### API Documentation (Swagger UI) — Running on GKE
 
-| BankChurn API | CarVision API | TelecomAI API |
+| BankChurn API | CarVision API | NLPInsight API |
 |---------------|---------------|---------------|
-| ![BankChurn](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/apis/25-fastapi-swagger-bankchurn.png) | ![CarVision](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/apis/27-fastapi-swagger-carvision.png) | ![TelecomAI](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/apis/29-fastapi-swagger-telecom.png) |
+| ![BankChurn](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/apis/25-fastapi-swagger-bankchurn.png) | ![CarVision](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/apis/27-fastapi-swagger-carvision.png) | ![NLPInsight](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/apis/29-fastapi-swagger-telecom.png) |
 
 ### Monitoring — Grafana + Prometheus (Running on GKE)
 

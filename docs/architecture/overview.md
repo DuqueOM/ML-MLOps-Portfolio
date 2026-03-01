@@ -28,7 +28,7 @@ graph TB
     subgraph "Serving Layer"
         API1["BankChurn API<br/>:8001"]
         API2["CarVision API<br/>:8002"]
-        API3["TelecomAI API<br/>:8003"]
+        API3["NLPInsight API<br/>:8003"]
         DASH["Streamlit Dashboard<br/>:8501"]
     end
 
@@ -172,7 +172,7 @@ graph LR
 - **No Data Leakage**: `price_per_mile` and `price_category` dropped from features (they depend on target)
 - **Dual Interface**: FastAPI for programmatic access, Streamlit for interactive exploration
 
-### TelecomAI Customer Intelligence
+### NLPInsight Analyzer
 
 ```mermaid
 graph LR
@@ -228,7 +228,7 @@ graph TB
         K8S["GKE Cluster<br/>(us-central1)"]
         BC["BankChurn Pod"]
         CV["CarVision Pod"]
-        TC["TelecomAI Pod"]
+        TC["NLPInsight Pod"]
         MLF["MLflow Pod"]
         PROM["Prometheus Pod"]
         GRAF["Grafana Pod"]
@@ -273,7 +273,7 @@ graph TB
         EKS["EKS Cluster<br/>(us-east-1)"]
         BC2["BankChurn Pod"]
         CV2["CarVision Pod"]
-        TC2["TelecomAI Pod"]
+        TC2["NLPInsight Pod"]
         MLF2["MLflow Pod"]
         PROM2["Prometheus Pod"]
         GRAF2["Grafana Pod"]

@@ -16,7 +16,7 @@
 │  │  :8000   │ │:8000+8501│     │  │  :8000   │ │  :8000 │   │
 │  └────┬─────┘ └────┬─────┘     │  └────┬─────┘ └───┬────┘   │
 │  ┌────┴─────┐ ┌────┴─────┐     │  ┌────┴─────┐ ┌───┴────┐   │
-│  │TelecomAI │ │ MLflow   │     │  │TelecomAI │ │ MLflow │   │
+│  │NLPInsight│ │ MLflow   │     │  │NLPInsigh│ │ MLflow │   │
 │  │  :8000   │ │  :5000   │     │  │  :8000   │ │  :5000 │   │
 │  └──────────┘ └──────────┘     │  └──────────┘ └────────┘   │
 │  Prometheus + Grafana          │  Prometheus + Grafana      │
@@ -35,7 +35,7 @@
 | Auto-scaling (HPA) | CPU-based | CPU-based | Scaled 3→1 pods under low load |
 | Model serving (FastAPI) | 3 services | 3 services | `/health` + `/predict` endpoints |
 | Batch prediction | All 3 APIs | All 3 APIs | `/predict_batch` endpoints |
-| Monitoring (Prometheus) | Custom metrics | Custom metrics | `bankchurn_*`, `carvision_*`, `telecom_*` |
+| Monitoring (Prometheus) | Custom metrics | Custom metrics | `bankchurn_*`, `carvision_*`, `nlpinsight_*` |
 | Dashboards (Grafana) | ML Performance | ML Performance | Latency, throughput, error rates |
 | Experiment tracking (MLflow) | Cloud SQL backend | RDS backend | Hyperparameter comparison |
 | Infrastructure as Code | Terraform GCP | Terraform AWS | `infra/terraform/{gcp,aws}/` |
@@ -54,7 +54,7 @@
 |---------|---------|-----------|------------|-------------------|
 | BankChurn | ~271ms | ~517ms (`?explain=true`) | 1.2 MB | ~300Mi |
 | CarVision | ~257ms | N/A | 8.5 MB | ~550Mi |
-| TelecomAI | ~299ms | N/A | 0.4 MB | ~140Mi |
+| NLPInsight | ~100ms | N/A | 316 KB | ~1.0 GB |
 
 ### Load Test Results (Locust, 10 users, 2min, via kubectl port-forward)
 
@@ -62,7 +62,7 @@
 |----------|-----|-----|-----|-----|----------|--------|
 | bankchurn:predict | 140ms | 140ms | 170ms | 220ms | 251 | 1 (0.4%) |
 | carvision:predict | 88ms | 91ms | 96ms | 99ms | 233 | 0 |
-| telecom:predict | 83ms | 86ms | 87ms | 89ms | 237 | 0 |
+| nlpinsight:predict | 83ms | 86ms | 87ms | 89ms | 237 | 0 |
 | **Aggregated** | **89ms** | **120ms** | **130ms** | **140ms** | **985** | **1 (0.1%)** |
 
 **SLA Compliance**: Error rate 0.1% < 1% ✅ · P95 130ms < 500ms ✅ · P99 140ms < 1000ms ✅
@@ -152,4 +152,4 @@ done
 
 ---
 
-**Last Updated**: February 2026 (performance optimizations applied)
+**Last Updated**: March 2026 (Docker optimization + NLPInsight rename)

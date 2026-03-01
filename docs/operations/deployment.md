@@ -29,7 +29,7 @@ bash scripts/setup_demo_models.sh
 # Build images (first time or after changes)
 docker build -t ml-portfolio-bankchurn:latest -f BankChurn-Predictor/Dockerfile BankChurn-Predictor
 docker build -t ml-portfolio-carvision:latest -f CarVision-Market-Intelligence/Dockerfile CarVision-Market-Intelligence
-docker build -t ml-portfolio-telecom:latest -f TelecomAI-Customer-Intelligence/Dockerfile TelecomAI-Customer-Intelligence
+docker build -t ml-portfolio-nlpinsight:latest -f NLPInsight-Customer-Intelligence/Dockerfile NLPInsight-Customer-Intelligence
 
 # Start the stack
 docker compose -f docker-compose.demo.yml up -d
@@ -45,7 +45,7 @@ docker compose -f docker-compose.demo.yml ps
 | MLflow | 5000 | `curl http://localhost:5000/health` |
 | BankChurn API | 8001 | `curl http://localhost:8001/health` |
 | CarVision API | 8002 | `curl http://localhost:8002/health` |
-| TelecomAI API | 8003 | `curl http://localhost:8003/health` |
+| NLPInsight API | 8003 | `curl http://localhost:8003/health` |
 | CarVision Dashboard | 8501 | `curl http://localhost:8501` |
 
 ### Enable Monitoring (Optional)
@@ -115,7 +115,7 @@ gcloud container clusters get-credentials ml-portfolio-gke-production \
 gcloud auth configure-docker us-central1-docker.pkg.dev
 
 # Build and push each service
-for svc in BankChurn-Predictor CarVision-Market-Intelligence TelecomAI-Customer-Intelligence; do
+for svc in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Customer-Intelligence; do
   docker build -t us-central1-docker.pkg.dev/PROJECT_ID/ml-portfolio/$(echo $svc | tr '[:upper:]' '[:lower:]'):latest -f $svc/Dockerfile $svc
   docker push us-central1-docker.pkg.dev/PROJECT_ID/ml-portfolio/$(echo $svc | tr '[:upper:]' '[:lower:]'):latest
 done
@@ -166,7 +166,7 @@ kubectl port-forward svc/bankchurn-service 8001:80 -n ml-portfolio
 # CarVision API
 kubectl port-forward svc/carvision-service 8002:80 -n ml-portfolio
 
-# TelecomAI API
+# NLPInsight API
 kubectl port-forward svc/telecom-service 8003:80 -n ml-portfolio
 
 # Grafana (credentials in K8s secret)

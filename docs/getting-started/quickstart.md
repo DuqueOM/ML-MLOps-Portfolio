@@ -44,7 +44,7 @@ Once the stack is running, access the services:
 | **🏦 BankChurn API** | [http://localhost:8001/docs](http://localhost:8001/docs) | Churn prediction (Swagger UI) |
 | **🚗 CarVision API** | [http://localhost:8002/docs](http://localhost:8002/docs) | Vehicle pricing (Swagger UI) |
 | **🚗 CarVision Dashboard** | [http://localhost:8501](http://localhost:8501) | Interactive analytics (Streamlit) |
-| **📱 TelecomAI API** | [http://localhost:8003/docs](http://localhost:8003/docs) | Plan recommendation (Swagger UI) |
+| **📱 NLPInsight API** | [http://localhost:8003/docs](http://localhost:8003/docs) | Plan recommendation (Swagger UI) |
 | **📊 MLflow UI** | [http://localhost:5000](http://localhost:5000) | Experiment tracking |
 
 ---
@@ -94,7 +94,7 @@ curl -X POST "http://localhost:8002/predict" \
 }
 ```
 
-### TelecomAI Plan Recommendation
+### NLPInsight Plan Recommendation
 
 ```bash
 curl -X POST "http://localhost:8003/predict" \
@@ -124,7 +124,7 @@ Verify all services are running:
 # Quick health check (all services)
 curl http://localhost:8001/health  # BankChurn
 curl http://localhost:8002/health  # CarVision
-curl http://localhost:8003/health  # TelecomAI
+curl http://localhost:8003/health  # NLPInsight
 
 # Expected response from each:
 # {"status": "healthy", "model_loaded": true, "model_version": "1.5.0"}

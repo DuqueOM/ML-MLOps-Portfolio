@@ -14,7 +14,7 @@ graph TB
     subgraph "ML Services"
         BC["BankChurn API<br/>:8001"]
         CV["CarVision API<br/>:8002"]
-        TC["TelecomAI API<br/>:8003"]
+        TC["NLPInsight API<br/>:8003"]
     end
     
     subgraph "Metrics Collection"
@@ -59,7 +59,7 @@ Each ML API exposes project-specific metrics at the `/metrics` endpoint:
 | `bankchurn_predictions_total` | Counter | Total predictions made | BankChurn |
 | `bankchurn_request_duration_seconds` | Histogram | Request latency | BankChurn |
 | `carvision_requests_total` | Counter | Total HTTP requests | CarVision |
-| `telecom_requests_total` | Counter | Total HTTP requests | TelecomAI |
+| `telecom_requests_total` | Counter | Total HTTP requests | NLPInsight |
 
 ![Prometheus UI](../media/screenshots/monitoring/36-prometheus-ui.png)
 *Prometheus web UI for ad-hoc metric queries*
@@ -142,7 +142,7 @@ The portfolio includes a **production-ready Grafana dashboard** with service-spe
 |-------|-------------|-------------|
 | **BankChurn Requests** | `rate(bankchurn_requests_total[5m])` | Request rate over time |
 | **CarVision Requests** | `rate(carvision_requests_total[5m])` | Request rate over time |
-| **TelecomAI Requests** | `rate(telecom_requests_total[5m])` | Request rate over time |
+| **NLPInsight Requests** | `rate(telecom_requests_total[5m])` | Request rate over time |
 | **BankChurn Latency** | `bankchurn_request_duration_seconds` | P50/P95 latency |
 
 ![Grafana After Load Test](../media/screenshots/monitoring/38d-grafana-after-loadtest.png)
@@ -316,7 +316,7 @@ def check_drift():
 MLflow runs as a dedicated service in the K8s cluster, tracking experiments for all 3 projects.
 
 ![MLflow Experiments](../media/screenshots/monitoring/39-mlflow-experiments.png)
-*MLflow UI showing 3 experiments with 9 total runs across BankChurn, CarVision, and TelecomAI*
+*MLflow UI showing 3 experiments with 9 total runs across BankChurn, CarVision, and NLPInsight*
 
 ### MLflow Experiments Summary
 
@@ -324,7 +324,7 @@ MLflow runs as a dedicated service in the K8s cluster, tracking experiments for 
 |------------|------|------------|------------|
 | **BankChurn-Predictor** | 3 | BC-2_RandomForest_Tuned | AUC 0.8652, F1 0.6432 |
 | **CarVision-Market-Intelligence** | 3 | CV-2_RandomForest_Tuned | R² 0.7692, RMSE $4,396 |
-| **TelecomAI-Customer-Intelligence** | 3 | TL-3_RandomForest | Acc 0.818, F1 0.6309 |
+| **NLPInsight-Customer-Intelligence** | 3 | TL-3_RandomForest | Acc 0.818, F1 0.6309 |
 
 ### What Gets Tracked
 
@@ -481,7 +481,7 @@ done
 |---------|--------------|-------------|------------|
 | BankChurn | 99.9% | <200ms | <1% |
 | CarVision | 99.5% | <500ms | <2% |
-| TelecomAI | 99.9% | <100ms | <1% |
+| NLPInsight | 99.9% | <100ms | <1% |
 
 ---
 
@@ -518,7 +518,7 @@ All ML services use CPU-only Horizontal Pod Autoscaling. Memory-based scaling wa
 |---------|-----------|----------|----------|------------------|
 | **BankChurn** | 70% | 1 | 3 | ~300Mi (fixed) |
 | **CarVision** | 70% | 1 | 3 | ~550Mi (fixed) |
-| **TelecomAI** | 75% | 1 | 3 | ~140Mi (fixed) |
+| **NLPInsight** | 75% | 1 | 3 | ~140Mi (fixed) |
 
 > **Design Decision**: ML inference services load models into RAM at startup. Memory usage is constant regardless of traffic, so memory-based HPA would never scale down. CPU scales proportionally with request volume, making it the correct scaling signal.
 
