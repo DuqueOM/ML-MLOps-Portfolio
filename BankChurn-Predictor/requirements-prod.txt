@@ -27,6 +27,9 @@ prometheus-client>=0.17.0
 # NOTE: shap excluded from prod — pulls torch/CUDA (~2GB).
 # explainability.py degrades gracefully when shap is absent.
 
+# MLflow (imported via __init__.py → training.py)
+mlflow>=2.9
+
 # HTTP (healthcheck, callbacks)
 requests>=2.27.0
 
