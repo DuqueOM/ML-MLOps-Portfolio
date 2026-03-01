@@ -12,7 +12,7 @@ Usage:
     # Prerequisite: port-forward all services
     kubectl port-forward svc/bankchurn-service 8000:80 -n ml-portfolio &
     kubectl port-forward svc/carvision-service 8001:80 -n ml-portfolio &
-    kubectl port-forward svc/telecom-service   8002:80 -n ml-portfolio &
+    kubectl port-forward svc/nlpinsight-service   8002:80 -n ml-portfolio &
 
     # Run all phases
     python scripts/load_test_services.py
@@ -58,8 +58,8 @@ SERVICES = {
         "health_endpoint": "/health",
         "metrics_endpoint": "/metrics",
     },
-    "telecom": {
-        "name": "TelecomAI-Customer-Intelligence",
+    "nlpinsight": {
+        "name": "NLPInsight-Analyzer",
         "base_url": "http://localhost:8002",
         "predict_endpoint": "/predict",
         "health_endpoint": "/health",
@@ -113,8 +113,8 @@ def generate_carvision_payload() -> Dict[str, Any]:
     }
 
 
-def generate_telecom_payload() -> Dict[str, Any]:
-    """Generate a realistic, randomized TelecomAI customer payload."""
+def generate_nlpinsight_payload() -> Dict[str, Any]:
+    """Generate a realistic, randomized NLPInsight customer payload."""
     return {
         "calls": round(random.uniform(0, 200), 1),
         "minutes": round(random.uniform(0, 1000), 1),
@@ -126,7 +126,7 @@ def generate_telecom_payload() -> Dict[str, Any]:
 PAYLOAD_GENERATORS = {
     "bankchurn": generate_bankchurn_payload,
     "carvision": generate_carvision_payload,
-    "telecom": generate_telecom_payload,
+    "nlpinsight": generate_nlpinsight_payload,
 }
 
 # ---------------------------------------------------------------------------
@@ -491,14 +491,14 @@ Examples:
     parser.add_argument("--service", "-s", choices=list(SERVICES.keys()), help="Test only a specific service")
     parser.add_argument("--bankchurn-port", type=int, default=8000)
     parser.add_argument("--carvision-port", type=int, default=8001)
-    parser.add_argument("--telecom-port", type=int, default=8002)
+    parser.add_argument("--nlpinsight-port", type=int, default=8002)
 
     args = parser.parse_args()
 
     # Apply port overrides
     SERVICES["bankchurn"]["base_url"] = f"http://localhost:{args.bankchurn_port}"
     SERVICES["carvision"]["base_url"] = f"http://localhost:{args.carvision_port}"
-    SERVICES["telecom"]["base_url"] = f"http://localhost:{args.telecom_port}"
+    SERVICES["nlpinsight"]["base_url"] = f"http://localhost:{args.nlpinsight_port}"
 
     # Filter services if single service mode
     services = SERVICES

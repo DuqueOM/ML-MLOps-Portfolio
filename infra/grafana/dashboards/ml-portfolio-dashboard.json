@@ -104,9 +104,9 @@
       "id": 4,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
       "targets": [
-        { "expr": "up{job=\"telecom-intelligence\"}", "legendFormat": "", "refId": "A" }
+        { "expr": "up{job=\"nlpinsight-analyzer\"}", "legendFormat": "", "refId": "A" }
       ],
-      "title": "📱 TelecomAI API",
+      "title": "📱 NLPInsight API",
       "type": "stat"
     },
     {
@@ -160,7 +160,7 @@
       "id": 7,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "rate(http_requests_total{job=~\"bankchurn.*|carvision.*|telecom.*\"}[5m])", "legendFormat": "{{job}} - {{method}} {{endpoint}}", "refId": "A" }
+        { "expr": "rate(http_requests_total{job=~\"bankchurn.*|carvision.*|nlpinsight.*\"}[5m])", "legendFormat": "{{job}} - {{method}} {{endpoint}}", "refId": "A" }
       ],
       "title": "Request Rate (req/s)",
       "type": "timeseries"
@@ -180,8 +180,8 @@
       "id": 8,
       "options": { "legend": { "calcs": ["mean", "p95", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~\"bankchurn.*|carvision.*|telecom.*\"}[5m]))*1000", "legendFormat": "{{job}} P95", "refId": "A" },
-        { "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=~\"bankchurn.*|carvision.*|telecom.*\"}[5m]))*1000", "legendFormat": "{{job}} P50", "refId": "B" }
+        { "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=~\"bankchurn.*|carvision.*|nlpinsight.*\"}[5m]))*1000", "legendFormat": "{{job}} P95", "refId": "A" },
+        { "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=~\"bankchurn.*|carvision.*|nlpinsight.*\"}[5m]))*1000", "legendFormat": "{{job}} P50", "refId": "B" }
       ],
       "title": "Request Latency (ms)",
       "type": "timeseries"
@@ -251,9 +251,9 @@
       "id": 12,
       "options": { "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "increase(predictions_total{job=\"telecom-intelligence\"}[1h])", "legendFormat": "Plan={{prediction}}", "refId": "A" }
+        { "expr": "increase(predictions_total{job=\"nlpinsight-analyzer\"}[1h])", "legendFormat": "Plan={{prediction}}", "refId": "A" }
       ],
-      "title": "📱 TelecomAI Predictions/hour",
+      "title": "📱 NLPInsight Predictions/hour",
       "type": "timeseries"
     },
     {
@@ -323,9 +323,9 @@
       "id": 16,
       "options": { "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
       "targets": [
-        { "expr": "model_drift_score{job=\"telecom-intelligence\"}", "legendFormat": "", "refId": "A" }
+        { "expr": "model_drift_score{job=\"nlpinsight-analyzer\"}", "legendFormat": "", "refId": "A" }
       ],
-      "title": "📱 TelecomAI Drift Score",
+      "title": "📱 NLPInsight Drift Score",
       "type": "gauge"
     },
     {
@@ -374,7 +374,7 @@
       "id": 19,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "container_memory_usage_bytes{container=~\"bankchurn.*|carvision.*|telecom.*\"}", "legendFormat": "{{container}}", "refId": "A" }
+        { "expr": "container_memory_usage_bytes{container=~\"bankchurn.*|carvision.*|nlpinsight.*\"}", "legendFormat": "{{container}}", "refId": "A" }
       ],
       "title": "Memory Usage (bytes)",
       "type": "timeseries"

@@ -332,6 +332,7 @@ AVAILABLE_MODELS = {
     "logistic_regression": "sklearn",
     "random_forest": "sklearn",
     "ensemble": "sklearn",
+    "stacking": "sklearn",
     "mlp": "sklearn",
     "xgboost": "xgboost",
     "lightgbm": "lightgbm",
@@ -421,6 +422,77 @@ def build_model(
         voting = params.get("voting", "soft")
         return VotingClassifier(estimators=[("lr", lr), ("rf", rf)], voting=voting, weights=weights)
 
+    elif model_name == "stacking":
+        from sklearn.calibration import CalibratedClassifierCV
+        from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier, StackingClassifier
+        from sklearn.linear_model import LogisticRegression
+
+        # Base estimators: diverse model families for better generalization
+        base_estimators = [
+            (
+                "rf",
+                RandomForestClassifier(
+                    n_estimators=200,
+                    max_depth=12,
+                    min_samples_leaf=4,
+                    class_weight="balanced",
+                    random_state=seed,
+                    n_jobs=-1,
+                ),
+            ),
+            (
+                "gb",
+                GradientBoostingClassifier(
+                    n_estimators=200,
+                    max_depth=5,
+                    learning_rate=0.05,
+                    subsample=0.8,
+                    random_state=seed,
+                ),
+            ),
+            (
+                "lr",
+                LogisticRegression(
+                    C=0.5,
+                    max_iter=1000,
+                    class_weight="balanced",
+                    random_state=seed,
+                ),
+            ),
+        ]
+
+        # Add XGBoost/LightGBM if available
+        if XGBOOST_AVAILABLE:
+            base_estimators.append(("xgb", build_xgboost_classifier(seed=seed)))
+        if LIGHTGBM_AVAILABLE:
+            base_estimators.append(("lgb", build_lightgbm_classifier(seed=seed)))
+
+        # Meta-learner: LogReg on base model predictions (probability calibration)
+        meta_learner = LogisticRegression(
+            C=1.0,
+            max_iter=1000,
+            random_state=seed,
+        )
+
+        stacker = StackingClassifier(
+            estimators=base_estimators,
+            final_estimator=meta_learner,
+            cv=5,
+            stack_method="predict_proba",
+            passthrough=False,
+            n_jobs=-1,
+        )
+
+        # Wrap in CalibratedClassifierCV for well-calibrated probabilities
+        use_calibration = params.get("calibrate", True)
+        if use_calibration:
+            return CalibratedClassifierCV(
+                stacker,
+                cv=3,
+                method="isotonic",
+            )
+        return stacker
+
     else:
         raise ValueError(f"Unknown model: '{model_name}'. Available: {list(AVAILABLE_MODELS.keys())}")
 
@@ -431,6 +503,7 @@ def get_available_models() -> Dict[str, bool]:
         "logistic_regression": True,
         "random_forest": True,
         "ensemble": True,
+        "stacking": True,
         "mlp": True,
         "xgboost": XGBOOST_AVAILABLE,
         "lightgbm": LIGHTGBM_AVAILABLE,

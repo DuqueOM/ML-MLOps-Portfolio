@@ -32,15 +32,15 @@ updates:
       - "CarVision"
     open-pull-requests-limit: 5
 
-  # Python dependencies - TelecomAI-Customer-Intelligence
+  # Python dependencies - NLPInsight-Analyzer
   - package-ecosystem: "pip"
-    directory: "/TelecomAI-Customer-Intelligence"
+    directory: "/NLPInsight-Analyzer"
     schedule:
       interval: "weekly"
     labels:
       - "dependencies"
       - "python"
-      - "TelecomAI"
+      - "NLPInsight"
     open-pull-requests-limit: 5
 
   # Docker

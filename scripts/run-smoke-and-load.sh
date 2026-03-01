@@ -10,7 +10,7 @@ kubectl port-forward svc/bankchurn-service 8000:80 -n ml-portfolio > /dev/null 2
 sleep 2
 kubectl port-forward svc/carvision-service 8001:80 -n ml-portfolio > /dev/null 2>&1 &
 sleep 2
-kubectl port-forward svc/telecom-service 8002:80 -n ml-portfolio > /dev/null 2>&1 &
+kubectl port-forward svc/nlpinsight-service 8002:80 -n ml-portfolio > /dev/null 2>&1 &
 sleep 2
 
 echo "Waiting for port-forwards to stabilize..."
@@ -30,7 +30,7 @@ for i in $(seq 1 15); do
 done
 for i in $(seq 1 15); do
   if curl -sf http://localhost:8002/health > /dev/null 2>&1; then
-    echo "TelecomAI ready after ${i}s"
+    echo "NLPInsight ready after ${i}s"
     break
   fi
   sleep 1
@@ -103,8 +103,8 @@ else
   FAIL=$((FAIL+1))
 fi
 
-# --- TelecomAI Health ---
-echo -n "[TelecomAI] Health check... "
+# --- NLPInsight Health ---
+echo -n "[NLPInsight] Health check... "
 if curl -sf http://localhost:8002/health > /dev/null; then
   echo "PASS"
   PASS=$((PASS+1))
@@ -113,8 +113,8 @@ else
   FAIL=$((FAIL+1))
 fi
 
-# --- TelecomAI Predict ---
-echo -n "[TelecomAI] Predict... "
+# --- NLPInsight Predict ---
+echo -n "[NLPInsight] Predict... "
 RESP=$(curl -sf -X POST http://localhost:8002/predict \
   -H "Content-Type: application/json" \
   -d '{"calls":50,"minutes":300.5,"messages":40,"mb_used":2048.0}')
@@ -157,7 +157,7 @@ curl -sf -o /dev/null -w "%{time_total}s\n" -X POST http://localhost:8001/predic
   -H "Content-Type: application/json" \
   -d '{"model_year":2018,"model":"Ford F-150","condition":"excellent","cylinders":6,"fuel":"gas","odometer":30000,"transmission":"automatic","drive":"4wd","type":"truck","paint_color":"white","state":"ca"}'
 
-echo -n "[TelecomAI] Single predict latency: "
+echo -n "[NLPInsight] Single predict latency: "
 curl -sf -o /dev/null -w "%{time_total}s\n" -X POST http://localhost:8002/predict \
   -H "Content-Type: application/json" \
   -d '{"calls":50,"minutes":300.5,"messages":40,"mb_used":2048.0}'

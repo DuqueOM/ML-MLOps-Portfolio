@@ -15,4 +15,4 @@ resources:
   - metrics-configmap-aws.yaml
   - bankchurn-deployment-aws.yaml
   - carvision-deployment-aws.yaml
-  - telecom-deployment-aws.yaml
+  - nlpinsight-deployment-aws.yaml

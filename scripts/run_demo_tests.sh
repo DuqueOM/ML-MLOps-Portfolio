@@ -11,7 +11,7 @@ echo -e "${GREEN}Starting Cross-Project Demo Integration Tests...${NC}"
 # Base URLs
 BANKCHURN_URL="http://localhost:8001"
 CARVISION_URL="http://localhost:8002"
-TELECOM_URL="http://localhost:8003"
+NLPINSIGHT_URL="http://localhost:8003"
 MLFLOW_URL="http://localhost:5000"
 
 # Helper function to check health with retries
@@ -74,9 +74,9 @@ else
     # Don't fail the script for dashboard yet as it might take longer
 fi
 
-# 4. Verify TelecomAI Customer Intelligence
-check_health "$TELECOM_URL" "TelecomAI API"
-check_endpoint "$TELECOM_URL/docs" "TelecomAI Docs"
+# 4. Verify NLPInsight Customer Intelligence
+check_health "$NLPINSIGHT_URL" "NLPInsight API"
+check_endpoint "$NLPINSIGHT_URL/docs" "NLPInsight Docs"
 
 # 5. Test Prediction Endpoints (Smoke Test)
 
@@ -130,15 +130,12 @@ else
     exit 1
 fi
 
-# TelecomAI Prediction Test
-echo -n "Testing TelecomAI Prediction... "
-RESPONSE=$(curl -s -X POST "$TELECOM_URL/predict" \
+# NLPInsight Prediction Test
+echo -n "Testing NLPInsight Prediction... "
+RESPONSE=$(curl -s -X POST "$NLPINSIGHT_URL/predict" \
      -H "Content-Type: application/json" \
      -d '{
-        "calls": 40.0,
-        "minutes": 311.9,
-        "messages": 83.0,
-        "mb_used": 19915.42
+        "text": "Revenue growth exceeded expectations this quarter."
      }')
 
 if echo "$RESPONSE" | grep -q "prediction"; then

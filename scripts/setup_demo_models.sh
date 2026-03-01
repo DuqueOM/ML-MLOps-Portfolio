@@ -164,74 +164,48 @@ print(f'   Features: {feature_columns}')
 cd ..
 echo -e "${GREEN}CarVision model ready${NC}"
 
-# TelecomAI: Train quick baseline model  
-echo -e "${BLUE}Training TelecomAI model...${NC}"
-cd TelecomAI-Customer-Intelligence
+# NLPInsight: Train quick TF-IDF baseline for sentiment analysis
+echo -e "${BLUE}Training NLPInsight model...${NC}"
+cd NLPInsight-Analyzer
 python -c "
 import sys
 sys.path.insert(0, '.')
 from pathlib import Path
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import StandardScaler
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 import joblib
 
-# Features matching the API schema (TelecomFeatures)
-feature_cols = ['calls', 'minutes', 'messages', 'mb_used']
-
-# Try multiple possible data paths
-data_paths = [
-    Path('data/raw/users_behavior.csv'),
-    Path('data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv'),
-    Path('data/processed/users_behavior.csv')
-]
-
-df = None
-for data_path in data_paths:
-    if data_path.exists():
-        df = pd.read_csv(data_path).head(500)
-        print(f'Using data from {data_path}')
-        break
-
-if df is None:
-    # Create synthetic demo data matching API schema
+data_path = Path('data/raw/train.csv')
+if data_path.exists():
+    df = pd.read_csv(data_path)
+    print(f'Using Financial PhraseBank from {data_path} ({len(df)} rows)')
+else:
+    # Synthetic fallback
     np.random.seed(42)
-    n = 200
-    df = pd.DataFrame({
-        'calls': np.random.uniform(20, 100, n),
-        'minutes': np.random.uniform(100, 500, n),
-        'messages': np.random.uniform(10, 100, n),
-        'mb_used': np.random.uniform(5000, 30000, n),
-        'is_ultra': np.random.choice([0, 1], n)
-    })
-    print('Using synthetic data (no data files found)')
+    texts = ['great earnings report'] * 50 + ['losses increased'] * 30 + ['no change expected'] * 70
+    labels = [2] * 50 + [0] * 30 + [1] * 70
+    df = pd.DataFrame({'text': texts, 'label_id': labels})
+    print('Using synthetic data (run download_financial_phrasebank.py first)')
 
-# Ensure all features exist
-for col in feature_cols:
-    if col not in df.columns:
-        df[col] = np.random.uniform(0, 100, len(df))
-
-# Determine target column
-target_col = 'is_ultra' if 'is_ultra' in df.columns else df.columns[-1]
-
-X = df[feature_cols].fillna(0)
-y = df[target_col] if target_col in df.columns else np.random.choice([0, 1], len(df))
+X = df['text']
+y = df['label_id']
 
 model = Pipeline([
-    ('scaler', StandardScaler()),
-    ('classifier', RandomForestClassifier(n_estimators=10, max_depth=5, random_state=42))
+    ('tfidf', TfidfVectorizer(max_features=5000, ngram_range=(1, 2))),
+    ('classifier', LogisticRegression(max_iter=1000, random_state=42, multi_class='multinomial'))
 ])
 
 model.fit(X, y)
 
-Path('artifacts').mkdir(exist_ok=True)
-joblib.dump(model, 'artifacts/model.joblib')
-print('✅ TelecomAI model saved to artifacts/model.joblib')
-print(f'   Features: {feature_cols}')
+Path('models').mkdir(exist_ok=True)
+joblib.dump(model, 'models/model.joblib')
+print('✅ NLPInsight model saved to models/model.joblib')
+print(f'   Classes: negative(0), neutral(1), positive(2)')
 "
 cd ..
-echo -e "${GREEN}TelecomAI model ready${NC}"
+echo -e "${GREEN}NLPInsight model ready${NC}"
 
 echo -e "${GREEN}✅ All demo models are ready!${NC}"

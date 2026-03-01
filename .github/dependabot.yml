@@ -58,18 +58,18 @@ updates:
       - "dependencies"
       - "carvision"
 
-  # TelecomAI-Customer-Intelligence dependencies
+  # NLPInsight-Analyzer dependencies
   - package-ecosystem: "pip"
-    directory: "/TelecomAI-Customer-Intelligence"
+    directory: "/NLPInsight-Analyzer"
     schedule:
       interval: "weekly"
       day: "wednesday"
     open-pull-requests-limit: 3
     commit-message:
-      prefix: "deps(telecom)"
+      prefix: "deps(nlpinsight)"
     labels:
       - "dependencies"
-      - "telecom"
+      - "nlpinsight"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -111,7 +111,7 @@ updates:
         versions: [">=3.14"]
 
   - package-ecosystem: "docker"
-    directory: "/TelecomAI-Customer-Intelligence"
+    directory: "/NLPInsight-Analyzer"
     schedule:
       interval: "monthly"
     labels:

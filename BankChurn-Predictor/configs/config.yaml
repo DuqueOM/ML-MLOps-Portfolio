@@ -92,6 +92,7 @@ model:
       class_weight: "balanced"
     # Models to train and compare alongside the primary model
     compare_models:
+      - "stacking"
       - "xgboost"
       - "lightgbm"
       - "neural_network"
@@ -123,11 +124,12 @@ preprocessing:
   numerical_scaling:
     method: "standard"  # standard, minmax, robust
   
-  # Feature engineering
+  # Feature engineering (domain-driven features for churn prediction)
   feature_engineering:
-    create_interactions: false
-    create_polynomials: false
-    polynomial_degree: 2
+    create_interactions: true
+    create_ratios: true
+    create_bins: true
+    create_risk_scores: true
 
 # Configuración de evaluación
 evaluation:
@@ -195,11 +197,11 @@ api:
     requests_per_minute: 1000
     batch_size_limit: 1000
   
-  # Configuración de CORS
+  # Configuración de CORS — use CORS_ORIGINS env var in production
   cors:
-    allow_origins: ["*"]
+    allow_origins: ["http://localhost:3000", "http://localhost:8501"]
     allow_methods: ["GET", "POST"]
-    allow_headers: ["*"]
+    allow_headers: ["Content-Type", "Authorization"]
 
 # Configuración de deployment
 deployment:

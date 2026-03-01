@@ -11,7 +11,6 @@ Features:
 import contextlib
 import logging
 import os
-import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -46,14 +45,10 @@ try:
 except ImportError:
     PROMETHEUS_AVAILABLE = False
 
-# Add project root to path to allow imports from src
-# app/ is one level deep, so parent is root
-BASE_DIR = Path(__file__).resolve().parent.parent
-if str(BASE_DIR) not in sys.path:
-    sys.path.insert(0, str(BASE_DIR))
+from src.bankchurn.explainability import ModelExplainer
+from src.bankchurn.prediction import ChurnPredictor
 
-from src.bankchurn.explainability import ModelExplainer  # noqa: E402
-from src.bankchurn.prediction import ChurnPredictor  # noqa: E402
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -172,13 +167,14 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Configurar CORS
+# Configurar CORS — origins from env for security (no wildcard + credentials)
+_cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:8501").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[o.strip() for o in _cors_origins],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 # --- Pydantic Models ---

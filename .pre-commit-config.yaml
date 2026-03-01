@@ -59,7 +59,7 @@ repos:
         files: >
           ^(BankChurn-Predictor|
             CarVision-Market-Intelligence|
-            TelecomAI-Customer-Intelligence)/
+            NLPInsight-Analyzer)/
             (main\.py|app/.*|monitoring/.*|scripts/.*|tests/.*)$
         exclude: >
           (?x)(
@@ -78,7 +78,7 @@ repos:
     hooks:
       - id: bandit
         args: ['-ll', '-i']
-        files: ^(BankChurn-Predictor|CarVision-Market-Intelligence|TelecomAI-Customer-Intelligence)/
+        files: ^(BankChurn-Predictor|CarVision-Market-Intelligence|NLPInsight-Analyzer)/
         exclude: ^.*\/tests\/
 
   # Secret detection with gitleaks

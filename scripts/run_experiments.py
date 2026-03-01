@@ -374,81 +374,60 @@ def run_carvision_experiments():
 
 
 # =============================================================================
-# TELECOMAI EXPERIMENTS
+# NLPINSIGHT EXPERIMENTS
 # =============================================================================
 
 
-def run_telecom_experiments():
-    """Run TelecomAI experiments: baseline, tuned."""
+def run_nlpinsight_experiments():
+    """Run NLPInsight experiments: TF-IDF + sklearn baselines for sentiment analysis."""
+    from sklearn.feature_extraction.text import TfidfVectorizer
+
     print("\n" + "=" * 60)
-    print(" TELECOMAI EXPERIMENTS")
+    print(" NLPINSIGHT EXPERIMENTS")
     print("=" * 60)
 
-    mlflow.set_experiment("TelecomAI-Customer-Intelligence")
+    mlflow.set_experiment("NLPInsight-Analyzer")
 
-    # Load data
-    data_path = BASE_DIR / "TelecomAI-Customer-Intelligence/data/raw/users_behavior.csv"
+    # Load Financial PhraseBank data
+    data_path = BASE_DIR / "NLPInsight-Analyzer/data/raw/train.csv"
     if not data_path.exists():
         print(f"  Data not found: {data_path}")
-        # Try synthetic
-        print("   Creating synthetic data...")
-        np.random.seed(42)
-        n = 500
-        df = pd.DataFrame(
-            {
-                "calls": np.random.uniform(20, 100, n),
-                "minutes": np.random.uniform(100, 500, n),
-                "messages": np.random.uniform(10, 100, n),
-                "mb_used": np.random.uniform(5000, 30000, n),
-                "is_ultra": np.random.choice([0, 1], n, p=[0.7, 0.3]),
-            }
-        )
-    else:
-        df = pd.read_csv(data_path)
+        print("   Run: python scripts/download_financial_phrasebank.py")
+        return
 
-    print(f" Loaded {len(df)} rows")
+    df = pd.read_csv(data_path)
+    print(f" Loaded {len(df)} rows ({df['label'].nunique()} classes)")
 
     # Create MLflow dataset for logging
-    tl_dataset = from_pandas(df, source=str(data_path), name="users_behavior", targets="is_ultra")
+    nl_dataset = from_pandas(df, source=str(data_path), name="financial_phrasebank", targets="label_id")
 
-    features = ["calls", "minutes", "messages", "mb_used"]
-    target = "is_ultra"
-
-    # Ensure columns exist
-    for col in features:
-        if col not in df.columns:
-            df[col] = np.random.uniform(0, 100, len(df))
-
-    if target not in df.columns:
-        df[target] = np.random.choice([0, 1], len(df))
-
-    X = df[features].fillna(0)
-    y = df[target]
+    X = df["text"]
+    y = df["label_id"]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
     experiments = [
         {
-            "run_name": "TL-1_Baseline_LogReg",
-            "tags": {"run_type": "baseline", "project": "telecom"},
-            "model": LogisticRegression(max_iter=1000, random_state=42),
-            "description": "Logistic Regression baseline",
+            "run_name": "NL-1_Baseline_LogReg_TfIdf",
+            "tags": {"run_type": "baseline", "project": "nlpinsight"},
+            "model": LogisticRegression(max_iter=1000, random_state=42, multi_class="multinomial"),
+            "description": "TF-IDF + Logistic Regression baseline for 3-class sentiment",
         },
         {
-            "run_name": "TL-2_GradientBoosting_Tuned",
-            "tags": {"run_type": "tuned", "project": "telecom"},
+            "run_name": "NL-2_GradientBoosting_TfIdf",
+            "tags": {"run_type": "tuned", "project": "nlpinsight"},
             "model": GradientBoostingClassifier(n_estimators=100, max_depth=3, learning_rate=0.1, random_state=42),
-            "description": "Tuned Gradient Boosting classifier",
+            "description": "TF-IDF + Gradient Boosting for sentiment analysis",
         },
         {
-            "run_name": "TL-3_RandomForest",
-            "tags": {"run_type": "alternative", "project": "telecom"},
-            "model": RandomForestClassifier(n_estimators=100, max_depth=8, random_state=42, n_jobs=-1),
-            "description": "Random Forest for comparison",
+            "run_name": "NL-3_RandomForest_TfIdf",
+            "tags": {"run_type": "alternative", "project": "nlpinsight"},
+            "model": RandomForestClassifier(n_estimators=100, max_depth=12, random_state=42, n_jobs=-1),
+            "description": "TF-IDF + Random Forest for comparison",
         },
     ]
 
-    preprocessor = Pipeline([("scaler", StandardScaler())])
+    tfidf = TfidfVectorizer(max_features=5000, ngram_range=(1, 2), sublinear_tf=True)
 
     for exp in experiments:
         print(f"\n Running: {exp['run_name']}")
@@ -457,43 +436,37 @@ def run_telecom_experiments():
             mlflow.set_tags(exp["tags"])
             mlflow.set_tag("mlflow.note.content", exp["description"])
             mlflow.set_tag("framework", "scikit-learn")
-            mlflow.set_tag("task", "binary_classification")
-            mlflow.log_input(tl_dataset, context="training")
+            mlflow.set_tag("task", "multiclass_classification")
+            mlflow.log_input(nl_dataset, context="training")
 
-            pipeline = Pipeline([("preprocessor", preprocessor), ("classifier", exp["model"])])
+            pipeline = Pipeline([("tfidf", tfidf), ("classifier", exp["model"])])
 
             model_params = exp["model"].get_params()
             mlflow.log_params({k: v for k, v in model_params.items() if not callable(v) and k != "n_jobs"})
             mlflow.log_param("train_size", len(X_train))
             mlflow.log_param("test_size", len(X_test))
-            mlflow.log_param("n_features", X_train.shape[1])
+            mlflow.log_param("tfidf_max_features", 5000)
+            mlflow.log_param("num_classes", 3)
 
             pipeline.fit(X_train, y_train)
 
             y_train_pred = pipeline.predict(X_train)
             y_test_pred = pipeline.predict(X_test)
 
-            try:
-                y_test_proba = pipeline.predict_proba(X_test)[:, 1]
-                test_auc = round(roc_auc_score(y_test, y_test_proba), 4)
-            except Exception:
-                test_auc = 0.0
-
             metrics = {
                 "train_accuracy": round(accuracy_score(y_train, y_train_pred), 4),
                 "test_accuracy": round(accuracy_score(y_test, y_test_pred), 4),
-                "train_f1": round(f1_score(y_train, y_train_pred), 4),
-                "test_f1": round(f1_score(y_test, y_test_pred), 4),
-                "test_precision": round(precision_score(y_test, y_test_pred), 4),
-                "test_recall": round(recall_score(y_test, y_test_pred), 4),
-                "test_roc_auc": test_auc,
+                "train_f1_macro": round(f1_score(y_train, y_train_pred, average="macro"), 4),
+                "test_f1_macro": round(f1_score(y_test, y_test_pred, average="macro"), 4),
+                "test_precision_macro": round(precision_score(y_test, y_test_pred, average="macro"), 4),
+                "test_recall_macro": round(recall_score(y_test, y_test_pred, average="macro"), 4),
             }
 
             mlflow.log_metrics(metrics)
 
-            print(f"   Test Accuracy: {metrics['test_accuracy']:.4f}, F1: {metrics['test_f1']:.4f}")
+            print(f"   Test Accuracy: {metrics['test_accuracy']:.4f}, F1-macro: {metrics['test_f1_macro']:.4f}")
 
-    print("\n TelecomAI experiments complete!")
+    print("\n NLPInsight experiments complete!")
 
 
 # =============================================================================
@@ -524,7 +497,7 @@ def main():
     # Run all experiments
     run_bankchurn_experiments()
     run_carvision_experiments()
-    run_telecom_experiments()
+    run_nlpinsight_experiments()
 
     print("\n" + "=" * 60)
     print("🎉 ALL EXPERIMENTS COMPLETE!")
@@ -533,7 +506,7 @@ def main():
     print("\nExperiments created:")
     print("  • BankChurn-Predictor (3 runs)")
     print("  • CarVision-Market-Intelligence (3 runs)")
-    print("  • TelecomAI-Customer-Intelligence (3 runs)")
+    print("  • NLPInsight-Analyzer (3 runs)")
 
 
 if __name__ == "__main__":

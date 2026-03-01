@@ -65,7 +65,7 @@ echo -e "  ${GREEN}►${NC} MLflow UI:          ${YELLOW}http://localhost:5000${
 echo -e "  ${GREEN}►${NC} BankChurn API:      ${YELLOW}http://localhost:8001${NC}"
 echo -e "  ${GREEN}►${NC} CarVision API:      ${YELLOW}http://localhost:8002${NC}"
 echo -e "  ${GREEN}►${NC} CarVision Dashboard:${YELLOW}http://localhost:8501${NC}"
-echo -e "  ${GREEN}►${NC} Telecom API:        ${YELLOW}http://localhost:8003${NC}\n"
+echo -e "  ${GREEN}►${NC} NLPInsight API:     ${YELLOW}http://localhost:8003${NC}\n"
 
 # 6. Ejecutar requests de prueba
 echo -e "${BLUE}[6/6]${NC} Ejecutando requests de prueba...\n"
@@ -79,7 +79,7 @@ echo -e "${YELLOW}► Testing CarVision API health...${NC}"
 curl -s http://localhost:8002/health | jq '.' 2>/dev/null || curl -s http://localhost:8002/health
 echo ""
 
-echo -e "${YELLOW}► Testing Telecom API health...${NC}"
+echo -e "${YELLOW}► Testing NLPInsight API health...${NC}"
 curl -s http://localhost:8003/health | jq '.' 2>/dev/null || curl -s http://localhost:8003/health
 echo ""
 

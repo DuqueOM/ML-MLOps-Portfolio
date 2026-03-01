@@ -73,7 +73,7 @@ nav:
     - Overview: projects/overview.md
     - BankChurn Predictor: projects/bankchurn.md
     - CarVision Market Intelligence: projects/carvision.md
-    - TelecomAI Customer Intelligence: projects/telecom.md
+    - NLPInsight Analyzer: projects/nlpinsight.md
   - Architecture:
     - System Overview: architecture/overview.md
     - Portfolio Architecture: ARCHITECTURE_PORTFOLIO.md

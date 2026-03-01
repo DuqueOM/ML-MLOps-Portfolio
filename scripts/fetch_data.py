@@ -35,10 +35,10 @@ DATASET_REGISTRY: Dict[str, Dict] = {
         "checksum": None,
         "size_mb": 50,
     },
-    "telecom": {
-        "name": "TelecomAI Users Dataset",
-        "url": "https://example.com/datasets/telecom_users.csv",  # Placeholder
-        "path": "TelecomAI-Customer-Intelligence/data/telecom_users.csv",
+    "nlpinsight": {
+        "name": "NLPInsight Users Dataset",
+        "url": "https://example.com/datasets/nlpinsight_users.csv",  # Placeholder
+        "path": "NLPInsight-Analyzer/data/nlpinsight_users.csv",
         "checksum": None,
         "size_mb": 5,
     },

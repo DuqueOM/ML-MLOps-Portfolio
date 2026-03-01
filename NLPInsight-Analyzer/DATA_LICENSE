@@ -1,0 +1,7 @@
+Dataset: Financial PhraseBank (Malo et al., 2014)
+
+- Source: https://huggingface.co/datasets/financial_phrasebank
+- License: CC BY-NC-SA 3.0
+- Description: 4,846 sentences from English-language financial news, annotated by financial domain experts for sentiment (positive, negative, neutral).
+- Citation: Malo, P., Sinha, A., Korhonen, P., Wallenius, J., & Takala, P. (2014). Good debt or bad debt: Detecting semantic orientations in economic texts. Journal of the Association for Information Science and Technology, 65(4), 782-796.
+- PII: None. Public financial news text only.

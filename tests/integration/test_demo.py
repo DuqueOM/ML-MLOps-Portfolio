@@ -7,7 +7,7 @@ import requests
 BASE_URLS = {
     "bankchurn": "http://localhost:8001",
     "carvision": "http://localhost:8002",
-    "telecom": "http://localhost:8003",
+    "nlpinsight": "http://localhost:8003",
     "mlflow": "http://localhost:5000",
 }
 
@@ -85,12 +85,12 @@ def test_carvision_prediction():
     assert isinstance(data["predicted_price"], (int, float))
 
 
-def test_telecom_prediction():
-    url = f"{BASE_URLS['telecom']}/predict"
-    # Payload matched to TelecomAI's TelecomFeatures
-    payload = {"calls": 10.0, "minutes": 300.0, "messages": 5.0, "mb_used": 1500.0}
+def test_nlpinsight_prediction():
+    url = f"{BASE_URLS['nlpinsight']}/predict"
+    payload = {"text": "Revenue growth exceeded expectations this quarter."}
     response = requests.post(url, json=payload)
-    assert response.status_code == 200, f"TelecomAI failed: {response.text}"
+    assert response.status_code == 200, f"NLPInsight failed: {response.text}"
     data = response.json()
     assert "prediction" in data
-    assert "plan" in data
+    assert data["prediction"]["label"] in ["negative", "neutral", "positive"]
+    assert "confidence" in data["prediction"]

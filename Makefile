@@ -11,7 +11,7 @@ BLUE := \033[0;34m
 NC := \033[0m # No Color
 
 # Projects
-PROJECTS := BankChurn-Predictor CarVision-Market-Intelligence TelecomAI-Customer-Intelligence
+PROJECTS := BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer
 
 help: ## Show this help message
 	@echo "$(GREEN)ML-MLOps Portfolio - Available Commands:$(NC)"
@@ -22,11 +22,12 @@ help: ## Show this help message
 # Development Commands
 # ═══════════════════════════════════════════════
 
-install: ## Install all project dependencies
+install: ## Install all project dependencies (editable mode)
 	@echo "$(GREEN)Installing dependencies for all projects...$(NC)"
 	@for project in $(PROJECTS); do \
-		echo "$(BLUE)► Installing $$project...$(NC)"; \
-		cd $$project && $(MAKE) install && cd ..; \
+		echo "$(BLUE)► Installing $$project (editable)...$(NC)"; \
+		pip install -e $$project && \
+		echo "$(GREEN)  ✓ $$project installed$(NC)"; \
 	done
 	@echo "$(GREEN)✓ All dependencies installed$(NC)"
 
@@ -36,7 +37,7 @@ install-dev: ## Install development dependencies
 	pre-commit install
 	@for project in $(PROJECTS); do \
 		echo "$(BLUE)► Installing dev deps for $$project...$(NC)"; \
-		cd $$project && $(MAKE) install-dev 2>/dev/null || pip install -r requirements.txt && cd ..; \
+		pip install -e "$$project[dev]" 2>/dev/null || pip install -e $$project; \
 	done
 	@echo "$(GREEN)✓ Dev dependencies installed$(NC)"
 
@@ -98,7 +99,7 @@ docker-demo-up: ## Start demo without tests (docker-compose up)
 	@echo "$(YELLOW)MLflow UI:$(NC)      http://localhost:5000"
 	@echo "$(YELLOW)BankChurn API:$(NC)  http://localhost:8001"
 	@echo "$(YELLOW)CarVision API:$(NC)  http://localhost:8002"
-	@echo "$(YELLOW)Telecom API:$(NC)    http://localhost:8003"
+	@echo "$(YELLOW)NLPInsight API:$(NC) http://localhost:8003"
 
 docker-demo-down: ## Stop demo stack
 	@echo "$(YELLOW)Stopping demo stack...$(NC)"
@@ -208,7 +209,7 @@ health-check: ## Check health of all demo services
 	@curl -s http://localhost:5000/health 2>/dev/null && echo "$(GREEN)✓ MLflow$(NC)" || echo "$(RED)✗ MLflow$(NC)"
 	@curl -s http://localhost:8001/health 2>/dev/null && echo "$(GREEN)✓ BankChurn$(NC)" || echo "$(RED)✗ BankChurn$(NC)"
 	@curl -s http://localhost:8002/health 2>/dev/null && echo "$(GREEN)✓ CarVision$(NC)" || echo "$(RED)✗ CarVision$(NC)"
-	@curl -s http://localhost:8003/health 2>/dev/null && echo "$(GREEN)✓ Telecom$(NC)" || echo "$(RED)✗ Telecom$(NC)"
+	@curl -s http://localhost:8003/health 2>/dev/null && echo "$(GREEN)✓ NLPInsight$(NC)" || echo "$(RED)✗ NLPInsight$(NC)"
 
 stats: ## Show repository statistics
 	@echo "$(GREEN)Repository Statistics:$(NC)"

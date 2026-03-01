@@ -1,0 +1,18 @@
+stages:
+  train:
+    cmd: python main.py --mode train --config configs/config.yaml
+    deps:
+      - data/raw/train.csv
+      - main.py
+      - configs/config.yaml
+    outs:
+      - models/
+      - artifacts/training_results.json
+  evaluate:
+    cmd: python main.py --mode eval --config configs/config.yaml
+    deps:
+      - models/
+      - data/raw/train.csv
+      - main.py
+    outs:
+      - artifacts/metrics/

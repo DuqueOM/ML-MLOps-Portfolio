@@ -35,7 +35,7 @@ jobs:
         project:
           - BankChurn-Predictor
           - CarVision-Market-Intelligence
-          - TelecomAI-Customer-Intelligence
+          - NLPInsight-Analyzer
     
     services:
       postgres:
@@ -93,7 +93,7 @@ jobs:
       - name: Run tests with coverage
         working-directory: ${{ matrix.project }}
         run: |
-          # Coverage thresholds: BankChurn 79%, CarVision 80%, TelecomAI 80%
+          # Coverage thresholds: BankChurn 79%, CarVision 80%, NLPInsight 80%
           if [ "${{ matrix.project }}" = "BankChurn-Predictor" ]; then
             COV_TARGET="src"
             THRESHOLD=79
@@ -101,7 +101,7 @@ jobs:
             COV_TARGET="src/carvision"
             THRESHOLD=80
           else
-            COV_TARGET="src/telecom"
+            COV_TARGET="src/nlpinsight"
             THRESHOLD=80
           fi
           pytest --maxfail=1 --disable-warnings -q \
@@ -148,7 +148,7 @@ jobs:
         run: |
           echo "::group::Black Formatting Check"
           FAIL=0
-          for project in BankChurn-Predictor CarVision-Market-Intelligence TelecomAI-Customer-Intelligence; do
+          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer; do
             if [ -d "$project/src" ]; then
               black --check "$project/src" "$project/app" 2>/dev/null || FAIL=1
             fi
@@ -161,7 +161,7 @@ jobs:
       - name: Check Flake8 critical errors
         run: |
           echo "::group::Flake8 Critical Errors"
-          for project in BankChurn-Predictor CarVision-Market-Intelligence TelecomAI-Customer-Intelligence; do
+          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer; do
             if [ -d "$project/src" ]; then
               flake8 "$project/src" --count --select=E9,F63,F7,F82 --show-source --statistics
             fi
@@ -205,7 +205,7 @@ jobs:
       - name: Run Bandit security scan
         run: |
           mkdir -p reports
-          bandit -r BankChurn-Predictor/src CarVision-Market-Intelligence/src TelecomAI-Customer-Intelligence/src \
+          bandit -r BankChurn-Predictor/src CarVision-Market-Intelligence/src NLPInsight-Analyzer/src \
             -f json -o reports/bandit-report.json -ll || true
           bandit -r . -f txt -ll || true
       
@@ -245,7 +245,7 @@ jobs:
         project:
           - BankChurn-Predictor
           - CarVision-Market-Intelligence
-          - TelecomAI-Customer-Intelligence
+          - NLPInsight-Analyzer
     
     steps:
       - name: Checkout code
@@ -360,14 +360,14 @@ jobs:
           tags: ml-portfolio-carvision:latest
           no-cache: true
       
-      - name: Build TelecomAI image (no cache)
+      - name: Build NLPInsight image (no cache)
         uses: docker/build-push-action@v5
         with:
-          context: TelecomAI-Customer-Intelligence
-          file: TelecomAI-Customer-Intelligence/Dockerfile
+          context: NLPInsight-Analyzer
+          file: NLPInsight-Analyzer/Dockerfile
           push: false
           load: true
-          tags: ml-portfolio-telecom:latest
+          tags: ml-portfolio-nlpinsight:latest
           no-cache: true
       
       - name: Spin up Demo Stack
@@ -384,7 +384,7 @@ jobs:
           
           # Wait for health checks with retry logic
           echo "Waiting for health checks..."
-          for service in bankchurn carvision telecom; do
+          for service in bankchurn carvision nlpinsight; do
             echo "Checking $service..."
             for i in {1..12}; do
               if docker compose -f docker-compose.demo.yml exec -T $service curl -sf http://localhost:8000/health > /dev/null 2>&1; then
@@ -408,20 +408,20 @@ jobs:
           docker compose -f docker-compose.demo.yml ps -a
           echo ""
           echo "=== sklearn versions inside containers ==="
-          for svc in bankchurn carvision telecom; do
+          for svc in bankchurn carvision nlpinsight; do
             echo "--- $svc ---"
             docker compose -f docker-compose.demo.yml exec -T $svc python -c "import sklearn; print(f'sklearn={sklearn.__version__}')" 2>&1 || echo "FAILED"
           done
           echo ""
           echo "=== Model files on HOST (all 3 projects) ==="
-          for proj in BankChurn-Predictor CarVision-Market-Intelligence TelecomAI-Customer-Intelligence; do
+          for proj in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer; do
             echo "--- $proj ---"
             ls -la $proj/models/model.joblib 2>&1
             file $proj/models/model.joblib 2>&1
           done
           echo ""
           echo "=== Model files INSIDE containers ==="
-          for svc in bankchurn carvision telecom; do
+          for svc in bankchurn carvision nlpinsight; do
             echo "--- $svc ---"
             docker compose -f docker-compose.demo.yml exec -T $svc ls -la models/model.joblib 2>&1 || echo "NOT FOUND"
             docker compose -f docker-compose.demo.yml exec -T $svc file models/model.joblib 2>&1 || echo "CANNOT CHECK"
@@ -563,7 +563,7 @@ jobs:
           find . -name "model_card.md" -type f
           
           # Verificar que existan en proyectos principales
-          for project in BankChurn-Predictor CarVision-Market-Intelligence TelecomAI-Customer-Intelligence; do
+          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer; do
             if [ ! -f "$project/model_card.md" ]; then
               echo "⚠️  Missing model_card.md in $project"
             else
@@ -599,7 +599,7 @@ jobs:
         project:
           - BankChurn-Predictor
           - CarVision-Market-Intelligence
-          - TelecomAI-Customer-Intelligence
+          - NLPInsight-Analyzer
       fail-fast: false
     
     steps:

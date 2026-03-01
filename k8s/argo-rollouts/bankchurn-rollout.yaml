@@ -1,0 +1,121 @@
+# Argo Rollouts — Canary Deployment for BankChurn
+# Requires: kubectl apply -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+#
+# Strategy: Canary with automated promotion
+# - 20% traffic → canary for 60s (smoke test window)
+# - 50% traffic → canary for 120s (validation window)
+# - 100% traffic → full promotion
+# - Auto-rollback on error rate > 5% or p95 latency > 500ms
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: bankchurn-predictor
+  namespace: ml-portfolio
+  labels:
+    app: bankchurn-predictor
+    tier: ml-service
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: bankchurn-predictor
+  template:
+    metadata:
+      labels:
+        app: bankchurn-predictor
+        tier: ml-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: ml-workload
+      containers:
+      - name: bankchurn-api
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/bankchurn-predictor:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: MODEL_PATH
+          value: "/app/models/model.joblib"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        resources:
+          requests:
+            memory: "384Mi"
+            cpu: "300m"
+          limits:
+            memory: "768Mi"
+            cpu: "800m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+  strategy:
+    canary:
+      canaryService: bankchurn-canary
+      stableService: bankchurn-stable
+      trafficRouting:
+        nginx:
+          stableIngress: bankchurn-ingress
+      steps:
+      # Step 1: Route 20% traffic to canary
+      - setWeight: 20
+      - pause: {duration: 60s}
+      # Step 2: Run Prometheus analysis (error rate + latency)
+      - analysis:
+          templates:
+          - templateName: canary-health-check
+          args:
+          - name: service-name
+            value: bankchurn
+      # Step 3: Scale up to 50%
+      - setWeight: 50
+      - pause: {duration: 120s}
+      # Step 4: Final analysis before full promotion
+      - analysis:
+          templates:
+          - templateName: canary-health-check
+          args:
+          - name: service-name
+            value: bankchurn
+      # Step 5: Full promotion
+      - setWeight: 100
+      maxSurge: 1
+      maxUnavailable: 0
+---
+# Canary Service (receives canary traffic)
+apiVersion: v1
+kind: Service
+metadata:
+  name: bankchurn-canary
+  namespace: ml-portfolio
+spec:
+  selector:
+    app: bankchurn-predictor
+  ports:
+  - port: 80
+    targetPort: 8000
+---
+# Stable Service (receives stable traffic)
+apiVersion: v1
+kind: Service
+metadata:
+  name: bankchurn-stable
+  namespace: ml-portfolio
+spec:
+  selector:
+    app: bankchurn-predictor
+  ports:
+  - port: 80
+    targetPort: 8000

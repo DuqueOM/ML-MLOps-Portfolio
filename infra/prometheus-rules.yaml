@@ -34,7 +34,7 @@ groups:
 
   # Service down
   - alert: ServiceDown
-    expr: up{job=~".*-intelligence|.*-predictor"} == 0
+    expr: up{job=~".*-intelligence|.*-predictor|.*-analyzer"} == 0
     for: 2m
     labels:
       severity: critical

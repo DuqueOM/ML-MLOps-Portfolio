@@ -14,7 +14,7 @@ mkdir -p reports
 PROJECTS=(
     "BankChurn-Predictor"
     "CarVision-Market-Intelligence"
-    "TelecomAI-Customer-Intelligence"
+    "NLPInsight-Analyzer"
 )
 
 # Función para ejecutar tests de un proyecto

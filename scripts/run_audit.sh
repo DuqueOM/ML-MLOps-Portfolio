@@ -17,7 +17,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-PROJECTS=("BankChurn-Predictor" "CarVision-Market-Intelligence" "TelecomAI-Customer-Intelligence")
+PROJECTS=("BankChurn-Predictor" "CarVision-Market-Intelligence" "NLPInsight-Analyzer")
 REPORTS_DIR="reports/audit"
 SPANISH_REPORTS_DIR="Reportes Portafolio"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)

@@ -27,6 +27,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from .config import BankChurnConfig
+from .features import ChurnFeatureEngineer
 from .models import ResampleClassifier
 from .models_advanced import build_model as build_advanced_model
 from .models_advanced import get_available_models
@@ -347,6 +348,25 @@ class ChurnTrainer:
 
         return results, fitted_models
 
+    def build_feature_engineer(self) -> ChurnFeatureEngineer:
+        """Build feature engineering transformer from config.
+
+        Returns
+        -------
+        feature_engineer : ChurnFeatureEngineer
+            Configured feature engineering transformer.
+        """
+        fe_config = getattr(self.config, "preprocessing", None)
+        if fe_config and hasattr(fe_config, "feature_engineering"):
+            fe_cfg = fe_config.feature_engineering
+            return ChurnFeatureEngineer(
+                create_interactions=getattr(fe_cfg, "create_interactions", True),
+                create_ratios=getattr(fe_cfg, "create_ratios", True),
+                create_bins=getattr(fe_cfg, "create_bins", True),
+                create_risk_scores=getattr(fe_cfg, "create_risk_scores", True),
+            )
+        return ChurnFeatureEngineer()
+
     def train(
         self,
         X: pd.DataFrame,
@@ -382,7 +402,12 @@ class ChurnTrainer:
             stratify=y,
         )
 
-        # Build preprocessor based on training data only
+        # Apply feature engineering BEFORE preprocessing (creates new columns)
+        self.feature_engineer_ = self.build_feature_engineer()
+        X_train = self.feature_engineer_.fit_transform(X_train)
+        X_test = self.feature_engineer_.transform(X_test)
+
+        # Build preprocessor based on ENGINEERED training data
         self.preprocessor_ = self.build_preprocessor(X_train)
 
         # Fit preprocessor on TRAIN, transform both
@@ -522,8 +547,13 @@ class ChurnTrainer:
 
         model_path = Path(model_path)
 
-        # Create full pipeline
-        full_pipeline = Pipeline([("preprocessor", self.preprocessor_), ("classifier", self.model_)])
+        # Create full pipeline: [features → preprocessor → classifier]
+        steps = []
+        if hasattr(self, "feature_engineer_") and self.feature_engineer_ is not None:
+            steps.append(("features", self.feature_engineer_))
+        steps.append(("preprocessor", self.preprocessor_))
+        steps.append(("classifier", self.model_))
+        full_pipeline = Pipeline(steps)
 
         # Create directories
         model_path.parent.mkdir(parents=True, exist_ok=True)

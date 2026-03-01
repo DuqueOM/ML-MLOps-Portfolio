@@ -1,0 +1,115 @@
+# Argo Rollouts — Canary Deployment for NLPInsight Analyzer
+# NLP models need longer validation windows due to transformer inference latency
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: nlpinsight-analyzer
+  namespace: ml-portfolio
+  labels:
+    app: nlpinsight-analyzer
+    tier: ml-service
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: nlpinsight-analyzer
+  template:
+    metadata:
+      labels:
+        app: nlpinsight-analyzer
+        tier: ml-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: ml-workload
+      containers:
+      - name: nlpinsight-api
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/nlpinsight-analyzer:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: MODEL_PATH
+          value: "/app/models"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: TRANSFORMERS_CACHE
+          value: "/app/.cache/huggingface"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 45
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 20
+          periodSeconds: 5
+  strategy:
+    canary:
+      canaryService: nlpinsight-canary
+      stableService: nlpinsight-stable
+      trafficRouting:
+        nginx:
+          stableIngress: nlpinsight-ingress
+      steps:
+      # Step 1: 10% traffic — transformer models need careful validation
+      - setWeight: 10
+      - pause: {duration: 90s}
+      # Step 2: Health check with wider latency tolerance for NLP
+      - analysis:
+          templates:
+          - templateName: canary-health-check
+          args:
+          - name: service-name
+            value: nlpinsight
+      # Step 3: 40% traffic
+      - setWeight: 40
+      - pause: {duration: 120s}
+      # Step 4: Validate prediction distribution
+      - analysis:
+          templates:
+          - templateName: canary-health-check
+          args:
+          - name: service-name
+            value: nlpinsight
+      # Step 5: Full promotion
+      - setWeight: 100
+      maxSurge: 1
+      maxUnavailable: 0
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nlpinsight-canary
+  namespace: ml-portfolio
+spec:
+  selector:
+    app: nlpinsight-analyzer
+  ports:
+  - port: 80
+    targetPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nlpinsight-stable
+  namespace: ml-portfolio
+spec:
+  selector:
+    app: nlpinsight-analyzer
+  ports:
+  - port: 80
+    targetPort: 8000

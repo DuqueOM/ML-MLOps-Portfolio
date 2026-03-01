@@ -20,7 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT / "BankChurn-Predictor"))
 sys.path.insert(0, str(ROOT / "CarVision-Market-Intelligence"))
-sys.path.insert(0, str(ROOT / "TelecomAI-Customer-Intelligence"))
+sys.path.insert(0, str(ROOT / "NLPInsight-Analyzer"))
 
 
 def check_bankchurn():
@@ -103,25 +103,24 @@ def check_carvision():
         return False
 
 
-def check_telecom():
-    """Verify TelecomAI model loads and predicts."""
-    print("📱 Checking TelecomAI-Customer-Intelligence...", end=" ")
+def check_nlpinsight():
+    """Verify NLPInsight model loads and predicts."""
+    print("� Checking NLPInsight-Analyzer...", end=" ")
     try:
-        import joblib
-        import pandas as pd
-
-        model_path = ROOT / "TelecomAI-Customer-Intelligence" / "artifacts" / "model.joblib"
-        if not model_path.exists():
+        model_dir = ROOT / "NLPInsight-Analyzer" / "models"
+        if not model_dir.exists() or not any(model_dir.iterdir()):
             print("⚠️  Model not found (run training first)")
             return False
 
-        model = joblib.load(model_path)
+        from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-        # Sample prediction
-        sample = pd.DataFrame([{"calls": 40.0, "minutes": 311.9, "messages": 83.0, "mb_used": 19915.42}])
+        tokenizer = AutoTokenizer.from_pretrained(str(model_dir))
+        model = AutoModelForSequenceClassification.from_pretrained(str(model_dir))
 
-        pred = model.predict(sample)
-        print(f"✅ OK (prediction: {pred[0]})")
+        inputs = tokenizer("This is a great product!", return_tensors="pt", truncation=True, max_length=256)
+        outputs = model(**inputs)
+        pred = outputs.logits.argmax(dim=-1).item()
+        print(f"✅ OK (prediction: {pred})")
         return True
     except Exception as e:
         print(f"❌ FAILED: {e}")
@@ -138,7 +137,7 @@ def main():
     results = []
     results.append(("BankChurn", check_bankchurn()))
     results.append(("CarVision", check_carvision()))
-    results.append(("TelecomAI", check_telecom()))
+    results.append(("NLPInsight", check_nlpinsight()))
 
     print()
     print("=" * 60)

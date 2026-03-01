@@ -24,9 +24,8 @@ jobs:
       matrix:
         project:
           - BankChurn-Predictor
-          # Add other projects as needed
-          # - CarVision-Market-Intelligence
-          # - TelecomAI-Customer-Intelligence
+          - CarVision-Market-Intelligence
+          - NLPInsight-Analyzer
     
     steps:
       - name: Checkout code

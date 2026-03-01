@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import json
 import logging
-import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -32,8 +31,6 @@ st.set_page_config(
 )
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))
 
 try:
     from src.carvision.analysis import MarketAnalyzer
@@ -41,7 +38,7 @@ try:
     from src.carvision.features import FeatureEngineer
     from src.carvision.visualization import VisualizationEngine
 except ImportError as e:
-    st.error(f"Error importando módulos: {e}")
+    st.error(f"Error importando módulos: {e}. Run: pip install -e .")
     st.stop()
 
 CONFIG_PATH, APP_VERSION = ROOT_DIR / "configs" / "config.yaml", "v2.0.0 Pro"

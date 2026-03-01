@@ -32,12 +32,12 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: telecom-dataset-config
+  name: nlpinsight-dataset-config
   namespace: ml-portfolio
   labels:
-    app: telecom-intelligence
+    app: nlpinsight-analyzer
     component: dataset-download
 data:
   GCS_BUCKET: "ml-portfolio-duque-om-202602-datasets-production"
-  GCS_MODEL_PATH: "telecom/v1/WA_Fn-UseC_-Telco-Customer-Churn.csv"
-  LOCAL_MODEL_PATH: "/data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv"
+  GCS_MODEL_PATH: "nlpinsight/v1/financial_phrasebank.csv"
+  LOCAL_MODEL_PATH: "/data/raw/train.csv"

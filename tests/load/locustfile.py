@@ -13,20 +13,20 @@ ENVIRONMENT SETUP
 ─────────────────────────────────────────────────────────────────────
 Option A — Docker Compose (local dev):
     docker compose -f docker-compose.demo.yml up -d
-    # Ports: BankChurn=8001, CarVision=8002, TelecomAI=8003
+    # Ports: BankChurn=8001, CarVision=8002, NLPInsight=8003
 
 Option B — Kubernetes port-forward (GKE / EKS):
     kubectl port-forward svc/bankchurn-service 8000:80 -n ml-portfolio &
     kubectl port-forward svc/carvision-service 8001:80 -n ml-portfolio &
-    kubectl port-forward svc/telecom-service   8002:80 -n ml-portfolio &
-    # Ports: BankChurn=8000, CarVision=8001, TelecomAI=8002
+    kubectl port-forward svc/nlpinsight-service 8002:80 -n ml-portfolio &
+    # Ports: BankChurn=8000, CarVision=8001, NLPInsight=8002
 
 Option C — Ingress IP (production-grade, recommended for real metrics):
     # GCP: Uses GCE Ingress with public IP
     export INGRESS_HOST=http://34.120.120.57
     # AWS: Uses ALB DNS
     export INGRESS_HOST=http://<alb-dns-name>
-    # Routes: /bankchurn/*, /carvision/*, /telecom/*
+    # Routes: /bankchurn/*, /carvision/*, /nlpinsight/*
     # No port-forward overhead (~70ms saved per request)
 
 ─────────────────────────────────────────────────────────────────────
@@ -117,13 +117,18 @@ def _carvision_payload() -> dict:
     }
 
 
-def _telecom_payload() -> dict:
-    return {
-        "calls": round(random.uniform(0, 200), 1),
-        "minutes": round(random.uniform(0, 1_000), 1),
-        "messages": round(random.uniform(0, 300), 1),
-        "mb_used": round(random.uniform(0, 50_000), 2),
-    }
+def _nlpinsight_payload() -> dict:
+    texts = [
+        "This product exceeded all my expectations. Absolutely fantastic quality!",
+        "Terrible experience. The worst customer service I have ever dealt with.",
+        "The quarterly earnings report shows strong growth in revenue.",
+        "Market volatility has increased significantly due to geopolitical tensions.",
+        "The new feature release has been well received by our user base.",
+        "Disappointing results this quarter with declining margins across segments.",
+        "Innovation in AI and machine learning continues to drive efficiency gains.",
+        "Supply chain disruptions are impacting delivery timelines negatively.",
+    ]
+    return {"text": random.choice(texts)}
 
 
 # ---------------------------------------------------------------------------
@@ -256,63 +261,67 @@ class CarVisionUser(HttpUser):
 
 
 # ---------------------------------------------------------------------------
-# TelecomAI — http://localhost:8002 (K8s) or http://localhost:8003 (Docker)
+# NLPInsight — http://localhost:8002 (K8s) or http://localhost:8003 (Docker)
 # ---------------------------------------------------------------------------
 
 
-class TelecomUser(HttpUser):
+class NLPInsightUser(HttpUser):
     """
-    Simulates traffic to TelecomAI Customer Intelligence.
+    Simulates traffic to NLPInsight Analyzer (Sentiment Analysis).
 
     Task weights:
-      - predict (10x): plan recommendation — primary endpoint
+      - predict (10x): single text sentiment — primary endpoint
+      - predict_batch (3x): batch sentiment — exercises transformer batching
       - health  (1x):  liveness probe
     """
 
     host = _INGRESS_HOST or "http://localhost:8002"
     wait_time = between(0.3, 1.5)
     weight = 2
-    _prefix = "/telecom" if _INGRESS_HOST else ""
+    _prefix = "/nlpinsight" if _INGRESS_HOST else ""
 
     def on_start(self) -> None:
-        with self.client.get(f"{self._prefix}/health", name="telecom:health", catch_response=True) as r:
+        with self.client.get(f"{self._prefix}/health", name="nlpinsight:health", catch_response=True) as r:
             if r.status_code != 200:
                 r.failure(f"Health check failed: {r.status_code}")
 
     @task(10)
     def predict(self) -> None:
-        """Plan recommendation — randomized usage patterns."""
+        """Single text sentiment analysis — randomized inputs."""
         with self.client.post(
             f"{self._prefix}/predict",
-            json=_telecom_payload(),
-            name="telecom:predict",
+            json=_nlpinsight_payload(),
+            name="nlpinsight:predict",
             catch_response=True,
         ) as r:
             if r.status_code == 200:
                 data = r.json()
-                if "prediction" not in data:
-                    r.failure("Missing prediction field")
-                if "plan" not in data:
-                    r.failure("Missing plan field")
+                pred = data.get("prediction", {})
+                if "label" not in pred:
+                    r.failure("Missing prediction.label")
+                if "confidence" not in pred:
+                    r.failure("Missing prediction.confidence")
+                elif not (0.0 <= pred["confidence"] <= 1.0):
+                    r.failure(f"Invalid confidence: {pred['confidence']}")
             elif r.status_code == 503:
                 r.failure("Service unavailable — model not loaded")
             else:
                 r.failure(f"Unexpected status {r.status_code}")
 
-    @task(2)
+    @task(3)
     def predict_batch(self) -> None:
-        """Batch plan recommendation — 5 customers per request."""
-        payload = {"customers": [_telecom_payload() for _ in range(5)]}
+        """Batch sentiment analysis — 5 texts per request."""
+        payload = {"texts": [_nlpinsight_payload() for _ in range(5)]}
         with self.client.post(
             f"{self._prefix}/predict_batch",
             json=payload,
-            name="telecom:predict_batch",
+            name="nlpinsight:predict_batch",
             catch_response=True,
         ) as r:
             if r.status_code == 200:
                 data = r.json()
-                if data.get("total_customers") != 5:
-                    r.failure(f"Expected 5 customers, got {data.get('total_customers')}")
+                if data.get("count") != 5:
+                    r.failure(f"Expected 5 predictions, got {data.get('count')}")
             elif r.status_code == 503:
                 r.failure("Service unavailable — model not loaded")
             else:
@@ -320,8 +329,8 @@ class TelecomUser(HttpUser):
 
     @task(1)
     def health(self) -> None:
-        self.client.get(f"{self._prefix}/health", name="telecom:health")
+        self.client.get(f"{self._prefix}/health", name="nlpinsight:health")
 
     @task(1)
     def metrics(self) -> None:
-        self.client.get(f"{self._prefix}/metrics", name="telecom:metrics")
+        self.client.get(f"{self._prefix}/metrics", name="nlpinsight:metrics")

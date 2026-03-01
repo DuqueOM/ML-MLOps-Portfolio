@@ -1,0 +1,11 @@
+.git
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+htmlcov
+.mypy_cache
+mlruns
+data/raw/*.csv
+*.egg-info

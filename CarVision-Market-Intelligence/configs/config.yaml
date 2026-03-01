@@ -16,7 +16,7 @@ training:
   val_size: 0.2
   shuffle: true
   # Primary model: random_forest | xgboost | lightgbm | neural_network
-  model: random_forest
+  model: lightgbm
   random_forest_params:
     n_estimators: 300
     max_depth: 12
@@ -46,6 +46,7 @@ training:
   compare_models:
     - "random_forest"
     - "xgboost"
+    - "lightgbm"
     - "neural_network"
 
 preprocessing:
@@ -58,7 +59,7 @@ preprocessing:
   scale_numeric: true
   categorical_imputer: most_frequent
   handle_unknown_category: ignore
-  drop_columns: ["price_per_mile", "price_category"]
+  drop_columns: ["price_per_mile", "price_category", "model", "date_posted", "brand"]
   # If empty lists, will be inferred dynamically from data
   numeric_features: []
   categorical_features: []

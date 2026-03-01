@@ -43,9 +43,9 @@ PROJECT_CONFIGS = {
         "extra_artifacts": ["artifacts/model_comparison.json", "artifacts/feature_columns.json"],
         "default_thresholds": {"r2": 0.70, "rmse": 6000},
     },
-    "telecom": {
-        "dir": "TelecomAI-Customer-Intelligence",
-        "model_name": "TelecomAI-Classifier",
+    "nlpinsight": {
+        "dir": "NLPInsight-Analyzer",
+        "model_name": "NLPInsight-Classifier",
         "model_path": "models/model.joblib",
         "metrics_path": "artifacts/metrics.json",
         "default_thresholds": {"accuracy": 0.75, "f1": 0.50},

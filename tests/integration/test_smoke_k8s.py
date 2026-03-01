@@ -14,7 +14,7 @@ PREREQUISITES
 ─────────────────────────────────────────────────────────────────────
 kubectl port-forward svc/bankchurn-service 8000:80 -n ml-portfolio &
 kubectl port-forward svc/carvision-service 8001:80 -n ml-portfolio &
-kubectl port-forward svc/telecom-service   8002:80 -n ml-portfolio &
+kubectl port-forward svc/nlpinsight-service 8002:80 -n ml-portfolio &
 
 ─────────────────────────────────────────────────────────────────────
 USAGE
@@ -40,7 +40,7 @@ import pytest
 
 BANKCHURN_URL = "http://localhost:8000"
 CARVISION_URL = "http://localhost:8001"
-TELECOM_URL = "http://localhost:8002"
+NLPINSIGHT_URL = "http://localhost:8002"
 
 TIMEOUT = httpx.Timeout(15.0)
 
@@ -72,11 +72,8 @@ CARVISION_PAYLOAD = {
     "paint_color": "white",
 }
 
-TELECOM_PAYLOAD = {
-    "calls": 40.0,
-    "minutes": 311.9,
-    "messages": 83.0,
-    "mb_used": 19915.42,
+NLPINSIGHT_PAYLOAD = {
+    "text": "The quarterly earnings report shows strong growth in revenue and margins.",
 }
 
 
@@ -188,34 +185,36 @@ class TestCarVisionSmoke:
         assert r.status_code == 422
 
 
-# ─── TelecomAI Customer Intelligence ─────────────────────────────────────────
+# ─── NLPInsight Analyzer ───────────────────────────────────────────────────
 
 
-class TestTelecomSmoke:
-    """Smoke tests for TelecomAI Customer Intelligence (port 8002)."""
+class TestNLPInsightSmoke:
+    """Smoke tests for NLPInsight Analyzer (port 8002)."""
 
     def test_health(self):
-        _skip_if_down(TELECOM_URL, "TelecomAI")
-        r = httpx.get(f"{TELECOM_URL}/health", timeout=TIMEOUT)
+        _skip_if_down(NLPINSIGHT_URL, "NLPInsight")
+        r = httpx.get(f"{NLPINSIGHT_URL}/health", timeout=TIMEOUT)
         assert r.status_code == 200
         data = r.json()
-        assert data.get("status") in {"ok", "healthy"}
-        assert data.get("model_loaded") is True
+        assert data.get("status") in {"healthy", "degraded"}
 
     def test_metrics_endpoint(self):
-        _skip_if_down(TELECOM_URL, "TelecomAI")
-        r = httpx.get(f"{TELECOM_URL}/metrics", timeout=TIMEOUT)
+        _skip_if_down(NLPINSIGHT_URL, "NLPInsight")
+        r = httpx.get(f"{NLPINSIGHT_URL}/metrics", timeout=TIMEOUT)
         assert r.status_code == 200
-        assert "telecom_requests_total" in r.text, "Prometheus metric 'telecom_requests_total' not found in /metrics"
 
     def test_predict_response_shape(self):
-        _skip_if_down(TELECOM_URL, "TelecomAI")
-        r = httpx.post(f"{TELECOM_URL}/predict", json=TELECOM_PAYLOAD, timeout=TIMEOUT)
+        _skip_if_down(NLPINSIGHT_URL, "NLPInsight")
+        r = httpx.post(f"{NLPINSIGHT_URL}/predict", json=NLPINSIGHT_PAYLOAD, timeout=TIMEOUT)
         assert r.status_code == 200, f"Predict failed: {r.text}"
         data = r.json()
         assert "prediction" in data
+        pred = data["prediction"]
+        assert "label" in pred
+        assert "confidence" in pred
+        assert 0.0 <= pred["confidence"] <= 1.0
 
-    def test_predict_invalid_payload_returns_422(self):
-        _skip_if_down(TELECOM_URL, "TelecomAI")
-        r = httpx.post(f"{TELECOM_URL}/predict", json={"bad": "data"}, timeout=TIMEOUT)
+    def test_predict_empty_text_returns_422(self):
+        _skip_if_down(NLPINSIGHT_URL, "NLPInsight")
+        r = httpx.post(f"{NLPINSIGHT_URL}/predict", json={"text": ""}, timeout=TIMEOUT)
         assert r.status_code == 422

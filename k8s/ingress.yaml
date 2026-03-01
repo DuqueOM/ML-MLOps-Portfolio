@@ -28,18 +28,18 @@ spec:
             name: bankchurn-service
             port:
               number: 80
-      - path: /telecom
+      - path: /nlpinsight
         pathType: ImplementationSpecific
         backend:
           service:
-            name: telecom-service
+            name: nlpinsight-service
             port:
               number: 80
-      - path: /telecom/*
+      - path: /nlpinsight/*
         pathType: ImplementationSpecific
         backend:
           service:
-            name: telecom-service
+            name: nlpinsight-service
             port:
               number: 80
       - path: /carvision

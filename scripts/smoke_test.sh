@@ -24,17 +24,17 @@ case "$MODE" in
   docker)
     BANKCHURN_URL="${BANKCHURN_URL:-http://localhost:8001}"
     CARVISION_URL="${CARVISION_URL:-http://localhost:8002}"
-    TELECOM_URL="${TELECOM_URL:-http://localhost:8003}"
+    NLPINSIGHT_URL="${NLPINSIGHT_URL:-http://localhost:8003}"
     ;;
   k8s)
     BANKCHURN_URL="${BANKCHURN_URL:-http://localhost:8000}"
     CARVISION_URL="${CARVISION_URL:-http://localhost:8001}"
-    TELECOM_URL="${TELECOM_URL:-http://localhost:8002}"
+    NLPINSIGHT_URL="${NLPINSIGHT_URL:-http://localhost:8002}"
     ;;
   *)
     BANKCHURN_URL="${BANKCHURN_URL:-http://localhost:8001}"
     CARVISION_URL="${CARVISION_URL:-http://localhost:8002}"
-    TELECOM_URL="${TELECOM_URL:-http://localhost:8003}"
+    NLPINSIGHT_URL="${NLPINSIGHT_URL:-http://localhost:8003}"
     ;;
 esac
 
@@ -123,28 +123,28 @@ BATCH=$(curl -sf -X POST "$CARVISION_URL/predict_batch" \
   }' 2>&1 || echo "BATCH_FAILED")
 check "Batch prediction (2)" "total_vehicles" "$BATCH"
 
-# ── TelecomAI ───────────────────────────────────────────────
-echo -e "\n${YELLOW}═══ TelecomAI Customer Intelligence ($TELECOM_URL) ═══${NC}"
+# ── NLPInsight ───────────────────────────────────────────────
+echo -e "\n${YELLOW}═══ NLPInsight Analyzer ($NLPINSIGHT_URL) ═══${NC}"
 
-HEALTH=$(curl -sf "$TELECOM_URL/health" 2>&1 || echo "CONNECTION_REFUSED")
+HEALTH=$(curl -sf "$NLPINSIGHT_URL/health" 2>&1 || echo "CONNECTION_REFUSED")
 check "Health endpoint" "model_loaded" "$HEALTH"
 
-PREDICT=$(curl -sf -X POST "$TELECOM_URL/predict" \
+PREDICT=$(curl -sf -X POST "$NLPINSIGHT_URL/predict" \
   -H "Content-Type: application/json" \
-  -d '{"calls": 50, "minutes": 500.0, "messages": 100, "mb_used": 20000.0}' \
+  -d '{"text": "Revenue growth exceeded expectations this quarter."}' \
   2>&1 || echo "PREDICT_FAILED")
-check "Single prediction" "plan" "$PREDICT"
-check "Feature importance" "feature_importance" "$PREDICT"
+check "Single prediction" "label" "$PREDICT"
+check "Confidence score" "confidence" "$PREDICT"
 
-BATCH=$(curl -sf -X POST "$TELECOM_URL/predict_batch" \
+BATCH=$(curl -sf -X POST "$NLPINSIGHT_URL/predict_batch" \
   -H "Content-Type: application/json" \
   -d '{
-    "customers": [
-      {"calls": 50, "minutes": 500.0, "messages": 100, "mb_used": 20000.0},
-      {"calls": 10, "minutes": 100.0, "messages": 20, "mb_used": 5000.0}
+    "texts": [
+      {"text": "Revenue growth exceeded expectations this quarter."},
+      {"text": "The company reported significant losses due to market downturn."}
     ]
   }' 2>&1 || echo "BATCH_FAILED")
-check "Batch prediction (2)" "total_customers" "$BATCH"
+check "Batch prediction (2)" "count" "$BATCH"
 
 # ── Summary ─────────────────────────────────────────────────
 echo -e "\n${YELLOW}═══════════════════════════════════════${NC}"

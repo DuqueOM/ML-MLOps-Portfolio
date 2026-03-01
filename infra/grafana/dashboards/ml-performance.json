@@ -12,7 +12,7 @@
         "targets": [
           { "expr": "sum(rate(bankchurn_requests_total[5m]))", "legendFormat": "BankChurn" },
           { "expr": "sum(rate(carvision_requests_total[5m]))", "legendFormat": "CarVision" },
-          { "expr": "sum(rate(telecom_requests_total[5m]))", "legendFormat": "TelecomAI" }
+          { "expr": "sum(rate(nlpinsight_requests_total[5m]))", "legendFormat": "NLPInsight" }
         ],
         "fieldConfig": { "defaults": { "unit": "reqps" } },
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
@@ -24,7 +24,7 @@
         "targets": [
           { "expr": "histogram_quantile(0.95, sum(rate(bankchurn_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "BankChurn P95" },
           { "expr": "histogram_quantile(0.95, sum(rate(carvision_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "CarVision P95" },
-          { "expr": "histogram_quantile(0.95, sum(rate(telecom_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "TelecomAI P95" }
+          { "expr": "histogram_quantile(0.95, sum(rate(nlpinsight_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "NLPInsight P95" }
         ],
         "fieldConfig": { "defaults": { "unit": "s" } },
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
@@ -36,7 +36,7 @@
         "targets": [
           { "expr": "sum(bankchurn_requests_total)", "legendFormat": "BankChurn" },
           { "expr": "sum(carvision_requests_total)", "legendFormat": "CarVision" },
-          { "expr": "sum(telecom_requests_total)", "legendFormat": "TelecomAI" }
+          { "expr": "sum(nlpinsight_requests_total)", "legendFormat": "NLPInsight" }
         ],
         "gridPos": {"h": 4, "w": 12, "x": 0, "y": 8}
       },
@@ -56,7 +56,7 @@
         "targets": [
           { "expr": "process_resident_memory_bytes{job='bankchurn-predictor'} / 1024 / 1024", "legendFormat": "BankChurn" },
           { "expr": "process_resident_memory_bytes{job='carvision-intelligence'} / 1024 / 1024", "legendFormat": "CarVision" },
-          { "expr": "process_resident_memory_bytes{job='telecom-intelligence'} / 1024 / 1024", "legendFormat": "TelecomAI" }
+          { "expr": "process_resident_memory_bytes{job='nlpinsight-analyzer'} / 1024 / 1024", "legendFormat": "NLPInsight" }
         ],
         "fieldConfig": { "defaults": { "unit": "decmbytes" } },
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12}
@@ -68,7 +68,7 @@
         "targets": [
           { "expr": "rate(bankchurn_request_duration_seconds_sum[5m]) / rate(bankchurn_request_duration_seconds_count[5m])", "legendFormat": "BankChurn Avg" },
           { "expr": "rate(carvision_request_duration_seconds_sum[5m]) / rate(carvision_request_duration_seconds_count[5m])", "legendFormat": "CarVision Avg" },
-          { "expr": "rate(telecom_request_duration_seconds_sum[5m]) / rate(telecom_request_duration_seconds_count[5m])", "legendFormat": "TelecomAI Avg" }
+          { "expr": "rate(nlpinsight_request_duration_seconds_sum[5m]) / rate(nlpinsight_request_duration_seconds_count[5m])", "legendFormat": "NLPInsight Avg" }
         ],
         "fieldConfig": { "defaults": { "unit": "s" } },
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12}
@@ -91,7 +91,7 @@
         "targets": [
           { "expr": "sum(rate(bankchurn_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "BankChurn errors" },
           { "expr": "sum(rate(carvision_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "CarVision errors" },
-          { "expr": "sum(rate(telecom_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "TelecomAI errors" }
+          { "expr": "sum(rate(nlpinsight_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "NLPInsight errors" }
         ],
         "fieldConfig": { "defaults": { "unit": "reqps" } },
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20}

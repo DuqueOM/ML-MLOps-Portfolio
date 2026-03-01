@@ -36,7 +36,7 @@ kubectl top pods -n ml-portfolio 2>/dev/null || echo "Metrics server not availab
 
 echo ""
 echo "=== 5. Health Checks ==="
-for DEPLOY in bankchurn-predictor carvision-intelligence telecom-intelligence; do
+for DEPLOY in bankchurn-predictor carvision-intelligence nlpinsight-analyzer; do
   echo "--- ${DEPLOY} ---"
   kubectl exec -n ml-portfolio deployment/${DEPLOY} -- curl -s http://localhost:8000/health 2>/dev/null || echo "FAILED"
   echo ""

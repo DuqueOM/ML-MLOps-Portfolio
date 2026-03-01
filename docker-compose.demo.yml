@@ -115,29 +115,30 @@ services:
       - ml-network
     restart: unless-stopped
 
-  # TelecomAI Customer Intelligence API
-  telecom:
-    image: ml-portfolio-telecom:latest
+  # NLPInsight Analyzer API (Sentiment Analysis with Transformers)
+  nlpinsight:
+    image: ml-portfolio-nlpinsight:latest
     build:
-      context: ./TelecomAI-Customer-Intelligence
+      context: ./NLPInsight-Analyzer
       dockerfile: Dockerfile
-    container_name: telecom-api
+    container_name: nlpinsight-api
     ports:
       - "8003:8000"
     volumes:
-      - ./TelecomAI-Customer-Intelligence/data:/app/data:ro
-      - ./TelecomAI-Customer-Intelligence/models:/app/models:ro
-      - ./TelecomAI-Customer-Intelligence/artifacts:/app/artifacts:ro
+      - ./NLPInsight-Analyzer/data:/app/data:ro
+      - ./NLPInsight-Analyzer/models:/app/models:ro
+      - ./NLPInsight-Analyzer/artifacts:/app/artifacts:ro
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow:5000
       - PYTHONUNBUFFERED=1
       - LOG_LEVEL=INFO
+      - MODEL_PATH=models
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 45s
+      start_period: 60s
     depends_on:
       mlflow:
         condition: service_healthy

@@ -246,7 +246,7 @@ resource "aws_security_group" "mlflow_db" {
 resource "aws_ecr_repository" "ml_services" {
   for_each = toset([
     "bankchurn-predictor",
-    "telecom-intelligence",
+    "nlpinsight-analyzer",
     "carvision-intelligence",
   ])
 

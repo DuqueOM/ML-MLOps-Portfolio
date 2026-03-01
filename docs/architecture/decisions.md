@@ -2,7 +2,7 @@
 
 > **Purpose**: This document captures the rationale behind every significant technical decision in this portfolio. Each decision is documented with its context, the choice made, alternatives considered, and the conditions under which the decision should be revisited. Written for technical reviewers, hiring managers, and future maintainers.
 >
-> **Last Updated**: February 2026 | **Portfolio Version**: 2.0.0
+> **Last Updated**: February 2026 | **Portfolio Version**: 7.0.0
 
 ---
 
@@ -337,9 +337,9 @@ Training pipeline trains the primary model plus all models listed in `compare_mo
 
 | Project | Model Type | Selection Method | Key Metric |
 |---|---|---|---|
-| **BankChurn** | VotingClassifier (LR + RF) | Manual ensemble design | AUC 0.87 |
-| **CarVision** | XGBRegressor | Auto-selected over RF | R² 0.705 |
-| **TelecomAI** | VotingClassifier (LR + GB + RF) | Manual ensemble design | Accuracy 82% |
+| **BankChurn** | StackingClassifier (RF+GB+LR+XGB+LGB) + CalibratedClassifierCV | Auto-selected with domain feature engineering | F1 (optimized) |
+| **CarVision** | LightGBM / XGBRegressor | Auto-selected with advanced features (depreciation, brand tiers, mileage) | R² (optimized) |
+| **NLPInsight** | Fine-tuned DistilBERT (66M params) | Transfer learning with HuggingFace Trainer | F1 weighted |
 
 ---
 
@@ -587,6 +587,82 @@ Multi-layer security approach:
 | **Light production** (10 RPS) | 2 nodes, 6 pods | ~$77 |
 | **Medium production** (100 RPS) | 3 nodes, 9 pods (3 replicas) | ~$127 |
 | **Heavy production** (1000 RPS) | 5 nodes, 15 pods + Redis cache | ~$250+ |
+
+---
+
+## ADR-018: NLPInsight Analyzer — Deep Learning with Transformers
+
+**Status**: Accepted | **Category**: ML Engineering
+
+### Context
+
+The portfolio originally contained three tabular ML projects (BankChurn, CarVision, TelecomAI), all using scikit-learn ensembles. This created a perception of limited ML depth — the infrastructure was more sophisticated than the models.
+
+### Decision
+
+Replace TelecomAI (churn classification with sklearn) with NLPInsight Analyzer — a sentiment analysis project using fine-tuned DistilBERT transformers via PyTorch and HuggingFace.
+
+### Rationale
+
+- **Model diversity**: The portfolio now spans tabular classification (BankChurn), tabular regression (CarVision), and **NLP with deep learning** (NLPInsight). This demonstrates breadth across ML paradigms.
+- **Transfer learning**: Fine-tuning a pre-trained 66M parameter transformer is fundamentally different from training a RandomForest — it demonstrates understanding of attention mechanisms, tokenization, gradient accumulation, learning rate scheduling with warmup, and mixed-precision training.
+- **GPU-aware engineering**: The training pipeline auto-detects CUDA, supports FP16, and falls back to CPU. The Dockerfile uses CPU-optimized PyTorch wheels to keep images small (~600MB vs ~2GB with CUDA).
+- **Production inference patterns**: Batch prediction, attention masking, softmax calibration — patterns specific to transformer serving that don't appear in tabular ML.
+- **HuggingFace ecosystem**: Industry-standard tooling (AutoTokenizer, AutoModelForSequenceClassification, Trainer API) that recruiters specifically look for.
+
+### Architecture
+
+```
+Text → AutoTokenizer → input_ids + attention_mask → DistilBERT → Classification Head → Softmax → Label
+```
+
+**Pipeline**: `[Tokenization → Model Forward Pass → Softmax → Argmax]`
+
+**Training**: HuggingFace Trainer with EarlyStoppingCallback, ReduceLROnPlateau, and class-weighted CrossEntropyLoss.
+
+### Alternatives Considered
+
+| Alternative | Why Not |
+|---|---|
+| **Keep TelecomAI (sklearn)** | Third tabular project adds no new signal. Recruiters see the same patterns repeated. |
+| **Computer Vision (CNN)** | Image data requires significant storage, augmentation pipelines, and GPU for training. Higher infrastructure cost with less MLOps differentiation. |
+| **LLM fine-tuning (GPT-2/LLaMA)** | Generative models require significantly more compute (GPU mandatory) and are harder to evaluate rigorously. DistilBERT is the right scale for a portfolio — fast to train, easy to evaluate, and demonstrates the same HuggingFace skills. |
+| **Traditional NLP (TF-IDF + sklearn)** | Misses the deep learning signal entirely. The whole point is demonstrating PyTorch + Transformers competence. |
+
+---
+
+## ADR-019: Domain-Driven Feature Engineering
+
+**Status**: Accepted | **Category**: ML Engineering
+
+### Context
+
+Original models used raw features with minimal preprocessing (OneHotEncoding + StandardScaler). This produced adequate but unimpressive results and failed to demonstrate domain knowledge.
+
+### Decision
+
+Add sklearn-compatible `FeatureEngineer` transformers to BankChurn and CarVision that create domain-driven features integrated into the training pipeline.
+
+### Features Added
+
+**BankChurn** (`ChurnFeatureEngineer`):
+- Interaction features: Age×Products, Balance×Active, CreditScore×Tenure
+- Ratio features: Balance/Salary, CreditScore/Age, Balance/Products
+- Binning: Age groups (churn peaks at 55+), Balance bands (zero-balance paradox)
+- Composite scores: Engagement score, Financial risk, Zero-balance flag
+
+**CarVision** (enhanced `FeatureEngineer`):
+- Non-linear depreciation curve: `1 - exp(-0.15 × age)` models real-world depreciation
+- Brand tier classification: Luxury/Domestic/Economy without target leakage
+- Mileage efficiency: miles_per_year, log_odometer, low/high mileage flags
+- Condition scoring: Ordinal encoding of condition strings
+- Fuel/cylinder indicators: Electric/hybrid flag, high-power flag
+
+### Rationale
+
+- **Domain knowledge signal**: Feature engineering is the #1 differentiator senior recruiters look for. It demonstrates that the candidate understands the business domain, not just the ML tooling.
+- **sklearn-compatible**: Both transformers inherit from `BaseEstimator` + `TransformerMixin`, integrate cleanly into `Pipeline`, and serialize with joblib. No special handling needed.
+- **No data leakage**: All features derived from input features only — no target-derived features in the inference path. Price-derived features (`price_per_mile`, `price_category`) are explicitly excluded via `drop_columns` config.
 
 ---
 

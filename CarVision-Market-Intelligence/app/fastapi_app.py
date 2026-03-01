@@ -13,7 +13,6 @@ from __future__ import annotations
 import json
 import logging
 import os
-import sys
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -48,11 +47,7 @@ try:
 except ImportError:
     PROMETHEUS_AVAILABLE = False
 
-# Add repo root to path for common_utils imports
 BASE_DIR = Path(__file__).resolve().parent.parent
-REPO_ROOT = BASE_DIR.parent
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
 
 try:
     from common_utils.model_persistence import load_model
@@ -106,12 +101,14 @@ async def lifespan(application: FastAPI):
 
 app = FastAPI(title="CarVision Inference API", version="1.0.0", lifespan=lifespan)
 
+# CORS — origins from env for security (no wildcard + credentials)
+_cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:8501").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[o.strip() for o in _cors_origins],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 

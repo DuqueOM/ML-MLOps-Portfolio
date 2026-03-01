@@ -34,10 +34,16 @@ from src.carvision.training import train_model
 try:
     from common_utils.seed import set_seed
 except ModuleNotFoundError:  # pragma: no cover
-    BASE_DIR = Path(__file__).resolve().parents[1]
-    if str(BASE_DIR) not in sys.path:
-        sys.path.insert(0, str(BASE_DIR))
-    from common_utils.seed import set_seed
+    import random
+
+    import numpy as np
+
+    def set_seed(seed=None):
+        seed = seed or 42
+        random.seed(seed)
+        np.random.seed(seed)
+        return seed
+
 
 # Configuración de warnings y logging
 warnings.filterwarnings("ignore", category=FutureWarning)

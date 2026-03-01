@@ -73,8 +73,8 @@ jobs:
             ar_image: bankchurn-predictor
           - ghcr_image: carvision-market-intelligence
             ar_image: carvision-market-intelligence
-          - ghcr_image: telecomai-customer-intelligence
-            ar_image: telecomai-customer-intelligence
+          - ghcr_image: nlpinsight-analyzer
+            ar_image: nlpinsight-analyzer
       fail-fast: false
     steps:
       - name: Log in to GHCR (source)
@@ -129,8 +129,8 @@ jobs:
             ecr_image: ml-portfolio/bankchurn-predictor
           - ghcr_image: carvision-market-intelligence
             ecr_image: ml-portfolio/carvision-intelligence
-          - ghcr_image: telecomai-customer-intelligence
-            ecr_image: ml-portfolio/telecom-intelligence
+          - ghcr_image: nlpinsight-analyzer
+            ecr_image: ml-portfolio/nlpinsight-analyzer
       fail-fast: false
     steps:
       - name: Log in to GHCR (source)
@@ -198,18 +198,18 @@ jobs:
           echo "Restarting deployments in ml-portfolio namespace..."
           kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio
           kubectl rollout restart deployment/carvision-intelligence -n ml-portfolio
-          kubectl rollout restart deployment/telecom-intelligence -n ml-portfolio
+          kubectl rollout restart deployment/nlpinsight-analyzer -n ml-portfolio
 
       - name: Wait for rollouts
         run: |
-          for DEP in bankchurn-predictor carvision-intelligence telecom-intelligence; do
+          for DEP in bankchurn-predictor carvision-intelligence nlpinsight-analyzer; do
             echo "Waiting for ${DEP}..."
             kubectl rollout status deployment/${DEP} -n ml-portfolio --timeout=300s || true
           done
 
       - name: Smoke test health endpoints
         run: |
-          for SVC in bankchurn-service carvision-service telecom-service; do
+          for SVC in bankchurn-service carvision-service nlpinsight-service; do
             echo "Testing ${SVC}..."
             kubectl run smoke-${SVC}-${{ github.run_number }} \
               --namespace=ml-portfolio \
@@ -256,18 +256,18 @@ jobs:
           echo "Restarting deployments in ml-portfolio namespace..."
           kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio
           kubectl rollout restart deployment/carvision-intelligence -n ml-portfolio
-          kubectl rollout restart deployment/telecom-intelligence -n ml-portfolio
+          kubectl rollout restart deployment/nlpinsight-analyzer -n ml-portfolio
 
       - name: Wait for rollouts
         run: |
-          for DEP in bankchurn-predictor carvision-intelligence telecom-intelligence; do
+          for DEP in bankchurn-predictor carvision-intelligence nlpinsight-analyzer; do
             echo "Waiting for ${DEP}..."
             kubectl rollout status deployment/${DEP} -n ml-portfolio --timeout=300s || true
           done
 
       - name: Smoke test health endpoints
         run: |
-          for SVC in bankchurn-service carvision-service telecom-service; do
+          for SVC in bankchurn-service carvision-service nlpinsight-service; do
             echo "Testing ${SVC}..."
             kubectl run smoke-${SVC}-${{ github.run_number }} \
               --namespace=ml-portfolio \

@@ -181,7 +181,7 @@ data:
         replacement: $1:$2
         target_label: __address__
     
-    - job_name: 'telecom-intelligence'
+    - job_name: 'nlpinsight-analyzer'
       kubernetes_sd_configs:
       - role: pod
         namespaces:
@@ -190,7 +190,7 @@ data:
       relabel_configs:
       - source_labels: [__meta_kubernetes_pod_label_app]
         action: keep
-        regex: telecom-intelligence
+        regex: nlpinsight-analyzer
       - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
         action: keep
         regex: true

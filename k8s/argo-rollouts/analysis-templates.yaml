@@ -1,0 +1,95 @@
+# Argo Rollouts Analysis Templates
+# Prometheus-based canary health verification
+#
+# These templates define automated rollback criteria:
+# - Error rate > 5% → rollback
+# - p95 latency > 500ms → rollback
+# - Prediction drift detected → rollback
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: canary-health-check
+  namespace: ml-portfolio
+spec:
+  args:
+  - name: service-name
+  metrics:
+  # Metric 1: Error rate must be below 5%
+  - name: error-rate
+    interval: 30s
+    count: 3
+    successCondition: result[0] < 0.05
+    failureLimit: 2
+    provider:
+      prometheus:
+        address: http://prometheus-service.ml-portfolio.svc:9090
+        query: |
+          sum(rate({{args.service-name}}_requests_total{status=~"5.."}[2m]))
+          /
+          sum(rate({{args.service-name}}_requests_total[2m]))
+
+  # Metric 2: p95 latency must be below 500ms
+  - name: latency-p95
+    interval: 30s
+    count: 3
+    successCondition: result[0] < 0.5
+    failureLimit: 2
+    provider:
+      prometheus:
+        address: http://prometheus-service.ml-portfolio.svc:9090
+        query: |
+          histogram_quantile(0.95,
+            sum(rate({{args.service-name}}_request_duration_seconds_bucket[2m])) by (le)
+          )
+
+  # Metric 3: Prediction distribution stability (no sudden shifts)
+  - name: prediction-stability
+    interval: 60s
+    count: 2
+    successCondition: result[0] < 0.3
+    failureLimit: 1
+    provider:
+      prometheus:
+        address: http://prometheus-service.ml-portfolio.svc:9090
+        query: |
+          abs(
+            sum(rate({{args.service-name}}_predictions_total{prediction="1"}[5m]))
+            /
+            sum(rate({{args.service-name}}_predictions_total[5m]))
+            - 0.5
+          )
+---
+# Blue-Green analysis (stricter — used for major model version changes)
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: bluegreen-validation
+  namespace: ml-portfolio
+spec:
+  args:
+  - name: service-name
+  metrics:
+  - name: error-rate
+    interval: 60s
+    count: 5
+    successCondition: result[0] < 0.02
+    failureLimit: 1
+    provider:
+      prometheus:
+        address: http://prometheus-service.ml-portfolio.svc:9090
+        query: |
+          sum(rate({{args.service-name}}_requests_total{status=~"5.."}[5m]))
+          /
+          sum(rate({{args.service-name}}_requests_total[5m]))
+  - name: latency-p99
+    interval: 60s
+    count: 5
+    successCondition: result[0] < 1.0
+    failureLimit: 1
+    provider:
+      prometheus:
+        address: http://prometheus-service.ml-portfolio.svc:9090
+        query: |
+          histogram_quantile(0.99,
+            sum(rate({{args.service-name}}_request_duration_seconds_bucket[5m])) by (le)
+          )

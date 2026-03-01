@@ -2,20 +2,13 @@
 """
 Entry point for BankChurn Predictor.
 Wrapper around src.bankchurn.cli.
+
+Run from project root: python main.py --mode train --config configs/config.yaml
+Or install the package first: pip install -e .
 """
 import sys
-from pathlib import Path
 
-# Add src to path if needed (though typically running from root works)
-# This ensures we can find the package even if not installed as a package
-sys.path.insert(0, str(Path(__file__).parent))
-
-try:
-    from src.bankchurn.cli import cli_main
-except ImportError as e:
-    print(f"Error importing src.bankchurn.cli: {e}")
-    print("Make sure you are running from the project root.")
-    sys.exit(1)
+from src.bankchurn.cli import cli_main
 
 if __name__ == "__main__":
     sys.exit(cli_main())

@@ -188,7 +188,7 @@ def _run_temporal_backtest(
     n_test = max(1, int(len(df_sorted) * test_size))
     df_temp = df_sorted.tail(n_test)
 
-    X_temp = df_temp[feature_cols]
+    X_temp = df_temp.drop(columns=[target], errors="ignore")
     y_temp = df_temp[target]
 
     # Align columns if needed (add missing as nan)
@@ -214,7 +214,7 @@ def _run_temporal_backtest(
             if len(group) < 30:
                 continue
 
-            y_g_pred = model.predict(group[feature_cols])
+            y_g_pred = model.predict(group.drop(columns=[target], errors="ignore"))
             rows.append(
                 {
                     "segment_col": col,

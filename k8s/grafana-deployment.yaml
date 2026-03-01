@@ -165,7 +165,7 @@ data:
           "targets": [
             { "expr": "sum(rate(bankchurn_requests_total[5m]))", "legendFormat": "BankChurn", "refId": "A" },
             { "expr": "sum(rate(carvision_requests_total[5m]))", "legendFormat": "CarVision", "refId": "B" },
-            { "expr": "sum(rate(telecom_requests_total[5m]))", "legendFormat": "TelecomAI", "refId": "C" }
+            { "expr": "sum(rate(nlpinsight_requests_total[5m]))", "legendFormat": "NLPInsight", "refId": "C" }
           ]
         },
         {
@@ -193,7 +193,7 @@ data:
           "targets": [
             { "expr": "histogram_quantile(0.95, sum(rate(bankchurn_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "BankChurn P95", "refId": "A" },
             { "expr": "histogram_quantile(0.95, sum(rate(carvision_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "CarVision P95", "refId": "B" },
-            { "expr": "histogram_quantile(0.95, sum(rate(telecom_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "TelecomAI P95", "refId": "C" }
+            { "expr": "histogram_quantile(0.95, sum(rate(nlpinsight_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "NLPInsight P95", "refId": "C" }
           ]
         },
         {
@@ -222,14 +222,14 @@ data:
         },
         {
           "id": 5,
-          "title": "Total Requests — TelecomAI",
-          "description": "Cumulative requests to TelecomAI",
+          "title": "Total Requests — NLPInsight",
+          "description": "Cumulative requests to NLPInsight",
           "type": "stat",
           "gridPos": { "h": 4, "w": 6, "x": 12, "y": 8 },
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
           "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "green", "value": 100 }] } }, "overrides": [] },
           "targets": [
-            { "expr": "sum(telecom_requests_total)", "legendFormat": "TelecomAI", "refId": "A" }
+            { "expr": "sum(nlpinsight_requests_total)", "legendFormat": "NLPInsight", "refId": "A" }
           ]
         },
         {
@@ -258,7 +258,7 @@ data:
           "targets": [
             { "expr": "rate(bankchurn_request_duration_seconds_sum[5m]) / rate(bankchurn_request_duration_seconds_count[5m])", "legendFormat": "BankChurn Avg", "refId": "A" },
             { "expr": "rate(carvision_request_duration_seconds_sum[5m]) / rate(carvision_request_duration_seconds_count[5m])", "legendFormat": "CarVision Avg", "refId": "B" },
-            { "expr": "rate(telecom_request_duration_seconds_sum[5m]) / rate(telecom_request_duration_seconds_count[5m])", "legendFormat": "TelecomAI Avg", "refId": "C" }
+            { "expr": "rate(nlpinsight_request_duration_seconds_sum[5m]) / rate(nlpinsight_request_duration_seconds_count[5m])", "legendFormat": "NLPInsight Avg", "refId": "C" }
           ]
         },
         {
@@ -275,10 +275,10 @@ data:
           "targets": [
             { "expr": "histogram_quantile(0.99, sum(rate(bankchurn_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "BankChurn P99", "refId": "A" },
             { "expr": "histogram_quantile(0.99, sum(rate(carvision_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "CarVision P99", "refId": "B" },
-            { "expr": "histogram_quantile(0.99, sum(rate(telecom_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "TelecomAI P99", "refId": "C" },
+            { "expr": "histogram_quantile(0.99, sum(rate(nlpinsight_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "NLPInsight P99", "refId": "C" },
             { "expr": "histogram_quantile(0.50, sum(rate(bankchurn_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "BankChurn P50", "refId": "D" },
             { "expr": "histogram_quantile(0.50, sum(rate(carvision_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "CarVision P50", "refId": "E" },
-            { "expr": "histogram_quantile(0.50, sum(rate(telecom_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "TelecomAI P50", "refId": "F" }
+            { "expr": "histogram_quantile(0.50, sum(rate(nlpinsight_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "NLPInsight P50", "refId": "F" }
           ]
         },
         {
@@ -312,7 +312,7 @@ data:
           "targets": [
             { "expr": "sum(rate(bankchurn_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "BankChurn errors", "refId": "A" },
             { "expr": "sum(rate(carvision_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "CarVision errors", "refId": "B" },
-            { "expr": "sum(rate(telecom_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "TelecomAI errors", "refId": "C" }
+            { "expr": "sum(rate(nlpinsight_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "NLPInsight errors", "refId": "C" }
           ]
         }
       ],

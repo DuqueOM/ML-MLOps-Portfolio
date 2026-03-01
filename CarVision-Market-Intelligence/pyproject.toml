@@ -46,6 +46,9 @@ advanced = [
     "optuna>=3.0.0",
 ]
 
+[tool.setuptools.packages.find]
+where = ["."]
+
 [tool.black]
 line-length = 120
 target-version = ['py310']

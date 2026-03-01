@@ -9,12 +9,12 @@
 #   ./scripts/upload-models-to-gcs.sh                    # Upload all 3 models
 #   ./scripts/upload-models-to-gcs.sh bankchurn           # Upload only bankchurn
 #   ./scripts/upload-models-to-gcs.sh carvision           # Upload only carvision
-#   ./scripts/upload-models-to-gcs.sh telecom             # Upload only telecom
+#   ./scripts/upload-models-to-gcs.sh nlpinsight           # Upload only nlpinsight
 #
 # After uploading, restart pods to pick up new models:
 #   kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio
 #   kubectl rollout restart deployment/carvision-intelligence -n ml-portfolio
-#   kubectl rollout restart deployment/telecom-intelligence -n ml-portfolio
+#   kubectl rollout restart deployment/nlpinsight-analyzer -n ml-portfolio
 
 set -euo pipefail
 
@@ -26,19 +26,23 @@ upload_model() {
     local local_path="$2"
     local gcs_path="$3"
 
-    if [ ! -f "$local_path" ]; then
+    if [ ! -e "$local_path" ]; then
         echo "ERROR: Model not found: $local_path"
         echo "  Train first, then re-run this script."
         return 1
     fi
 
     local size_mb
-    size_mb=$(du -m "$local_path" | cut -f1)
+    size_mb=$(du -sm "$local_path" | cut -f1)
     echo "Uploading $project model ($size_mb MB)..."
     echo "  Local:  $local_path"
     echo "  Remote: gs://$BUCKET/$gcs_path"
 
-    gsutil cp "$local_path" "gs://$BUCKET/$gcs_path"
+    if [ -d "$local_path" ]; then
+        gsutil -m cp -r "$local_path/*" "gs://$BUCKET/$gcs_path/"
+    else
+        gsutil cp "$local_path" "gs://$BUCKET/$gcs_path"
+    fi
     echo "  ✅ $project uploaded successfully"
     echo ""
 }
@@ -60,15 +64,15 @@ case "$TARGET" in
             "$PROJECT_ROOT/CarVision-Market-Intelligence/models/model.joblib" \
             "carvision/model.joblib"
         ;;&
-    telecom|all)
-        upload_model "TelecomAI" \
-            "$PROJECT_ROOT/TelecomAI-Customer-Intelligence/models/model.joblib" \
-            "telecom/model.joblib"
+    nlpinsight|all)
+        upload_model "NLPInsight" \
+            "$PROJECT_ROOT/NLPInsight-Analyzer/models" \
+            "nlpinsight/model"
         ;;&
     all) ;;
-    bankchurn|carvision|telecom) ;;
+    bankchurn|carvision|nlpinsight) ;;
     *)
-        echo "Usage: $0 [bankchurn|carvision|telecom|all]"
+        echo "Usage: $0 [bankchurn|carvision|nlpinsight|all]"
         exit 1
         ;;
 esac
@@ -79,7 +83,7 @@ echo "Next steps:"
 echo "  1. Restart deployments to pick up new models:"
 echo "     kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio"
 echo "     kubectl rollout restart deployment/carvision-intelligence -n ml-portfolio"
-echo "     kubectl rollout restart deployment/telecom-intelligence -n ml-portfolio"
+echo "     kubectl rollout restart deployment/nlpinsight-analyzer -n ml-portfolio"
 echo ""
 echo "  2. Verify pods are running:"
 echo "     kubectl get pods -n ml-portfolio -w"

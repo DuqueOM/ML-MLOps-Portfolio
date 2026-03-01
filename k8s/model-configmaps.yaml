@@ -33,12 +33,12 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: telecom-model-config
+  name: nlpinsight-model-config
   namespace: ml-portfolio
   labels:
-    app: telecom-intelligence
+    app: nlpinsight-analyzer
     component: model-download
 data:
   GCS_BUCKET: "ml-portfolio-duque-om-202602-ml-models-production"
-  GCS_MODEL_PATH: "telecom/model.joblib"
-  LOCAL_MODEL_PATH: "/models/model.joblib"
+  GCS_MODEL_PATH: "nlpinsight/model"
+  LOCAL_MODEL_PATH: "/models"
