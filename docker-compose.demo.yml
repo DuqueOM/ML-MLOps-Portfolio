@@ -115,7 +115,7 @@ services:
       - ml-network
     restart: unless-stopped
 
-  # NLPInsight Analyzer API (Sentiment Analysis with Transformers)
+  # NLPInsight Analyzer API (Sentiment Analysis with TF-IDF + sklearn)
   nlpinsight:
     image: ml-portfolio-nlpinsight:latest
     build:

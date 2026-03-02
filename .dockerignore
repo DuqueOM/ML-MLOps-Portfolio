@@ -74,6 +74,7 @@ data/external/
 *.parquet
 *.pkl
 *.joblib
+!models/*.joblib
 !artifacts/*.joblib
 
 # MLflow

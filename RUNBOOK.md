@@ -189,7 +189,7 @@ curl -X POST "http://localhost:8000/predict" \
 ```
 
 **Key Artifacts**:
-- `artifacts/model.joblib` (trained pipeline)
+- `models/model.joblib` (trained pipeline)
 - `artifacts/metrics.json` (evaluation results)
 
 ### CarVision-Market-Intelligence
@@ -448,7 +448,7 @@ cp .env.example .env
 | `API_HOST` | API bind address | `0.0.0.0` | No |
 | `API_PORT` | API port | `8000` | No |
 | `LOG_LEVEL` | Logging verbosity | `INFO` | No |
-| `MODEL_PATH` | Path to model artifacts | `artifacts/model.joblib` | Yes |
+| `MODEL_PATH` | Path to model artifacts | `models/model.joblib` | Yes |
 
 ### Production Overrides
 
