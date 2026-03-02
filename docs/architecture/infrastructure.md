@@ -55,6 +55,26 @@ terraform plan -var-file=terraform.tfvars
 terraform apply -var-file=terraform.tfvars
 ```
 
+## Infrastructure Testing
+
+Automated validation suite in `tests/infra/`:
+
+| Test | Type | GCP | AWS |
+|------|------|-----|-----|
+| `terraform fmt` | Hard gate | ✅ | ✅ |
+| `terraform validate` | Hard gate | ✅ | ✅ |
+| `tfsec` | Advisory | ✅ (51/71) | ✅ (84/116) |
+| `checkov` | Advisory | ✅ (51/71) | ✅ (84/116) |
+| YAML syntax | Hard gate | ✅ 24/24 | ✅ 24/24 |
+| `kube-linter` | Advisory | ✅ 17 findings | ✅ 17 findings |
+| `conftest` (OPA) | Hard gate | ✅ 0 violations | ✅ 0 violations |
+
+```bash
+bash tests/infra/run_all_tests.sh
+```
+
+![Infrastructure Test Results](../media/screenshots/terminal/22b-infra-test-results.png)
+
 ## Security
 
 - Encryption at rest (GCS, Cloud SQL, S3, RDS)
@@ -63,6 +83,7 @@ terraform apply -var-file=terraform.tfvars
 - Private database networking
 - CI/CD scanning: Trivy, Bandit, Gitleaks, pip-audit
 - Least-privilege: `storage.objectViewer` for GKE pods
+- IaC scanning: tfsec, checkov (advisory findings documented in `.tfsec.yml`)
 
 ---
 

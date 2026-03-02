@@ -45,6 +45,38 @@
 | Data versioning | DVC + GCS | DVC + S3 | `dvc push/pull` |
 | Security scanning | Trivy + Bandit + Gitleaks | Trivy + Bandit + Gitleaks | SARIF reports |
 | Test coverage | 88-95% | 88-95% | Codecov integration |
+| Infra testing (Terraform) | tfsec + checkov | tfsec + checkov | Hard gates + advisory |
+| Infra testing (K8s) | kube-linter + conftest | kube-linter + conftest | OPA policies (13 rules) |
+
+## Infrastructure Test Results
+
+| Test | Type | GCP | AWS |
+|------|------|-----|-----|
+| `terraform fmt` | Hard gate | ✅ Pass | ✅ Pass |
+| `terraform validate` | Hard gate | ✅ Pass | ✅ Pass |
+| `tfsec` | Advisory | ✅ (51/71) | ✅ (84/116) |
+| `checkov` | Advisory | ✅ (51/71) | ✅ (84/116) |
+| YAML syntax | Hard gate | ✅ 24/24 | ✅ 24/24 |
+| `kube-linter` | Advisory | ✅ 17 findings | ✅ 17 findings |
+| `conftest` (OPA) | Hard gate | ✅ 0 violations | ✅ 0 violations |
+
+> Run: `bash tests/infra/run_all_tests.sh`
+
+## Model Performance (v2.0.0 — Python 3.11, sklearn 1.8.0)
+
+| Model | Algorithm | Key Metric | Size |
+|-------|-----------|------------|------|
+| BankChurn | VotingClassifier (LR+RF) | AUC 0.863, F1 0.616 | 4.1 MB |
+| CarVision | XGBRegressor + FeatureEngineer (24 features) | R² 0.825, RMSE $6,273 | 5.7 MB |
+| NLPInsight | TF-IDF + LogisticRegression | Acc 88.1%, F1-macro 0.826 | 309 KB |
+
+## Test Coverage (~92% overall)
+
+| Project | Coverage | Lines | Tests |
+|---------|----------|-------|-------|
+| BankChurn | 88.3% | 737/835 | 168 |
+| CarVision | 95.2% | 551/579 | 37 |
+| NLPInsight | 95.5% | 336/352 | 59 |
 
 ## Key Metrics
 
