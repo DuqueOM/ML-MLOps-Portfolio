@@ -163,13 +163,14 @@ model = Pipeline([
 model.fit(X, y)
 
 # Save model and feature columns
-Path('artifacts').mkdir(exist_ok=True)
-joblib.dump(model, 'artifacts/model.joblib')
+Path('models').mkdir(exist_ok=True)
+joblib.dump(model, 'models/model.joblib')
 
+Path('artifacts').mkdir(exist_ok=True)
 feature_columns = cat_features + num_features
 Path('artifacts/feature_columns.json').write_text(json.dumps(feature_columns))
 
-print('✅ CarVision model saved to artifacts/model.joblib')
+print('✅ CarVision model saved to models/model.joblib')
 print(f'   Features: {feature_columns}')
 "
 cd ..

@@ -36,11 +36,11 @@ DATASET_REGISTRY: Dict[str, Dict] = {
         "size_mb": 50,
     },
     "nlpinsight": {
-        "name": "NLPInsight Users Dataset",
-        "url": "https://example.com/datasets/nlpinsight_users.csv",  # Placeholder
-        "path": "NLPInsight-Analyzer/data/nlpinsight_users.csv",
+        "name": "NLPInsight Financial PhraseBank",
+        "url": "https://example.com/datasets/train.csv",  # Placeholder — use download_financial_phrasebank.py
+        "path": "NLPInsight-Analyzer/data/raw/train.csv",
         "checksum": None,
-        "size_mb": 5,
+        "size_mb": 1,
     },
 }
 

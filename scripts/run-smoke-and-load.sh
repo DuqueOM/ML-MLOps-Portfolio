@@ -117,8 +117,8 @@ fi
 echo -n "[NLPInsight] Predict... "
 RESP=$(curl -sf -X POST http://localhost:8002/predict \
   -H "Content-Type: application/json" \
-  -d '{"calls":50,"minutes":300.5,"messages":40,"mb_used":2048.0}')
-if echo "$RESP" | grep -q "prediction"; then
+  -d '{"text":"The company reported strong quarterly earnings growth"}')
+if echo "$RESP" | grep -q "label"; then
   echo "PASS"
   PASS=$((PASS+1))
 else
@@ -160,7 +160,7 @@ curl -sf -o /dev/null -w "%{time_total}s\n" -X POST http://localhost:8001/predic
 echo -n "[NLPInsight] Single predict latency: "
 curl -sf -o /dev/null -w "%{time_total}s\n" -X POST http://localhost:8002/predict \
   -H "Content-Type: application/json" \
-  -d '{"calls":50,"minutes":300.5,"messages":40,"mb_used":2048.0}'
+  -d '{"text":"The company reported strong quarterly earnings growth"}'
 
 echo ""
 echo "Port-forwards still running. Ready for load tests."

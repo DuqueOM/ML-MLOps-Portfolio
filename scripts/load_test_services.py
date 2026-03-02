@@ -114,12 +114,21 @@ def generate_carvision_payload() -> Dict[str, Any]:
 
 
 def generate_nlpinsight_payload() -> Dict[str, Any]:
-    """Generate a realistic, randomized NLPInsight customer payload."""
+    """Generate a realistic, randomized NLPInsight sentiment analysis payload."""
+    texts = [
+        "Revenue growth exceeded expectations this quarter",
+        "The company reported significant losses due to market downturn",
+        "Shares remained stable with no major changes in outlook",
+        "Strong earnings drove stock prices to new highs",
+        "The acquisition is expected to boost market share significantly",
+        "Declining sales led to workforce reduction announcements",
+        "The board approved a new dividend payout for shareholders",
+        "Market uncertainty continues to weigh on investor confidence",
+        "Operating margins improved thanks to cost reduction initiatives",
+        "The company faces regulatory challenges in key markets",
+    ]
     return {
-        "calls": round(random.uniform(0, 200), 1),
-        "minutes": round(random.uniform(0, 1000), 1),
-        "messages": round(random.uniform(0, 300), 1),
-        "mb_used": round(random.uniform(0, 50000), 2),
+        "text": random.choice(texts),
     }
 
 

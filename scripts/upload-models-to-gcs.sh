@@ -66,8 +66,8 @@ case "$TARGET" in
         ;;&
     nlpinsight|all)
         upload_model "NLPInsight" \
-            "$PROJECT_ROOT/NLPInsight-Analyzer/models" \
-            "nlpinsight/model"
+            "$PROJECT_ROOT/NLPInsight-Analyzer/models/model.joblib" \
+            "nlpinsight/model.joblib"
         ;;&
     all) ;;
     bankchurn|carvision|nlpinsight) ;;

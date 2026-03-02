@@ -6,7 +6,7 @@
 set -e
 
 PROJECT="BankChurn-Predictor"
-PORTFOLIO_ROOT="/home/duque_om/projects/Projects Tripe Ten"
+PORTFOLIO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PROJECT_DIR="$PORTFOLIO_ROOT/$PROJECT"
 
 # Colores

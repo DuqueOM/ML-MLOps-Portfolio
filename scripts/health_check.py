@@ -10,7 +10,7 @@ Usage:
 
 Requirements:
     - All project dependencies installed
-    - Model artifacts present in each project's models/ or artifacts/ directory
+    - Model artifacts present in each project's models/ directory
 """
 
 import sys
@@ -70,7 +70,7 @@ def check_carvision():
         import joblib
         import pandas as pd
 
-        model_path = ROOT / "CarVision-Market-Intelligence" / "artifacts" / "model.joblib"
+        model_path = ROOT / "CarVision-Market-Intelligence" / "models" / "model.joblib"
         if not model_path.exists():
             print("⚠️  Model not found (run training first)")
             return False
@@ -105,25 +105,26 @@ def check_carvision():
 
 def check_nlpinsight():
     """Verify NLPInsight model loads and predicts."""
-    print("� Checking NLPInsight-Analyzer...", end=" ")
+    print("\U0001f4dd Checking NLPInsight-Analyzer...", end=" ")
     try:
-        model_dir = ROOT / "NLPInsight-Analyzer" / "models"
-        if not model_dir.exists() or not any(model_dir.iterdir()):
-            print("⚠️  Model not found (run training first)")
+        import joblib
+
+        model_path = ROOT / "NLPInsight-Analyzer" / "models" / "model.joblib"
+        if not model_path.exists():
+            print("\u26a0\ufe0f  Model not found (run training first)")
             return False
 
-        from transformers import AutoModelForSequenceClassification, AutoTokenizer
+        model = joblib.load(model_path)
 
-        tokenizer = AutoTokenizer.from_pretrained(str(model_dir))
-        model = AutoModelForSequenceClassification.from_pretrained(str(model_dir))
-
-        inputs = tokenizer("This is a great product!", return_tensors="pt", truncation=True, max_length=256)
-        outputs = model(**inputs)
-        pred = outputs.logits.argmax(dim=-1).item()
-        print(f"✅ OK (prediction: {pred})")
+        # Sample prediction (TF-IDF + LogisticRegression pipeline)
+        sample = ["Revenue growth exceeded expectations this quarter."]
+        pred = model.predict(sample)
+        label_map = {0: "negative", 1: "neutral", 2: "positive"}
+        label = label_map.get(pred[0], str(pred[0]))
+        print(f"\u2705 OK (prediction: {label})")
         return True
     except Exception as e:
-        print(f"❌ FAILED: {e}")
+        print(f"\u274c FAILED: {e}")
         return False
 
 
