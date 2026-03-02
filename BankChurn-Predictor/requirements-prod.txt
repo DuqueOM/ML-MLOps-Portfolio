@@ -25,10 +25,8 @@ pyyaml>=6.0
 prometheus-client>=0.17.0
 
 # SHAP explainability (CPU-only, installed with --no-deps in Dockerfile)
-# TreeExplainer works without torch for sklearn/XGBoost models
-# Runtime deps: numba, llvmlite, slicer, cloudpickle, packaging (added below)
-numba>=0.58.0
-llvmlite>=0.41.0
+# TreeExplainer works without torch/numba for sklearn/XGBoost models
+# Only minimal runtime deps needed (numba NOT required for TreeExplainer)
 slicer>=0.0.7
 cloudpickle>=2.0.0
 packaging>=21.0

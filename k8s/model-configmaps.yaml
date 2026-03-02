@@ -40,5 +40,5 @@ metadata:
     component: model-download
 data:
   GCS_BUCKET: "ml-portfolio-duque-om-202602-ml-models-production"
-  GCS_MODEL_PATH: "nlpinsight/model"
-  LOCAL_MODEL_PATH: "/models"
+  GCS_MODEL_PATH: "nlpinsight/model.joblib"
+  LOCAL_MODEL_PATH: "/models/model.joblib"
