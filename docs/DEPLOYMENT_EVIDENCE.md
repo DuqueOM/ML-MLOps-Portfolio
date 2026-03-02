@@ -82,7 +82,7 @@
 
 ### Fixes Applied
 - **BankChurn**: SHAP is now lazy — skipped by default on `/predict`, available via `?explain=true`
-- **TelecomAI**: Feature importance cached at startup (computed once, reused)
+- **NLPInsight**: TF-IDF vectorizer cached at startup (computed once, reused)
 - **All services**: Uvicorn workers increased from 1 → 2 (K8s manifests + Dockerfiles)
 - **Memory limits**: CarVision API increased to 1536Mi to support 2 workers
 - **CPU requests**: Normalized to 300m across all services
@@ -144,7 +144,7 @@ aws eks update-kubeconfig --name ml-portfolio-eks-production --region us-east-1
 kubectl get pods -n ml-portfolio
 
 # Verify all services
-for svc in bankchurn carvision telecom; do
+for svc in bankchurn carvision nlpinsight; do
   echo "--- $svc ---"
   kubectl exec -n ml-portfolio deploy/$svc-deployment -- curl -sf http://localhost:8000/health
 done

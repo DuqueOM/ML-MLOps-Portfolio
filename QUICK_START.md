@@ -24,7 +24,7 @@ make docker-demo
 **What this does**:
 1. ✅ Builds optimized Docker images for all 3 projects
 2. ✅ Starts MLflow Tracking Server (experiment management)
-3. ✅ Launches BankChurn, CarVision, TelecomAI APIs
+3. ✅ Launches BankChurn, CarVision, NLPInsight APIs
 4. ✅ Starts CarVision Streamlit Dashboard
 5. ✅ Runs automated health checks
 
@@ -35,7 +35,7 @@ make docker-demo
 | **🏦 BankChurn API** | [http://localhost:8001/docs](http://localhost:8001/docs) | Churn prediction (Swagger UI) |
 | **🚗 CarVision API** | [http://localhost:8002/docs](http://localhost:8002/docs) | Vehicle pricing (Swagger UI) |
 | **🚗 CarVision Dashboard** | [http://localhost:8501](http://localhost:8501) | Interactive analytics (Streamlit) |
-| **📱 TelecomAI API** | [http://localhost:8003/docs](http://localhost:8003/docs) | Plan recommendation (Swagger UI) |
+| **📝 NLPInsight API** | [http://localhost:8003/docs](http://localhost:8003/docs) | Sentiment analysis (Swagger UI) |
 | **📊 MLflow UI** | [http://localhost:5000](http://localhost:5000) | Experiment tracking |
 
 ---
@@ -79,16 +79,14 @@ curl -X POST "http://localhost:8002/predict" \
 # Response: {"predicted_price": 24500.0, "vehicle_age": 8, "brand": "ford"}
 ```
 
-### TelecomAI Plan Recommendation
+### NLPInsight Sentiment Analysis
 
 ```bash
 curl -X POST "http://localhost:8003/predict" \
      -H "Content-Type: application/json" \
-     -d '{
-       "calls": 40.0, "minutes": 311.9, "messages": 83.0, "mb_used": 19915.42
-     }'
+     -d '{"text": "The company reported strong quarterly earnings growth"}'
 
-# Response: {"prediction": 0, "probability_is_ultra": 0.12, "confidence": "HIGH"}
+# Response: {"label": "positive", "confidence": 0.92, "scores": {"positive": 0.92, "neutral": 0.06, "negative": 0.02}}
 ```
 
 ---
@@ -125,7 +123,7 @@ make install
 
 After starting the demo stack, open [http://localhost:5000](http://localhost:5000) to see:
 
-- **3 Experiments**: BankChurn, CarVision, TelecomAI
+- **3 Experiments**: BankChurn, CarVision, NLPInsight
 - **Performance Metrics**: F1-Score, AUC-ROC, Accuracy, RMSE
 - **Business Metrics**: Revenue impact, retention estimates
 - **Model Artifacts**: Config files, model checkpoints
@@ -139,7 +137,7 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 # Run experiments from each project
 cd BankChurn-Predictor && make mlflow-demo && cd ..
 cd CarVision-Market-Intelligence && make mlflow-demo && cd ..
-cd TelecomAI-Customer-Intelligence && make mlflow-demo && cd ..
+cd NLPInsight-Analyzer && make mlflow-demo && cd ..
 ```
 
 **Results**: New runs appear in MLflow UI with full lineage (params, metrics, artifacts)
@@ -157,7 +155,7 @@ make health-check
 # Or manually:
 curl http://localhost:8001/health  # BankChurn
 curl http://localhost:8002/health  # CarVision
-curl http://localhost:8003/health  # TelecomAI
+curl http://localhost:8003/health  # NLPInsight
 ```
 
 **Expected**: `{"status": "healthy", "model_loaded": true, "model_version": "..."}`
@@ -209,7 +207,7 @@ For detailed development instructions, see:
 - **Project READMEs** — Individual project setup
   - [BankChurn-Predictor/README.md](BankChurn-Predictor/README.md)
   - [CarVision-Market-Intelligence/README.md](CarVision-Market-Intelligence/README.md)
-  - [TelecomAI-Customer-Intelligence/README.md](TelecomAI-Customer-Intelligence/README.md)
+  - [NLPInsight-Analyzer/README.md](NLPInsight-Analyzer/README.md)
 
 ---
 

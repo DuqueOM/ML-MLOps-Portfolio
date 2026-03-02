@@ -76,7 +76,7 @@ make health-check
 - `bankchurn-api` (port 8001)
 - `carvision-api` (port 8002)
 - `carvision-dashboard` (port 8501)
-- `telecomai-api` (port 8003)
+- `nlpinsight-api` (port 8003)
 - `mlflow` (port 5000)
 
 ### Health Monitoring
@@ -88,7 +88,7 @@ make health-check
 # Individual service checks
 curl http://localhost:8001/health  # BankChurn
 curl http://localhost:8002/health  # CarVision API
-curl http://localhost:8003/health  # TelecomAI
+curl http://localhost:8003/health  # NLPInsight
 curl http://localhost:8501          # CarVision Dashboard (returns HTML)
 curl http://localhost:5000          # MLflow (returns HTML)
 ```
@@ -218,13 +218,13 @@ curl -X POST "http://localhost:8000/predict" \
 - Model Metrics (RMSE, R², bootstrap CI)
 - Price Predictor (single-vehicle estimation)
 
-### TelecomAI-Customer-Intelligence
+### NLPInsight-Analyzer
 
 ```bash
-cd TelecomAI-Customer-Intelligence
+cd NLPInsight-Analyzer
 
 # Train model
-python main.py --mode train
+python main.py --mode train --config configs/config.yaml
 
 # Start API
 uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000
@@ -232,16 +232,15 @@ uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000
 # Test prediction
 curl -X POST "http://localhost:8000/predict" \
      -H "Content-Type: application/json" \
-     -d '{"calls":40.0,"minutes":311.9,"messages":83.0,"mb_used":19915.42}'
+     -d '{"text": "The company reported strong quarterly earnings growth"}'
 ```
 
 **Response**:
 ```json
 {
-  "prediction": 0,
-  "probability_is_ultra": 0.12,
-  "confidence": "HIGH",
-  "recommendation": "Smart plan ($40/mo) is optimal"
+  "label": "positive",
+  "confidence": 0.92,
+  "scores": {"positive": 0.92, "neutral": 0.06, "negative": 0.02}
 }
 ```
 
@@ -271,7 +270,7 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 # Run experiments
 cd BankChurn-Predictor && make mlflow-demo && cd ..
 cd CarVision-Market-Intelligence && make mlflow-demo && cd ..
-cd TelecomAI-Customer-Intelligence && make mlflow-demo && cd ..
+cd NLPInsight-Analyzer && make mlflow-demo && cd ..
 ```
 
 ### View Experiments (CLI)
@@ -300,7 +299,7 @@ make docker-build
 # Build individual images
 docker build -t bankchurn:latest ./BankChurn-Predictor
 docker build -t carvision:latest ./CarVision-Market-Intelligence
-docker build -t telecomai:latest ./TelecomAI-Customer-Intelligence
+docker build -t nlpinsight:latest ./NLPInsight-Analyzer
 ```
 
 ### Push to Registry (GHCR)
@@ -312,12 +311,12 @@ echo $GITHUB_TOKEN | docker login ghcr.io -u DuqueOM --password-stdin
 # 2. Tag images
 docker tag bankchurn:latest ghcr.io/duqueom/bankchurn-api:v1.5.0
 docker tag carvision:latest ghcr.io/duqueom/carvision-api:v1.5.0
-docker tag telecomai:latest ghcr.io/duqueom/telecomai:v1.5.0
+docker tag nlpinsight:latest ghcr.io/duqueom/nlpinsight-api:v2.0.0
 
 # 3. Push to registry
 docker push ghcr.io/duqueom/bankchurn-api:v1.5.0
 docker push ghcr.io/duqueom/carvision-api:v1.5.0
-docker push ghcr.io/duqueom/telecomai:v1.5.0
+docker push ghcr.io/duqueom/nlpinsight-api:v2.0.0
 ```
 
 ### Pull from Registry
@@ -326,7 +325,7 @@ docker push ghcr.io/duqueom/telecomai:v1.5.0
 # Pull pre-built images
 docker pull ghcr.io/duqueom/bankchurn-api:latest
 docker pull ghcr.io/duqueom/carvision-api:latest
-docker pull ghcr.io/duqueom/telecomai:latest
+docker pull ghcr.io/duqueom/nlpinsight-api:latest
 
 # Run pulled image
 docker run -d -p 8001:8000 ghcr.io/duqueom/bankchurn-api:latest
@@ -520,13 +519,13 @@ kubectl get pods -l app=ml-mlops-portfolio
 # Check service status
 kubectl get svc
 
-# Expected: 3 Deployments (bankchurn, carvision, telecomai) + 3 Services + 1 HPA
+# Expected: 3 Deployments (bankchurn, carvision, nlpinsight) + 3 Services + 3 HPAs
 ```
 
 **Key K8s Resources**:
 - `k8s/bankchurn-deployment.yaml` (3 replicas, HPA 2-10)
 - `k8s/carvision-deployment.yaml` (2 replicas, HPA 2-8)
-- `k8s/telecomai-deployment.yaml` (2 replicas, HPA 2-10)
+- `k8s/nlpinsight-deployment.yaml` (2 replicas, HPA 2-10)
 
 ### Terraform Deployment (AWS)
 
@@ -562,13 +561,13 @@ terraform destroy
 
 - [BankChurn-Predictor/README.md](BankChurn-Predictor/README.md)
 - [CarVision-Market-Intelligence/README.md](CarVision-Market-Intelligence/README.md)
-- [TelecomAI-Customer-Intelligence/README.md](TelecomAI-Customer-Intelligence/README.md)
+- [NLPInsight-Analyzer/README.md](NLPInsight-Analyzer/README.md)
 
 ### Model Cards
 
 - [BankChurn-Predictor/models/model_card.md](BankChurn-Predictor/models/model_card.md)
 - [CarVision-Market-Intelligence/models/model_card.md](CarVision-Market-Intelligence/models/model_card.md)
-- [TelecomAI-Customer-Intelligence/models/model_card.md](TelecomAI-Customer-Intelligence/models/model_card.md)
+- [NLPInsight-Analyzer/models/model_card.md](NLPInsight-Analyzer/models/model_card.md)
 
 ---
 

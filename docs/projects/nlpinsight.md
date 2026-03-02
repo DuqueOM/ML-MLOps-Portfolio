@@ -2,7 +2,7 @@
 
 Financial sentiment analysis powered by NLP.
 
-![NLPInsight API](../media/screenshots/apis/29-fastapi-swagger-telecom.png)
+![NLPInsight API](../media/screenshots/apis/29-fastapi-swagger-nlpinsight.png)
 
 ## Performance (v2.0.0)
 

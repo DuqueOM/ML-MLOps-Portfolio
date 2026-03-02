@@ -39,7 +39,7 @@ locust -f tests/load/locustfile.py \
 |---------|------|----------|------------------|
 | BankChurn | 8001 | POST /predict | < 50ms p95 |
 | CarVision | 8002 | POST /predict | < 100ms p95 |
-| TelecomAI | 8003 | POST /predict | < 50ms p95 |
+| NLPInsight | 8003 | POST /predict | < 50ms p95 |
 
 ## Performance Targets
 

@@ -37,7 +37,7 @@
 
 **API Demo (Running on GKE):**
 
-![TelecomAI Demo](../docs/media/screenshots/apis/25-fastapi-swagger-bankchurn.png)
+![BankChurn API](../docs/media/screenshots/apis/25-fastapi-swagger-bankchurn.png)
 
 **Real-time Prediction:**
 
