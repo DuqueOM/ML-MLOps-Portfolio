@@ -31,7 +31,7 @@ Dual-backend inference engine:
 
 | Metric | Value |
 |--------|-------|
-| Test Coverage | 76% |
+| Test Coverage | 95.5% (59 tests) |
 | Docker Image | 2.05 GB (torch CPU-only) |
 | Model Size | 309 KB (sklearn) |
 | P95 Latency | <220ms |

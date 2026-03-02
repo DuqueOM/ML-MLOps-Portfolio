@@ -85,6 +85,25 @@ bash tests/infra/run_all_tests.sh
 - Least-privilege: `storage.objectViewer` for GKE pods
 - IaC scanning: tfsec, checkov (advisory findings documented in `.tfsec.yml`)
 
+### Security Hardening (Terraform — Production-Grade)
+
+The Terraform configuration includes **production-grade security hardening** that goes beyond what is applied to the running demo cluster:
+
+| Feature | GCP (`main.tf`) | AWS (`main.tf`) |
+|---------|-----------------|-----------------|
+| Private cluster | `private_cluster_config` (private nodes, public endpoint) | `endpoint_private_access = true` |
+| Authorized networks | `master_authorized_networks_config` (VPC CIDR only) | `endpoint_public_access_cidrs` |
+| Network policy | Calico CNI | Calico CNI |
+| VPC-native | `ip_allocation_policy` (secondary pod/service ranges) | VPC CNI (native) |
+| Flow logs | VPC Flow Logs enabled | VPC Flow Logs enabled |
+| Encryption | GCS/Cloud SQL at-rest | S3 KMS + public access blocks |
+
+> **Architecture Decision**: The running GKE demo cluster was provisioned before the security hardening was added to the Terraform code. Applying these changes would **force cluster recreation** (`private_cluster_config` and `ip_allocation_policy` are ForceNew attributes in the GCP provider), destroying all 6 running pods and requiring full redeployment.
+>
+> Additionally, `master_authorized_networks_config` restricts API access to the VPC subnet (`10.10.0.0/24`), which would require a bastion host or Cloud Shell for kubectl access — appropriate for production but impractical for a portfolio demo that requires frequent local interaction.
+>
+> **The Terraform code represents the production-ready target state.** The running cluster demonstrates deployment capabilities (APIs, monitoring, autoscaling, CI/CD). Both are valid portfolio artifacts — the code shows security engineering, the cluster shows operational execution. A real production deployment would apply the hardened configuration from initial provisioning.
+
 ---
 
 *Last Updated: March 2026*

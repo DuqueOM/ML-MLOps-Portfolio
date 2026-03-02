@@ -87,7 +87,7 @@ async def lifespan(application: FastAPI):
 
 app = FastAPI(
     title="NLPInsight Analyzer API",
-    description="Sentiment analysis powered by fine-tuned DistilBERT",
+    description="Financial sentiment analysis — dual-backend (TF-IDF + DistilBERT)",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -133,11 +133,18 @@ class SentimentResult(BaseModel):
     all_scores: Optional[Dict[str, float]] = None
 
 
+def _model_name() -> str:
+    """Return the active model backend name."""
+    if predictor is None:
+        return "not-loaded"
+    return "tfidf-logreg" if predictor.backend == "sklearn" else "distilbert-base-uncased"
+
+
 class PredictResponse(BaseModel):
     """Single prediction response."""
 
     prediction: SentimentResult
-    model: str = "distilbert-base-uncased"
+    model: str = "tfidf-logreg"
     inference_time_ms: float
 
 
@@ -146,7 +153,7 @@ class BatchResponse(BaseModel):
 
     predictions: List[SentimentResult]
     count: int
-    model: str = "distilbert-base-uncased"
+    model: str = "tfidf-logreg"
     inference_time_ms: float
 
 
@@ -190,6 +197,7 @@ async def predict(input_data: TextInput):
 
     return PredictResponse(
         prediction=SentimentResult(**result),
+        model=_model_name(),
         inference_time_ms=round(elapsed_ms, 2),
     )
 
@@ -218,6 +226,7 @@ async def predict_batch(input_data: BatchInput):
     return BatchResponse(
         predictions=[SentimentResult(**r) for r in results],
         count=len(results),
+        model=_model_name(),
         inference_time_ms=round(elapsed_ms, 2),
     )
 
@@ -228,12 +237,15 @@ async def model_info():
     if predictor is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
 
-    return {
+    info = {
         "model_path": str(predictor.model_path),
-        "device": predictor.device,
+        "backend": predictor.backend,
         "labels": predictor.id2label,
         "num_labels": len(predictor.id2label),
     }
+    if hasattr(predictor, "device"):
+        info["device"] = predictor.device
+    return info
 
 
 @app.get("/metrics")
