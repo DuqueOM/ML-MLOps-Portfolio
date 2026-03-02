@@ -1,247 +1,28 @@
-# 📊 Projects Overview
+# Projects Overview
 
-The ML-MLOps Portfolio features **three production-ready machine learning projects**, each demonstrating different aspects of the ML lifecycle and enterprise MLOps practices.
-
----
-
-## 📺 Video Walkthrough
-
-Watch the complete portfolio demonstration:
+Three production-ready ML systems demonstrating enterprise MLOps practices.
 
 [![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
----
-
-## 🎯 Project Comparison
+## Comparison (v2.0.0)
 
 | Aspect | BankChurn | CarVision | NLPInsight |
 |--------|-----------|-----------|------------|
-| **Problem Type** | Binary Classification | Regression | Multi-class Classification |
-| **Business Domain** | Banking (Customer Retention) | Automotive (Pricing) | Finance (Sentiment Analysis) |
-| **Target Variable** | Customer Churn (`Exited`) | Vehicle Price (USD) | Sentiment (neg/neu/pos) |
-| **Best Model** | VotingClassifier (LR + RF) | XGBRegressor | DistilBERT / TF-IDF |
-| **Primary Metric** | **AUC=0.87**, F1=0.64 | **R²=0.77**, RMSE=$4,396 | **Accuracy=85%** (transformer) |
-| **MLflow Experiments** | 3 tracked runs | 3 tracked runs | 2 tracked runs |
-| **Test Coverage** | 88% | 95% | 95% |
-| **Interface** | REST API (FastAPI) | REST API + **Streamlit Dashboard** | REST API (FastAPI) |
-| **Special Features** | SHAP explainability, drift detection | 4-tab dashboard, bootstrap CI | Dual backend (transformer + sklearn) |
-| **Docker Image** | 1.83 GB | 1.76 GB | 2.05 GB (torch CPU-only) |
+| **Domain** | Banking (Retention) | Automotive (Pricing) | Finance (Sentiment) |
+| **Type** | Binary Classification | Regression | Multi-class Classification |
+| **Algorithm** | VotingClassifier (LR+RF) | XGBRegressor + FeatureEngineer | TF-IDF + LogisticRegression |
+| **Primary Metric** | AUC 0.8626 | R² 0.8246 | Accuracy 88.1% |
+| **Coverage** | 88% | 95% | 76% |
+| **Docker** | 2.11 GB (SHAP) | 1.76 GB | 2.05 GB |
+| **Interface** | REST API | REST API + Streamlit | REST API |
+| **Special** | SHAP explainability, drift detection | 4-tab dashboard, FeatureEngineer | Dual backend (transformer + sklearn) |
+
+## Links
+
+- [BankChurn Predictor](bankchurn.md)
+- [CarVision Market Intelligence](carvision.md)
+- [NLPInsight Analyzer](nlpinsight.md)
 
 ---
 
-## 📈 Performance Summary
-
-### Classification Models
-
-```mermaid
-graph LR
-    subgraph "Classification Performance"
-        BC["BankChurn<br/>AUC: 0.87<br/>F1: 0.64<br/>Precision: 60%"]
-        NLP["NLPInsight<br/>Accuracy: 85%<br/>3 classes<br/>Dual backend"]
-    end
-    
-    BC -->|Churn Prediction| BU[Business Impact:<br/>$960K annual savings]
-    NLP -->|Sentiment Analysis| TU[Business Impact:<br/>Real-time market intelligence]
-```
-
-### Regression Model
-
-```mermaid
-graph LR
-    subgraph "Regression Performance"
-        CV["CarVision<br/>R²: 0.77<br/>RMSE: $4,396<br/>MAPE: 18.2%"]
-    end
-    
-    CV -->|Price Prediction| CU[Business Impact:<br/>Inventory valuation]
-```
-
----
-
-## 🏆 Business Value
-
-| Project | Primary Business Impact | Annual Value |
-|---------|-------------------------|--------------|
-| **BankChurn** | Retention campaign targeting, reduced churn by 15% | **$960K** savings (100K customer base) |
-| **CarVision** | Pricing optimization, 18% faster time-to-sale | Inventory turnover improvement |
-| **NLPInsight** | Real-time financial sentiment, market intelligence | Faster trading decisions |
-
----
-
-## 🛠️ Technical Architecture
-
-All projects follow **consistent architectural patterns**:
-
-### Common Structure
-
-```
-project/
-├── src/<package>/              # Core Python package
-│   ├── __init__.py
-│   ├── training.py             # Model training orchestration
-│   ├── prediction.py           # Inference logic
-│   ├── evaluation.py           # Metrics computation
-│   ├── data.py                 # Data loading & preprocessing
-│   ├── config.py               # Pydantic configuration
-│   └── features.py             # Feature engineering (CarVision)
-│
-├── app/
-│   ├── fastapi_app.py          # REST API (all projects)
-│   └── streamlit_app.py        # Dashboard (CarVision only)
-│
-├── tests/                      # Comprehensive test suite
-│   ├── conftest.py             # Shared fixtures
-│   ├── test_training.py
-│   ├── test_prediction.py
-│   ├── test_data.py
-│   └── test_models_advanced.py
-│
-├── monitoring/
-│   └── check_drift.py          # Drift detection (KS + PSI)
-│
-├── scripts/
-│   └── run_mlflow.py           # MLflow experiment runner
-│
-├── configs/
-│   └── config.yaml             # Configuration file
-│
-├── models/
-│   ├── model_card.md           # Model documentation (v2.0)
-│   └── README.md               # Artifact documentation
-│
-├── data_card.md                # Dataset documentation (v2.0)
-├── dvc.yaml                    # DVC pipeline definition
-├── params.yaml                 # DVC parameters
-├── Dockerfile                  # Multi-stage Docker build
-├── requirements.txt            # Python dependencies
-└── README.md                   # Project documentation (hybrid)
-```
-
-### Shared MLOps Patterns
-
-1. **Configuration Management**: Pydantic-based strict validation
-2. **Experiment Tracking**: MLflow integration (central server)
-3. **Data Versioning**: DVC for dataset lineage
-4. **Containerization**: Multi-stage Docker builds (CPU-only, 1.3–2.1 GB)
-5. **API Design**: FastAPI with automatic OpenAPI docs
-6. **Testing**: pytest with >80% coverage target (88-95% actual, Codecov verified)
-7. **CI/CD**: Unified GitHub Actions workflow
-
----
-
-## 🔗 Quick Links
-
-### Detailed Project Pages
-
-- **[BankChurn Predictor](bankchurn.md)** — Customer churn prediction with SHAP explainability
-- **[CarVision Market Intelligence](carvision.md)** — Vehicle price prediction with interactive dashboard
-- **[NLPInsight Analyzer](nlpinsight.md)** — Financial sentiment analysis (NLP)
-
-### Related Documentation
-
-- **[Model Catalog](../models/catalog.md)** — Registry of all trained models
-- **[API Reference](../api/rest-apis.md)** — Complete REST API documentation
-- **[Architecture](../architecture/overview.md)** — System design and data flow
-- **[Operations](../operations/deployment.md)** — Deployment and monitoring guides
-
----
-
-## 🎯 Technology Stack
-
-### ML & Data Science
-
-| Component | Technology |
-|-----------|-----------|
-| **Core ML** | Scikit-learn 1.8+, XGBoost, Optuna |
-| **Data Processing** | Pandas, NumPy |
-| **Validation** | Pydantic for config, schema enforcement |
-| **Explainability** | SHAP (BankChurn), feature importance |
-| **Evaluation** | Cross-validation, bootstrap CI, temporal backtest |
-
-### MLOps & Infrastructure
-
-| Component | Technology |
-|-----------|-----------|
-| **Experiment Tracking** | MLflow (central server, 9 runs total) |
-| **Data Versioning** | DVC (Git-based lineage) |
-| **APIs** | FastAPI with auto-docs (Swagger UI, ReDoc) |
-| **Dashboard** | Streamlit (CarVision — 4 tabs) |
-| **Containerization** | Docker (multi-stage builds) |
-| **Orchestration** | Docker Compose, Kubernetes (HPA, services) |
-| **CI/CD** | GitHub Actions (matrix testing, 10 jobs) |
-| **IaC** | Terraform (GCP: GKE, Cloud SQL, GCS; AWS: EKS, RDS, S3) ✅ Live |
-
-### Quality & Security
-
-| Component | Technology |
-|-----------|-----------|
-| **Testing** | pytest, pytest-cov (88-95% coverage), Codecov |
-| **Linting** | Black, Flake8, isort |
-| **Type Checking** | Mypy (strict mode) |
-| **Security** | Bandit, Gitleaks, pip-audit, Trivy |
-| **Pre-commit** | Automated quality gates |
-
----
-
-## 💡 Key Learnings Demonstrated
-
-### BankChurn Predictor
-
-**Focus**: Imbalanced classification, explainability, drift detection
-
-- ✅ Handling severe class imbalance (80/20 split)
-- ✅ SHAP explainability for business insights
-- ✅ Drift detection with Evidently AI
-- ✅ Fairness analysis by geography and age
-- ✅ Model monitoring with Prometheus + Grafana
-
-### CarVision Market Intelligence
-
-**Focus**: Regression, feature engineering, interactive visualization
-
-- ✅ Centralized `FeatureEngineer` class for consistency
-- ✅ Data leakage prevention (exclude target-dependent features)
-- ✅ Interactive Streamlit dashboard (4 tabs)
-- ✅ Advanced validation (cross-validation, bootstrap CI, temporal backtest)
-- ✅ Performance by price segment (<$10K, $10K-$30K, etc.)
-
-### NLPInsight Analyzer
-
-**Focus**: NLP, dual inference backends, transformer fine-tuning
-
-- ✅ Dual backend: HuggingFace transformers + sklearn/TF-IDF fallback
-- ✅ Financial PhraseBank dataset (2,264 samples, 3 classes)
-- ✅ CPU-only torch deployment (no CUDA overhead)
-- ✅ Batch prediction support (up to 500 texts)
-- ✅ Auto-detection of model format (joblib vs transformer dir)
-
----
-
-## 🚀 Getting Started
-
-### Which Project to Explore First?
-
-!!! tip "Choose Your Path"
-    - **API Focus**: Start with [BankChurn](bankchurn.md) (cleanest API design, SHAP integration)
-    - **Visualization**: Start with [CarVision](carvision.md) (Streamlit dashboard with 4 interactive tabs)
-    - **NLP / Transformers**: Start with [NLPInsight](nlpinsight.md) (dual backend inference engine)
-    - **Full Stack**: Run the [Quick Start](../getting-started/quickstart.md) demo with all 3 services
-
-### Quick Demo
-
-All projects included in the one-command demo:
-
-```bash
-# Start full stack
-docker compose -f docker-compose.demo.yml up -d --build
-
-# Access points:
-# - BankChurn API:       http://localhost:8001/docs
-# - CarVision API:       http://localhost:8002/docs
-# - CarVision Dashboard: http://localhost:8501
-# - NLPInsight API:      http://localhost:8003/docs
-# - MLflow UI:           http://localhost:5000
-```
-
----
-
-**Last Updated**: March 2026
+*Last Updated: March 2026*

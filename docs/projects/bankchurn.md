@@ -1,271 +1,47 @@
 # BankChurn Predictor
 
-Customer churn prediction system for banking institutions.
-
-![BankChurn API Demo](../media/gifs/01-demo-prediccion.gif)
-
-## Overview
-
-**BankChurn Predictor** is a production-ready machine learning system that predicts customer churn probability for banking customers. It demonstrates enterprise-grade practices including MLflow experiment tracking, Pydantic configuration validation, and comprehensive testing.
-
-## Model Performance
-
-### Production Metrics (Test Set)
-
-| Metric | Value | Description |
-|--------|-------|-------------|
-| **AUC-ROC** | 0.8652 | Area under ROC curve |
-| **Accuracy** | 84.3% | Overall classification accuracy |
-| **Precision** | 59.83% | Positive predictive value |
-| **Recall** | 69.53% | True positive rate |
-| **F1 Score** | 0.6432 | Harmonic mean of precision/recall |
-
-### Cross-Validation Results (5-Fold)
-
-| Metric | Mean | Std Dev |
-|--------|------|---------|
-| **AUC-ROC** | 0.844 | ±0.018 |
-| **F1 Score** | 0.596 | ±0.031 |
-| **Precision** | 0.672 | ±0.026 |
-| **Recall** | 0.537 | ±0.038 |
-
-### Confusion Matrix
-
-```
-              Predicted
-              Neg    Pos
-Actual Neg   1496    97
-       Pos    189   218
-```
-
-### MLflow Experiments
-
-| Run | Model | Test F1 | Test AUC | Purpose |
-|-----|-------|---------|----------|---------|
-| BC-1_Baseline | LogisticRegression | 0.2873 | 0.7749 | Linear baseline |
-| **BC-2_RF_Tuned** | **RandomForest (balanced)** | **0.6432** | **0.8652** | **Production model** |
-| BC-3_Overfit_Demo | RF (no regularization) | 0.5793 | 0.8524 | Overfitting demonstration |
-
-### Operational Metrics
-
-| Metric | Value | Description |
-|--------|-------|-------------|
-| **Test Coverage** | 88% | 168 tests ([Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)) |
-| **P95 Latency** | <50ms | Inference time |
-| **Model Size** | ~3.3 MB | Serialized pipeline |
-
-### Production Monitoring
+Customer churn prediction for banking institutions.
 
 ![BankChurn API](../media/screenshots/apis/25-fastapi-swagger-bankchurn.png)
-*BankChurn FastAPI Swagger UI with prediction endpoint*
 
-![BankChurn Prediction](../media/screenshots/apis/26-bankchurn-prediccion-real.png)
-*Real prediction response showing churn probability and risk level*
+## Performance (v2.0.0)
 
-## Quick Start
+| Metric | Value |
+|--------|-------|
+| **AUC-ROC** | 0.8626 |
+| **F1 Score** | 0.616 |
+| **Precision** | 67.35% |
+| **Recall** | 56.76% |
+| **CV AUC (5-fold)** | 0.856 ± 0.005 |
 
-### Using Docker
+## Architecture
+
+`Request → Pydantic Validation → ColumnTransformer(SimpleImputer + StandardScaler + OneHotEncoder) → VotingClassifier(LR + RF, soft voting) → Prediction + Risk Level`
+
+## Key Features
+
+- **SHAP Explainability**: CPU-only, lazy via `?explain=true`
+- **Drift Detection**: Evidently AI (PSI/KS monitoring)
+- **Unified Pipeline**: Single `model.joblib` (preprocessor + model)
+- **Fairness Analysis**: By geography and age group
+
+## Operational
+
+| Metric | Value |
+|--------|-------|
+| Test Coverage | 88% (168 tests) |
+| Docker Image | 2.11 GB (with SHAP 0.50.0) |
+| Model Size | 4.1 MB |
+| P95 Latency | <250ms |
+
+## API
 
 ```bash
-cd BankChurn-Predictor
-docker build -t ml-portfolio-bankchurn:latest .
-docker run -p 8001:8000 ml-portfolio-bankchurn:latest
-```
-
-### Using Python
-
-```bash
-cd BankChurn-Predictor
-python -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
-python -m bankchurn.cli train --config configs/config.yaml
-```
-
-## API Reference
-
-### Predict Endpoint
-
-**POST** `/predict`
-
-```bash
-curl -X POST "http://localhost:8001/predict" \
+curl -X POST http://localhost:8001/predict \
   -H "Content-Type: application/json" \
-  -d '{
-    "CreditScore": 650,
-    "Geography": "France",
-    "Gender": "Female",
-    "Age": 40,
-    "Tenure": 3,
-    "Balance": 60000,
-    "NumOfProducts": 2,
-    "HasCrCard": 1,
-    "IsActiveMember": 1,
-    "EstimatedSalary": 50000
-  }'
+  -d '{"CreditScore":650,"Geography":"France","Gender":"Male","Age":40,"Tenure":5,"Balance":60000,"NumOfProducts":2,"HasCrCard":1,"IsActiveMember":1,"EstimatedSalary":50000}'
 ```
-
-**Response:**
-
-```json
-{
-  "prediction": 0,
-  "probability": 0.23,
-  "risk_level": "low"
-}
-```
-
-### Health Endpoint
-
-**GET** `/health`
-
-```json
-{"status": "healthy", "version": "1.0.0"}
-```
-
-## Model Architecture
-
-```mermaid
-graph LR
-    INPUT["Customer Data"] --> VAL["Pydantic Validation"]
-    VAL --> PRE["ColumnTransformer<br/>(Imputer + Scaler + OneHot)"]
-    PRE --> ENS["VotingClassifier<br/>(LR + RF)"]
-    ENS --> PRED["Churn Probability"]
-    PRED --> RISK["Risk Level<br/>(low/medium/high)"]
-```
-
-### Pipeline Components
-
-1. **Preprocessing (`ColumnTransformer`)**
-   - Numerical: `SimpleImputer(median)` → `StandardScaler`
-   - Categorical: `SimpleImputer(constant)` → `OneHotEncoder`
-
-2. **Model (`VotingClassifier`, soft voting, weights=[1, 2])**
-   - Logistic Regression (C=1.0)
-   - Random Forest (n_estimators=100, max_depth=10, balanced)
-
-3. **Post-processing**
-   - Probability → Risk Level mapping
-   - Threshold customization support
-
-## Configuration
-
-Configuration is managed via Pydantic models in `configs/config.yaml`:
-
-```yaml
-data:
-  train_path: "data/raw/train.csv"
-  target_column: "Exited"
-  categorical_features:
-    - Geography
-    - Gender
-  numerical_features:
-    - CreditScore
-    - Age
-    - Balance
-    - EstimatedSalary
-
-model:
-  logistic_regression:
-    C: 1.0
-    max_iter: 1000
-  random_forest:
-    n_estimators: 100
-    max_depth: 10
-```
-
-## Training
-
-### CLI
-
-```bash
-python -m bankchurn.cli train --config configs/config.yaml
-```
-
-### Programmatic
-
-```python
-from bankchurn.training import ChurnTrainer
-from bankchurn.config import BankChurnConfig
-
-config = BankChurnConfig.from_yaml("configs/config.yaml")
-trainer = ChurnTrainer(config)
-trainer.train()
-```
-
-## Testing
-
-```bash
-# Run all tests
-pytest tests/ -v
-
-# Run with coverage
-pytest tests/ --cov=src/bankchurn --cov-report=html
-
-# Run specific test file
-pytest tests/test_training.py -v
-```
-
-## Project Structure
-
-```
-BankChurn-Predictor/
-├── src/bankchurn/          # Core package
-│   ├── __init__.py
-│   ├── cli.py              # Command-line interface
-│   ├── config.py           # Pydantic configuration
-│   ├── training.py         # Training logic
-│   ├── prediction.py       # Inference logic
-│   ├── evaluation.py       # Metrics computation
-│   └── models.py           # Custom model wrappers
-├── app/
-│   └── fastapi_app.py      # REST API
-├── tests/                  # Test suite
-├── configs/                # YAML configs
-├── models/                 # Saved models
-│   └── model_card.md       # Model documentation
-└── Dockerfile              # Multi-stage build
-```
-
-## Production Deployment (Multi-Cloud)
-
-**Deployed on both GCP (GKE) and AWS (EKS)** with identical configuration.
-
-![BankChurn Workload Detail](../media/screenshots/gcp-console/06-workload-bankchurn-detalle.png)
-*GKE workload detail: BankChurn deployment with rolling updates, resource limits, and health checks*
-
-![GCS Model BankChurn](../media/screenshots/gcp-console/12-gcs-modelo-bankchurn.png)
-*Production model artifact stored in Google Cloud Storage (mirrored to S3 for AWS)*
-
-## Monitoring
-
-![Prometheus Targets](../media/screenshots/monitoring/37-prometheus-targets-up.png)
-*Prometheus scraping BankChurn metrics (bankchurn_requests_total, bankchurn_request_duration_seconds)*
-
-![Grafana Dashboard](../media/screenshots/monitoring/34-grafana-dashboard.png)
-*Grafana dashboard showing BankChurn request rate and latency panels*
-
-## Explainability (SHAP)
-
-![SHAP Response](../media/screenshots/apis/82-shap-prediction-response.png)
-*SHAP feature importance values returned with each prediction*
-
-![SHAP Swagger](../media/screenshots/apis/83-swagger-shap-response.png)
-*Swagger UI showing SHAP explainability endpoint response*
-
-## Known Limitations
-
-1. **Imbalanced Classes**: Uses class weights; SMOTE available but not default
-2. **Feature Engineering**: Limited to basic preprocessing
-3. **Explainability**: SHAP integrated for global and individual feature importance
-
-## Related Documentation
-
-- [Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/BankChurn-Predictor/models/model_card.md)
-- [API Reference](../api/rest-apis.md)
-- [Architecture Overview](../architecture/overview.md)
-- [Deployment Guide](../operations/deployment.md)
 
 ---
 
-**Last Updated**: February 2026
+*Last Updated: March 2026*
