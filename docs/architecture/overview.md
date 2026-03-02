@@ -1,326 +1,50 @@
 # System Architecture Overview
 
-This document describes the high-level architecture of the ML-MLOps Portfolio, including system components, data flow, and deployment infrastructure.
+## Components
 
-## System Diagram
+| Layer | Components | Technology |
+|-------|-----------|------------|
+| **Data** | DVC versioning, raw/processed data | DVC + GCS/S3 |
+| **Training** | Feature engineering, model training, evaluation | sklearn, XGBoost, MLflow |
+| **Serving** | REST APIs, Streamlit dashboard | FastAPI, Streamlit |
+| **Monitoring** | Metrics, dashboards, drift detection | Prometheus, Grafana, Evidently |
 
-```mermaid
-graph TB
-    subgraph "Data Sources"
-        DS1[("Bank Customer Data")]
-        DS2[("Vehicle Listings")]
-        DS3[("Telecom Usage Data")]
-    end
+## Project Architectures
 
-    subgraph "Data Layer"
-        DVC["DVC<br/>(Data Versioning)"]
-        RAW["Raw Data<br/>data/raw/"]
-        PROC["Processed Data<br/>data/processed/"]
-    end
+### BankChurn
+`API Request → Pydantic Validation → ColumnTransformer → VotingClassifier(LR+RF) → Prediction + Risk Level`
+- Unified sklearn Pipeline, SHAP explainability via `?explain=true`
 
-    subgraph "Training Pipeline"
-        FE["Feature Engineering"]
-        TRAIN["Model Training"]
-        EVAL["Model Evaluation"]
-        REG["Model Registry<br/>(MLflow)"]
-    end
+### CarVision
+`Vehicle Data → Data Cleaning → FeatureEngineer (centralized) → Preprocessor → XGBRegressor → Price`
+- No data leakage: `price_per_mile`/`price_category` dropped from features
+- Dual interface: FastAPI + Streamlit (4 tabs)
 
-    subgraph "Serving Layer"
-        API1["BankChurn API<br/>:8001"]
-        API2["CarVision API<br/>:8002"]
-        API3["NLPInsight API<br/>:8003"]
-        DASH["Streamlit Dashboard<br/>:8501"]
-    end
+### NLPInsight
+`Text → TF-IDF Vectorization → LogisticRegression → Sentiment Prediction`
+- Dual backend: DistilBERT (production) / TF-IDF (lightweight)
 
-    subgraph "Monitoring"
-        PROM["Prometheus<br/>:9090"]
-        GRAF["Grafana<br/>:3000"]
-        EVID["Evidently<br/>(Drift Detection)"]
-    end
+## Deployment (Multi-Cloud)
 
-    DS1 --> DVC
-    DS2 --> DVC
-    DS3 --> DVC
-    DVC --> RAW
-    RAW --> PROC
-    PROC --> FE
-    FE --> TRAIN
-    TRAIN --> EVAL
-    EVAL --> REG
-    REG --> API1
-    REG --> API2
-    REG --> API3
-    API2 --> DASH
-    API1 --> PROM
-    API2 --> PROM
-    API3 --> PROM
-    PROM --> GRAF
-    API1 --> EVID
-    API2 --> EVID
-    API3 --> EVID
-```
+| Resource | GCP (Primary) | AWS |
+|----------|--------------|-----|
+| **Cluster** | GKE (us-central1) | EKS (us-east-1) |
+| **Registry** | Artifact Registry | ECR |
+| **Storage** | GCS (models + datasets) | S3 |
+| **Database** | Cloud SQL (MLflow) | RDS |
+| **Ingress** | GCE Load Balancer | ALB |
+| **IaC** | Terraform | Terraform |
 
-## Component Overview
-
-### Data Layer
-
-| Component | Purpose | Technology |
-|-----------|---------|------------|
-| **DVC** | Data versioning and remote storage | DVC + S3/GCS |
-| **Raw Data** | Original datasets | CSV/Parquet |
-| **Processed Data** | Cleaned and transformed data | Pandas DataFrames |
-
-### Training Pipeline
-
-| Component | Purpose | Technology |
-|-----------|---------|------------|
-| **Feature Engineering** | Transform raw data into features | Scikit-learn Pipelines |
-| **Model Training** | Train ML models | XGBoost, RandomForest, Ensemble |
-| **Evaluation** | Compute metrics and validate | Pytest, Custom metrics |
-| **Model Registry** | Version and store models | MLflow |
-
-### Serving Layer
-
-| Component | Purpose | Technology |
-|-----------|---------|------------|
-| **REST APIs** | Serve predictions | FastAPI + Uvicorn |
-| **Dashboard** | Interactive visualization | Streamlit |
-| **Containers** | Package applications | Docker (multi-stage) |
-
-### Monitoring
-
-| Component | Purpose | Technology |
-|-----------|---------|------------|
-| **Prometheus** | Metrics collection | Prometheus + exporters |
-| **Grafana** | Dashboards and alerting | Grafana |
-| **Evidently** | ML model monitoring | Evidently AI |
-
-## Project-Specific Architectures
-
-### BankChurn Predictor
-
-```mermaid
-graph LR
-    subgraph "Input"
-        REQ["API Request<br/>(JSON)"]
-    end
-
-    subgraph "Processing Pipeline"
-        VAL["Pydantic<br/>Validation"]
-        PRE["Preprocessor<br/>(ColumnTransformer)"]
-        MOD["Ensemble Model<br/>(VotingClassifier)"]
-    end
-
-    subgraph "Output"
-        PRED["Prediction"]
-        PROB["Probability"]
-        RISK["Risk Level"]
-    end
-
-    REQ --> VAL
-    VAL --> PRE
-    PRE --> MOD
-    MOD --> PRED
-    MOD --> PROB
-    PROB --> RISK
-```
-
-**Key Design Decisions:**
-
-- **Unified Pipeline**: Preprocessor + Model in single sklearn Pipeline
-- **Config Validation**: Pydantic for strict configuration
-- **Imbalance Handling**: SMOTE and class weights support
-
-### CarVision Market Intelligence
-
-```mermaid
-graph LR
-    subgraph "Input"
-        CSV["Vehicle Data<br/>(CSV)"]
-        API["API Request"]
-    end
-
-    subgraph "Feature Pipeline"
-        CLEAN["Data Cleaning<br/>(filters)"]
-        FEAT["FeatureEngineer<br/>(centralized)"]
-        PREP["Preprocessor"]
-    end
-
-    subgraph "Model"
-        XGB["XGBRegressor"]
-    end
-
-    subgraph "Output"
-        PRICE["Price Prediction"]
-        ANAL["Market Analysis"]
-        DASH["Dashboard"]
-    end
-
-    CSV --> CLEAN
-    API --> CLEAN
-    CLEAN --> FEAT
-    FEAT --> PREP
-    PREP --> XGB
-    XGB --> PRICE
-    XGB --> ANAL
-    ANAL --> DASH
-```
-
-**Key Design Decisions:**
-
-- **Centralized Feature Engineering**: Single `FeatureEngineer` class for training, inference, and analysis
-- **No Data Leakage**: `price_per_mile` and `price_category` dropped from features (they depend on target)
-- **Dual Interface**: FastAPI for programmatic access, Streamlit for interactive exploration
-
-### NLPInsight Analyzer
-
-```mermaid
-graph LR
-    subgraph "Input"
-        USAGE["Usage Metrics"]
-    end
-
-    subgraph "Pipeline"
-        FE["Feature Engineering"]
-        PRE["Preprocessing"]
-        VC["VotingClassifier"]
-    end
-
-    subgraph "Output"
-        PLAN["Plan Recommendation"]
-        CONF["Confidence Score"]
-    end
-
-    USAGE --> FE
-    FE --> PRE
-    PRE --> VC
-    VC --> PLAN
-    VC --> CONF
-```
-
-**Key Design Decisions:**
-
-- **Voting Classifier**: Combines multiple base models for robust predictions
-- **Domain Features**: Telecom-specific feature engineering
-
-## Deployment Architecture (Multi-Cloud Production)
-
-### GCP (GKE) — Primary
-
-```mermaid
-graph TB
-    subgraph "Developer"
-        DEV["Local Dev<br/>(WSL)"]
-    end
-
-    subgraph "CI/CD (GitHub Actions)"
-        GH["Push to main"]
-        TEST["Tests & Linting"]
-        BUILD["Docker Build"]
-        SCAN["Security Scan"]
-    end
-
-    subgraph "GCP Registry"
-        AR["Artifact Registry<br/>(3 images)"]
-    end
-
-    subgraph "GCP Production (GKE)"
-        K8S["GKE Cluster<br/>(us-central1)"]
-        BC["BankChurn Pod"]
-        CV["CarVision Pod"]
-        TC["NLPInsight Pod"]
-        MLF["MLflow Pod"]
-        PROM["Prometheus Pod"]
-        GRAF["Grafana Pod"]
-        ING["GCE Ingress<br/>(34.120.120.57)"]
-    end
-
-    subgraph "GCP Storage"
-        GCS["Cloud Storage<br/>(ML Models)"]
-        SQL["Cloud SQL<br/>(MLflow DB)"]
-    end
-
-    DEV -->|git push| GH
-    GH --> TEST
-    TEST --> BUILD
-    BUILD --> SCAN
-    SCAN -->|push image| AR
-    AR -->|pull| K8S
-    K8S --> BC
-    K8S --> CV
-    K8S --> TC
-    K8S --> MLF
-    K8S --> PROM
-    K8S --> GRAF
-    ING --> BC
-    ING --> CV
-    ING --> TC
-    GCS --> BC
-    GCS --> CV
-    GCS --> TC
-    SQL --> MLF
-```
-
-### AWS (EKS) — Multi-Cloud Parity
-
-```mermaid
-graph TB
-    subgraph "AWS Registry"
-        ECR["ECR<br/>(3 images)"]
-    end
-
-    subgraph "AWS Production (EKS)"
-        EKS["EKS Cluster<br/>(us-east-1)"]
-        BC2["BankChurn Pod"]
-        CV2["CarVision Pod"]
-        TC2["NLPInsight Pod"]
-        MLF2["MLflow Pod"]
-        PROM2["Prometheus Pod"]
-        GRAF2["Grafana Pod"]
-        ALB["ALB Ingress<br/>(DNS)"]
-    end
-
-    subgraph "AWS Storage"
-        S3["S3<br/>(ML Models)"]
-        RDS["RDS PostgreSQL<br/>(MLflow DB)"]
-    end
-
-    ECR -->|pull| EKS
-    EKS --> BC2
-    EKS --> CV2
-    EKS --> TC2
-    EKS --> MLF2
-    EKS --> PROM2
-    EKS --> GRAF2
-    ALB --> BC2
-    ALB --> CV2
-    ALB --> TC2
-    S3 --> BC2
-    S3 --> CV2
-    S3 --> TC2
-    RDS --> MLF2
-```
-
-## Technology Stack Summary
+## Tech Stack
 
 | Layer | Technologies |
-|-------|--------------|
-| **Languages** | Python 3.11+, Bash, HCL |
-| **ML Frameworks** | Scikit-learn, XGBoost, LightGBM |
-| **Web Frameworks** | FastAPI, Streamlit |
-| **MLOps** | MLflow, DVC, Evidently |
-| **Containers** | Docker (multi-stage builds) |
-| **Orchestration** | GKE + EKS (production), Docker Compose (local) |
-| **Monitoring** | Prometheus, Grafana (on both GKE and EKS) |
-| **Infrastructure** | Terraform (GCP: GKE, GCS, AR, Cloud SQL; AWS: EKS, S3, ECR, RDS) |
-| **CI/CD** | GitHub Actions → Artifact Registry / ECR → GKE / EKS |
+|-------|-------------|
+| **ML** | Python 3.11, scikit-learn 1.8.0, XGBoost 3.2.0, SHAP 0.50.0 |
+| **APIs** | FastAPI, Streamlit, Pydantic |
+| **MLOps** | MLflow 3.10, DVC, Evidently AI |
+| **Infra** | Docker, Kubernetes (GKE/EKS), Terraform |
+| **CI/CD** | GitHub Actions, Trivy, Bandit, Gitleaks |
 
 ---
 
-!!! note "Diagram Source"
-    All diagrams are written in Mermaid and can be edited directly in the markdown files.
-    Source files are located in `docs/architecture/`.
-
----
-
-**Last Updated**: February 2026
+*Last Updated: March 2026*

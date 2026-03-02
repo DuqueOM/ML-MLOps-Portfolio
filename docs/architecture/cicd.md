@@ -1,328 +1,58 @@
 # CI/CD Pipeline
 
-GitHub Actions workflows for testing, building, and deployment of the ML-MLOps Portfolio.
+GitHub Actions workflows for testing, building, and deploying the ML-MLOps Portfolio.
 
-![Cloud Build History](../media/screenshots/gcp-console/13-cloud-build-history.png)
-*Google Cloud Build history showing successful image builds*
-
-![Cloud Build Logs](../media/screenshots/gcp-console/14-cloud-build-logs.png)
-*Build logs: multi-stage Docker build completing successfully*
-
----
-
-## Pipeline Overview
-
-```mermaid
-graph TB
-    subgraph "Trigger"
-        PUSH["Push to main/PR"]
-    end
-    
-    subgraph "CI Pipeline"
-        LINT["Lint & Format"]
-        TEST["Unit Tests"]
-        COV["Coverage Check"]
-        SEC["Security Scan"]
-    end
-    
-    subgraph "Build"
-        DOCKER["Docker Build"]
-        TRIVY["Vulnerability Scan"]
-    end
-    
-    subgraph "Integration"
-        E2E["E2E Tests"]
-        INT["Integration Tests"]
-    end
-    
-    subgraph "Deploy"
-        PAGES["GitHub Pages"]
-        REG["Container Registry<br/>(AR + ECR + GHCR)"]
-    end
-    
-    PUSH --> LINT
-    LINT --> TEST
-    TEST --> COV
-    COV --> SEC
-    SEC --> DOCKER
-    DOCKER --> TRIVY
-    TRIVY --> E2E
-    E2E --> INT
-    INT --> PAGES
-    INT --> REG
-```
-
----
-
-## Workflow Files
+## Workflows
 
 | Workflow | File | Trigger | Purpose |
 |----------|------|---------|---------|
-| **Main CI** | `ci-mlops.yml` | Push/PR to main | Tests, security, Docker |
-| **Documentation** | `docs.yml` | Push to docs/ | Build and deploy docs |
+| **Main CI** | `ci-mlops.yml` | Push/PR to main | Tests, security, Docker, integration |
+| **Docs** | `docs.yml` | Push to docs/ | Build and deploy GitHub Pages |
 | **CML Training** | `cml-training-comparison.yml` | Manual | Model comparison reports |
-| **Portfolio CI** | `ci-portfolio-top3.yml` | Push/PR | Cross-project validation |
 
----
+## Main Pipeline (`ci-mlops.yml`)
 
-## Main CI Pipeline (`ci-mlops.yml`)
+**10 jobs**: tests → security → docker → integration-test → integration-report → validate-docs
 
-### Job Flow
-
-```mermaid
-graph LR
-    subgraph "Stage 1: Quality"
-        A["tests"] --> B["security"]
-    end
-    
-    subgraph "Stage 2: Build"
-        B --> C["docker"]
-    end
-    
-    subgraph "Stage 3: Integration"
-        C --> D["integration-test"]
-    end
-    
-    subgraph "Stage 4: Report"
-        D --> E["integration-report"]
-        D --> F["validate-docs"]
-    end
-```
-
-### Job Details
-
-#### 1. Tests Job
-
-Runs unit tests for each project with coverage reporting.
+### Matrix Strategy
 
 ```yaml
-tests:
-  strategy:
-    matrix:
-      project:
-        - BankChurn-Predictor
-        - CarVision-Market-Intelligence
-        - NLPInsight-Customer-Intelligence
-      python-version: ['3.11', '3.12']
+matrix:
+  project: [BankChurn-Predictor, CarVision-Market-Intelligence, NLPInsight-Customer-Intelligence]
+  python-version: ['3.11', '3.12']
 ```
 
-**Steps:**
-1. Checkout code
-2. Setup Python
-3. Install dependencies
-4. Run linters (flake8, black, isort)
-5. Run mypy type checking
-6. Execute pytest with coverage
-7. Upload coverage to Codecov
+6 parallel test jobs (3 projects × 2 Python versions).
 
-#### 2. Security Job
+### Jobs
 
-Scans for secrets and vulnerabilities.
+| Job | Tools | Purpose |
+|-----|-------|---------|
+| **tests** | pytest, flake8, black, isort, mypy | Unit tests + linting + coverage |
+| **security** | Gitleaks, Bandit | Secret detection + Python security |
+| **docker** | Docker, Trivy | Multi-stage build + vulnerability scan |
+| **integration-test** | docker-compose, pytest | Full-stack E2E validation |
 
-```mermaid
-graph LR
-    A["Checkout"] --> B["Gitleaks"]
-    B --> C["Bandit"]
-    C --> D["Report"]
-```
+### Caching
 
-**Tools:**
-- **Gitleaks**: Secret detection
-- **Bandit**: Python security linter
-
-#### 3. Docker Job
-
-Builds Docker images for each service.
-
-```yaml
-docker:
-  strategy:
-    matrix:
-      service:
-        - bankchurn
-        - carvision
-        - telecom
-```
-
-**Steps:**
-1. Build multi-stage Docker image
-2. Run Trivy vulnerability scan
-3. Push to GitHub Container Registry (on main)
-
-#### 4. Integration Test Job
-
-Runs end-to-end tests with all services.
-
-```mermaid
-sequenceDiagram
-    participant CI as CI Runner
-    participant DC as Docker Compose
-    participant API as APIs
-    participant TEST as Test Script
-    
-    CI->>DC: docker-compose up -d
-    DC->>API: Start services
-    API-->>CI: Health check OK
-    CI->>TEST: Run integration tests
-    TEST->>API: HTTP requests
-    API-->>TEST: Responses
-    TEST-->>CI: Test results
-    CI->>DC: docker-compose down
-```
-
----
-
-## Documentation Pipeline (`docs.yml`)
-
-### Workflow
-
-```mermaid
-graph LR
-    A["Push to docs/"] --> B["Build MkDocs"]
-    B --> C["Spell Check"]
-    C --> D["Upload Artifact"]
-    D --> E["Deploy to GH Pages"]
-```
-
-### Configuration
-
-```yaml
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'docs/**'
-      - 'mkdocs.yml'
-```
-
----
-
-## Matrix Strategy
-
-The pipeline uses matrix builds for efficiency:
-
-```yaml
-strategy:
-  matrix:
-    project: [BankChurn, CarVision, NLPInsight]
-    python-version: ['3.11', '3.12']
-  fail-fast: false
-```
-
-This produces 6 parallel test jobs (3 projects × 2 Python versions). The full CI pipeline has **10 jobs** total (tests, quality-gates, security, docker, e2e, integration-test, benchmarks, integration-report, validate-docs, ghcr-publish).
-
----
-
-## Caching Strategy
-
-### Pip Cache
-
-```yaml
-- uses: actions/setup-python@v6
-  with:
-    python-version: ${{ matrix.python-version }}
-    cache: 'pip'
-```
-
-### Docker Layer Cache
-
-```yaml
-- uses: docker/build-push-action@v5
-  with:
-    cache-from: type=gha
-    cache-to: type=gha,mode=max
-```
-
----
-
-## Secrets Management
-
-| Secret | Purpose | Scope |
-|--------|---------|-------|
-| `GITHUB_TOKEN` | Automatic | Push to registry |
-| `CODECOV_TOKEN` | Coverage upload | Repository |
-| `DOCKERHUB_TOKEN` | Docker Hub push | Optional |
-
----
-
-## Branch Protection
-
-Recommended settings for `main` branch:
-
-- [x] Require pull request before merging
-- [x] Require status checks to pass
-  - [x] `tests (BankChurn-Predictor, 3.12)`
-  - [x] `tests (CarVision-Market-Intelligence, 3.12)`
-  - [x] `tests (NLPInsight-Customer-Intelligence, 3.12)`
-  - [x] `security`
-- [x] Require branches to be up to date
-- [x] Do not allow bypassing settings
-
----
+- **pip**: `actions/setup-python` with `cache: 'pip'`
+- **Docker layers**: `docker/build-push-action` with GHA cache
 
 ## Pipeline Metrics
 
 | Metric | Target | Current |
 |--------|--------|---------|
 | Build Time | <10 min | ~8 min |
-| Test Coverage | >80% | 88-95% (Codecov) |
-| Security Findings | 0 critical | ✅ Pass |
-| Docker Size | <1 GB | ~500 MB |
+| Test Coverage | >80% | 88–95% |
+| Security | 0 critical | Pass |
 
----
-
-## Troubleshooting CI
-
-### Common Failures
-
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `ModuleNotFoundError` | Missing dependency | Check requirements.txt |
-| `flake8 failed` | Style violation | Run `black .` locally |
-| `coverage below threshold` | Insufficient tests | Add more tests |
-| `Trivy HIGH findings` | Vulnerable package | Update dependencies |
-
-### Re-running Workflows
+## Local CI
 
 ```bash
-# Via GitHub CLI
-gh run rerun <run-id>
-
-# Or via GitHub UI
-# Actions → Select run → Re-run jobs
+pre-commit run --all-files    # Lint + format + security
+pytest tests/ -v --cov        # Tests + coverage
 ```
 
 ---
 
-## Local CI Simulation
-
-Run CI checks locally before pushing:
-
-```bash
-# Install pre-commit
-pip install pre-commit
-pre-commit install
-
-# Run all checks
-pre-commit run --all-files
-
-# Run tests
-pytest tests/ -v --cov
-
-# Build Docker
-docker build -t myproject .
-```
-
----
-
-## Enhancements Status
-
-- [x] Load testing with Locust (port-forward + Ingress IP modes) — `tests/load/locustfile.py`
-- [x] MLflow model registry automation — `scripts/mlflow_registry_automation.py`
-- [x] Multi-cloud deployment (GKE + EKS)
-- [ ] Model performance regression tests in CI
-- [ ] Canary deployments with traffic splitting
-
----
-
-**Last Updated**: February 2026
+*Last Updated: March 2026*
