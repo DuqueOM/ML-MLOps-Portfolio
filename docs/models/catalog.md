@@ -8,9 +8,9 @@
 
 | Project | Model ID | Algorithm | Version | Status | Primary Metric | Coverage | Last Updated |
 |---------|----------|-----------|---------|--------|----------------|----------|--------|
-| **BankChurn** | `bankchurn-voting-v1.5.0` | VotingClassifier (LR + RF) | 1.5.0 | ✅ Production | AUC-ROC: 0.87 | 88% | February 2026 |
-| **CarVision** | `carvision-xgb-v1.5.0` | XGBRegressor (auto-selected) | 1.5.0 | ✅ Production | R²: 0.77 | 95% | February 2026 |
-| **NLPInsight** | `nlpinsight-sentiment-v1.5.0` | DistilBERT / TF-IDF dual | 1.5.0 | ✅ Production | Accuracy: 85% | 95% | March 2026 |
+| **BankChurn** | `bankchurn-voting-v2.0.0` | VotingClassifier (LR + RF) | 2.0.0 | ✅ Production | AUC-ROC: 0.86 | 88% | March 2026 |
+| **CarVision** | `carvision-xgb-v2.0.0` | XGBRegressor + FeatureEngineer | 2.0.0 | ✅ Production | R²: 0.82 | 95% | March 2026 |
+| **NLPInsight** | `nlpinsight-tfidf-v2.0.0` | TF-IDF + LogisticRegression | 2.0.0 | ✅ Production | Accuracy: 88% | 76% | March 2026 |
 
 ---
 
@@ -20,27 +20,27 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Model ID** | `bankchurn-voting-v1.5.0` |
+| **Model ID** | `bankchurn-voting-v2.0.0` |
 | **Model Name** | BankChurn Customer Churn Classifier |
-| **Version** | 1.5.0 |
+| **Version** | 2.0.0 |
 | **Algorithm** | VotingClassifier (Logistic Regression + RandomForest) |
-| **Framework** | Scikit-learn 1.8+ |
+| **Framework** | Scikit-learn 1.8.0, Python 3.11.14 |
 | **Status** | ✅ **Production** |
 | **Artifact Path** | `models/model.joblib` (unified pipeline) |
-| **Model Size** | 3.3 MB |
+| **Model Size** | 4.1 MB |
 | **Created** | February 2026 |
-| **Last Updated** | February 2026 |
+| **Last Updated** | March 2026 |
 
 ### Performance Metrics (Test Set, n=2,000)
 
 | Metric | Value | Business Impact |
 |--------|-------|-----------------|
-| **AUC-ROC** | **0.8652** | Excellent discrimination |
-| **Accuracy** | 84.3% | Overall correctness |
-| **Precision (Churn)** | 59.83% | Positive predictive value |
-| **Recall (Churn)** | 69.53% | Catches 70% of churners |
-| **F1-Score (Churn)** | **0.6432** | Balanced metric |
-| **Precision@10%** | 84% | Top 10% contains 84% churners |
+| **AUC-ROC** | **0.8626** | Excellent discrimination |
+| **Accuracy** | 85.6% | Overall correctness |
+| **Precision (Churn)** | 67.35% | Positive predictive value |
+| **Recall (Churn)** | 56.76% | Catches 57% of churners |
+| **F1-Score (Churn)** | **0.616** | Balanced metric |
+| **CV AUC (5-fold)** | 0.856 ± 0.005 | Stable cross-validation |
 
 > **MLflow Run**: `BC-2_RandomForest_Tuned` — Best of 3 tracked experiments
 
@@ -83,25 +83,24 @@ Full documentation: [BankChurn Model Card](https://github.com/DuqueOM/ML-MLOps-P
 
 | Attribute | Value |
 |-----------|-------|
-| **Model ID** | `carvision-xgb-v1.5.0` |
+| **Model ID** | `carvision-xgb-v2.0.0` |
 | **Model Name** | CarVision Vehicle Price Predictor |
-| **Version** | 1.5.0 |
-| **Algorithm** | XGBRegressor (auto-selected over RandomForest) |
-| **Framework** | Scikit-learn 1.8+ |
+| **Version** | 2.0.0 |
+| **Algorithm** | XGBRegressor + FeatureEngineer (24 features) |
+| **Framework** | XGBoost 3.2.0, Scikit-learn 1.8.0, Python 3.11.14 |
 | **Status** | ✅ **Production** |
 | **Artifact Path** | `models/model.joblib` (full pipeline) |
-| **Model Size** | 968 KB |
+| **Model Size** | 5.7 MB |
 | **Created** | February 2026 |
-| **Last Updated** | February 2026 |
+| **Last Updated** | March 2026 |
 
 ### Performance Metrics (Test Set, n=9,231)
 
 | Metric | Value | Description |
 |--------|-------|-------------|
-| **R²** | **0.7692** | Explains 77% of variance |
-| **RMSE** | **$4,396** | Average prediction error |
-| **MAE** | $3,124 | Mean absolute error |
-| **MAPE** | 18.2% | Percentage error |
+| **R²** | **0.8246** | Explains 82% of variance |
+| **RMSE** | **$6,273** | Average prediction error |
+| **MAE** | $3,671 | Mean absolute error |
 
 > **MLflow Run**: `CV-2_RandomForest_Tuned` — Best of 3 tracked experiments
 
@@ -121,9 +120,9 @@ Preprocessor:
   ├─ StandardScaler (numerical features)
   └─ OneHotEncoder (categorical: fuel, transmission, condition, etc.)
 
-XGBRegressor (auto-selected over RandomForest, R² 0.77 vs 0.68):
-  n_estimators=100, max_depth=6, learning_rate=0.1,
-  random_state=42
+XGBRegressor (R² 0.82, trained with Python 3.11):
+  n_estimators=500, max_depth=8, learning_rate=0.05,
+  subsample=0.8, colsample_bytree=0.8, random_state=42
 ```
 
 ### Key Features
@@ -146,25 +145,27 @@ Full documentation: [CarVision Model Card](https://github.com/DuqueOM/ML-MLOps-P
 
 | Attribute | Value |
 |-----------|-------|
-| **Model ID** | `nlpinsight-sentiment-v1.5.0` |
+| **Model ID** | `nlpinsight-tfidf-v2.0.0` |
 | **Model Name** | NLPInsight Financial Sentiment Analyzer |
-| **Version** | 1.5.0 |
-| **Algorithm** | DistilBERT fine-tuned (prod) / TF-IDF + LogReg (demo) |
-| **Framework** | HuggingFace Transformers + Scikit-learn |
+| **Version** | 2.0.0 |
+| **Algorithm** | TF-IDF + LogisticRegression (sklearn) |
+| **Framework** | Scikit-learn 1.8.0, Python 3.11.14 |
 | **Status** | ✅ **Production** |
-| **Artifact Path** | `models/model.joblib` (sklearn) or `models/` dir (transformer) |
-| **Model Size** | 316 KB (sklearn) / ~260 MB (transformer) |
-| **Docker Image** | 2.05 GB (torch CPU-only) |
+| **Artifact Path** | `models/model.joblib` (sklearn pipeline) |
+| **Model Size** | 309 KB |
+| **Docker Image** | 2.05 GB (supports transformer fallback) |
 | **Created** | March 2026 |
 | **Last Updated** | March 2026 |
 
 ### Performance Metrics (Financial PhraseBank, n=2,264)
 
-| Metric | Transformer | TF-IDF Baseline | Business Impact |
-|--------|-------------|-----------------|------------------|
-| **Accuracy** | **~85%** | ~75% | Reliable sentiment signals |
-| **F1 (macro)** | **~0.82** | ~0.70 | Balanced across 3 classes |
-| **Labels** | 3 | 3 | negative, neutral, positive |
+| Metric | Value | Business Impact |
+|--------|-------|------------------|
+| **Accuracy** | **88.08%** | Reliable sentiment signals |
+| **F1 (macro)** | **0.826** | Balanced across 3 classes |
+| **Precision (macro)** | 87.94% | Low false positive rate |
+| **Recall (macro)** | 79.31% | Good class coverage |
+| **Labels** | 3 | negative, neutral, positive |
 
 > **MLflow Run**: `NLP-2_DistilBERT` — Best of 2 tracked experiments
 
