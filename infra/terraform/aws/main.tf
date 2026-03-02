@@ -1,6 +1,6 @@
 terraform {
   required_version = ">= 1.5.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -41,7 +41,11 @@ module "eks" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  cluster_endpoint_public_access = true
+  cluster_endpoint_public_access       = true
+  cluster_endpoint_public_access_cidrs = var.allowed_cidr_blocks
+  cluster_endpoint_private_access      = true
+
+  cluster_enabled_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
   eks_managed_node_groups = {
     ml_services = {
@@ -123,9 +127,25 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "ml_models" {
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm = "aws:kms"
     }
+    bucket_key_enabled = true
   }
+}
+
+resource "aws_s3_bucket_public_access_block" "ml_models" {
+  bucket = aws_s3_bucket.ml_models.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_logging" "ml_models" {
+  bucket        = aws_s3_bucket.ml_models.id
+  target_bucket = aws_s3_bucket.ml_models.id
+  target_prefix = "access-logs/ml-models/"
 }
 
 # S3 Bucket for Datasets (equivalent to GCP datasets-production bucket)
@@ -152,9 +172,25 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "ml_datasets" {
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm = "aws:kms"
     }
+    bucket_key_enabled = true
   }
+}
+
+resource "aws_s3_bucket_public_access_block" "ml_datasets" {
+  bucket = aws_s3_bucket.ml_datasets.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_logging" "ml_datasets" {
+  bucket        = aws_s3_bucket.ml_datasets.id
+  target_bucket = aws_s3_bucket.ml_datasets.id
+  target_prefix = "access-logs/datasets/"
 }
 
 # S3 Bucket for MLflow Artifacts
@@ -174,6 +210,32 @@ resource "aws_s3_bucket_versioning" "mlflow_artifacts" {
   versioning_configuration {
     status = "Enabled"
   }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "mlflow_artifacts" {
+  bucket = aws_s3_bucket.mlflow_artifacts.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "aws:kms"
+    }
+    bucket_key_enabled = true
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "mlflow_artifacts" {
+  bucket = aws_s3_bucket.mlflow_artifacts.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_logging" "mlflow_artifacts" {
+  bucket        = aws_s3_bucket.mlflow_artifacts.id
+  target_bucket = aws_s3_bucket.mlflow_artifacts.id
+  target_prefix = "access-logs/mlflow/"
 }
 
 # RDS for MLflow Backend
@@ -198,7 +260,10 @@ resource "aws_db_instance" "mlflow_db" {
   backup_window           = "03:00-04:00"
   maintenance_window      = "mon:04:00-mon:05:00"
 
-  skip_final_snapshot = var.environment != "production"
+  deletion_protection                 = var.environment == "production"
+  iam_database_authentication_enabled = true
+
+  skip_final_snapshot       = var.environment != "production"
   final_snapshot_identifier = var.environment == "production" ? "${var.project_name}-mlflow-db-final-${formatdate("YYYY-MM-DD-hhmm", timestamp())}" : null
 
   tags = {
@@ -231,10 +296,11 @@ resource "aws_security_group" "mlflow_db" {
   }
 
   egress {
+    description = "Allow outbound to VPC"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.vpc_cidr]
   }
 
   tags = {
@@ -251,7 +317,7 @@ resource "aws_ecr_repository" "ml_services" {
   ])
 
   name                 = "${var.project_name}/${each.key}"
-  image_tag_mutability = "MUTABLE"
+  image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {
     scan_on_push = true

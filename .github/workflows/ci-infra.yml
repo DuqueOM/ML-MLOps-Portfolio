@@ -1,0 +1,193 @@
+name: Infrastructure Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'infra/**'
+      - 'k8s/**'
+      - 'tests/infra/**'
+      - '.github/workflows/ci-infra.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'infra/**'
+      - 'k8s/**'
+      - 'tests/infra/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 1: Terraform Validation & Security
+  # ─────────────────────────────────────────────────────────────────────────
+  terraform:
+    name: Terraform (${{ matrix.provider }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [gcp, aws]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.5"
+
+      - name: Terraform fmt
+        run: terraform -chdir=infra/terraform/${{ matrix.provider }} fmt -check -recursive -diff
+
+      - name: Create test variables
+        run: |
+          if [ "${{ matrix.provider }}" = "gcp" ]; then
+            cat > infra/terraform/${{ matrix.provider }}/.test.auto.tfvars <<EOF
+          project_id  = "test-project-000000"
+          db_password = "test-password-ci"
+          EOF
+          elif [ "${{ matrix.provider }}" = "aws" ]; then
+            cat > infra/terraform/${{ matrix.provider }}/.test.auto.tfvars <<EOF
+          db_password = "test-password-ci"
+          EOF
+          fi
+
+      - name: Terraform init
+        run: terraform -chdir=infra/terraform/${{ matrix.provider }} init -backend=false -input=false
+
+      - name: Terraform validate
+        run: terraform -chdir=infra/terraform/${{ matrix.provider }} validate -no-color
+
+      - name: Cleanup test variables
+        if: always()
+        run: rm -f infra/terraform/${{ matrix.provider }}/.test.auto.tfvars
+
+      - name: tfsec security scan
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: infra/terraform/${{ matrix.provider }}
+          soft_fail: true
+          format: sarif
+          sarif_file: tfsec-${{ matrix.provider }}.sarif
+
+      - name: Upload tfsec SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: tfsec-${{ matrix.provider }}.sarif
+        continue-on-error: true
+
+      - name: Checkov scan
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: infra/terraform/${{ matrix.provider }}
+          framework: terraform
+          quiet: true
+          soft_fail: true
+          output_format: cli
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 2: Kubernetes Manifest Validation
+  # ─────────────────────────────────────────────────────────────────────────
+  kubernetes:
+    name: Kubernetes Manifests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: YAML syntax check
+        run: |
+          pip install pyyaml
+          echo "Checking YAML syntax..."
+          ERRORS=0
+          for f in k8s/*.yaml k8s/overlays/**/*.yaml k8s/argo-rollouts/*.yaml; do
+            [ -f "$f" ] || continue
+            if ! python3 -c "import yaml; list(yaml.safe_load_all(open('$f')))" 2>/dev/null; then
+              echo "❌ Invalid YAML: $f"
+              ERRORS=$((ERRORS+1))
+            fi
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "::error::$ERRORS YAML files have syntax errors"
+            exit 1
+          fi
+          echo "✅ All YAML files valid"
+
+      - name: Install kube-linter
+        run: |
+          curl -sL https://github.com/stackrox/kube-linter/releases/download/v0.7.1/kube-linter-linux -o kube-linter
+          chmod +x kube-linter
+          sudo mv kube-linter /usr/local/bin/
+
+      - name: Run kube-linter
+        run: |
+          kube-linter lint k8s/ \
+            --config tests/infra/kubernetes/.kube-linter.yaml \
+            || true
+
+      - name: Install conftest
+        run: |
+          LATEST=$(curl -s https://api.github.com/repos/open-policy-agent/conftest/releases/latest | grep tag_name | cut -d '"' -f 4 | sed 's/v//')
+          curl -sL "https://github.com/open-policy-agent/conftest/releases/download/v${LATEST}/conftest_${LATEST}_Linux_x86_64.tar.gz" | tar xz conftest
+          sudo mv conftest /usr/local/bin/
+
+      - name: Run OPA policy tests (base manifests)
+        run: |
+          echo "Testing base K8s manifests..."
+          TOTAL=0
+          DENIES=0
+          for f in k8s/*.yaml; do
+            [ -f "$f" ] || continue
+            TOTAL=$((TOTAL+1))
+            OUTPUT=$(conftest test "$f" -p tests/infra/kubernetes/policies/ --no-color 2>&1) || true
+            FILE_DENIES=$(echo "$OUTPUT" | grep -c "FAIL" || echo "0")
+            if [ "$FILE_DENIES" -gt 0 ]; then
+              DENIES=$((DENIES + FILE_DENIES))
+              echo "::warning file=$f::$FILE_DENIES policy violations"
+              echo "$OUTPUT" | grep "FAIL"
+            fi
+          done
+          echo "Tested $TOTAL files, $DENIES total policy violations"
+
+      - name: Run OPA policy tests (AWS overlays)
+        run: |
+          echo "Testing AWS overlay manifests..."
+          for f in k8s/overlays/aws/*.yaml; do
+            [ -f "$f" ] || continue
+            conftest test "$f" -p tests/infra/kubernetes/policies/ --no-color 2>&1 || true
+          done
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 3: Smoke Tests (only on workflow_dispatch with running services)
+  # ─────────────────────────────────────────────────────────────────────────
+  smoke-tests:
+    name: API Smoke Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    needs: [terraform, kubernetes]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install pytest requests
+
+      - name: Run smoke tests
+        run: |
+          pytest tests/infra/smoke/test_smoke_services.py -v --tb=short || true
+        env:
+          SMOKE_BASE_URL: http://localhost
+          SMOKE_TIMEOUT: "10"

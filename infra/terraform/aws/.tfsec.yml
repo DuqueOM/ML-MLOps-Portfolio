@@ -1,0 +1,10 @@
+---
+# tfsec configuration — AWS
+# Acceptable findings for portfolio-grade infrastructure
+minimum_severity: HIGH
+exclude:
+  # EKS public access: restricted via allowed_cidr_blocks (not 0.0.0.0/0 in production)
+  - AVD-AWS-0040
+  # S3 buckets use AWS-managed KMS (aws:kms); customer-managed CMK adds ~$1/mo per key
+  # Acceptable trade-off for portfolio project
+  - AVD-AWS-0132

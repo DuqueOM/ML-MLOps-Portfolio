@@ -35,8 +35,8 @@ locals {
 
 # GKE Cluster
 resource "google_container_cluster" "ml_portfolio" {
-  name     = "${var.project_name}-gke-${var.environment}"
-  location = var.region
+  name                = "${var.project_name}-gke-${var.environment}"
+  location            = var.region
   deletion_protection = false
 
   # We can't create a cluster with no node pool defined, but we want to only use
@@ -53,6 +53,40 @@ resource "google_container_cluster" "ml_portfolio" {
 
   network    = google_compute_network.vpc.name
   subnetwork = google_compute_subnetwork.subnet.name
+
+  # Security: Master authorized networks
+  master_authorized_networks_config {
+    cidr_blocks {
+      cidr_block   = "10.10.0.0/24"
+      display_name = "VPC subnet"
+    }
+  }
+
+  # Security: Private cluster (private nodes, public endpoint with authorized networks)
+  private_cluster_config {
+    enable_private_nodes    = true
+    enable_private_endpoint = false
+    master_ipv4_cidr_block  = "172.16.0.0/28"
+  }
+
+  # Security: Network policy
+  network_policy {
+    enabled  = true
+    provider = "CALICO"
+  }
+
+  # Security: IP aliasing (VPC-native cluster)
+  ip_allocation_policy {
+    cluster_secondary_range_name  = "pod-ranges"
+    services_secondary_range_name = "services-range"
+  }
+
+  # Security: Resource labels
+  resource_labels = {
+    environment = var.environment
+    project     = var.project_name
+    managed_by  = "terraform"
+  }
 
   # Enable Workload Identity
   workload_identity_config {
@@ -82,6 +116,9 @@ resource "google_container_cluster" "ml_portfolio" {
     horizontal_pod_autoscaling {
       disabled = false
     }
+    network_policy_config {
+      disabled = false
+    }
   }
 }
 
@@ -97,10 +134,19 @@ resource "google_container_node_pool" "ml_services" {
     max_node_count = var.max_node_count
   }
 
+  management {
+    auto_repair  = true
+    auto_upgrade = true
+  }
+
   node_config {
     disk_size_gb = 30
+    image_type   = "COS_CONTAINERD"
     preemptible  = var.environment != "production"
     machine_type = var.machine_type
+
+    # Security: Use dedicated service account instead of default
+    service_account = google_service_account.gke_workload.email
 
     labels = {
       env     = var.environment
@@ -116,6 +162,11 @@ resource "google_container_node_pool" "ml_services" {
     metadata = {
       disable-legacy-endpoints = "true"
     }
+
+    # Security: Protect node metadata from pods
+    workload_metadata_config {
+      mode = "GKE_METADATA"
+    }
   }
 }
 
@@ -130,6 +181,13 @@ resource "google_compute_subnetwork" "subnet" {
   ip_cidr_range = "10.10.0.0/24"
   region        = var.region
   network       = google_compute_network.vpc.id
+
+  # Security: VPC Flow Logs
+  log_config {
+    aggregation_interval = "INTERVAL_10_MIN"
+    flow_sampling        = 0.5
+    metadata             = "INCLUDE_ALL_METADATA"
+  }
 
   secondary_ip_range {
     range_name    = "services-range"
@@ -210,6 +268,29 @@ resource "google_sql_database_instance" "mlflow" {
     ip_configuration {
       ipv4_enabled    = false
       private_network = google_compute_network.vpc.id
+      require_ssl     = true
+    }
+
+    # Security: Database logging flags
+    database_flags {
+      name  = "log_checkpoints"
+      value = "on"
+    }
+    database_flags {
+      name  = "log_connections"
+      value = "on"
+    }
+    database_flags {
+      name  = "log_disconnections"
+      value = "on"
+    }
+    database_flags {
+      name  = "log_lock_waits"
+      value = "on"
+    }
+    database_flags {
+      name  = "log_temp_files"
+      value = "0"
     }
   }
 

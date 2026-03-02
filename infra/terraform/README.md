@@ -214,7 +214,31 @@ aws dynamodb create-table \
 gsutil mb -l us-central1 gs://ml-portfolio-terraform-state/
 ```
 
-## 🧹 Cleanup
+## � Infrastructure Testing
+
+Automated validation and security scanning for all Terraform configurations.
+
+```bash
+# Run all Terraform tests (fmt, validate, tfsec, checkov)
+bash tests/infra/terraform/test_terraform.sh all
+
+# Run per provider
+bash tests/infra/terraform/test_terraform.sh gcp
+bash tests/infra/terraform/test_terraform.sh aws
+```
+
+| Test | Type | GCP | AWS |
+|------|------|-----|-----|
+| `terraform fmt` | Hard gate | ✅ | ✅ |
+| `terraform validate` | Hard gate | ✅ | ✅ |
+| `tfsec` | Advisory | ✅ (51/71) | ✅ (84/116) |
+| `checkov` | Advisory | ✅ (51/71) | ✅ (84/116) |
+
+CI: `.github/workflows/ci-infra.yml` runs on push to `main`/`develop` when `infra/` or `k8s/` files change.
+
+See [tests/infra/README.md](../../tests/infra/README.md) for full details.
+
+## �🧹 Cleanup
 
 To destroy all infrastructure:
 

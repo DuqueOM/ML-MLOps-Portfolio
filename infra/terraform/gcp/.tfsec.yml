@@ -1,0 +1,10 @@
+---
+# tfsec configuration — GCP
+# Acceptable findings for portfolio-grade infrastructure
+minimum_severity: HIGH
+exclude:
+  # PodSecurityPolicy deprecated in K8s 1.25+ (replaced by Pod Security Admission)
+  - AVD-GCP-0047
+  # Legacy metadata endpoints: applies to default node pool which is immediately removed
+  # Our managed node pool has workload_metadata_config.mode = GKE_METADATA
+  - AVD-GCP-0048

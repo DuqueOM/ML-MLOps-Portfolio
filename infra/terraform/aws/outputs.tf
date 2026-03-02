@@ -81,11 +81,11 @@ output "cloudwatch_log_group" {
 output "cost_optimization_notes" {
   description = "Summary of cost optimization decisions"
   value = {
-    eks_node_type     = "t3.medium (2 vCPU burstable, 4 GiB — matches GCP e2-medium; upgrade to t3.large for sustained inference)"
-    rds_instance      = "db.t3.micro (burstable, 1 vCPU, 1 GiB — sufficient for MLflow)"
-    nat_gateway       = "single (non-production saves ~$32/month vs multi-AZ)"
-    s3_lifecycle      = "Glacier after 90 days, expire after 365 days"
-    ecr_lifecycle     = "Keep 10 tagged images, expire untagged after 7 days"
+    eks_node_type        = "t3.medium (2 vCPU burstable, 4 GiB — matches GCP e2-medium; upgrade to t3.large for sustained inference)"
+    rds_instance         = "db.t3.micro (burstable, 1 vCPU, 1 GiB — sufficient for MLflow)"
+    nat_gateway          = "single (non-production saves ~$32/month vs multi-AZ)"
+    s3_lifecycle         = "Glacier after 90 days, expire after 365 days"
+    ecr_lifecycle        = "Keep 10 tagged images, expire untagged after 7 days"
     cloudwatch_retention = "30 days"
   }
 }

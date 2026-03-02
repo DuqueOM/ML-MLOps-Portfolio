@@ -45,6 +45,12 @@ variable "node_instance_type" {
   default     = "t3.medium"
 }
 
+variable "allowed_cidr_blocks" {
+  description = "CIDR blocks allowed to access EKS API endpoint"
+  type        = list(string)
+  default     = ["10.0.0.0/16"]
+}
+
 variable "db_instance_class" {
   description = "RDS instance class for MLflow database"
   type        = string
