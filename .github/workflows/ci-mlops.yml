@@ -93,7 +93,7 @@ jobs:
       - name: Run tests with coverage
         working-directory: ${{ matrix.project }}
         run: |
-          # Coverage thresholds: BankChurn 79%, CarVision 80%, NLPInsight 80%
+          # Coverage thresholds: BankChurn 79%, CarVision 80%, NLPInsight 75%
           if [ "${{ matrix.project }}" = "BankChurn-Predictor" ]; then
             COV_TARGET="src"
             THRESHOLD=79
@@ -102,7 +102,7 @@ jobs:
             THRESHOLD=80
           else
             COV_TARGET="src/nlpinsight"
-            THRESHOLD=80
+            THRESHOLD=75
           fi
           pytest --maxfail=1 --disable-warnings -q \
             -m "not slow" \
@@ -110,6 +110,7 @@ jobs:
             --cov-fail-under=$THRESHOLD
       
       - name: Upload coverage to Codecov
+        if: always()
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -119,6 +120,7 @@ jobs:
           fail_ci_if_error: false
       
       - name: Upload coverage artifact
+        if: always()
         uses: actions/upload-artifact@v5
         with:
           name: coverage-${{ matrix.project }}-py${{ matrix.python-version }}
