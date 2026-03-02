@@ -29,7 +29,7 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, VotingClassifier
+from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
@@ -227,40 +227,60 @@ def train_bankchurn():
 
 
 # =============================================================================
-# CARVISION — RandomForestRegressor (tuned)
+# CARVISION — XGBRegressor + FeatureEngineer (production pipeline)
 # =============================================================================
 def train_carvision():
     print("\n" + "=" * 60)
     print("🚗 CARVISION — Production Model Training")
     print("=" * 60)
 
-    data_path = BASE_DIR / "CarVision-Market-Intelligence/data/raw/vehicles_us.csv"
+    # Import the actual FeatureEngineer from the project
+    cv_src = BASE_DIR / "CarVision-Market-Intelligence"
+    sys.path.insert(0, str(cv_src))
+    from src.carvision.features import FeatureEngineer
+
+    data_path = cv_src / "data/raw/vehicles_us.csv"
     if not data_path.exists():
         print("❌ No data file found")
         return None
 
     df = pd.read_csv(data_path)
 
-    # Clean data (matching data.py clean_data filters)
-    df = df[(df["price"] >= 1000) & (df["price"] <= 100000)]
+    # Clean data (matching config.yaml preprocessing.filters)
+    df = df[(df["price"] >= 1000) & (df["price"] <= 500000)]
     if "year" in df.columns and "model_year" not in df.columns:
         df["model_year"] = df["year"]
     df = df[df["model_year"] >= 1990]
+    df = df[df["odometer"] <= 500000]
     df = df.dropna(subset=["price"])
 
     print(f"📊 Loaded {len(df)} rows after cleaning")
 
-    cat_features = ["fuel", "transmission", "type"]
-    num_features = ["model_year", "odometer"]
+    # Apply FeatureEngineer (creates vehicle_age, brand, depreciation, etc.)
+    fe = FeatureEngineer(current_year=2026)
+    df = fe.transform(df)
 
-    X = df[cat_features + num_features].copy()
-    for col in cat_features:
-        X[col] = X[col].fillna("unknown")
-    for col in num_features:
-        X[col] = pd.to_numeric(X[col], errors="coerce").fillna(0)
+    # Drop leakage columns (matching config drop_columns)
+    drop_cols = ["price_per_mile", "price_category", "model", "date_posted", "brand"]
+    df = df.drop(columns=[c for c in drop_cols if c in df.columns], errors="ignore")
+
+    # Target
     y = df["price"]
+    X = df.drop(columns=["price"], errors="ignore")
+
+    # Separate numeric and categorical features dynamically
+    cat_cols = X.select_dtypes(include=["object", "category"]).columns.tolist()
+    num_cols = X.select_dtypes(include=["number"]).columns.tolist()
+
+    # Fill missing values before split
+    for col in cat_cols:
+        X[col] = X[col].fillna("unknown")
+    for col in num_cols:
+        X[col] = pd.to_numeric(X[col], errors="coerce").fillna(0)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    print(f"   Features: {len(cat_cols)} cat + {len(num_cols)} num = {len(cat_cols) + len(num_cols)}")
 
     preprocessor = ColumnTransformer(
         [
@@ -272,7 +292,7 @@ def train_carvision():
                         ("onehot", OneHotEncoder(sparse_output=False, handle_unknown="ignore")),
                     ]
                 ),
-                cat_features,
+                cat_cols,
             ),
             (
                 "num",
@@ -282,20 +302,25 @@ def train_carvision():
                         ("scaler", StandardScaler()),
                     ]
                 ),
-                num_features,
+                num_cols,
             ),
         ]
     )
 
+    # Use XGBRegressor matching documented production model
+    from xgboost import XGBRegressor
+
     pipeline = Pipeline(
         [
-            ("preprocessor", preprocessor),
+            ("pre", preprocessor),
             (
-                "regressor",
-                RandomForestRegressor(
-                    n_estimators=100,
-                    max_depth=12,
-                    min_samples_leaf=2,
+                "model",
+                XGBRegressor(
+                    n_estimators=500,
+                    max_depth=8,
+                    learning_rate=0.05,
+                    subsample=0.8,
+                    colsample_bytree=0.8,
                     random_state=42,
                     n_jobs=-1,
                 ),
@@ -322,7 +347,7 @@ def train_carvision():
     joblib.dump(pipeline, save_path)
 
     # Save feature columns for API compatibility
-    feature_columns = cat_features + num_features
+    feature_columns = cat_cols + num_cols
     artifacts_dir = BASE_DIR / "CarVision-Market-Intelligence/artifacts"
     artifacts_dir.mkdir(exist_ok=True)
     (artifacts_dir / "feature_columns.json").write_text(json.dumps(feature_columns))
@@ -332,11 +357,14 @@ def train_carvision():
 
     log_mlflow(
         "CarVision-Market-Intelligence",
-        "CV-Production_RandomForest",
+        "CV-Production_XGBRegressor",
         {
-            "model": "RandomForestRegressor",
-            "n_estimators": 100,
-            "max_depth": 12,
+            "model": "XGBRegressor",
+            "n_estimators": 500,
+            "max_depth": 8,
+            "learning_rate": 0.05,
+            "n_features_cat": len(cat_cols),
+            "n_features_num": len(num_cols),
             "train_size": len(X_train),
             "test_size": len(X_test),
         },
@@ -344,7 +372,7 @@ def train_carvision():
         {
             "run_type": "production",
             "project": "carvision",
-            "framework": "scikit-learn",
+            "framework": "xgboost",
             "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
         },
         pipeline,
