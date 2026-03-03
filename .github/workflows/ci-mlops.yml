@@ -269,8 +269,16 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.project }}-v2
           cache-to: type=gha,mode=max,scope=${{ matrix.project }}-v2
       
+      - name: Install Trivy
+        run: |
+          sudo apt-get install -y wget apt-transport-https gnupg
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.29.0
         env:
           TRIVY_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-db:2
         with:
@@ -278,6 +286,7 @@ jobs:
           format: 'sarif'
           output: 'trivy-results-${{ matrix.project }}.sarif'
           severity: 'CRITICAL,HIGH'
+          skip-setup-trivy: true
       
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v4
@@ -317,6 +326,35 @@ jobs:
             pip install -r requirements_no_hash.txt
           fi
       
+      - name: Generate synthetic data for E2E
+        working-directory: BankChurn-Predictor
+        run: |
+          mkdir -p data/raw
+          python - <<'EOF'
+          import pandas as pd
+          import numpy as np
+          np.random.seed(42)
+          n = 500
+          df = pd.DataFrame({
+              'RowNumber': range(1, n+1),
+              'CustomerId': np.random.randint(15000000, 16000000, n),
+              'Surname': ['Smith'] * n,
+              'CreditScore': np.random.randint(350, 850, n),
+              'Geography': np.random.choice(['France', 'Germany', 'Spain'], n),
+              'Gender': np.random.choice(['Male', 'Female'], n),
+              'Age': np.random.randint(18, 70, n),
+              'Tenure': np.random.randint(0, 10, n),
+              'Balance': np.round(np.random.uniform(0, 250000, n), 2),
+              'NumOfProducts': np.random.randint(1, 4, n),
+              'HasCrCard': np.random.randint(0, 2, n),
+              'IsActiveMember': np.random.randint(0, 2, n),
+              'EstimatedSalary': np.round(np.random.uniform(10000, 200000, n), 2),
+              'Exited': np.random.randint(0, 2, n),
+          })
+          df.to_csv('data/raw/Churn.csv', index=False)
+          print(f'Generated {n} rows → data/raw/Churn.csv')
+          EOF
+
       - name: Run E2E pipeline
         run: |
           chmod +x scripts/run_e2e.sh
