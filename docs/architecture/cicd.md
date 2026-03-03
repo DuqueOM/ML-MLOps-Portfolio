@@ -18,7 +18,7 @@ GitHub Actions workflows for testing, building, and deploying the ML-MLOps Portf
 
 ```yaml
 matrix:
-  project: [BankChurn-Predictor, CarVision-Market-Intelligence, NLPInsight-Customer-Intelligence]
+  project: [BankChurn-Predictor, CarVision-Market-Intelligence, NLPInsight-Analyzer]
   python-version: ['3.11', '3.12']
 ```
 
@@ -43,7 +43,7 @@ matrix:
 | Metric | Target | Current |
 |--------|--------|---------|
 | Build Time | <10 min | ~8 min |
-| Test Coverage | >80% | 88–95% |
+| Test Coverage | >85% | 90–98% (323 tests) |
 | Security | 0 critical | Pass |
 
 ## Local CI
@@ -55,4 +55,4 @@ pytest tests/ -v --cov        # Tests + coverage
 
 ---
 
-*Last Updated: March 2026*
+*Last Updated: March 2026 — v3.2.0*

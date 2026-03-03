@@ -6,7 +6,8 @@
 |-----------|---------|
 | Python | 3.11.14 |
 | scikit-learn | 1.8.0 |
-| XGBoost | 3.2.0 |
+| LightGBM | 4.6+ |
+| Transformers | 4.48+ |
 | SHAP | 0.50.0 |
 | MLflow | 3.10 |
 
@@ -20,15 +21,15 @@ conda activate ml-py311
 # 2. Install dependencies (per project)
 pip install -r BankChurn-Predictor/requirements.txt
 pip install -r CarVision-Market-Intelligence/requirements.txt
-pip install -r NLPInsight-Customer-Intelligence/requirements.txt
+pip install -r NLPInsight-Analyzer/requirements.txt
 
 # 3. Train all models
 python scripts/train_production_models.py
 
 # 4. Verify metrics
-# BankChurn: AUC 0.8626, F1 0.616
-# CarVision: R² 0.8246, RMSE $6,273
-# NLPInsight: Accuracy 88.08%, F1-macro 0.826
+# BankChurn: AUC 0.87, F1 0.62 (StackingClassifier)
+# CarVision: R² 0.80, RMSE $6,744 (LightGBM)
+# NLPInsight: Acc 97%, F1-w 0.97 (FinBERT)
 ```
 
 ## Random Seeds
@@ -64,4 +65,4 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 
 ---
 
-*Last Updated: March 2026*
+*Last Updated: March 2026 — v3.2.0*

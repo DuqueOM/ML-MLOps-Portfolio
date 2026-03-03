@@ -9,13 +9,13 @@
 
 ---
 
-## Projects (v2.0.0, Python 3.11.14)
+## Projects (v3.0.0, Python 3.11.14)
 
-| Project | Algorithm | Primary Metric | Docker | Coverage |
-|---------|-----------|----------------|--------|----------|
-| **[BankChurn](projects/bankchurn.md)** | VotingClassifier (LR+RF) + SHAP | AUC 0.8626 | 2.11 GB | 88% |
-| **[CarVision](projects/carvision.md)** | XGBRegressor + FeatureEngineer | R² 0.8246 | 1.76 GB | 95% |
-| **[NLPInsight](projects/nlpinsight.md)** | TF-IDF + LogisticRegression | Accuracy 88.1% | 2.05 GB | 76% |
+| Project | Algorithm | Primary Metric | Tests | Coverage |
+|---------|-----------|----------------|:-----:|:--------:|
+| **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC 0.87 | 198 | 90% |
+| **[CarVision](projects/carvision.md)** | LightGBM + FeatureEngineer (24 features) | R² 0.80 | 52 | 96% |
+| **[NLPInsight](projects/nlpinsight.md)** | FinBERT (ProsusAI) / TF-IDF fallback | Acc 97% | 73 | 98% |
 
 ## Quick Start
 
@@ -38,14 +38,15 @@ docker compose -f docker-compose.demo.yml up -d --build
 
 | Layer | Technologies |
 |-------|-------------|
-| **ML** | scikit-learn 1.8.0, XGBoost 3.2.0, SHAP 0.50.0 |
+| **ML** | scikit-learn 1.8.0, LightGBM 4.6+, HuggingFace Transformers, SHAP 0.50.0 |
 | **API** | FastAPI, Pydantic, Streamlit |
 | **Tracking** | MLflow 3.10, DVC |
-| **Monitoring** | Prometheus, Grafana, Evidently AI |
+| **Monitoring** | Prometheus, Grafana, Evidently AI, OpenTelemetry |
+| **Responsible AI** | Fairness audits (×3), drift detection (KS+PSI+Evidently), Pandera validation |
 | **Containers** | Docker (multi-stage), Kubernetes (GKE/EKS) |
 | **IaC** | Terraform (GCP + AWS modules) |
 | **CI/CD** | GitHub Actions, Trivy, Bandit, Gitleaks |
-| **Testing** | pytest (88–95%), Locust, Codecov |
+| **Testing** | pytest (90–98%, 323 tests), Locust, Codecov |
 
 ## Production Infrastructure
 
@@ -75,4 +76,4 @@ Developed using AI-assisted tools (Cursor/Cascade) for code generation accelerat
 
 **Built by [Duque Ortega Mutis](https://github.com/DuqueOM)** | [Source Code](https://github.com/DuqueOM/ML-MLOps-Portfolio) | [Video Demo](https://youtu.be/qmw9VlgUcn8)
 
-*Last Updated: March 2026 — v2.0.0*
+*Last Updated: March 2026 — v3.2.0*

@@ -4,30 +4,31 @@ Vehicle price prediction platform with interactive dashboard.
 
 ![CarVision API](../media/screenshots/apis/27-fastapi-swagger-carvision.png)
 
-## Performance (v2.0.0)
+## Performance (v3.0.0)
 
 | Metric | Value |
 |--------|-------|
-| **R²** | 0.8246 |
-| **RMSE** | $6,273 |
-| **MAE** | $3,671 |
+| **R²** | 0.80 |
+| **RMSE** | $6,744 |
 
 ## Architecture
 
-`Vehicle Data → Data Cleaning (price 1K-500K, year≥1990) → FeatureEngineer (vehicle_age, brand tiers, depreciation, miles_per_year) → ColumnTransformer → XGBRegressor(n=500, depth=8, lr=0.05) → Price`
+`Vehicle Data → Data Cleaning (price 1K-500K, year≥1990) → FeatureEngineer (24 features) → ColumnTransformer → LightGBM(n=500, depth=8, lr=0.05) → Price`
 
 ## Key Features
 
 - **Centralized FeatureEngineer**: Single class for training/inference/analysis (prevents skew)
 - **Data Leakage Prevention**: `price_per_mile`, `price_category` excluded from features
 - **Streamlit Dashboard**: 4 tabs (Portfolio, Market, Metrics, Predictor)
+- **Fairness Audits**: Error ratio, MAE/RMSE parity by group (fuel type, condition)
+- **Data Validation**: Pandera schemas (raw + inference)
 - **Advanced Validation**: 5-fold CV, bootstrap CI, temporal backtest
 
 ## Operational
 
 | Metric | Value |
 |--------|-------|
-| Test Coverage | 95% (37 tests) |
+| Test Coverage | 96% (52 tests) |
 | Docker Image | 1.76 GB |
 | Model Size | 5.7 MB |
 | P95 Latency | <150ms |
@@ -42,4 +43,4 @@ curl -X POST http://localhost:8002/predict \
 
 ---
 
-*Last Updated: March 2026*
+*Last Updated: March 2026 — v3.2.0*

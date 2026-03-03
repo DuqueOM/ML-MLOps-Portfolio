@@ -16,13 +16,13 @@
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Scalability** | Kubernetes HPA, CPU-based autoscaling |
 
-## Projects (v2.0.0, Python 3.11.14 + sklearn 1.8.0)
+## Projects (v3.0.0, Python 3.11.14 + sklearn 1.8.0)
 
-| Project | Algorithm | Primary Metric | Docker | Coverage |
-|---------|-----------|----------------|--------|----------|
-| **BankChurn** | VotingClassifier (LR+RF) | AUC 0.8626 | 2.11 GB | 88% |
-| **CarVision** | XGBRegressor + FeatureEngineer | R² 0.8246 | 1.76 GB | 95% |
-| **NLPInsight** | TF-IDF + LogisticRegression | Accuracy 88.1% | 2.05 GB | 76% |
+| Project | Algorithm | Primary Metric | Tests | Coverage |
+|---------|-----------|----------------|:-----:|:--------:|
+| **BankChurn** | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87 | 198 | 90% |
+| **CarVision** | LightGBM + FeatureEngineer (24 features) | R² 0.80 | 52 | 96% |
+| **NLPInsight** | FinBERT (ProsusAI) / TF-IDF fallback | Acc 97% | 73 | 98% |
 
 ## Infrastructure
 
@@ -48,15 +48,16 @@
 
 | Layer | Technologies |
 |-------|-------------|
-| **ML** | scikit-learn 1.8.0, XGBoost 3.2.0, SHAP 0.50.0 |
+| **ML** | scikit-learn 1.8.0, LightGBM 4.6+, HuggingFace Transformers, SHAP 0.50.0 |
 | **API** | FastAPI, uvicorn, Pydantic |
 | **Dashboard** | Streamlit (CarVision) |
-| **Tracking** | MLflow 3.10 |
-| **Monitoring** | Prometheus, Grafana, Evidently AI |
+| **Tracking** | MLflow 3.10, DVC |
+| **Monitoring** | Prometheus, Grafana, Evidently AI, OpenTelemetry |
+| **Responsible AI** | Fairness audits (×3), drift detection (KS+PSI+Evidently), Pandera validation |
 | **Containers** | Docker, Kubernetes (GKE/EKS) |
 | **IaC** | Terraform (GCP + AWS modules) |
 | **CI/CD** | GitHub Actions, Trivy, Bandit, Gitleaks |
-| **Testing** | pytest (88–95% coverage), Locust (load testing) |
+| **Testing** | pytest (90–98% coverage, 323 tests), Locust (load testing) |
 
 ## Visual Evidence
 
@@ -73,4 +74,4 @@
 
 ---
 
-*Last Updated: March 2026 — Portfolio v2.0.0*
+*Last Updated: March 2026 — Portfolio v3.2.0*

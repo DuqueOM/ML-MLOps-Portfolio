@@ -46,7 +46,7 @@ pytest tests/ -v
 ### NLPInsight Analyzer
 
 ```bash
-cd NLPInsight-Customer-Intelligence
+cd NLPInsight-Analyzer
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"

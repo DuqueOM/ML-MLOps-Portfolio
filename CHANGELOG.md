@@ -6,6 +6,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [3.2.1] — 2026-03-03
+
+### Added
+- **CarVision fairness module** (`src/carvision/fairness.py`) — error ratio, MAE/RMSE parity by group (15 tests)
+- **NLPInsight fairness module** (`src/nlpinsight/fairness.py`) — per-class F1 parity, group fairness (16 tests)
+- Trivy DB repository override (`ghcr.io/aquasecurity/trivy-db:2`) to fix mirror.gcr.io 404
+
+### Changed
+- **All 3 projects now have fairness audits** (was only BankChurn)
+- Trivy action pinned to `0.28.0` (was `@master`)
+- Documentation standardized: 30+ files updated to v3.0.0 models / v3.2.0 portfolio
+- Test total: 323 (198 + 52 + 73), coverage 90–98%
+
+### Fixed
+- E2E script: `app/main.py` → `app/fastapi_app.py`
+- Version inconsistencies across 8 documentation files (model_version references)
+
 ## [3.2.0] — 2026-03-03
 
 ### Added
@@ -99,7 +116,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
-[3.2.0]: https://github.com/DuqueOM/ML-MLOps-Portfolio/compare/v3.1.0...HEAD
+[3.2.1]: https://github.com/DuqueOM/ML-MLOps-Portfolio/compare/v3.2.0...HEAD
+[3.2.0]: https://github.com/DuqueOM/ML-MLOps-Portfolio/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/DuqueOM/ML-MLOps-Portfolio/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/DuqueOM/ML-MLOps-Portfolio/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/DuqueOM/ML-MLOps-Portfolio/compare/v1.0.0...v2.0.0

@@ -5,24 +5,24 @@
 | Layer | Components | Technology |
 |-------|-----------|------------|
 | **Data** | DVC versioning, raw/processed data | DVC + GCS/S3 |
-| **Training** | Feature engineering, model training, evaluation | sklearn, XGBoost, MLflow |
+| **Training** | Feature engineering, model training, evaluation | sklearn, LightGBM, Transformers, MLflow |
 | **Serving** | REST APIs, Streamlit dashboard | FastAPI, Streamlit |
 | **Monitoring** | Metrics, dashboards, drift detection | Prometheus, Grafana, Evidently |
 
 ## Project Architectures
 
 ### BankChurn
-`API Request → Pydantic Validation → ColumnTransformer → VotingClassifier(LR+RF) → Prediction + Risk Level`
-- Unified sklearn Pipeline, SHAP explainability via `?explain=true`
+`API Request → Pydantic Validation → ColumnTransformer → StackingClassifier(RF+GB+XGB+LGB→LR) → Prediction + Risk Level`
+- Unified sklearn Pipeline, SHAP explainability via `?explain=true`, fairness audits (disparate impact)
 
 ### CarVision
-`Vehicle Data → Data Cleaning → FeatureEngineer (centralized) → Preprocessor → XGBRegressor → Price`
+`Vehicle Data → Data Cleaning → FeatureEngineer (centralized, 24 features) → Preprocessor → LightGBM → Price`
 - No data leakage: `price_per_mile`/`price_category` dropped from features
-- Dual interface: FastAPI + Streamlit (4 tabs)
+- Dual interface: FastAPI + Streamlit (4 tabs), fairness audits (error ratio)
 
 ### NLPInsight
-`Text → TF-IDF Vectorization → LogisticRegression → Sentiment Prediction`
-- Dual backend: DistilBERT (production) / TF-IDF (lightweight)
+`Text → FinBERT Tokenizer → FinBERT (ProsusAI) → Sentiment Prediction`
+- Dual backend: FinBERT (production) / TF-IDF+LogReg (lightweight fallback), fairness audits (F1 parity)
 
 ## Deployment (Multi-Cloud)
 
@@ -39,12 +39,13 @@
 
 | Layer | Technologies |
 |-------|-------------|
-| **ML** | Python 3.11, scikit-learn 1.8.0, XGBoost 3.2.0, SHAP 0.50.0 |
+| **ML** | Python 3.11, scikit-learn 1.8.0, LightGBM 4.6+, HuggingFace Transformers, SHAP 0.50.0 |
 | **APIs** | FastAPI, Streamlit, Pydantic |
-| **MLOps** | MLflow 3.10, DVC, Evidently AI |
+| **MLOps** | MLflow 3.10, DVC, Evidently AI, OpenTelemetry |
+| **Responsible AI** | Fairness audits (×3), drift detection (KS+PSI+Evidently), Pandera validation |
 | **Infra** | Docker, Kubernetes (GKE/EKS), Terraform |
 | **CI/CD** | GitHub Actions, Trivy, Bandit, Gitleaks |
 
 ---
 
-*Last Updated: March 2026*
+*Last Updated: March 2026 — v3.2.0*

@@ -270,12 +270,13 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.project }}-v2
       
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: ml-portfolio:${{ matrix.project }}-${{ github.sha }}
           format: 'sarif'
           output: 'trivy-results-${{ matrix.project }}.sarif'
           severity: 'CRITICAL,HIGH'
+          db-repository: 'ghcr.io/aquasecurity/trivy-db:2'
       
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v4

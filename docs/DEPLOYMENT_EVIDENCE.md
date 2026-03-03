@@ -44,7 +44,7 @@
 | Object storage (models) | GCS | S3 | Init containers download on boot |
 | Data versioning | DVC + GCS | DVC + S3 | `dvc push/pull` |
 | Security scanning | Trivy + Bandit + Gitleaks | Trivy + Bandit + Gitleaks | SARIF reports |
-| Test coverage | 85-99% (292 tests) | 85-99% | Codecov integration, 85% CI threshold |
+| Test coverage | 85-99% (323 tests) | 85-99% | Codecov integration, 85% CI threshold |
 | Infra testing (Terraform) | tfsec + checkov | tfsec + checkov | Hard gates + advisory |
 | Infra testing (K8s) | kube-linter + conftest | kube-linter + conftest | OPA policies (13 rules) |
 
@@ -70,13 +70,13 @@
 | CarVision | LightGBM + FeatureEngineer (24 features) | R² 0.80, RMSE $6,744 | 5.7 MB |
 | NLPInsight | FinBERT (ProsusAI) / TF-IDF+LogReg fallback | Acc 97%, F1-w 0.97 | 309 KB |
 
-## Test Coverage (~92% overall, 292 tests)
+## Test Coverage (~93% overall, 323 tests)
 
 | Project | Coverage | Tests | CI Threshold |
 |---------|----------|-------|--------------|
 | BankChurn | 90.0% | 198 | 85% |
-| CarVision | 95.4% | 37 | 85% |
-| NLPInsight | 99.6% | 57 | 85% |
+| CarVision | 95.7% | 52 | 85% |
+| NLPInsight | 98.4% | 73 | 85% |
 
 ## Key Metrics
 
@@ -131,14 +131,16 @@
 
 ### Recommended Evidence (High Impact)
 
-1. **GIF: Full prediction flow** — curl → API → JSON response for each service
-2. **GIF: Auto-scaling under load** — HPA scaling pods up, then back down
+1. **GIF: Full prediction flow** — curl → API → JSON response for each service (`media/gifs/01-demo-prediccion.gif`)
+2. **GIF: Auto-scaling under load** — HPA scaling pods up, then back down (`media/gifs/hpa-autoscaling.gif`)
 3. **Screenshot: Grafana dashboard** — Real-time ML metrics during load test
 4. **Screenshot: GitHub Actions** — Full green CI/CD pipeline
 5. **Screenshot: `kubectl get all`** — All pods, services, HPAs running
 6. **GIF: MLflow experiment comparison** — Comparing model runs side-by-side
-7. **Screenshot: Codecov** — Coverage badges and sunburst chart
+7. **Screenshot: Codecov** — 323 tests, ~93% coverage sunburst (`media/screenshots/cicd/codecov-sunburst-323.png`)
 8. **Screenshot: Multi-cloud** — Side-by-side GKE vs EKS terminal
+9. **GIF: Fairness audit CLI** — Disparate impact, error ratio, F1 parity across 3 projects (`media/gifs/fairness-audit-cli.gif`)
+10. **Screenshot: Drift detection report** — Evidently HTML with KS/PSI per feature (`media/screenshots/monitoring/drift-detection-report.png`)
 
 ### Media Directory Structure
 
@@ -184,4 +186,4 @@ done
 
 ---
 
-**Last Updated**: March 2026 (v3.2.0 — OpenTelemetry, strict CI, fairness audits, CHANGELOG)
+**Last Updated**: March 2026 (v3.2.0 — Fairness audits ×3, drift detection ×3, OpenTelemetry, 323 tests)

@@ -4,32 +4,30 @@ Customer churn prediction for banking institutions.
 
 ![BankChurn API](../media/screenshots/apis/25-fastapi-swagger-bankchurn.png)
 
-## Performance (v2.0.0)
+## Performance (v3.0.0)
 
 | Metric | Value |
 |--------|-------|
-| **AUC-ROC** | 0.8626 |
-| **F1 Score** | 0.616 |
-| **Precision** | 67.35% |
-| **Recall** | 56.76% |
-| **CV AUC (5-fold)** | 0.856 ± 0.005 |
+| **AUC-ROC** | 0.87 |
+| **F1 Score** | 0.62 |
 
 ## Architecture
 
-`Request → Pydantic Validation → ColumnTransformer(SimpleImputer + StandardScaler + OneHotEncoder) → VotingClassifier(LR + RF, soft voting) → Prediction + Risk Level`
+`Request → Pydantic Validation → ColumnTransformer(SimpleImputer + StandardScaler + OneHotEncoder) → StackingClassifier(RF+GB+XGB+LGB→LR) → Prediction + Risk Level`
 
 ## Key Features
 
 - **SHAP Explainability**: CPU-only, lazy via `?explain=true`
 - **Drift Detection**: Evidently AI (PSI/KS monitoring)
 - **Unified Pipeline**: Single `model.joblib` (preprocessor + model)
-- **Fairness Analysis**: By geography and age group
+- **Fairness Audits**: Disparate impact ratio, equal opportunity difference (by Gender, Geography)
+- **Data Validation**: Pandera schemas (raw + inference)
 
 ## Operational
 
 | Metric | Value |
 |--------|-------|
-| Test Coverage | 88% (168 tests) |
+| Test Coverage | 90% (198 tests) |
 | Docker Image | 2.11 GB (with SHAP 0.50.0) |
 | Model Size | 4.1 MB |
 | P95 Latency | <250ms |
@@ -44,4 +42,4 @@ curl -X POST http://localhost:8001/predict \
 
 ---
 
-*Last Updated: March 2026*
+*Last Updated: March 2026 — v3.2.0*

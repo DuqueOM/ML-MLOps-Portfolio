@@ -11,7 +11,7 @@ Prometheus + Grafana + MLflow + Evidently monitoring stack deployed on GKE.
 | **Prometheus** | Metrics collection (15s scrape) | `:9090` |
 | **Grafana** | Auto-provisioned 10-panel dashboard | `:3000` |
 | **MLflow** | Experiment tracking (9 runs, 3 projects) | `:5000` |
-| **Evidently** | Data drift detection (PSI/KS) | BankChurn integrated |
+| **Evidently** | Data drift detection (PSI/KS) | All 3 projects |
 
 ## Prometheus Metrics
 
@@ -23,13 +23,13 @@ All APIs expose `/metrics`. Key metrics per service:
 
 ![Prometheus Targets](../media/screenshots/monitoring/37-prometheus-targets-up.png)
 
-## MLflow Experiments (v2.0.0)
+## MLflow Experiments (v3.0.0)
 
 | Experiment | Best Run | Key Metric |
 |------------|----------|------------|
-| **BankChurn** | VotingClassifier (LR+RF) | AUC 0.8626 |
-| **CarVision** | XGBRegressor + FeatureEngineer | R² 0.8246 |
-| **NLPInsight** | TF-IDF + LogisticRegression | Accuracy 88.1% |
+| **BankChurn** | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87 |
+| **CarVision** | LightGBM + FeatureEngineer (24 features) | R² 0.80 |
+| **NLPInsight** | FinBERT (ProsusAI) | Acc 97% |
 
 ![MLflow Experiments](../media/screenshots/monitoring/39-mlflow-experiments.png)
 
@@ -66,4 +66,4 @@ locust -f tests/load/locustfile.py --headless     # Load tests
 
 ---
 
-*Last Updated: March 2026*
+*Last Updated: March 2026 — v3.2.0*
