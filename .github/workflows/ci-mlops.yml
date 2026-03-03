@@ -271,12 +271,13 @@ jobs:
       
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
+        env:
+          TRIVY_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-db:2
         with:
           image-ref: ml-portfolio:${{ matrix.project }}-${{ github.sha }}
           format: 'sarif'
           output: 'trivy-results-${{ matrix.project }}.sarif'
           severity: 'CRITICAL,HIGH'
-          db-repository: 'ghcr.io/aquasecurity/trivy-db:2'
       
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v4
@@ -320,6 +321,8 @@ jobs:
         run: |
           chmod +x scripts/run_e2e.sh
           bash scripts/run_e2e.sh
+        env:
+          E2E_DATA_FILE: data/raw/Churn.csv
 
   # Job 5: Cross-Project Integration Test (only on main or manual trigger)
   integration-test:

@@ -59,17 +59,33 @@ echo ""
 
 # Paso 3: Training
 echo -e "${YELLOW}[3/6] Model Training${NC}"
-if [ -f "src/bankchurn/training.py" ]; then
-    python -m src.bankchurn.training || python src/bankchurn/training.py || {
-        echo -e "${RED}[ERROR] Training falló${NC}"
-        exit 1
-    }
-elif [ -f "scripts/train.py" ]; then
-    python scripts/train.py
-else
-    echo -e "${RED}[ERROR] Script de training no encontrado${NC}"
+# Resolve data file: prefer env var, then standard locations
+DATA_FILE="${E2E_DATA_FILE:-}"
+if [ -z "$DATA_FILE" ]; then
+    for candidate in \
+        "data/raw/Churn.csv" \
+        "data/raw/Churn_Modelling.csv"; do
+        if [ -f "$candidate" ]; then
+            DATA_FILE="$candidate"
+            break
+        fi
+    done
+fi
+
+if [ -z "$DATA_FILE" ] || [ ! -f "$DATA_FILE" ]; then
+    echo -e "${RED}[ERROR] No se encontró el archivo de datos para training${NC}"
+    echo "  Probados: data/raw/Churn.csv, data/raw/Churn_Modelling.csv"
     exit 1
 fi
+echo "[*] Usando datos: $DATA_FILE"
+
+python -m src.bankchurn.cli train \
+    --config configs/config.yaml \
+    --input "$DATA_FILE" \
+    --model models/model.joblib || {
+    echo -e "${RED}[ERROR] Training falló${NC}"
+    exit 1
+}
 echo -e "${GREEN}[✓] Training completado${NC}"
 echo ""
 
