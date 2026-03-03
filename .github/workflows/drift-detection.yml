@@ -74,7 +74,7 @@ jobs:
             --target Exited
       
       - name: Upload drift report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: drift-report-${{ matrix.project }}-${{ github.run_number }}

@@ -123,7 +123,7 @@ jobs:
 
       - name: Upload image tag artifact
         run: echo "${{ env.IMAGE_TAG }}" > tag.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: image-tag-aws-${{ matrix.service }}
           path: tag.txt
