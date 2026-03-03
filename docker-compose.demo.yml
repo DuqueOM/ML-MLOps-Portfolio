@@ -89,7 +89,7 @@ services:
       - ml-network
     restart: unless-stopped
 
-  # CarVision Streamlit Dashboard
+  # CarVision Streamlit Dashboard (optional — requires streamlit in image)
   carvision-dashboard:
     image: ml-portfolio-carvision:latest
     container_name: carvision-dashboard
@@ -114,6 +114,8 @@ services:
     networks:
       - ml-network
     restart: unless-stopped
+    profiles:
+      - dashboard
 
   # NLPInsight Analyzer API (Sentiment Analysis with TF-IDF + sklearn)
   nlpinsight:

@@ -318,7 +318,7 @@ jobs:
       - name: Run E2E pipeline
         run: |
           chmod +x scripts/run_e2e.sh
-          bash scripts/run_e2e.sh || true
+          bash scripts/run_e2e.sh
 
   # Job 5: Cross-Project Integration Test (only on main or manual trigger)
   integration-test:
@@ -500,7 +500,6 @@ jobs:
       - name: Run benchmarks
         run: |
           python scripts/benchmark_optimizations.py
-        continue-on-error: true
       
       - name: Upload benchmark results
         uses: actions/upload-artifact@v5

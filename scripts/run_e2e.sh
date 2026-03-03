@@ -23,12 +23,14 @@ echo ""
 
 cd "$PROJECT_DIR"
 
-# Activar entorno virtual
+# Activate virtual environment if available (optional in CI)
 if [ -d ".venv" ]; then
     source .venv/bin/activate
+elif python -c "import sklearn" 2>/dev/null; then
+    echo -e "${YELLOW}[!] No .venv found, but dependencies available — continuing${NC}"
 else
-    echo -e "${RED}[ERROR] Entorno virtual no encontrado${NC}"
-    echo "Ejecutar primero: python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt"
+    echo -e "${RED}[ERROR] No .venv and dependencies not installed${NC}"
+    echo "Run: python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt"
     exit 1
 fi
 

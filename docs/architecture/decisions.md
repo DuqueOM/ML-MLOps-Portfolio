@@ -2,7 +2,9 @@
 
 Key technical decisions with rationale. Written for technical reviewers and hiring managers.
 
-**Last Updated**: March 2026 | **Portfolio Version**: 2.0.0
+**Last Updated**: March 2026 | **Portfolio Version**: 3.2.0
+
+> **Granular ADRs**: See [`docs/decisions/`](../decisions/) for detailed per-decision records (ADR-001 through ADR-005).
 
 ---
 

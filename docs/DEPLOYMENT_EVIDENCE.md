@@ -44,7 +44,7 @@
 | Object storage (models) | GCS | S3 | Init containers download on boot |
 | Data versioning | DVC + GCS | DVC + S3 | `dvc push/pull` |
 | Security scanning | Trivy + Bandit + Gitleaks | Trivy + Bandit + Gitleaks | SARIF reports |
-| Test coverage | 88-95% | 88-95% | Codecov integration |
+| Test coverage | 85-99% (292 tests) | 85-99% | Codecov integration, 85% CI threshold |
 | Infra testing (Terraform) | tfsec + checkov | tfsec + checkov | Hard gates + advisory |
 | Infra testing (K8s) | kube-linter + conftest | kube-linter + conftest | OPA policies (13 rules) |
 
@@ -62,21 +62,21 @@
 
 > Run: `bash tests/infra/run_all_tests.sh`
 
-## Model Performance (v2.0.0 — Python 3.11, sklearn 1.8.0)
+## Model Performance (v3.0.0 — Python 3.11, sklearn 1.8.0)
 
 | Model | Algorithm | Key Metric | Size |
 |-------|-----------|------------|------|
-| BankChurn | VotingClassifier (LR+RF) | AUC 0.863, F1 0.616 | 4.1 MB |
-| CarVision | XGBRegressor + FeatureEngineer (24 features) | R² 0.825, RMSE $6,273 | 5.7 MB |
-| NLPInsight | TF-IDF + LogisticRegression | Acc 88.1%, F1-macro 0.826 | 309 KB |
+| BankChurn | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87, F1 0.62 | 4.1 MB |
+| CarVision | LightGBM + FeatureEngineer (24 features) | R² 0.80, RMSE $6,744 | 5.7 MB |
+| NLPInsight | FinBERT (ProsusAI) / TF-IDF+LogReg fallback | Acc 97%, F1-w 0.97 | 309 KB |
 
-## Test Coverage (~92% overall)
+## Test Coverage (~92% overall, 292 tests)
 
-| Project | Coverage | Lines | Tests |
-|---------|----------|-------|-------|
-| BankChurn | 88.3% | 737/835 | 168 |
-| CarVision | 95.2% | 551/579 | 37 |
-| NLPInsight | 95.5% | 336/352 | 59 |
+| Project | Coverage | Tests | CI Threshold |
+|---------|----------|-------|--------------|
+| BankChurn | 90.0% | 198 | 85% |
+| CarVision | 95.4% | 37 | 85% |
+| NLPInsight | 99.6% | 57 | 85% |
 
 ## Key Metrics
 
@@ -160,7 +160,7 @@ docs/media/
 > **Tip**: 5-8 high-quality GIFs are more impactful than 50+ static screenshots.
 > Record with [Kap](https://getkap.co/) or [peek](https://github.com/phw/peek), optimize with `gifsicle`.
 >
-> For the curated list of which evidence to use where, see the internal guide: `.GCP_DEPLOYMENT_EVIDENCE_internal.md` → **Selección Curada**.
+> **Tip**: Use high-quality GIFs over static screenshots for maximum recruiter impact.
 
 ---
 
@@ -184,4 +184,4 @@ done
 
 ---
 
-**Last Updated**: March 2026 (Docker optimization + NLPInsight rename)
+**Last Updated**: March 2026 (v3.2.0 — OpenTelemetry, strict CI, fairness audits, CHANGELOG)

@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "common-utils"
+version = "1.1.0"
+description = "Shared utilities for ML-MLOps Portfolio (telemetry, model persistence, seeding)"
+requires-python = ">=3.10"
+license = {file = "../LICENSE"}
+authors = [
+    {name = "Duque Ortega Mutis (DuqueOM)", email = "DuqueOrtegaMutis@gmail.com"}
+]
+
+dependencies = []
+
+[project.optional-dependencies]
+telemetry = [
+    "opentelemetry-api>=1.20.0",
+    "opentelemetry-sdk>=1.20.0",
+    "opentelemetry-exporter-otlp>=1.20.0",
+    "opentelemetry-instrumentation-fastapi>=0.41b0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["common_utils*"]
