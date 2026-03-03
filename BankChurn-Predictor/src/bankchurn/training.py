@@ -14,7 +14,11 @@ import logging
 from pathlib import Path
 
 import joblib
-import mlflow
+
+try:
+    import mlflow
+except ImportError:
+    mlflow = None  # type: ignore[assignment]
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer

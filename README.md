@@ -16,7 +16,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.demo.yml)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-6.3.0-brightgreen.svg)](docs/FEATURES.md)
+[![Version](https://img.shields.io/badge/Version-7.0.0-brightgreen.svg)](docs/FEATURES.md)
 
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow)](https://mlflow.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
@@ -53,9 +53,9 @@
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|---------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.64 | 88% | 140ms p50 | Ensemble, Lazy SHAP (`?explain=true`), Drift Detection |
-| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.77**, RMSE $4.4K | 95% | 79ms p50 | FeatureEngineer, Streamlit Dashboard (4 tabs) |
-| [� NLPInsight](NLPInsight-Analyzer/) | Classification | **Acc 85%** (sentiment) | 95% | 100ms p50 | Dual backend (Transformer + sklearn), Financial PhraseBank |
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 89% | 140ms p50 | StackingClassifier (5 models), Feature Engineering, Drift Detection |
+| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.80**, RMSE $6.7K | 95% | 79ms p50 | LightGBM + FeatureEngineer, Streamlit Dashboard (4 tabs) |
+| [📝 NLPInsight](NLPInsight-Analyzer/) | Classification | **Acc 97%** (sentiment) | 99% | 100ms p50 | FinBERT (ProsusAI), Transfer Learning, Financial PhraseBank |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
@@ -72,11 +72,11 @@
 
 ### 🏦 1. [BankChurn Predictor](BankChurn-Predictor/) — Customer Churn Prediction
 
-Production-grade churn prediction enabling proactive retention campaigns with **87% AUC** discrimination. VotingClassifier ensemble with SHAP explainability, SMOTE handling, and MLflow tracking (3 experiments).
+Production-grade churn prediction with **StackingClassifier** ensemble (RF + GradientBoosting + XGBoost + LightGBM → LogisticRegression meta-learner). Advanced `ChurnFeatureEngineer` with domain-specific ratios, bins, and risk scores. MLflow tracking.
 
 | AUC-ROC | F1 | Precision | Recall | Coverage | Latency |
 |---------|-----|-----------|--------|----------|----------|
-| **0.87** | 0.64 | 0.60 | 0.70 | 88% | <50ms p95 |
+| **0.87** | 0.62 | 0.73 | 0.54 | 89% | <50ms p95 |
 
 [📂 Project](BankChurn-Predictor/) · [📄 Model Card](BankChurn-Predictor/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
@@ -84,11 +84,11 @@ Production-grade churn prediction enabling proactive retention campaigns with **
 
 ### 🚗 2. [CarVision Market Intelligence](CarVision-Market-Intelligence/) — Vehicle Price Prediction
 
-End-to-end vehicle valuation platform with **Streamlit BI Dashboard** (4 tabs) and REST API. Centralized `FeatureEngineer` prevents train-serve skew. Advanced validation with bootstrap CIs and temporal backtesting.
+End-to-end vehicle valuation platform powered by **LightGBM** with optimized hyperparameters. Centralized `FeatureEngineer` prevents train-serve skew. Streamlit BI Dashboard (4 tabs) and REST API.
 
 | R² | RMSE | MAE | MAPE | Coverage | Dashboard |
 |----|------|-----|------|----------|------------|
-| **0.77** | $4,396 | $3,124 | 18.2% | 95% | <2s load |
+| **0.80** | $6,744 | $3,973 | 32.9% | 95% | <2s load |
 
 [📂 Project](CarVision-Market-Intelligence/) · [📄 Model Card](CarVision-Market-Intelligence/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
@@ -96,11 +96,11 @@ End-to-end vehicle valuation platform with **Streamlit BI Dashboard** (4 tabs) a
 
 ### � 3. [NLPInsight Analyzer](NLPInsight-Analyzer/) — Financial Sentiment Analysis
 
-Real-time sentiment analysis on financial text (positive/neutral/negative). Dual inference backend: HuggingFace DistilBERT (production) + TF-IDF sklearn pipeline (lightweight demo). CPU-only torch deployment.
+Real-time financial sentiment analysis using **ProsusAI/FinBERT** — a BERT model fine-tuned on financial corpora. Domain-specific transfer learning achieving 97% accuracy on Financial PhraseBank. Dual inference backend supports both transformer and sklearn models.
 
-| Accuracy | F1 (macro) | Labels | Docker Image | Coverage |
-|----------|------------|--------|--------------|----------|
-| **85%** (transformer) | 0.82 | 3 | 2.05 GB (CPU) | 95% |
+| Accuracy | F1 (weighted) | F1 (macro) | Labels | Coverage |
+|----------|---------------|------------|--------|----------|
+| **97%** | 0.97 | 0.96 | 3 | 99% |
 
 [📂 Project](NLPInsight-Analyzer/) · [📄 Model Card](NLPInsight-Analyzer/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
@@ -121,7 +121,58 @@ Real-time sentiment analysis on financial text (positive/neutral/negative). Dual
 
 > **v6.3 Performance Optimizations**: Lazy SHAP (BankChurn), NLPInsight dual backend, 2 uvicorn workers, optimized K8s resource limits. Load test: 0% error rate, p95 180ms aggregated. Previous: Joblib compression (-76%), Pandas dtypes (-56%), sklearn parallelization (2-4x). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
-For system architecture diagrams, CI/CD pipeline details, and infrastructure specs, see [docs/ARCHITECTURE_PORTFOLIO.md](docs/ARCHITECTURE_PORTFOLIO.md).
+## 🏗️ Architecture
+
+```mermaid
+graph TB
+    subgraph "CI/CD Pipeline"
+        GH[GitHub Actions] --> LINT[Lint + Security]
+        GH --> TEST[pytest + Coverage]
+        GH --> BUILD[Docker Build]
+        BUILD --> AR[GCP Artifact Registry]
+        BUILD --> ECR[AWS ECR]
+    end
+
+    subgraph "Training Pipeline"
+        DATA[Raw Data] --> FE[Feature Engineering]
+        FE --> TRAIN[Model Training]
+        TRAIN --> MLFLOW[MLflow Tracking]
+        TRAIN --> GCS[GCS Model Storage]
+    end
+
+    subgraph "GKE Cluster — ml-portfolio namespace"
+        direction TB
+        INGRESS[Nginx Ingress] --> BC_SVC[BankChurn Service]
+        INGRESS --> CV_SVC[CarVision Service]
+        INGRESS --> NL_SVC[NLPInsight Service]
+
+        BC_SVC --> BC_POD[BankChurn Pod<br/>StackingClassifier]
+        CV_SVC --> CV_POD[CarVision Pod<br/>LightGBM]
+        NL_SVC --> NL_POD[NLPInsight Pod<br/>FinBERT]
+
+        BC_POD -.->|Init Container| GCS
+        CV_POD -.->|Init Container| GCS
+        NL_POD -.->|Init Container| GCS
+
+        PROM[Prometheus] --> BC_POD
+        PROM --> CV_POD
+        PROM --> NL_POD
+        PROM --> GRAF[Grafana Dashboard]
+
+        MLF[MLflow Server] --> CLOUDSQL[(Cloud SQL)]
+        DRIFT[Drift Detection CronJob] --> BC_SVC
+        DRIFT --> CV_SVC
+        DRIFT --> NL_SVC
+    end
+
+    subgraph "Argo Rollouts"
+        CANARY[Canary Strategy] --> ANALYSIS[Prometheus Analysis]
+        ANALYSIS -->|Error Rate < 5%| PROMOTE[Auto-Promote]
+        ANALYSIS -->|Error Rate > 5%| ROLLBACK[Auto-Rollback]
+    end
+```
+
+For detailed architecture docs, see [docs/ARCHITECTURE_PORTFOLIO.md](docs/ARCHITECTURE_PORTFOLIO.md).
 
 ---
 

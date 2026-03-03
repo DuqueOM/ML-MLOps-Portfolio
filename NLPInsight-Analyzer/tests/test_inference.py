@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+from unittest.mock import MagicMock, patch
+
 import joblib
 import pytest
+import torch
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
@@ -133,3 +136,108 @@ class TestSentimentPredictorTransformerFallback:
         predictor.model_path = sklearn_model_file
         result = predictor._find_joblib()
         assert result == sklearn_model_file
+
+
+class TestSentimentPredictorTransformer:
+    @patch("transformers.AutoModelForSequenceClassification")
+    @patch("transformers.AutoTokenizer")
+    def test_load_transformer(self, mock_tok_cls, mock_model_cls, tmp_path):
+        """Test transformer loading path."""
+        mock_model = MagicMock()
+        mock_model.config.id2label = {0: "negative", 1: "neutral", 2: "positive"}
+        mock_model.config.label2id = {"negative": 0, "neutral": 1, "positive": 2}
+        mock_model_cls.from_pretrained.return_value = mock_model
+        mock_tok_cls.from_pretrained.return_value = MagicMock()
+
+        predictor = SentimentPredictor.__new__(SentimentPredictor)
+        predictor.model_path = tmp_path
+        predictor._load_transformer(device="cpu")
+
+        assert predictor.backend == "transformer"
+        assert predictor.device == "cpu"
+        mock_model.to.assert_called_once_with("cpu")
+        mock_model.eval.assert_called_once()
+
+    @patch("transformers.AutoModelForSequenceClassification")
+    @patch("transformers.AutoTokenizer")
+    def test_predict_transformer_single(self, mock_tok_cls, mock_model_cls, tmp_path):
+        """Test transformer prediction path."""
+        # Setup mock model
+        mock_model = MagicMock()
+        mock_model.config.id2label = {0: "negative", 1: "neutral", 2: "positive"}
+        mock_model.config.label2id = {"negative": 0, "neutral": 1, "positive": 2}
+        # Return logits that predict "positive" (index 2)
+        logits = torch.tensor([[0.1, 0.2, 0.9]])
+        mock_model.return_value = MagicMock(logits=logits)
+        mock_model_cls.from_pretrained.return_value = mock_model
+
+        # Setup mock tokenizer
+        mock_tokenizer = MagicMock()
+        mock_tokenizer.return_value = {
+            "input_ids": torch.tensor([[101, 2023, 102]]),
+            "attention_mask": torch.tensor([[1, 1, 1]]),
+        }
+        mock_tok_cls.from_pretrained.return_value = mock_tokenizer
+
+        predictor = SentimentPredictor.__new__(SentimentPredictor)
+        predictor.model_path = tmp_path
+        predictor._load_transformer(device="cpu")
+
+        result = predictor.predict("good earnings")
+        assert result["label"] == "positive"
+        assert 0.0 <= result["confidence"] <= 1.0
+
+    @patch("transformers.AutoModelForSequenceClassification")
+    @patch("transformers.AutoTokenizer")
+    def test_predict_transformer_batch_all_scores(self, mock_tok_cls, mock_model_cls, tmp_path):
+        """Test transformer batch prediction with all_scores."""
+        mock_model = MagicMock()
+        mock_model.config.id2label = {0: "negative", 1: "neutral", 2: "positive"}
+        mock_model.config.label2id = {"negative": 0, "neutral": 1, "positive": 2}
+        logits = torch.tensor([[0.1, 0.2, 0.9], [0.8, 0.1, 0.1]])
+        mock_model.return_value = MagicMock(logits=logits)
+        mock_model_cls.from_pretrained.return_value = mock_model
+
+        mock_tokenizer = MagicMock()
+        mock_tokenizer.return_value = {
+            "input_ids": torch.tensor([[101, 102], [101, 102]]),
+            "attention_mask": torch.tensor([[1, 1], [1, 1]]),
+        }
+        mock_tok_cls.from_pretrained.return_value = mock_tokenizer
+
+        predictor = SentimentPredictor.__new__(SentimentPredictor)
+        predictor.model_path = tmp_path
+        predictor._load_transformer(device="cpu")
+
+        results = predictor.predict_batch(["good", "bad"], return_all_scores=True)
+        assert len(results) == 2
+        assert results[0]["label"] == "positive"
+        assert results[1]["label"] == "negative"
+        assert "all_scores" in results[0]
+        assert len(results[0]["all_scores"]) == 3
+
+    @patch("transformers.AutoModelForSequenceClassification")
+    @patch("transformers.AutoTokenizer")
+    def test_predict_batch_routes_to_transformer(self, mock_tok_cls, mock_model_cls, tmp_path):
+        """predict_batch routes to _predict_transformer when backend is transformer."""
+        mock_model = MagicMock()
+        mock_model.config.id2label = {0: "neg", 1: "pos"}
+        mock_model.config.label2id = {"neg": 0, "pos": 1}
+        logits = torch.tensor([[0.9, 0.1]])
+        mock_model.return_value = MagicMock(logits=logits)
+        mock_model_cls.from_pretrained.return_value = mock_model
+
+        mock_tokenizer = MagicMock()
+        mock_tokenizer.return_value = {
+            "input_ids": torch.tensor([[101, 102]]),
+            "attention_mask": torch.tensor([[1, 1]]),
+        }
+        mock_tok_cls.from_pretrained.return_value = mock_tokenizer
+
+        predictor = SentimentPredictor.__new__(SentimentPredictor)
+        predictor.model_path = tmp_path
+        predictor._load_transformer(device="cpu")
+
+        results = predictor.predict_batch(["test"])
+        assert len(results) == 1
+        assert results[0]["label"] == "neg"

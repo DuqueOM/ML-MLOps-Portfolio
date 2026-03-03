@@ -3,11 +3,11 @@
 ## Model Details
 
 - **Model Name**: NLPInsight Sentiment Analyzer
-- **Model Type**: Dual-backend — TF-IDF + LogisticRegression (production) / Fine-tuned DistilBERT (advanced)
-- **Production Model**: sklearn Pipeline (TfidfVectorizer → LogisticRegression), 309 KB
-- **Advanced Model**: `distilbert-base-uncased` (66M parameters), ~260 MB
-- **Framework**: scikit-learn 1.8 (production) / PyTorch 2.0+ + HuggingFace Transformers (advanced)
-- **Version**: 2.0.0
+- **Model Type**: Dual-backend — ProsusAI/FinBERT (production) / TF-IDF + LogisticRegression (fallback)
+- **Production Model**: ProsusAI/FinBERT (110M parameters), ~440 MB
+- **Fallback Model**: sklearn Pipeline (TfidfVectorizer → LogisticRegression), 309 KB
+- **Framework**: PyTorch 2.10+ + HuggingFace Transformers 5.2+ (production) / scikit-learn 1.8 (fallback)
+- **Version**: 3.0.0
 - **License**: MIT
 
 ## Intended Use
@@ -42,16 +42,17 @@
 
 ## Evaluation
 
-| Metric | TF-IDF + LogReg (production) | DistilBERT |
-|--------|------------------------------|------------|
-| Accuracy | **88.08%** | ~85% |
-| F1 (macro) | **0.826** | ~0.82 |
-| Precision (macro) | 0.83 | ~0.83 |
-| Recall (macro) | 0.82 | ~0.81 |
+| Metric | FinBERT v3.0 (production) | TF-IDF + LogReg (fallback) |
+|--------|---------------------------|----------------------------|
+| Accuracy | **96.91%** | 88.08% |
+| F1 (weighted) | **0.9695** | 0.880 |
+| F1 (macro) | **0.9595** | 0.826 |
+| Precision (macro) | 0.96 | 0.83 |
+| Recall (macro) | 0.96 | 0.82 |
 
 ### Design Decision
 
-The TF-IDF + LogisticRegression model outperforms DistilBERT on this dataset because Financial PhraseBank is relatively small (4,845 samples) and has clear lexical sentiment signals. The transformer shows no significant advantage but requires 800x more storage and GPU for optimal inference. The dual-backend architecture allows upgrading to DistilBERT without code changes when larger datasets become available.
+The ProsusAI/FinBERT model achieves **97% accuracy** via domain-specific transfer learning — a BERT model pre-trained on financial corpora (TRC2 + Financial PhraseBank). This dramatically outperforms TF-IDF + LogReg (88%) because FinBERT captures semantic meaning of financial terminology. The dual-backend architecture retains the sklearn fallback for environments without PyTorch.
 
 ## Limitations
 
@@ -70,8 +71,8 @@ The TF-IDF + LogisticRegression model outperforms DistilBERT on this dataset bec
 ## Infrastructure
 
 - **Serving**: FastAPI with Prometheus metrics (`nlpinsight_*`), batch inference (up to 500 texts)
-- **Container**: Multi-stage Docker (CPU-optimized PyTorch, 2.05 GB)
+- **Container**: Multi-stage Docker (CPU-optimized PyTorch)
 - **Orchestration**: Kubernetes with HPA (CPU-based autoscaling, 1–3 pods)
 - **Monitoring**: Prometheus + Grafana dashboards
-- **Memory**: ~140Mi per worker (sklearn backend)
+- **Memory**: ~512Mi per worker (FinBERT backend)
 - **Latency**: P95 <220ms (K8s via port-forward), ~87ms avg

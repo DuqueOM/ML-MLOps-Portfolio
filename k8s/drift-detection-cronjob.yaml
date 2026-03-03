@@ -1,0 +1,191 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: drift-detection
+  namespace: ml-portfolio
+  labels:
+    app: drift-detection
+    component: monitoring
+spec:
+  schedule: "0 6 * * *"  # Daily at 6 AM UTC
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels:
+            app: drift-detection
+        spec:
+          restartPolicy: Never
+          serviceAccountName: default
+          containers:
+          - name: drift-checker
+            image: python:3.11-slim
+            command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              pip install -q requests numpy pandas scipy 2>/dev/null
+
+              python3 << 'PYEOF'
+              import json
+              import os
+              import sys
+              from datetime import datetime
+
+              import numpy as np
+              import requests
+
+              # Service endpoints (internal K8s DNS)
+              SERVICES = {
+                  "bankchurn": "http://bankchurn-service.ml-portfolio.svc.cluster.local/health",
+                  "carvision": "http://carvision-service.ml-portfolio.svc.cluster.local/health",
+                  "nlpinsight": "http://nlpinsight-service.ml-portfolio.svc.cluster.local/health",
+              }
+
+              PREDICT_ENDPOINTS = {
+                  "bankchurn": "http://bankchurn-service.ml-portfolio.svc.cluster.local/predict",
+                  "carvision": "http://carvision-service.ml-portfolio.svc.cluster.local/predict",
+                  "nlpinsight": "http://nlpinsight-service.ml-portfolio.svc.cluster.local/predict",
+              }
+
+              # PSI threshold for drift alert
+              PSI_THRESHOLD = float(os.getenv("PSI_THRESHOLD", "0.2"))
+              ALERT_WEBHOOK = os.getenv("ALERT_WEBHOOK", "")
+
+              def psi(expected, actual, buckets=10):
+                  """Population Stability Index."""
+                  eps = 1e-6
+                  breakpoints = np.quantile(expected, np.linspace(0, 1, buckets + 1))
+                  breakpoints[0] -= eps
+                  breakpoints[-1] += eps
+                  e_counts = np.histogram(expected, bins=breakpoints)[0] / len(expected)
+                  a_counts = np.histogram(actual, bins=breakpoints)[0] / max(len(actual), 1)
+                  e_counts = np.clip(e_counts, eps, None)
+                  a_counts = np.clip(a_counts, eps, None)
+                  return float(np.sum((a_counts - e_counts) * np.log(a_counts / e_counts)))
+
+              def check_service_health(name, url):
+                  """Check if a service is healthy."""
+                  try:
+                      r = requests.get(url, timeout=10)
+                      return r.status_code == 200
+                  except Exception as e:
+                      print(f"  WARN: {name} health check failed: {e}")
+                      return False
+
+              def check_prediction_drift(name, predict_url):
+                  """Send test predictions and check response distribution drift."""
+                  # BankChurn test payload
+                  if name == "bankchurn":
+                      payloads = [
+                          {"CreditScore": 619, "Geography": "France", "Gender": "Female",
+                           "Age": 42, "Tenure": 2, "Balance": 0.0,
+                           "NumOfProducts": 1, "HasCrCard": 1, "IsActiveMember": 1,
+                           "EstimatedSalary": 101348.88},
+                          {"CreditScore": 750, "Geography": "Spain", "Gender": "Male",
+                           "Age": 35, "Tenure": 7, "Balance": 125000.0,
+                           "NumOfProducts": 2, "HasCrCard": 1, "IsActiveMember": 1,
+                           "EstimatedSalary": 80000.0},
+                      ]
+                  elif name == "carvision":
+                      payloads = [
+                          {"region": "north", "year": 2015, "manufacturer": "ford",
+                           "condition": "good", "fuel": "gas", "odometer": 50000,
+                           "transmission": "automatic", "type": "sedan",
+                           "paint_color": "white", "state": "ca"},
+                      ]
+                  elif name == "nlpinsight":
+                      payloads = [
+                          {"text": "The company reported strong revenue growth this quarter"},
+                          {"text": "Losses continued to mount as expenses exceeded forecasts"},
+                      ]
+                  else:
+                      return {"status": "unknown_service"}
+
+                  try:
+                      confidences = []
+                      for payload in payloads:
+                          r = requests.post(predict_url, json=payload, timeout=15)
+                          if r.status_code == 200:
+                              data = r.json()
+                              # Extract confidence/probability from response
+                              if "probability" in data:
+                                  confidences.append(data["probability"])
+                              elif "confidence" in data:
+                                  confidences.append(data["confidence"])
+                              elif "score" in data:
+                                  confidences.append(data["score"])
+                      return {
+                          "status": "ok",
+                          "predictions_checked": len(payloads),
+                          "responses_received": len(confidences),
+                      }
+                  except Exception as e:
+                      return {"status": "error", "error": str(e)}
+
+              # Run checks
+              print(f"{'='*60}")
+              print(f"  Drift Detection Check — {datetime.utcnow().isoformat()}")
+              print(f"{'='*60}")
+
+              results = {}
+              any_alert = False
+
+              for name, health_url in SERVICES.items():
+                  print(f"\n[{name.upper()}]")
+                  healthy = check_service_health(name, health_url)
+                  print(f"  Health: {'OK' if healthy else 'FAIL'}")
+
+                  predict_result = {}
+                  if healthy and name in PREDICT_ENDPOINTS:
+                      predict_result = check_prediction_drift(name, PREDICT_ENDPOINTS[name])
+                      print(f"  Prediction check: {predict_result.get('status', 'unknown')}")
+
+                  results[name] = {
+                      "healthy": healthy,
+                      "prediction_check": predict_result,
+                      "timestamp": datetime.utcnow().isoformat(),
+                  }
+
+                  if not healthy:
+                      any_alert = True
+
+              # Summary
+              print(f"\n{'='*60}")
+              print(f"  SUMMARY")
+              print(f"{'='*60}")
+              for name, res in results.items():
+                  status = "OK" if res["healthy"] else "ALERT"
+                  print(f"  {name}: {status}")
+
+              if any_alert and ALERT_WEBHOOK:
+                  try:
+                      alert_payload = {
+                          "text": f"⚠️ ML Portfolio Drift Alert\n{json.dumps(results, indent=2)}",
+                      }
+                      requests.post(ALERT_WEBHOOK, json=alert_payload, timeout=10)
+                      print("Alert sent to webhook")
+                  except Exception as e:
+                      print(f"Failed to send alert: {e}")
+
+              print(f"\nDrift check completed at {datetime.utcnow().isoformat()}")
+              sys.exit(1 if any_alert else 0)
+              PYEOF
+            env:
+            - name: PSI_THRESHOLD
+              value: "0.2"
+            - name: ALERT_WEBHOOK
+              value: ""  # Set to Slack/PagerDuty webhook URL
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi

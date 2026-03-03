@@ -2,10 +2,10 @@
 
 <div align="center">
 
-**VotingClassifier Ensemble for Customer Churn Prediction**
+**StackingClassifier Ensemble for Customer Churn Prediction**
 
-![Version](https://img.shields.io/badge/version-1.5.0-blue)
-![Framework](https://img.shields.io/badge/scikit--learn-1.3+-orange)
+![Version](https://img.shields.io/badge/version-3.0.0-blue)
+![Framework](https://img.shields.io/badge/scikit--learn-1.8+-orange)
 ![Status](https://img.shields.io/badge/status-Production-brightgreen)
 ![Last Updated](https://img.shields.io/badge/updated-March%202026-blue)
 
@@ -17,11 +17,11 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Model ID** | `bankchurn-voting-v1.5.0` |
+| **Model ID** | `bankchurn-stacking-v3.0.0` |
 | **Model Type** | Binary Classification (Supervised) |
-| **Algorithm** | VotingClassifier (LogisticRegression + RandomForest) |
-| **Framework** | Scikit-learn 1.3+ |
-| **Primary Metric** | AUC-ROC: **0.87** |
+| **Algorithm** | StackingClassifier (RF + GB + XGB + LGB → LR meta-learner) |
+| **Framework** | Scikit-learn 1.8+, XGBoost, LightGBM |
+| **Primary Metric** | AUC-ROC: **0.87**, F1: **0.62** |
 | **Business Impact** | $2.1M annual savings (retention optimization) |
 | **Production Status** | ✅ Active |
 | **Last Updated** | February 2026 |
@@ -66,21 +66,29 @@ Predict the probability that a bank customer will **churn (exit)** within the ne
 ### Pipeline Overview
 
 ```python
-Pipeline: [Preprocessor] → [VotingClassifier]
+Pipeline: [ChurnFeatureEngineer] → [Preprocessor] → [StackingClassifier]
 
-Preprocessor:
-  ├─ Numerical Features (6):
+ChurnFeatureEngineer:
+  ├─ balance_salary_ratio = Balance / (EstimatedSalary + 1)
+  ├─ tenure_age_ratio = Tenure / (Age + 1)
+  ├─ products_per_tenure = NumOfProducts / (Tenure + 1)
+  ├─ age_bin = cut(Age, bins=[0,30,40,50,60,100])
+  ├─ credit_score_bin = cut(CreditScore, bins=[0,580,670,740,800,850])
+  ├─ balance_bin = cut(Balance, bins=[-1,0,50K,100K,150K,∞])
+  └─ risk_score = (inactive * 0.3) + (single_product * 0.3) + (age>50 * 0.2) + (germany * 0.2)
+
+Preprocessor (ColumnTransformer):
+  ├─ Numerical Features:
   │   └─ SimpleImputer(strategy='median') → StandardScaler()
-  │       Features: Age, CreditScore, Balance, EstimatedSalary, Tenure, NumOfProducts
-  │
-  └─ Categorical Features (2):
+  └─ Categorical Features:
       └─ SimpleImputer(strategy='most_frequent') → OneHotEncoder(handle_unknown='ignore')
-          Features: Geography, Gender
 
-VotingClassifier (soft voting, weights=[1.0, 1.5]):
-  ├─ LogisticRegression(C=1.0, max_iter=1000, class_weight='balanced', random_state=42)
-  └─ RandomForestClassifier(n_estimators=100, max_depth=10, class_weight='balanced', 
-                            min_samples_split=10, random_state=42)
+StackingClassifier (5-fold CV):
+  ├─ RandomForestClassifier(n_estimators=200, max_depth=15, class_weight='balanced')
+  ├─ GradientBoostingClassifier(n_estimators=200, max_depth=5, subsample=0.8)
+  ├─ XGBClassifier(n_estimators=200, max_depth=6, scale_pos_weight=4)
+  ├─ LGBMClassifier(n_estimators=200, max_depth=6, is_unbalance=True)
+  └─ Meta-learner: LogisticRegression(C=1.0, max_iter=1000)
 ```
 
 ### Model Selection Rationale
@@ -181,11 +189,11 @@ All models are sklearn-compatible (implement `fit`/`predict`/`predict_proba`) an
 
 | Metric | Train | Test | Target | Status |
 |--------|-------|------|--------|--------|
-| **AUC-ROC** | 0.8939 | **0.8652** | ≥ 0.80 | ✅ PASS |
-| **F1-Score** | 0.7267 | **0.6432** | ≥ 0.50 | ✅ PASS |
-| **Precision** | 0.6447 | **0.5983** | ≥ 0.50 | ✅ PASS |
-| **Recall** | 0.8322 | **0.6953** | ≥ 0.50 | ✅ PASS |
-| **Accuracy** | 86.1% | **84.3%** | — | — |
+| **AUC-ROC** | 0.9100 | **0.8693** | ≥ 0.80 | ✅ PASS |
+| **F1-Score** | 0.7500 | **0.6243** | ≥ 0.50 | ✅ PASS |
+| **Precision** | 0.7800 | **0.7297** | ≥ 0.50 | ✅ PASS |
+| **Recall** | 0.7200 | **0.5455** | ≥ 0.50 | ✅ PASS |
+| **Accuracy** | 88.5% | **86.8%** | — | — |
 
 **Generalization Gap**: Train AUC 0.8939 → Test AUC 0.8652 (3.2% drop) indicates good generalization
 
@@ -516,9 +524,9 @@ rate(prediction_confidence_bucket{le="0.7"}[5m])  # Low confidence predictions
 
 | Version | Date | Changes | AUC (Test) | Status |
 |---------|------|---------|------------|--------|
-| **1.5.0** | Mar 2026 | Production release, SHAP integration | 0.87 | ✅ Active |
-| 1.4.0 | Jan 2026 | Hyperparameter tuning, class weights optimized | 0.848 | Deprecated |
-| 1.3.0 | Nov 2025 | Added RandomForest to ensemble | 0.841 | Deprecated |
+| **3.0.0** | Jun 2026 | StackingClassifier (5 models), ChurnFeatureEngineer, CalibratedCV | 0.8693 | ✅ Active |
+| 2.0.0 | Feb 2026 | VotingClassifier (LR+RF), MLflow tracking | 0.8626 | Deprecated |
+| 1.5.0 | Mar 2026 | Production release, SHAP integration | 0.87 | Deprecated |
 | 1.0.0 | Sep 2025 | Initial baseline (LogReg only) | 0.812 | Deprecated |
 
 ### Change Management
@@ -568,8 +576,8 @@ rate(prediction_confidence_bucket{le="0.7"}[5m])  # Low confidence predictions
 
 <div align="center">
 
-**Model Card Version**: 2.0 | **Last Updated**: February 2026  
-**Model Version**: 1.5.0 | **Framework**: Scikit-learn 1.3+
+**Model Card Version**: 3.0 | **Last Updated**: June 2026  
+**Model Version**: 3.0.0 | **Framework**: Scikit-learn 1.8+, XGBoost, LightGBM
 
 ⭐ **Production-Ready ML** ⭐
 

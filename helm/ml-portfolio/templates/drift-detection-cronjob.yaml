@@ -1,0 +1,45 @@
+{{- if .Values.driftDetection.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: drift-detection
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: drift-detection
+    {{- include "ml-portfolio.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.driftDetection.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: drift-checker
+              image: curlimages/curl:latest
+              env:
+                - name: PSI_THRESHOLD
+                  value: {{ .Values.driftDetection.psiThreshold | quote }}
+                - name: ALERT_WEBHOOK
+                  value: {{ .Values.driftDetection.alertWebhook | quote }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "=== Drift Detection Run: $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
+                  SERVICES="bankchurn-service carvision-service nlpinsight-service"
+                  for svc in $SERVICES; do
+                    echo "--- Checking $svc ---"
+                    HEALTH=$(curl -s -o /dev/null -w "%{http_code}" http://${svc}.{{ .Values.namespace }}.svc.cluster.local/health || echo "000")
+                    if [ "$HEALTH" != "200" ]; then
+                      echo "ALERT: $svc health check failed (HTTP $HEALTH)"
+                    else
+                      echo "OK: $svc healthy"
+                    fi
+                  done
+                  echo "=== Drift Detection Complete ==="
+{{- end }}

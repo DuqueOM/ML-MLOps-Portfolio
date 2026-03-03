@@ -1,9 +1,7 @@
 {
-  "model": "xgboost",
-  "rmse": 7271.416093169198,
-  "mae": 4133.73095703125,
-  "mape": 33.13349613892506,
-  "r2": 0.7678084373474121,
-  "auto_selected": true,
-  "original_model": "lightgbm"
+  "test_rmse": 6743.75,
+  "test_mae": 3973.19,
+  "test_mape": 32.86,
+  "test_r2": 0.7955,
+  "train_time_seconds": 50.19
 }

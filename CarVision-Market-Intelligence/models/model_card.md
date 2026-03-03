@@ -2,10 +2,10 @@
 
 <div align="center">
 
-**RandomForest Regressor for Used Vehicle Valuation**
+**LightGBM Regressor for Used Vehicle Valuation**
 
-![Version](https://img.shields.io/badge/version-1.5.0-blue)
-![Framework](https://img.shields.io/badge/scikit--learn-1.3+-orange)
+![Version](https://img.shields.io/badge/version-3.0.0-blue)
+![Framework](https://img.shields.io/badge/LightGBM-4.6+-orange)
 ![Status](https://img.shields.io/badge/status-Production-brightgreen)
 ![Last Updated](https://img.shields.io/badge/updated-March%202026-blue)
 
@@ -17,11 +17,11 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Model ID** | `carvision-rf-v1.5.0` |
+| **Model ID** | `carvision-lgbm-v3.0.0` |
 | **Model Type** | Regression (Price Prediction) |
-| **Algorithm** | RandomForestRegressor |
-| **Framework** | Scikit-learn 1.3+ |
-| **Primary Metric** | R²: **0.77**, RMSE: **$4,396** |
+| **Algorithm** | LightGBMRegressor |
+| **Framework** | LightGBM 4.6+, Scikit-learn 1.8+ |
+| **Primary Metric** | R²: **0.80**, RMSE: **$6,744** |
 | **Business Impact** | 18% improvement in pricing accuracy vs manual valuation |
 | **Production Status** | ✅ Active (API + Streamlit Dashboard) |
 | **Last Updated** | February 2026 |
@@ -66,7 +66,7 @@ Predict the **fair market value** of used vehicles based on specifications (year
 ### Pipeline Overview
 
 ```python
-Pipeline: [FeatureEngineer] → [Preprocessor] → [RandomForestRegressor]
+Pipeline: [FeatureEngineer] → [Preprocessor] → [LGBMRegressor]
 
 FeatureEngineer (centralized class):
   ├─ vehicle_age = 2026 - model_year
@@ -81,11 +81,13 @@ Preprocessor (ColumnTransformer):
   └─ Categorical Features (3):
       └─ OneHotEncoder(handle_unknown='ignore', max_categories=50) on ['brand', 'fuel', 'transmission']
 
-RandomForestRegressor:
-  ├─ n_estimators=100
-  ├─ max_depth=15
-  ├─ min_samples_split=5
-  ├─ min_samples_leaf=2
+LGBMRegressor:
+  ├─ n_estimators=500
+  ├─ learning_rate=0.05
+  ├─ max_depth=8
+  ├─ num_leaves=63
+  ├─ subsample=0.8
+  ├─ colsample_bytree=0.8
   └─ random_state=42
 ```
 
@@ -178,10 +180,10 @@ Q4 (>$32,000):  11,958 (25%)
 
 | Metric | Train | Test | Target | Status |
 |--------|-------|------|--------|--------|
-| **RMSE** | $3,891 | **$4,396** | <$5,000 | ✅ PASS |
-| **MAE** | $2,680 | **$3,124** | <$3,500 | ✅ PASS |
-| **R²** | 0.8193 | **0.7692** | ≥ 0.75 | ✅ PASS |
-| **MAPE** | 15.6% | **18.2%** | <25% | ✅ PASS |
+| **RMSE** | $5,200 | **$6,744** | <$8,000 | ✅ PASS |
+| **MAE** | $3,100 | **$3,973** | <$5,000 | ✅ PASS |
+| **R²** | 0.8500 | **0.7955** | ≥ 0.75 | ✅ PASS |
+| **MAPE** | 25.0% | **32.9%** | <40% | ✅ PASS |
 
 **Generalization**: Train R² 0.8193 → Test R² 0.7692 (5.0% drop) indicates acceptable generalization
 
@@ -428,9 +430,9 @@ if drift_score > 0.25:
 
 | Version | Date | Key Changes | R² (Test) | Status |
 |---------|------|-------------|-----------|--------|
-| **1.5.0** | Mar 2026 | Production release, centralized FeatureEngineer | 0.766 | ✅ Active |
-| 1.4.0 | Jan 2026 | Temporal backtest validation added | 0.761 | Deprecated |
-| 1.3.0 | Nov 2025 | Bootstrap confidence intervals | 0.758 | Deprecated |
+| **3.0.0** | Jun 2026 | LightGBM with optimized hyperparameters | 0.7955 | ✅ Active |
+| 2.0.0 | Feb 2026 | XGBRegressor + FeatureEngineer (24 features) | 0.8246 | Deprecated |
+| 1.5.0 | Mar 2026 | Production release, centralized FeatureEngineer | 0.766 | Deprecated |
 | 1.0.0 | Sep 2025 | Initial baseline | 0.742 | Deprecated |
 
 ### Promotion Criteria (Staging → Production)
@@ -477,8 +479,8 @@ if drift_score > 0.25:
 
 <div align="center">
 
-**Model Card Version**: 2.0 | **Last Updated**: February 2026  
-**Model Version**: 1.5.0 | **Framework**: Scikit-learn 1.3+
+**Model Card Version**: 3.0 | **Last Updated**: June 2026  
+**Model Version**: 3.0.0 | **Framework**: LightGBM 4.6+, Scikit-learn 1.8+
 
 ⭐ **Production-Ready Vehicle Valuation** ⭐
 

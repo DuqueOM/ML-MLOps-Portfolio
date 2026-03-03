@@ -1,0 +1,104 @@
+{{- if .Values.nlpinsight.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nlpinsight-analyzer
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: nlpinsight-analyzer
+    {{- include "ml-portfolio.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.nlpinsight.replicas }}
+  selector:
+    matchLabels:
+      app: nlpinsight-analyzer
+  template:
+    metadata:
+      labels:
+        app: nlpinsight-analyzer
+    spec:
+      initContainers:
+        - name: download-model
+          image: {{ .Values.modelStorage.initImage }}
+          command: ["python", "/scripts/download-model.py"]
+          env:
+            - name: GCS_BUCKET
+              value: {{ .Values.modelStorage.bucket }}
+            - name: GCS_MODEL_PATH
+              value: {{ .Values.nlpinsight.model.gcsPath }}
+            - name: LOCAL_MODEL_PATH
+              value: {{ .Values.nlpinsight.model.localPath }}
+          volumeMounts:
+            - name: model-volume
+              mountPath: /models
+            - name: download-script
+              mountPath: /scripts
+      containers:
+        - name: api
+          image: {{ .Values.registry.url }}/{{ .Values.nlpinsight.image }}
+          imagePullPolicy: {{ .Values.registry.pullPolicy }}
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: MODEL_PATH
+              value: /models
+          resources:
+            {{- toYaml .Values.nlpinsight.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 45
+            periodSeconds: 30
+          volumeMounts:
+            - name: model-volume
+              mountPath: /models
+      volumes:
+        - name: model-volume
+          emptyDir: {}
+        - name: download-script
+          configMap:
+            name: download-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nlpinsight-service
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: nlpinsight-analyzer
+spec:
+  selector:
+    app: nlpinsight-analyzer
+  ports:
+    - port: 80
+      targetPort: 8000
+      name: http
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nlpinsight-hpa
+  namespace: {{ .Values.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nlpinsight-analyzer
+  minReplicas: {{ .Values.nlpinsight.hpa.minReplicas }}
+  maxReplicas: {{ .Values.nlpinsight.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.nlpinsight.hpa.cpuTarget }}
+{{- end }}

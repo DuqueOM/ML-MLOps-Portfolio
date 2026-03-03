@@ -1,5 +1,6 @@
-# BankChurn Predictor — Production runtime dependencies only
-# Used by Dockerfile for minimal image size (~400MB vs ~3GB with full deps)
+# BankChurn Predictor — Production runtime dependencies (inference only)
+# Optimized for minimal Docker image size (<500MB)
+# SHAP, MLflow, imbalanced-learn are NOT needed at inference time.
 
 # Core Data Science
 pandas>=1.3.0
@@ -8,8 +9,7 @@ scipy>=1.7.0
 
 # ML Frameworks (inference)
 scikit-learn>=1.8.0
-# xgboost installed separately in Dockerfile with --no-deps (avoids nvidia-nccl-cu12)
-imbalanced-learn>=0.10.0
+# xgboost + lightgbm installed separately in Dockerfile with --no-deps
 joblib>=1.1.0
 
 # API Framework
@@ -23,20 +23,6 @@ pyyaml>=6.0
 
 # Monitoring
 prometheus-client>=0.17.0
-
-# SHAP explainability (CPU-only, installed with --no-deps in Dockerfile)
-# TreeExplainer works without torch/numba for sklearn/XGBoost models
-# Only minimal runtime deps needed (numba NOT required for TreeExplainer)
-slicer>=0.0.7
-cloudpickle>=2.0.0
-packaging>=21.0
-tqdm>=4.64.0
-
-# MLflow (imported via __init__.py → training.py)
-mlflow>=2.9
-
-# HTTP (healthcheck, callbacks)
-requests>=2.27.0
 
 # Type hints
 typing-extensions>=4.0.0

@@ -416,18 +416,20 @@ jobs:
           done
           echo ""
           echo "=== Model files on HOST (all 3 projects) ==="
-          for proj in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer; do
+          for proj in BankChurn-Predictor CarVision-Market-Intelligence; do
             echo "--- $proj ---"
-            ls -la $proj/models/model.joblib 2>&1
-            file $proj/models/model.joblib 2>&1
+            ls -la $proj/models/model.joblib 2>&1 || echo "Not found (models are downloaded at runtime via Init Container)"
           done
+          echo "--- NLPInsight-Analyzer ---"
+          ls -la NLPInsight-Analyzer/models/ 2>&1 || echo "Not found (transformer model downloaded at runtime)"
           echo ""
           echo "=== Model files INSIDE containers ==="
-          for svc in bankchurn carvision nlpinsight; do
+          for svc in bankchurn carvision; do
             echo "--- $svc ---"
-            docker compose -f docker-compose.demo.yml exec -T $svc ls -la models/model.joblib 2>&1 || echo "NOT FOUND"
-            docker compose -f docker-compose.demo.yml exec -T $svc file models/model.joblib 2>&1 || echo "CANNOT CHECK"
+            docker compose -f docker-compose.demo.yml exec -T $svc ls -la models/model.joblib 2>&1 || echo "NOT FOUND (expected: loaded via volume mount or Init Container)"
           done
+          echo "--- nlpinsight ---"
+          docker compose -f docker-compose.demo.yml exec -T nlpinsight ls -la models/ 2>&1 || echo "NOT FOUND"
           echo ""
           echo "=== Test model loading inside CarVision container ==="
           docker compose -f docker-compose.demo.yml exec -T carvision python -c "

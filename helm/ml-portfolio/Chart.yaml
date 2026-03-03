@@ -1,0 +1,14 @@
+apiVersion: v2
+name: ml-portfolio
+description: ML/MLOps Portfolio — 3 production ML services with monitoring
+type: application
+version: 3.0.0
+appVersion: "3.0.0"
+keywords:
+  - machine-learning
+  - mlops
+  - kubernetes
+  - fastapi
+maintainers:
+  - name: DuqueOM
+    url: https://github.com/DuqueOM

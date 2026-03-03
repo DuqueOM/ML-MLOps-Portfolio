@@ -6,7 +6,7 @@ metadata:
   labels:
     app: carvision-intelligence
     tier: ml-service
-    version: v2.0.0
+    version: v3.0.0
 spec:
   replicas: 1
   strategy:
@@ -19,7 +19,7 @@ spec:
       labels:
         app: carvision-intelligence
         tier: ml-service
-        version: v2.0.0
+        version: v3.0.0
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8000"
@@ -66,45 +66,9 @@ spec:
           mountPath: /app/models
         - name: data
           mountPath: /app/data
-      - name: carvision-streamlit
-        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/carvision-market-intelligence:latest
-        imagePullPolicy: Always
-        command: ["streamlit", "run", "app/streamlit_app.py", "--server.port", "8501", "--server.address", "0.0.0.0", "--server.headless", "true"]
-        ports:
-        - containerPort: 8501
-          name: streamlit
-          protocol: TCP
-        env:
-        - name: MODEL_PATH
-          value: "/app/models/model.joblib"
-        - name: PYTHONUNBUFFERED
-          value: "1"
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8501
-          initialDelaySeconds: 30
-          periodSeconds: 15
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8501
-          initialDelaySeconds: 15
-          periodSeconds: 10
-        volumeMounts:
-        - name: models
-          mountPath: /app/models
-        - name: data
-          mountPath: /app/data
-        - name: artifacts
-          mountPath: /app/artifacts
+      # NOTE: Streamlit dashboard sidecar removed — production image uses
+      # requirements-prod.txt which excludes streamlit for size optimization.
+      # Use docker-compose.demo.yml for local Streamlit dashboard development.
       initContainers:
       - name: download-model
         image: python:3.11-alpine
@@ -210,7 +174,7 @@ metadata:
   name: carvision-config
   namespace: ml-portfolio
 data:
-  MODEL_VERSION: "v2.0.0"
+  MODEL_VERSION: "v3.0.0"
   PREDICTIONS_PER_BATCH: "100"
 ---
 apiVersion: autoscaling/v2

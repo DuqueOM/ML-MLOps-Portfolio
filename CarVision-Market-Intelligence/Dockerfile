@@ -18,16 +18,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc g++ build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy production requirements (no jupyter, dev tools, shap/torch)
+# Copy production requirements (inference only — no streamlit/plotly/pyarrow)
 COPY requirements-prod.txt ./
 
 # Install dependencies in venv
-# xgboost installed with --no-deps to avoid nvidia-nccl-cu12 (~290MB)
+# lightgbm installed with --no-deps to avoid unnecessary CUDA deps
 RUN python -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
     pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements-prod.txt && \
-    pip install --no-cache-dir --no-deps "xgboost>=1.5.0,<3.0"
+    pip install --no-cache-dir --no-deps "lightgbm>=4.0.0,<5.0"
 
 # Stage 2: Runtime
 FROM python:3.11-slim-bookworm AS runtime
@@ -42,7 +42,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 # Install runtime dependencies (curl for healthcheck)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl ca-certificates \
+    curl ca-certificates libgomp1 \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 

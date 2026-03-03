@@ -19,6 +19,7 @@ Usage in K8s Init Container:
 
 import os
 import sys
+import tarfile
 import time
 
 MAX_RETRIES = 3
@@ -37,7 +38,7 @@ def download_model():
     print(f"Downloading gs://{bucket_name}/{blob_path} -> {local_path}")
 
     # Ensure parent directory exists
-    os.makedirs(os.path.dirname(local_path), exist_ok=True)
+    os.makedirs(os.path.dirname(local_path) or ".", exist_ok=True)
 
     from google.cloud import storage
 
@@ -50,6 +51,17 @@ def download_model():
             blob.download_to_filename(local_path)
             size_mb = os.path.getsize(local_path) / (1024 * 1024)
             print(f"OK: Downloaded {size_mb:.2f} MB (attempt {attempt}/{MAX_RETRIES})")
+
+            # Auto-extract tar.gz archives (used for transformer models)
+            if local_path.endswith(".tar.gz"):
+                extract_dir = os.path.dirname(local_path) or "."
+                print(f"Extracting archive to {extract_dir}/")
+                with tarfile.open(local_path, "r:gz") as tar:
+                    tar.extractall(path=extract_dir)
+                extracted = [m.name for m in tarfile.open(local_path, "r:gz").getmembers()]
+                print(f"Extracted {len(extracted)} files: {extracted}")
+                os.remove(local_path)
+
             sys.exit(0)
         except Exception as e:
             print(f"WARN: Attempt {attempt}/{MAX_RETRIES} failed: {e}")

@@ -9,7 +9,7 @@ metadata:
   labels:
     app: carvision-intelligence
     tier: ml-service
-    version: v2.0.0
+    version: v3.0.0
     cloud: aws
 spec:
   replicas: 1
@@ -23,7 +23,7 @@ spec:
       labels:
         app: carvision-intelligence
         tier: ml-service
-        version: v2.0.0
+        version: v3.0.0
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8000"
@@ -197,7 +197,7 @@ metadata:
   name: carvision-config
   namespace: ml-portfolio
 data:
-  MODEL_VERSION: "v2.0.0"
+  MODEL_VERSION: "v3.0.0"
   PREDICTIONS_PER_BATCH: "100"
 ---
 apiVersion: autoscaling/v2

@@ -1,0 +1,95 @@
+# ML Portfolio Helm Chart — Default Values
+# Override per environment: helm install -f values-gcp.yaml ml-portfolio ./helm/ml-portfolio
+
+namespace: ml-portfolio
+
+# Container registry
+registry:
+  url: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images
+  pullPolicy: IfNotPresent
+
+# GCS model storage
+modelStorage:
+  bucket: ml-portfolio-duque-om-202602-ml-models-production
+  initImage: python:3.11-alpine
+
+# --- BankChurn ---
+bankchurn:
+  enabled: true
+  replicas: 1
+  image: bankchurn-predictor:latest
+  model:
+    gcsPath: bankchurn/model.joblib
+    localPath: /models/model.joblib
+  resources:
+    requests:
+      cpu: 300m
+      memory: 384Mi
+    limits:
+      cpu: 800m
+      memory: 768Mi
+  hpa:
+    minReplicas: 1
+    maxReplicas: 3
+    cpuTarget: 70
+
+# --- CarVision ---
+carvision:
+  enabled: true
+  replicas: 1
+  image: carvision-market-intelligence:latest
+  model:
+    gcsPath: carvision/model.joblib
+    localPath: /models/model.joblib
+  resources:
+    requests:
+      cpu: 300m
+      memory: 512Mi
+    limits:
+      cpu: 800m
+      memory: 1536Mi
+  hpa:
+    minReplicas: 1
+    maxReplicas: 3
+    cpuTarget: 70
+
+# --- NLPInsight ---
+nlpinsight:
+  enabled: true
+  replicas: 1
+  image: nlpinsight-analyzer:latest
+  model:
+    gcsPath: nlpinsight/model.tar.gz
+    localPath: /models/model.tar.gz
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  hpa:
+    minReplicas: 1
+    maxReplicas: 3
+    cpuTarget: 70
+
+# --- Monitoring ---
+prometheus:
+  enabled: true
+  image: prom/prometheus:v2.51.0
+
+grafana:
+  enabled: true
+  image: grafana/grafana:10.3.1
+
+mlflow:
+  enabled: true
+  image: ghcr.io/mlflow/mlflow:v2.19.0
+  trackingUri: http://mlflow-service:5000
+
+# --- Drift Detection ---
+driftDetection:
+  enabled: true
+  schedule: "0 6 * * *"
+  psiThreshold: "0.2"
+  alertWebhook: ""

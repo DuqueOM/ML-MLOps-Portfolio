@@ -9,7 +9,7 @@ metadata:
   labels:
     app: bankchurn-predictor
     tier: ml-service
-    version: v2.0.0
+    version: v3.0.0
     cloud: aws
 spec:
   replicas: 1
@@ -26,7 +26,7 @@ spec:
       labels:
         app: bankchurn-predictor
         tier: ml-service
-        version: v2.0.0
+        version: v3.0.0
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8000"
@@ -169,7 +169,7 @@ metadata:
   name: bankchurn-config
   namespace: ml-portfolio
 data:
-  MODEL_VERSION: "v2.0.0"
+  MODEL_VERSION: "v3.0.0"
   DRIFT_THRESHOLD: "0.05"
   MONITORING_ENABLED: "true"
   MLFLOW_TRACKING_URI: "http://mlflow-service:5000"

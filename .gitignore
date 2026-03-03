@@ -75,6 +75,10 @@ CarVision-Market-Intelligence/artifacts/*
 **/*.pth
 **/*.onnx
 **/*.joblib
+**/*.safetensors
+**/models/*.tar.gz
+**/models/config.json
+**/models/tokenizer*.json
 
 # Raw and processed data — tracked via DVC / GCS, never in git
 **/data/raw/*.csv
