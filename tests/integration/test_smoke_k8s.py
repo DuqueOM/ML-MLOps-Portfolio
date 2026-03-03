@@ -169,14 +169,14 @@ class TestCarVisionSmoke:
         r = httpx.post(f"{CARVISION_URL}/predict", json=CARVISION_PAYLOAD, timeout=TIMEOUT)
         assert r.status_code == 200, f"Predict failed: {r.text}"
         data = r.json()
-        assert "prediction" in data
-        assert isinstance(data["prediction"], (int, float))
+        assert "predicted_price" in data, f"Response keys: {list(data.keys())}"
+        assert isinstance(data["predicted_price"], (int, float))
 
     def test_predict_price_positive(self):
         _skip_if_down(CARVISION_URL, "CarVision")
         r = httpx.post(f"{CARVISION_URL}/predict", json=CARVISION_PAYLOAD, timeout=TIMEOUT)
         assert r.status_code == 200
-        price = r.json()["prediction"]
+        price = r.json()["predicted_price"]
         assert price > 0, f"Predicted price must be positive, got {price}"
 
     def test_predict_invalid_payload_returns_422(self):

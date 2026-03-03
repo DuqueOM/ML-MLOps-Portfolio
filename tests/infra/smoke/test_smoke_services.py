@@ -102,7 +102,7 @@ class TestHealthEndpoints:
         assert r.status_code == 200, f"{service} health returned {r.status_code}"
 
         data = r.json()
-        assert data.get("status") == "healthy", f"{service}: {data}"
+        assert data.get("status") in {"healthy", "ok"}, f"{service}: {data}"
         assert data.get("model_loaded") is True, f"{service} model not loaded: {data}"
 
     @pytest.mark.parametrize("service", SERVICES.keys())

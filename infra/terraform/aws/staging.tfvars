@@ -17,4 +17,4 @@ node_instance_type = "t3.small"
 # RDS database for MLflow
 db_instance_class = "db.t3.micro"
 db_username       = "mlflow"
-db_password       = "CHANGE_ME_TO_A_SECURE_PASSWORD"  # Use: openssl rand -base64 24
+db_password       = "CHANGE_ME_TO_A_SECURE_PASSWORD" # Use: openssl rand -base64 24

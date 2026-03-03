@@ -11,4 +11,4 @@ node_count     = 1
 min_node_count = 1
 max_node_count = 2
 db_tier        = "db-f1-micro"
-db_password    = ""  # Use Secret Manager: gcloud secrets create mlflow-db-password-staging
+db_password    = "" # Use Secret Manager: gcloud secrets create mlflow-db-password-staging
