@@ -4,7 +4,7 @@ Vehicle price prediction platform with interactive dashboard.
 
 ![CarVision API](../media/screenshots/apis/27-fastapi-swagger-carvision.png)
 
-## Performance (v3.0.0)
+## Performance (v3.3.0)
 
 | Metric | Value |
 |--------|-------|
@@ -29,9 +29,9 @@ Vehicle price prediction platform with interactive dashboard.
 | Metric | Value |
 |--------|-------|
 | Test Coverage | 96% (52 tests) |
-| Docker Image | 1.76 GB |
+| Docker Image | 518 MB (optimized, -71%) |
 | Model Size | 5.7 MB |
-| P95 Latency | <150ms |
+| P95 Latency | <170ms (K8s port-forward) |
 
 ## API
 
@@ -43,4 +43,4 @@ curl -X POST http://localhost:8002/predict \
 
 ---
 
-*Last Updated: March 2026 — v3.2.0*
+*Last Updated: March 2026 — v3.3.0*

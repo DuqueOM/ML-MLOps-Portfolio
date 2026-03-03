@@ -16,13 +16,13 @@
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Scalability** | Kubernetes HPA, CPU-based autoscaling |
 
-## Projects (v3.0.0, Python 3.11.14 + sklearn 1.8.0)
+## Projects (v3.3.0, Python 3.11.14 + sklearn 1.8.0)
 
 | Project | Algorithm | Primary Metric | Tests | Coverage |
 |---------|-----------|----------------|:-----:|:--------:|
 | **BankChurn** | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87 | 198 | 90% |
 | **CarVision** | LightGBM + FeatureEngineer (24 features) | R² 0.80 | 52 | 96% |
-| **NLPInsight** | FinBERT (ProsusAI) / TF-IDF fallback | Acc 97% | 73 | 98% |
+| **NLPInsight** | FinBERT (ProsusAI) / TF-IDF fallback | Acc 97% | 74 | 98% |
 
 ## Infrastructure
 
@@ -57,7 +57,7 @@
 | **Containers** | Docker, Kubernetes (GKE/EKS) |
 | **IaC** | Terraform (GCP + AWS modules) |
 | **CI/CD** | GitHub Actions, Trivy, Bandit, Gitleaks |
-| **Testing** | pytest (90–98% coverage, 323 tests), Locust (load testing) |
+| **Testing** | pytest (90–98% coverage, 367+ tests), Locust (load testing), adversarial (43 tests) |
 
 ## Visual Evidence
 
@@ -74,4 +74,4 @@
 
 ---
 
-*Last Updated: March 2026 — Portfolio v3.2.0*
+*Last Updated: March 2026 — Portfolio v3.3.0*

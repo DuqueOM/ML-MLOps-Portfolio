@@ -4,7 +4,7 @@ Customer churn prediction for banking institutions.
 
 ![BankChurn API](../media/screenshots/apis/25-fastapi-swagger-bankchurn.png)
 
-## Performance (v3.0.0)
+## Performance (v3.3.0)
 
 | Metric | Value |
 |--------|-------|
@@ -28,9 +28,9 @@ Customer churn prediction for banking institutions.
 | Metric | Value |
 |--------|-------|
 | Test Coverage | 90% (198 tests) |
-| Docker Image | 2.11 GB (with SHAP 0.50.0) |
+| Docker Image | 1.09 GB (optimized, -48%) |
 | Model Size | 4.1 MB |
-| P95 Latency | <250ms |
+| P95 Latency | <360ms (K8s port-forward) |
 
 ## API
 
@@ -42,4 +42,4 @@ curl -X POST http://localhost:8001/predict \
 
 ---
 
-*Last Updated: March 2026 — v3.2.0*
+*Last Updated: March 2026 — v3.3.0*

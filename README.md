@@ -53,18 +53,18 @@
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|---------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | 140ms p50 | StackingClassifier (5 models), Feature Engineering, Drift Detection |
-| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.80**, RMSE $6.7K | 96% | 79ms p50 | LightGBM + FeatureEngineer, Streamlit Dashboard (4 tabs) |
-| [📝 NLPInsight](NLPInsight-Analyzer/) | Classification | **Acc 97%** (sentiment) | 98% | 100ms p50 | FinBERT (ProsusAI), Transfer Learning, Financial PhraseBank |
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | 180ms p50 | StackingClassifier (5 models), Feature Engineering, Drift Detection |
+| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.80**, RMSE $6.7K | 96% | 110ms p50 | LightGBM + FeatureEngineer, Streamlit Dashboard (4 tabs) |
+| [📝 NLPInsight](NLPInsight-Analyzer/) | Classification | **Acc 97%** (sentiment) | 98% | 220ms p50 | FinBERT (ProsusAI), Transfer Learning, Financial PhraseBank |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
-| **GCP Deployment** | ✅ Live | GKE cluster, 6 pods, Artifact Registry, Cloud Storage |
+| **GCP Deployment** | ✅ Live | GKE cluster (7 nodes), 8+ pods, Artifact Registry, Cloud Storage |
 | **AWS Deployment** | 🟡 Ready | EKS + ECR + S3 + RDS — Terraform + K8s overlays complete |
 | **CI/CD** | ✅ Unified | GitHub Actions → GKE + EKS (separate deploy workflows) |
 | **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) — parallel provider configs |
 | **Monitoring** | ✅ Full Stack | Prometheus + Grafana + MLflow — cloud-agnostic on K8s |
-| **Security** | ✅ Automated | Gitleaks, Bandit, Trivy, pip-audit — all enforced in CI |
+| **Security** | ✅ Automated | Gitleaks, Bandit, Trivy, pip-audit — blocking in CI (HIGH severity) |
 
 ---
 
@@ -117,9 +117,9 @@ Real-time financial sentiment analysis using **ProsusAI/FinBERT** — a BERT mod
 | **Monitoring** | Prometheus (multi-service scraping), Grafana (10-panel dashboard), Load Testing (SRE methodology), Evidently |
 | **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy), Artifact Registry, ECR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
-| **Testing** | pytest (90–98% coverage, 323 tests), Codecov, pre-commit hooks |
+| **Testing** | pytest (90–98% coverage, 367+ tests), Codecov, pre-commit hooks |
 
-> **v3.2.0 Highlights**: StackingClassifier (BankChurn), LightGBM (CarVision), FinBERT (NLPInsight), Lazy SHAP, dual NLP backend, Pandera validation, fairness audits, OpenTelemetry tracing. Load test: 0% error rate, p95 180ms aggregated. Full details in [docs/FEATURES.md](docs/FEATURES.md).
+> **v3.3.0 Highlights**: StackingClassifier (BankChurn), LightGBM (CarVision), FinBERT (NLPInsight), Lazy SHAP, dual NLP backend, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests (43), Pod Security Standards. Load test: 0% error rate, p95 500ms (10 users, 2min). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
 ## 🏗️ Architecture
 
@@ -211,7 +211,7 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 
 ![GKE Workloads Running](docs/media/screenshots/gcp-console/05-gke-workloads-running.png)
 
-*6 services running simultaneously on GKE: 3 ML APIs + MLflow + Prometheus + Grafana*
+*8+ services running simultaneously on GKE: 3 ML APIs (with HPA autoscaling) + MLflow + Prometheus + Grafana*
 
 </div>
 
@@ -319,7 +319,7 @@ The author maintains and operates all systems independently, including CI/CD pip
 
 <div align="center">
 
-**Portfolio Version**: 3.2.0 · **License**: MIT · **Status**: ✅ Production-Ready (GCP) · 🟡 AWS Ready
+**Portfolio Version**: 3.3.0 · **License**: MIT · **Status**: ✅ Production-Ready (GCP) · 🟡 AWS Ready
 
 *Building ML systems that work at 2am* 🌙
 

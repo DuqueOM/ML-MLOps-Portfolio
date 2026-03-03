@@ -49,7 +49,7 @@ CPU-only scaling (memory is fixed for ML models loaded at startup):
 |---------|-----------|--------------|--------|
 | BankChurn | 70% | 1–3 | ~300Mi |
 | CarVision | 70% | 1–3 | ~550Mi |
-| NLPInsight | 75% | 1–3 | ~140Mi |
+| NLPInsight | 75% | 1–3 | ~650Mi |
 
 ## Testing
 
@@ -66,4 +66,4 @@ locust -f tests/load/locustfile.py --headless     # Load tests
 
 ---
 
-*Last Updated: March 2026 — v3.2.0*
+*Last Updated: March 2026 — v3.3.0*

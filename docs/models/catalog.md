@@ -38,7 +38,7 @@
 |--------|-------|
 | Accuracy | **97%** |
 | F1 (weighted) | 0.97 |
-| Coverage | 98% (73 tests) |
+| Coverage | 98% (74 tests) |
 
 **Pipeline**: `FinBERT Tokenizer → FinBERT (ProsusAI)` (production) or `TF-IDF → LogisticRegression` (fallback)
 **Features**: Dual backend auto-detection, Financial PhraseBank trained, fairness audits (F1 parity), batch support (500 texts)
@@ -68,4 +68,4 @@
 
 ---
 
-*Last Updated: March 2026 — v3.2.0*
+*Last Updated: March 2026 — v3.3.0*

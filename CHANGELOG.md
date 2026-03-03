@@ -36,7 +36,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 - **All 3 projects now have fairness audits** (was only BankChurn)
 - Trivy action pinned to `0.28.0` (was `@master`)
 - Documentation standardized: 30+ files updated to v3.0.0 models / v3.2.0 portfolio
-- Test total: 323 (198 + 52 + 73), coverage 90–98%
+- Test total: 324 (198 + 52 + 74), coverage 90–98%
 
 ### Fixed
 - E2E script: `app/main.py` → `app/fastapi_app.py`
@@ -135,7 +135,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
-[3.2.1]: https://github.com/DuqueOM/ML-MLOps-Portfolio/compare/v3.2.0...HEAD
+[3.3.0]: https://github.com/DuqueOM/ML-MLOps-Portfolio/compare/v3.2.1...HEAD
+[3.2.1]: https://github.com/DuqueOM/ML-MLOps-Portfolio/compare/v3.2.0...v3.2.1
 [3.2.0]: https://github.com/DuqueOM/ML-MLOps-Portfolio/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/DuqueOM/ML-MLOps-Portfolio/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/DuqueOM/ML-MLOps-Portfolio/compare/v2.0.0...v3.0.0

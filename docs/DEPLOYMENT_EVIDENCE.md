@@ -27,6 +27,9 @@
 │  Cloud SQL (PostgreSQL)        │  RDS (PostgreSQL)          │
 │  Terraform IaC                 │  Terraform IaC             │
 └─────────────────────────────────────────────────────────────┘
+
+Note: CarVision Streamlit dashboard (:8501) runs only in local
+docker-compose dev environment, not in K8s production deployments.
 ```
 
 ## Verified Capabilities

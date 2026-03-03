@@ -928,13 +928,13 @@ Users: 10 concurrent (via kubectl port-forward)
 Request: POST /predict (randomized payloads)
 Infra: GKE e2-medium, 2 uvicorn workers
 
-# Results (Feb 2026)
-Total Requests: 283
-Successful: 283 (100%)
+# Results (March 2026, v3.3.0)
+Total Requests: 278
+Successful: 278 (100%)
 Failed: 0 (0.0%)
-Latency p50: 140ms
-Latency p95: 220ms
-Latency p99: 290ms
+Latency p50: 180ms
+Latency p95: 360ms
+Latency p99: 520ms
 SLA: ✅ All thresholds met
 ```
 

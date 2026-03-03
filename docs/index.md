@@ -9,13 +9,13 @@
 
 ---
 
-## Projects (v3.0.0, Python 3.11.14)
+## Projects (v3.3.0, Python 3.11.14)
 
 | Project | Algorithm | Primary Metric | Tests | Coverage |
 |---------|-----------|----------------|:-----:|:--------:|
 | **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC 0.87 | 198 | 90% |
 | **[CarVision](projects/carvision.md)** | LightGBM + FeatureEngineer (24 features) | R² 0.80 | 52 | 96% |
-| **[NLPInsight](projects/nlpinsight.md)** | FinBERT (ProsusAI) / TF-IDF fallback | Acc 97% | 73 | 98% |
+| **[NLPInsight](projects/nlpinsight.md)** | FinBERT (ProsusAI) / TF-IDF fallback | Acc 97% | 74 | 98% |
 
 ## Quick Start
 
@@ -46,14 +46,14 @@ docker compose -f docker-compose.demo.yml up -d --build
 | **Containers** | Docker (multi-stage), Kubernetes (GKE/EKS) |
 | **IaC** | Terraform (GCP + AWS modules) |
 | **CI/CD** | GitHub Actions, Trivy, Bandit, Gitleaks |
-| **Testing** | pytest (90–98%, 323 tests), Locust, Codecov |
+| **Testing** | pytest (90–98%, 367+ tests), Locust, Codecov |
 
 ## Production Infrastructure
 
 | Metric | GCP (GKE) | AWS (EKS) |
 |--------|-----------|-----------|
-| **Pods** | 6 (3 APIs + MLflow + Prometheus + Grafana) | 6 |
-| **Nodes** | 3 × e2-medium | 2 × t3.large |
+| **Pods** | 8+ (3 APIs with HPA + MLflow + Prometheus + Grafana) | 6 |
+| **Nodes** | 7 × e2-medium | 2 × t3.large |
 | **Cost** | ~$51/month | ~$170/month |
 | **Uptime** | 99.9%+ | 99.9%+ |
 
@@ -76,4 +76,4 @@ Developed using AI-assisted tools (Cursor/Cascade) for code generation accelerat
 
 **Built by [Duque Ortega Mutis](https://github.com/DuqueOM)** | [Source Code](https://github.com/DuqueOM/ML-MLOps-Portfolio) | [Video Demo](https://youtu.be/qmw9VlgUcn8)
 
-*Last Updated: March 2026 — v3.2.1*
+*Last Updated: March 2026 — v3.3.0*

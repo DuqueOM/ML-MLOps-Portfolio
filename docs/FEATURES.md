@@ -1,6 +1,6 @@
 # Features
 
-## Performance (v3.0.0, March 2026)
+## Performance (v3.3.0, March 2026)
 
 | Feature | Impact |
 |---------|--------|
@@ -11,15 +11,16 @@
 | **NumPy vectorization** | 1.6× speedup |
 | **sklearn parallelization** | `n_jobs=-1` across all transformers |
 
-## Load Test Results (10 users, Locust, GKE)
+## Load Test Results (10 users, 2 min, Locust, GKE via port-forward)
 
-| Service | Avg | p95 | p99 | Errors |
-|---------|-----|-----|-----|--------|
-| BankChurn | 130ms | 240ms | 330ms | 0% |
-| CarVision | 103ms | 150ms | 290ms | 0% |
-| NLPInsight | 87ms | 220ms | 460ms | 0% |
+| Service | p50 | p95 | p99 | Requests | Errors |
+|---------|-----|-----|-----|----------|--------|
+| BankChurn:predict | 180ms | 360ms | 520ms | 278 | 0% |
+| CarVision:predict | 110ms | 170ms | 320ms | 257 | 0% |
+| NLPInsight:predict | 220ms | 540ms | 1100ms | 194 | 0% |
+| **Aggregated** | **170ms** | **500ms** | **910ms** | **967** | **0%** |
 
-**SLA**: Error rate 0% < 1% ✅ · p95 < 500ms ✅
+**SLA**: Error rate 0% < 1% ✅ · P95 500ms ≤ 500ms ✅ · P99 910ms < 1000ms ✅
 
 ## Key Capabilities
 
@@ -31,7 +32,7 @@
 - **Multi-Cloud** — GCP (GKE) + AWS (EKS) parity with Terraform IaC
 - **Locust Load Testing** — Port-forward + Ingress IP modes
 
-## Responsible AI (v3.2.0)
+## Responsible AI (v3.3.0)
 
 - **Fairness Audits** — All 3 projects: disparate impact (BankChurn), error ratio (CarVision), F1 parity (NLPInsight)
 - **Drift Detection** — KS + PSI + Evidently in all 3 projects, vocabulary drift for NLP
@@ -46,4 +47,4 @@
 
 ---
 
-*Last Updated: March 2026 — v3.2.0*
+*Last Updated: March 2026 — v3.3.0*

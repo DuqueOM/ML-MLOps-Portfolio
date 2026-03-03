@@ -6,7 +6,7 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-ee4c2c.svg)](https://pytorch.org)
 [![HuggingFace](https://img.shields.io/badge/🤗-FinBERT-yellow.svg)](https://huggingface.co/ProsusAI/finbert)
 [![scikit-learn](https://img.shields.io/badge/sklearn-1.8-F7931E.svg)](https://scikit-learn.org)
-[![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen.svg)]()
+[![Coverage](https://img.shields.io/badge/coverage-98.4%25-brightgreen.svg)]()
 
 ## Overview
 
@@ -69,7 +69,7 @@ python main.py --mode predict --input "Revenue growth exceeded expectations"
 # Run API
 uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000
 
-# Tests (98% coverage, 73 tests)
+# Tests (98% coverage, 74 tests)
 pytest tests/ -v --cov=src/nlpinsight
 ```
 
@@ -97,11 +97,11 @@ curl -X POST http://localhost:8000/predict \
 
 | Metric | Value |
 |--------|-------|
-| Test Coverage | 98% (73 tests) |
-| Docker Image | 2.05 GB (torch CPU-only) |
+| Test Coverage | 98.4% (74 tests) |
+| Docker Image | 1.4 GB (torch CPU-only, optimized) |
 | Model Size | ~260 MB (FinBERT) / 309 KB (TF-IDF fallback) |
-| P95 Latency | <220ms (K8s via port-forward) |
-| Load Test | 0% error rate (Locust, 10 users, 30s) |
+| P95 Latency | <540ms (K8s via port-forward) |
+| Load Test | 0% error rate (Locust, 10 users, 2min) |
 
 ## Tech Stack
 

@@ -4,7 +4,7 @@ Financial sentiment analysis powered by NLP.
 
 ![NLPInsight API](../media/screenshots/apis/29-fastapi-swagger-nlpinsight.png)
 
-## Performance (v3.0.0)
+## Performance (v3.3.0)
 
 | Metric | FinBERT (production) | TF-IDF (fallback) |
 |--------|---------------------|-------------------|
@@ -33,10 +33,10 @@ Dual-backend inference engine:
 
 | Metric | Value |
 |--------|-------|
-| Test Coverage | 98% (73 tests) |
-| Docker Image | 2.05 GB (torch CPU-only) |
+| Test Coverage | 98% (74 tests) |
+| Docker Image | 1.4 GB (torch CPU-only, optimized, -32%) |
 | Model Size | ~260 MB (FinBERT) / 309 KB (TF-IDF fallback) |
-| P95 Latency | <220ms |
+| P95 Latency | <540ms (K8s port-forward) |
 
 ## API
 
@@ -48,4 +48,4 @@ curl -X POST http://localhost:8003/predict \
 
 ---
 
-*Last Updated: March 2026 — v3.2.0*
+*Last Updated: March 2026 — v3.3.0*
