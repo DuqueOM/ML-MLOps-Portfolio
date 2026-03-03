@@ -104,6 +104,7 @@ app = FastAPI(
     title="NLPInsight Analyzer API",
     description="Financial sentiment analysis — dual-backend (TF-IDF + DistilBERT)",
     version="1.0.0",
+    root_path=os.getenv("API_ROOT_PATH", ""),
     lifespan=lifespan,
 )
 

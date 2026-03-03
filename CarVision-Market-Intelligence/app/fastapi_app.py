@@ -114,7 +114,12 @@ async def lifespan(application: FastAPI):
     yield
 
 
-app = FastAPI(title="CarVision Inference API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(
+    title="CarVision Inference API",
+    version="1.0.0",
+    root_path=os.getenv("API_ROOT_PATH", ""),
+    lifespan=lifespan,
+)
 
 # CORS — origins from env for security (no wildcard + credentials)
 _cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:8501").split(",")

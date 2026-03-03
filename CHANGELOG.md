@@ -6,6 +6,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [3.3.1] — 2026-03-03
+
+### Added
+- **CarVision Streamlit Dashboard on K8s** — separate Deployment + Service (enterprise pattern: independent scaling, health checks, resource limits)
+- **Multi-target Dockerfile** (`CarVision-Market-Intelligence/Dockerfile`) — `--target api` (518 MB) and `--target dashboard` (950 MB) from single Dockerfile
+- **Ingress route** `/dashboard/*` → `carvision-dashboard-service:8501`
+- **AWS overlay** for dashboard deployment (`k8s/overlays/aws/carvision-deployment-aws.yaml`)
+
+### Changed
+- **FastAPI `root_path`** — all 3 APIs now support `API_ROOT_PATH` env var for Ingress path-based routing
+- **CarVision K8s manifest** — dashboard sidecar removed, replaced with separate Deployment (enterprise pattern)
+- **Load test metrics improved** — p50 160ms, p95 480ms, 973 requests, 0% errors (10 users, 2 min)
+
+### Fixed
+- Dashboard image missing Streamlit due to early pip cleanup in Dockerfile
+
 ## [3.3.0] — 2026-03-03
 
 ### Added

@@ -16,7 +16,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.demo.yml)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-3.3.0-brightgreen.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-3.3.1-brightgreen.svg)](CHANGELOG.md)
 
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow)](https://mlflow.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
@@ -59,7 +59,7 @@
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
-| **GCP Deployment** | ✅ Live | GKE cluster (7 nodes), 8+ pods, Artifact Registry, Cloud Storage |
+| **GCP Deployment** | ✅ Live | GKE cluster (7 nodes), 8 pods (incl. Streamlit dashboard), Ingress IP, Artifact Registry |
 | **AWS Deployment** | 🟡 Ready | EKS + ECR + S3 + RDS — Terraform + K8s overlays complete |
 | **CI/CD** | ✅ Unified | GitHub Actions → GKE + EKS (separate deploy workflows) |
 | **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) — parallel provider configs |
@@ -142,9 +142,10 @@ graph TB
 
     subgraph "GKE Cluster — ml-portfolio namespace"
         direction TB
-        INGRESS[Nginx Ingress] --> BC_SVC[BankChurn Service]
+        INGRESS[GCE Ingress<br/>34.120.120.57] --> BC_SVC[BankChurn Service]
         INGRESS --> CV_SVC[CarVision Service]
         INGRESS --> NL_SVC[NLPInsight Service]
+        INGRESS --> CV_DASH[CarVision Dashboard<br/>Streamlit :8501]
 
         BC_SVC --> BC_POD[BankChurn Pod<br/>StackingClassifier]
         CV_SVC --> CV_POD[CarVision Pod<br/>LightGBM]
@@ -211,7 +212,7 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 
 ![GKE Workloads Running](docs/media/screenshots/gcp-console/05-gke-workloads-running.png)
 
-*8+ services running simultaneously on GKE: 3 ML APIs (with HPA autoscaling) + MLflow + Prometheus + Grafana*
+*8 services running on GKE: 3 ML APIs (HPA) + Streamlit Dashboard + MLflow + Prometheus + Grafana*
 
 </div>
 

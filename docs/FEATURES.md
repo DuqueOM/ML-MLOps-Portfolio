@@ -15,12 +15,12 @@
 
 | Service | p50 | p95 | p99 | Requests | Errors |
 |---------|-----|-----|-----|----------|--------|
-| BankChurn:predict | 180ms | 360ms | 520ms | 278 | 0% |
-| CarVision:predict | 110ms | 170ms | 320ms | 257 | 0% |
-| NLPInsight:predict | 220ms | 540ms | 1100ms | 194 | 0% |
-| **Aggregated** | **170ms** | **500ms** | **910ms** | **967** | **0%** |
+| BankChurn:predict | 170ms | 350ms | 450ms | 260 | 0% |
+| CarVision:predict | 91ms | 130ms | 300ms | 265 | 0% |
+| NLPInsight:predict | 180ms | 450ms | 2400ms | 184 | 0% |
+| **Aggregated** | **160ms** | **480ms** | **820ms** | **973** | **0%** |
 
-**SLA**: Error rate 0% < 1% ✅ · P95 500ms ≤ 500ms ✅ · P99 910ms < 1000ms ✅
+**SLA**: Error rate 0% < 1% ✅ · P95 480ms < 500ms ✅ · P99 820ms < 1000ms ✅
 
 ## Key Capabilities
 

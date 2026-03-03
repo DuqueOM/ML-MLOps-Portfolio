@@ -1,0 +1,12 @@
+# CarVision Market Intelligence — Dashboard addendum dependencies
+# Installed ON TOP of requirements-prod.txt (builder-dashboard stage)
+# These are the EXTRA packages needed for the Streamlit dashboard target.
+
+# Interactive Dashboard
+streamlit~=1.41.0
+
+# Visualization
+plotly~=5.24.0
+
+# Data Processing (parquet support for cached data)
+pyarrow~=18.0.0

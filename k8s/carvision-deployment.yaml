@@ -6,7 +6,7 @@ metadata:
   labels:
     app: carvision-intelligence
     tier: ml-service
-    version: v3.0.0
+    version: v3.3.0
 spec:
   replicas: 1
   strategy:
@@ -19,7 +19,7 @@ spec:
       labels:
         app: carvision-intelligence
         tier: ml-service
-        version: v3.0.0
+        version: v3.3.0
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8000"
@@ -163,10 +163,6 @@ spec:
     port: 80
     targetPort: 8000
     protocol: TCP
-  - name: streamlit
-    port: 8501
-    targetPort: 8501
-    protocol: TCP
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -174,7 +170,7 @@ metadata:
   name: carvision-config
   namespace: ml-portfolio
 data:
-  MODEL_VERSION: "v3.0.0"
+  MODEL_VERSION: "v3.3.0"
   PREDICTIONS_PER_BATCH: "100"
 ---
 apiVersion: autoscaling/v2
@@ -213,3 +209,169 @@ spec:
         value: 2
         periodSeconds: 30
       selectPolicy: Max
+---
+# ─── CarVision Streamlit Dashboard (separate pod for independent scaling) ────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carvision-dashboard
+  namespace: ml-portfolio
+  labels:
+    app: carvision-dashboard
+    tier: dashboard
+    version: v3.3.0
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: carvision-dashboard
+  template:
+    metadata:
+      labels:
+        app: carvision-dashboard
+        tier: dashboard
+        version: v3.3.0
+    spec:
+      serviceAccountName: ml-workload
+      containers:
+      - name: carvision-dashboard
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/carvision-dashboard:latest
+        imagePullPolicy: Always
+        command: ["streamlit", "run", "app/streamlit_app.py",
+                  "--server.port=8501",
+                  "--server.address=0.0.0.0",
+                  "--server.headless=true",
+                  "--browser.gatherUsageStats=false"]
+        ports:
+        - containerPort: 8501
+          name: http
+          protocol: TCP
+        env:
+        - name: MODEL_PATH
+          value: "/app/models/model.joblib"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: ARTIFACTS_DIR
+          value: "/app/artifacts"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /_stcore/health
+            port: 8501
+          initialDelaySeconds: 45
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /_stcore/health
+            port: 8501
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - name: models
+          mountPath: /app/models
+        - name: data
+          mountPath: /app/data
+        - name: artifacts
+          mountPath: /app/artifacts
+      initContainers:
+      - name: download-model
+        image: python:3.11-alpine
+        command:
+        - sh
+        - -c
+        - |
+          pip install --quiet google-cloud-storage==2.18.2 && \
+          python /scripts/download-model.py
+        envFrom:
+        - configMapRef:
+            name: carvision-model-config
+        volumeMounts:
+        - name: models
+          mountPath: /models
+        - name: download-script
+          mountPath: /scripts
+      - name: download-data
+        image: python:3.11-alpine
+        command:
+        - sh
+        - -c
+        - |
+          pip install --quiet google-cloud-storage==2.18.2 && \
+          python /scripts/download-model.py
+        envFrom:
+        - configMapRef:
+            name: carvision-dataset-config
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: download-script
+          mountPath: /scripts
+      - name: download-metrics
+        image: python:3.11-alpine
+        command:
+        - sh
+        - -c
+        - |
+          pip install --quiet google-cloud-storage==2.18.2 && \
+          python -c "
+          import os
+          from google.cloud import storage
+          bucket = storage.Client().bucket(os.environ['GCS_BUCKET'])
+          for line in os.environ['ARTIFACTS'].strip().split('\n'):
+              line = line.strip()
+              if not line: continue
+              gcs_path, local_path = line.split(':')
+              os.makedirs(os.path.dirname(local_path), exist_ok=True)
+              bucket.blob(gcs_path).download_to_filename(local_path)
+              print(f'Downloaded {gcs_path} -> {local_path} ({os.path.getsize(local_path)} bytes)')
+          "
+        env:
+        - name: GCS_BUCKET
+          valueFrom:
+            configMapKeyRef:
+              name: carvision-metrics-config
+              key: GCS_BUCKET
+        - name: ARTIFACTS
+          valueFrom:
+            configMapKeyRef:
+              name: carvision-metrics-config
+              key: ARTIFACTS
+        volumeMounts:
+        - name: artifacts
+          mountPath: /artifacts
+      volumes:
+      - name: models
+        emptyDir: {}
+      - name: data
+        emptyDir: {}
+      - name: artifacts
+        emptyDir: {}
+      - name: download-script
+        configMap:
+          name: download-script
+          defaultMode: 0755
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: carvision-dashboard-service
+  namespace: ml-portfolio
+  labels:
+    app: carvision-dashboard
+spec:
+  type: NodePort
+  selector:
+    app: carvision-dashboard
+  ports:
+  - name: http
+    port: 8501
+    targetPort: 8501
+    protocol: TCP

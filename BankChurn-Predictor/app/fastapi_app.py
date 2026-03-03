@@ -179,6 +179,7 @@ app = FastAPI(
     title="BankChurn Predictor API",
     description="API for bank customer churn prediction",
     version="1.0.0",
+    root_path=os.getenv("API_ROOT_PATH", ""),
     lifespan=lifespan,
 )
 

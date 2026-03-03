@@ -12,15 +12,17 @@
 │  GCP (us-central1)             │  AWS (us-east-1)           │
 │                                │                            │
 │  GKE Cluster (7 nodes)         │  EKS Cluster (t3.large)    │
-│  v1.34.3-gke.1318000           │  Terraform-managed          │
+│  v1.34.3-gke.1318000           │  Terraform-managed         │
 │  ┌──────────┐ ┌──────────┐     │  ┌──────────┐ ┌────────┐   │
 │  │BankChurn │ │CarVision │     │  │BankChurn │ │CarVis. │   │
 │  │  :8000   │ │  :8000   │     │  │  :8000   │ │  :8000 │   │
 │  └────┬─────┘ └────┬─────┘     │  └────┬─────┘ └───┬────┘   │
 │  ┌────┴─────┐ ┌────┴─────┐     │  ┌────┴─────┐ ┌───┴────┐   │
-│  │NLPInsight│ │ MLflow   │     │  │NLPInsight│ │ MLflow │   │
-│  │  :8000   │ │  :5000   │     │  │  :8000   │ │  :5000 │   │
-│  └──────────┘ └──────────┘     │  └──────────┘ └────────┘   │
+│  │NLPInsight│ │CarVision │     │  │NLPInsight│ │CarVis. │   │
+│  │  :8000   │ │Dashboard │     │  │  :8000   │ │Dashb.  │   │
+│  └──────────┘ │  :8501   │     │  └──────────┘ │  :8501 │   │
+│               └──────────┘     │               └────────┘   │
+│  MLflow :5000                  │  MLflow :5000              │
 │  Prometheus + Grafana          │  Prometheus + Grafana      │
 │  GCE Ingress (34.120.120.57)   │  ALB (DNS)                 │
 │  Artifact Registry + GCS       │  ECR + S3                  │
@@ -28,15 +30,16 @@
 │  Terraform IaC                 │  Terraform IaC             │
 └─────────────────────────────────────────────────────────────┘
 
-Note: CarVision Streamlit dashboard (:8501) runs only in local
-docker-compose dev environment, not in K8s production deployments.
+CarVision Streamlit dashboard runs as a separate K8s pod (multi-target
+Dockerfile: --target api | --target dashboard). Enterprise pattern:
+independent scaling, health checks, and resource limits.
 ```
 
 ## Verified Capabilities
 
 | Capability | GCP | AWS | Evidence |
 |------------|-----|-----|----------|
-| Container orchestration (K8s) | GKE v1.34.3 | EKS | 7 nodes, 8+ pods running |
+| Container orchestration (K8s) | GKE v1.34.3 | EKS | 7 nodes, 8 pods running (incl. Streamlit dashboard) |
 | Auto-scaling (HPA) | CPU-based | CPU-based | Verified: 1→3 pods under load, scale-down after |
 | Model serving (FastAPI) | 3 services | 3 services | `/health` + `/predict` — 27/27 smoke tests passed |
 | Batch prediction | All 3 APIs | All 3 APIs | `/predict_batch` endpoints verified |
@@ -107,10 +110,12 @@ docker-compose dev environment, not in K8s production deployments.
 | Service | Image | Size | Improvement |
 |---------|-------|------|-------------|
 | BankChurn | `bankchurn-predictor:v3.3.0` | **1.09 GB** | from 2.11 GB (-48%) |
-| CarVision | `carvision-market-intelligence:v3.3.0` | **518 MB** | from 1.76 GB (-71%) |
+| CarVision API | `carvision-market-intelligence:v3.3.0` | **518 MB** | from 1.76 GB (-71%) |
+| CarVision Dashboard | `carvision-dashboard:latest` | **950 MB** | Multi-target Dockerfile |
 | NLPInsight | `nlpinsight-analyzer:v3.3.0` | **1.4 GB** | from 2.05 GB (-32%) |
 
 > Optimizations: `--no-compile`, aggressive cleanup (`__pycache__`, `tests/`, `pip/setuptools`), NLPInsight `torch/test` removal.
+> CarVision uses multi-target Dockerfile: `docker build --target api` (518 MB) or `--target dashboard` (950 MB).
 
 ## Load Test Results (Locust, via kubectl port-forward, 2026-03-03)
 
@@ -118,15 +123,15 @@ docker-compose dev environment, not in K8s production deployments.
 
 | Endpoint | p50 | p75 | p95 | p99 | Requests | Errors | RPS |
 |----------|-----|-----|-----|-----|----------|--------|-----|
-| bankchurn:predict | 180ms | 220ms | 360ms | 520ms | 278 | 0 | 2.3 |
-| bankchurn:health | 79ms | 99ms | 190ms | 190ms | 31 | 0 | 0.3 |
-| carvision:predict | 110ms | 110ms | 170ms | 320ms | 257 | 0 | 2.1 |
-| carvision:predict_batch | 100ms | 110ms | 130ms | 140ms | 46 | 0 | 0.4 |
-| nlpinsight:predict | 220ms | 330ms | 540ms | 1100ms | 194 | 0 | 1.6 |
-| nlpinsight:predict_batch | 500ms | 730ms | 1200ms | 1400ms | 52 | 0 | 0.4 |
-| **Aggregated** | **170ms** | **210ms** | **500ms** | **910ms** | **967** | **0 (0%)** | **8.0** |
+| bankchurn:predict | 170ms | 190ms | 350ms | 450ms | 260 | 0 | 2.2 |
+| bankchurn:health | 64ms | 69ms | 560ms | 640ms | 37 | 0 | 0.3 |
+| carvision:predict | 91ms | 98ms | 130ms | 300ms | 265 | 0 | 2.2 |
+| carvision:predict_batch | 92ms | 97ms | 140ms | 240ms | 45 | 0 | 0.4 |
+| nlpinsight:predict | 180ms | 270ms | 450ms | 2400ms | 184 | 0 | 1.5 |
+| nlpinsight:predict_batch | 530ms | 670ms | 850ms | 2300ms | 67 | 0 | 0.6 |
+| **Aggregated** | **160ms** | **190ms** | **480ms** | **820ms** | **973** | **0 (0%)** | **8.1** |
 
-**SLA Compliance**: Error rate 0.0% < 1% ✅ · P95 500ms ≤ 500ms ✅ · P99 910ms < 1000ms ✅
+**SLA Compliance**: Error rate 0.0% < 1% ✅ · P95 480ms < 500ms ✅ · P99 820ms < 1000ms ✅
 
 ### Stress Load (30 users, 2 minutes)
 
@@ -157,11 +162,12 @@ docker-compose dev environment, not in K8s production deployments.
 
 | Pod | Status | CPU | Memory | Node |
 |-----|--------|-----|--------|------|
-| bankchurn-predictor | Running 1/1 | 279m | 348Mi | xrch |
-| carvision-intelligence | Running 1/1 | 85m | 294Mi | lfn4 |
-| nlpinsight-analyzer (×3) | Running 1/1 | 8-396m | 647-761Mi | fjmv, lqbl, nb2q |
-| prometheus | Running 1/1 | 3m | 42Mi | lfn4 |
-| grafana | Running 1/1 | 2m | 76Mi | fjmv |
+| bankchurn-predictor | Running 1/1 | 10m | 348Mi | xrch |
+| carvision-intelligence | Running 1/1 | 10m | 294Mi | mf2h |
+| carvision-dashboard | Running 1/1 | — | ~512Mi | 6ls9 |
+| nlpinsight-analyzer | Running 1/1 | 9m | 927Mi | lqbl |
+| prometheus | Running 1/1 | 3m | 29Mi | t8v4 |
+| grafana | Running 1/1 | 3m | 76Mi | lqbl |
 | mlflow-server | Running 1/1 | 1m | 420Mi | xrch |
 
 ### Cluster
@@ -273,4 +279,4 @@ python3 -m locust -f tests/load/locustfile.py --headless -u 10 -r 2 -t 120s --on
 
 ---
 
-**Last Updated**: 2026-03-03 (v3.3.0 — CI fixes, PSS labels, adversarial tests, 367+ tests, Docker optimization, full GKE redeployment)
+**Last Updated**: 2026-03-03 (v3.3.0 — Streamlit dashboard on K8s, multi-target Dockerfile, enterprise manifests, load test 973 reqs 0% errors, 367+ tests, full GKE redeployment)

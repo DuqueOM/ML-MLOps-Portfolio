@@ -56,3 +56,17 @@ spec:
             name: carvision-service
             port:
               number: 80
+      - path: /dashboard
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: carvision-dashboard-service
+            port:
+              number: 8501
+      - path: /dashboard/*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: carvision-dashboard-service
+            port:
+              number: 8501
