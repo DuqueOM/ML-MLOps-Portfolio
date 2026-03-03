@@ -309,14 +309,14 @@ docker build -t nlpinsight:latest ./NLPInsight-Analyzer
 echo $GITHUB_TOKEN | docker login ghcr.io -u DuqueOM --password-stdin
 
 # 2. Tag images
-docker tag bankchurn:latest ghcr.io/duqueom/bankchurn-api:v1.5.0
-docker tag carvision:latest ghcr.io/duqueom/carvision-api:v1.5.0
-docker tag nlpinsight:latest ghcr.io/duqueom/nlpinsight-api:v2.0.0
+docker tag bankchurn:latest ghcr.io/duqueom/bankchurn-api:v3.0.0
+docker tag carvision:latest ghcr.io/duqueom/carvision-api:v3.0.0
+docker tag nlpinsight:latest ghcr.io/duqueom/nlpinsight-api:v3.0.0
 
 # 3. Push to registry
-docker push ghcr.io/duqueom/bankchurn-api:v1.5.0
-docker push ghcr.io/duqueom/carvision-api:v1.5.0
-docker push ghcr.io/duqueom/nlpinsight-api:v2.0.0
+docker push ghcr.io/duqueom/bankchurn-api:v3.0.0
+docker push ghcr.io/duqueom/carvision-api:v3.0.0
+docker push ghcr.io/duqueom/nlpinsight-api:v3.0.0
 ```
 
 ### Pull from Registry
@@ -483,8 +483,8 @@ export MODEL_PATH=/app/models/production/model.joblib
 git push origin main
 
 # Or create tag for release
-git tag -a v1.5.0 -m "Release v1.5.0"
-git push origin v1.5.0
+git tag -a v3.2.1 -m "Release v3.2.1"
+git push origin v3.2.1
 ```
 
 ### Debug CI Failures
@@ -590,7 +590,7 @@ For **critical production issues**:
 
 <div align="center">
 
-**Runbook Version**: 2.0 | **Last Updated**: February 2026
+**Runbook Version**: 3.0 | **Last Updated**: March 2026
 
 ⭐ **Production-Ready Operations** ⭐
 

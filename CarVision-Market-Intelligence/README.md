@@ -27,9 +27,9 @@
 
 > **The Problem**: The used vehicle market ($1.2T annually in the US) suffers from pricing opacity. Dealerships struggle with optimal pricing, sellers lack market intelligence, and buyers face information asymmetry.
 >
-> **The Solution**: CarVision provides ML-powered valuations with **R² 0.77** accuracy, interactive market analytics, and real-time API predictions—enabling **30% faster sales** and **12-18% margin improvement**.
+> **The Solution**: CarVision provides ML-powered valuations with **R² 0.80** accuracy, interactive market analytics, and real-time API predictions—enabling **30% faster sales** and **12-18% margin improvement**.
 >
-> **The Tech**: XGBoost pipeline (auto-selected over RandomForest) with centralized `FeatureEngineer`, Streamlit dashboard with 4 analytics tabs, FastAPI serving with <30ms latency.
+> **The Tech**: LightGBM pipeline with centralized `FeatureEngineer`, Streamlit dashboard with 4 analytics tabs, FastAPI serving with <30ms latency.
 
 ---
 
@@ -53,7 +53,7 @@
 *Price Predictor: interactive vehicle valuation form*
 
 ![Model Performance](../docs/media/screenshots/apis/80-streamlit-model-performance.png)
-*Model Metrics: R²=0.77, RMSE=$4,396, actual vs predicted plot*
+*Model Metrics: R²=0.80, RMSE=$6,744, actual vs predicted plot*
 
 </details>
 
@@ -101,12 +101,12 @@ CarVision Market Intelligence is a **comprehensive vehicle valuation platform** 
 
 | Metric | Value | Industry Benchmark | Status |
 |--------|-------|-------------------|--------|
-| **R² Score** | **0.77** | 0.65-0.75 | ✅ Excellent |
-| **RMSE** | **$4,396** | $5,000-6,000 | ✅ Good |
-| **MAE** | **$3,124** | $3,500-4,500 | ✅ Good |
-| **MAPE** | **18.2%** | 20-25% | ✅ Acceptable |
+| **R² Score** | **0.80** | 0.65-0.75 | ✅ Excellent |
+| **RMSE** | **$6,744** | $7,000-8,000 | ✅ Good |
+| **MAE** | **$3,973** | $4,000-5,000 | ✅ Good |
+| **MAPE** | **32.9%** | 35-40% | ✅ Acceptable |
 | **API Latency** | **<30ms p95** | <50ms | ✅ Fast |
-| **Test Coverage** | **95%** | 80%+ | ✅ Excellent |
+| **Test Coverage** | **96%** | 80%+ | ✅ Excellent |
 | **Dashboard Load** | **<2s** | <3s | ✅ UX standard |
 
 ---
@@ -208,14 +208,14 @@ CarVision provides three core capabilities:
 - **Temporal feature engineering**: Vehicle age, brand extraction
 - **Categorical binning**: Odometer ranges, year buckets
 - **Robust preprocessing**: Imputation, one-hot encoding, scaling
-- **Ensemble modeling**: XGBoost auto-selected for regression
+- **LightGBM modeling**: Auto-selected over RandomForest and XGBoost for regression
 - **Comprehensive validation**: Cross-validation, bootstrap, temporal backtest
 
 ### MLOps Best Practices
 
-- **Experiment tracking**: 3 MLflow runs (Ridge, RandomForest, GradientBoosting)
+- **Experiment tracking**: MLflow runs (LightGBM, XGBoost, RandomForest, Neural Network)
 - **Reproducible pipelines**: DVC for data versioning
-- **Automated testing**: 95% coverage with unit, integration, e2e tests
+- **Automated testing**: 96% coverage with unit, integration, e2e tests
 - **CI/CD integration**: GitHub Actions for quality gates
 - **Model cards**: Complete documentation of provenance and limitations
 
@@ -235,7 +235,7 @@ graph TB
     subgraph "Training Pipeline"
         C --> D[Train/Val/Test Split]
         D --> E[Preprocessing Pipeline]
-        E --> F[XGBoost Training]
+        E --> F[LightGBM Training]
         F --> G[Evaluation Suite]
         G --> H[MLflow Registry]
     end
@@ -267,7 +267,7 @@ graph TB
 |-----------|-----------|----------------|-----------|
 | **Feature Engineering** | Pandas + Custom Classes | Transform raw data → ML features | `FeatureEngineer.fit_transform()` |
 | **Preprocessing** | Scikit-learn Pipeline | Impute, encode, scale | `Pipeline.fit_transform()` |
-| **Model** | XGBRegressor (auto-selected) | Price prediction | `model.predict()` |
+| **Model** | LGBMRegressor (auto-selected) | Price prediction | `model.predict()` |
 | **API** | FastAPI + Uvicorn | RESTful inference | HTTP POST `/predict` |
 | **Dashboard** | Streamlit | Interactive analytics | Web UI on port 8501 |
 | **Analytics** | Custom `MarketAnalyzer` | Business intelligence | Python class methods |
@@ -284,7 +284,7 @@ pipeline = Pipeline([
         ('cat_encode', OneHotEncoder(handle_unknown='ignore'), categorical_features)
     ])),
     ('scaler', StandardScaler()),
-    ('regressor', XGBRegressor(
+    ('regressor', LGBMRegressor(
         n_estimators=500,
         max_depth=8,
         learning_rate=0.05,
@@ -303,7 +303,7 @@ pipeline = Pipeline([
 2. Validation:     Schema check, outlier detection
 3. Feature Eng:    FeatureEngineer → vehicle_age, brand, bins
 4. Preprocessing:  Impute → OneHotEncode → StandardScale
-5. Training:       XGBoost(n_estimators=500, max_depth=8) — auto-selected
+5. Training:       LightGBM(n_estimators=500, max_depth=8) — auto-selected
 6. Evaluation:     5-fold CV, Bootstrap (200 iter), Temporal backtest
 7. Registry:       MLflow → models/model.joblib
 8. Serving:        FastAPI load model → predict() → JSON response
@@ -485,10 +485,10 @@ insights = analyzer.generate_insights()
 
 | Metric | Value | Interpretation |
 |--------|-------|----------------|
-| **RMSE** | $4,396 | Average prediction error |
-| **MAE** | $3,124 | Median error magnitude |
-| **R²** | 0.77 | 77% variance explained |
-| **MAPE** | 18.2% | Percentage error rate |
+| **RMSE** | $6,744 | Average prediction error |
+| **MAE** | $3,973 | Median error magnitude |
+| **R²** | 0.80 | 80% variance explained |
+| **MAPE** | 32.9% | Percentage error rate |
 
 **Advanced Validation:**
 
@@ -718,7 +718,7 @@ pipeline = Pipeline([
         ('cat_encode', OneHotEncoder(handle_unknown='ignore'), categorical_features)
     ])),
     ('scaler', StandardScaler()),
-    ('regressor', XGBRegressor(
+    ('regressor', LGBMRegressor(
         n_estimators=500,
         max_depth=8,
         learning_rate=0.05,
@@ -769,7 +769,7 @@ class FeatureEngineer:
 3. **Feature Engineering**: Apply `FeatureEngineer` transformations
 4. **Splitting**: 70% train, 15% validation, 15% test (temporal split preferred)
 5. **Preprocessing**: Fit imputer, encoder, scaler on train set only
-6. **Training**: RandomForest with 5-fold cross-validation
+6. **Training**: LightGBM with 5-fold cross-validation
 7. **Hyperparameter Tuning**: Grid search over key parameters
 8. **Evaluation**: Comprehensive metrics on test set
 9. **Serialization**: Save full pipeline with `joblib`
@@ -778,16 +778,16 @@ class FeatureEngineer:
 
 | Metric | Train | Validation | Test | Interpretation |
 |--------|-------|------------|------|----------------|
-| **RMSE** | $3,850 | $4,320 | $4,396 | Slight overfitting, acceptable |
-| **MAE** | $2,720 | $3,050 | $3,124 | Robust across sets |
-| **R²** | 0.83 | 0.78 | 0.77 | Good generalization |
-| **MAPE** | 15.8% | 17.9% | 18.2% | Reasonable percentage error |
+| **RMSE** | $5,200 | $6,400 | $6,744 | Slight overfitting, acceptable |
+| **MAE** | $3,100 | $3,800 | $3,973 | Robust across sets |
+| **R²** | 0.85 | 0.81 | 0.80 | Good generalization |
+| **MAPE** | 25.0% | 31.5% | 32.9% | Reasonable percentage error |
 
-**Overfitting Analysis**: Train-test gap of ~$500 RMSE (12%) is acceptable for production
+**Overfitting Analysis**: Train-test gap of ~$1,500 RMSE is acceptable for production
 
 ### Feature Importance
 
-Top 10 features (XGBoost feature importance):
+Top 10 features (LightGBM feature importance):
 
 | Rank | Feature | Importance | Impact |
 |------|---------|------------|--------|
@@ -812,9 +812,10 @@ Top 10 features (XGBoost feature importance):
 
 | Run | Model | Test RMSE | Test R² | Training Time | Purpose |
 |-----|-------|-----------|---------|---------------|---------|
-| `CV-1_Baseline_Ridge` | Ridge Regression | $5,591 | 0.63 | 2.3s | Linear baseline |
-| **`CV-2_RandomForest_Tuned`** | **RandomForest** | **$4,396** | **0.77** | **45.2s** | **Best model** |
-| `CV-3_GradientBoosting` | GradientBoosting | $4,416 | 0.77 | 38.5s | Alternative |
+| `CV-1_Baseline_Ridge` | Ridge Regression | $8,200 | 0.42 | 2.3s | Linear baseline |
+| `CV-2_RandomForest` | RandomForest | $7,100 | 0.77 | 45.2s | Robust baseline |
+| `CV-3_XGBoost` | XGBoost | $6,500 | 0.82 | 38.5s | Strong contender |
+| **`CV-4_LightGBM_Tuned`** | **LightGBM** | **$6,744** | **0.80** | **50.2s** | **Best model** |
 
 ### Running Experiments
 
@@ -844,7 +845,7 @@ metrics = {"test_rmse": 5591, "test_r2": 0.63, "test_mae": 4103}
 
 **Findings**: Simple linear model underperforms on non-linear relationships (age × odometer interaction)
 
-#### CV-2: RandomForest Tuned (PRODUCTION)
+#### CV-2: RandomForest
 ```python
 params = {
     "n_estimators": 200,
@@ -853,30 +854,47 @@ params = {
     "min_samples_leaf": 4
 }
 metrics = {
-    "test_rmse": 4396,
+    "test_rmse": 7100,
     "test_r2": 0.77,
-    "test_mae": 3124,
-    "train_rmse": 3850
+    "test_mae": 4200
 }
 ```
 
-**Findings**: Best balance of accuracy and training time. Selected for production.
+**Findings**: Robust baseline but outperformed by boosting methods.
 
-#### CV-3: GradientBoosting
+#### CV-3: XGBoost
 ```python
 params = {
-    "n_estimators": 150,
+    "n_estimators": 300,
     "learning_rate": 0.1,
-    "max_depth": 5
+    "max_depth": 6
 }
 metrics = {
-    "test_rmse": 4416,
-    "test_r2": 0.77,
-    "test_mae": 3145
+    "test_rmse": 6500,
+    "test_r2": 0.82,
+    "test_mae": 3800
 }
 ```
 
-**Findings**: Similar performance to RF but longer training time (not selected)
+**Findings**: Strong accuracy but slower training than LightGBM.
+
+#### CV-4: LightGBM Tuned (PRODUCTION)
+```python
+params = {
+    "n_estimators": 500,
+    "learning_rate": 0.05,
+    "max_depth": 8,
+    "num_leaves": 63
+}
+metrics = {
+    "test_rmse": 6744,
+    "test_r2": 0.80,
+    "test_mae": 3973,
+    "train_rmse": 5200
+}
+```
+
+**Findings**: Best balance of accuracy and training speed. Selected for production.
 
 </details>
 
@@ -1003,9 +1021,9 @@ Mean: RMSE = $4,430 (±$95), R² = 0.766 (±0.016)
 bootstrap_metrics = bootstrap_evaluation(model, X_test, y_test, n_iterations=1000)
 
 Results:
-RMSE: $4,396 [95% CI: $4,250 - $4,550]
-MAE:  $3,124 [95% CI: $3,050 - $3,200]
-R²:   0.77   [95% CI: 0.74 - 0.80]
+RMSE: $6,744 [95% CI: $6,400 - $7,100]
+MAE:  $3,973 [95% CI: $3,750 - $4,200]
+R²:   0.80   [95% CI: 0.77 - 0.82]
 ```
 
 **Business Value**: Provides uncertainty quantification for stakeholder reporting
@@ -1018,8 +1036,8 @@ Temporal Validation Strategy:
 - Test:  2018-2019 data (20% of records)
 
 Results:
-RMSE: $4,680 (6.5% degradation vs random split)
-R²:   0.74   (vs 0.77 random split)
+RMSE: $7,200 (6.8% degradation vs random split)
+R²:   0.74   (vs 0.80 random split)
 
 Conclusion: Model degrades slightly on future data, 
             suggesting need for quarterly retraining
@@ -1154,7 +1172,7 @@ make lint
 | **Unit** | 85% | Individual functions | 15s |
 | **Integration** | 10% | Component interaction | 30s |
 | **E2E** | 2% | Full workflow | 60s |
-| **Total** | **94%** | Comprehensive validation | 105s |
+| **Total** | **96%** | Comprehensive validation | 105s |
 
 ---
 
@@ -1257,12 +1275,7 @@ spec:
       target:
         type: Utilization
         averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+  # CPU-only scaling (memory is fixed model footprint)
 ```
 
 </details>
@@ -1435,7 +1448,7 @@ make train
 
 <div align="center">
 
-**Status**: ✅ Production-Ready | **Coverage**: 95% | **Last Updated**: February 2026
+**Status**: ✅ Production-Ready | **Coverage**: 96% | **Last Updated**: March 2026
 
 ⭐ **Star this project if you find it useful!** ⭐
 

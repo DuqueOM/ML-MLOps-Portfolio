@@ -53,9 +53,9 @@
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|---------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 89% | 140ms p50 | StackingClassifier (5 models), Feature Engineering, Drift Detection |
-| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.80**, RMSE $6.7K | 95% | 79ms p50 | LightGBM + FeatureEngineer, Streamlit Dashboard (4 tabs) |
-| [📝 NLPInsight](NLPInsight-Analyzer/) | Classification | **Acc 97%** (sentiment) | 99% | 100ms p50 | FinBERT (ProsusAI), Transfer Learning, Financial PhraseBank |
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | 140ms p50 | StackingClassifier (5 models), Feature Engineering, Drift Detection |
+| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.80**, RMSE $6.7K | 96% | 79ms p50 | LightGBM + FeatureEngineer, Streamlit Dashboard (4 tabs) |
+| [📝 NLPInsight](NLPInsight-Analyzer/) | Classification | **Acc 97%** (sentiment) | 98% | 100ms p50 | FinBERT (ProsusAI), Transfer Learning, Financial PhraseBank |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
@@ -76,7 +76,7 @@ Production-grade churn prediction with **StackingClassifier** ensemble (RF + Gra
 
 | AUC-ROC | F1 | Precision | Recall | Coverage | Latency |
 |---------|-----|-----------|--------|----------|----------|
-| **0.87** | 0.62 | 0.73 | 0.54 | 89% | <50ms p95 |
+| **0.87** | 0.62 | 0.73 | 0.54 | 90% | <50ms p95 |
 
 [📂 Project](BankChurn-Predictor/) · [📄 Model Card](BankChurn-Predictor/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
@@ -88,7 +88,7 @@ End-to-end vehicle valuation platform powered by **LightGBM** with optimized hyp
 
 | R² | RMSE | MAE | MAPE | Coverage | Dashboard |
 |----|------|-----|------|----------|------------|
-| **0.80** | $6,744 | $3,973 | 32.9% | 95% | <2s load |
+| **0.80** | $6,744 | $3,973 | 32.9% | 96% | <2s load |
 
 [📂 Project](CarVision-Market-Intelligence/) · [📄 Model Card](CarVision-Market-Intelligence/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
@@ -100,7 +100,7 @@ Real-time financial sentiment analysis using **ProsusAI/FinBERT** — a BERT mod
 
 | Accuracy | F1 (weighted) | F1 (macro) | Labels | Coverage |
 |----------|---------------|------------|--------|----------|
-| **97%** | 0.97 | 0.96 | 3 | 99% |
+| **97%** | 0.97 | 0.96 | 3 | 98% |
 
 [📂 Project](NLPInsight-Analyzer/) · [📄 Model Card](NLPInsight-Analyzer/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
@@ -117,9 +117,9 @@ Real-time financial sentiment analysis using **ProsusAI/FinBERT** — a BERT mod
 | **Monitoring** | Prometheus (multi-service scraping), Grafana (10-panel dashboard), Load Testing (SRE methodology), Evidently |
 | **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy), Artifact Registry, ECR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
-| **Testing** | pytest (88-95% coverage), Codecov, pre-commit hooks |
+| **Testing** | pytest (90–98% coverage, 323 tests), Codecov, pre-commit hooks |
 
-> **v6.3 Performance Optimizations**: Lazy SHAP (BankChurn), NLPInsight dual backend, 2 uvicorn workers, optimized K8s resource limits. Load test: 0% error rate, p95 180ms aggregated. Previous: Joblib compression (-76%), Pandas dtypes (-56%), sklearn parallelization (2-4x). Full details in [docs/FEATURES.md](docs/FEATURES.md).
+> **v3.2.0 Highlights**: StackingClassifier (BankChurn), LightGBM (CarVision), FinBERT (NLPInsight), Lazy SHAP, dual NLP backend, Pandera validation, fairness audits, OpenTelemetry tracing. Load test: 0% error rate, p95 180ms aggregated. Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
 ## 🏗️ Architecture
 
@@ -286,7 +286,7 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 | **[Quick Start](QUICK_START.md)** | 5-minute demo with API examples and health checks |
 | **[Architecture](docs/ARCHITECTURE_PORTFOLIO.md)** | System design, Mermaid diagrams, infrastructure, CI/CD workflow |
 | **[Operations Runbook](RUNBOOK.md)** | Day-to-day commands, Docker, K8s, Terraform deployment |
-| **[Features & Changelog](docs/FEATURES.md)** | Performance optimizations, new features (v6.0–v6.1) |
+| **[Features & Changelog](docs/FEATURES.md)** | Performance optimizations, new features, version history |
 | **[Release Process](docs/RELEASE.md)** | GHCR publishing, blue/green deployments, rollback procedures |
 | **[Contributing](docs/contributing/guidelines.md)** | Development workflow, code standards, PR process |
 | **[Security Policy](SECURITY.md)** | Vulnerability reporting and scanning details |

@@ -77,7 +77,7 @@ make lint
 - **Integration Tests**: Required for API endpoints.
   - Use `tests/integration/test_demo.py` for cross-project validation.
   - Ensure all services pass health checks and prediction tests.
-- **Coverage**: Must remain above 80% (actual: 88-95%, [Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)).
+- **Coverage**: Must remain above 85% (actual: 90–98%, [Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)).
 
 **Run integration tests**:
 ```bash
@@ -102,7 +102,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 **Example:**
 ```text
-feat(bankchurn): add probability calibration to XGBoost model
+feat(bankchurn): add probability calibration to StackingClassifier
 ```
 
 ## Pull Request Process
@@ -137,4 +137,4 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: March 2026

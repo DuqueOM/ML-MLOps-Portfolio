@@ -44,7 +44,7 @@
 | Object storage (models) | GCS | S3 | Init containers download on boot |
 | Data versioning | DVC + GCS | DVC + S3 | `dvc push/pull` |
 | Security scanning | Trivy + Bandit + Gitleaks | Trivy + Bandit + Gitleaks | SARIF reports |
-| Test coverage | 85-99% (323 tests) | 85-99% | Codecov integration, 85% CI threshold |
+| Test coverage | 90-98% (323 tests) | 90-98% | Codecov integration, 85% CI threshold |
 | Infra testing (Terraform) | tfsec + checkov | tfsec + checkov | Hard gates + advisory |
 | Infra testing (K8s) | kube-linter + conftest | kube-linter + conftest | OPA policies (13 rules) |
 

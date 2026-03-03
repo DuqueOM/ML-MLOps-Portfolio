@@ -1,6 +1,6 @@
 # Models Directory
 
-**Last Updated**: February 2026
+**Last Updated**: March 2026
 
 ## Current Files
 
@@ -8,13 +8,13 @@
 **Status**: ✅ **Active - Production Documentation**
 
 Comprehensive model card following MLOps Staff best practices:
-- RandomForest regression architecture
-- Performance metrics (R²=0.77, RMSE=$4,396)
+- LightGBM regression architecture
+- Performance metrics (R²=0.80, RMSE=$6,744)
 - Feature engineering (centralized FeatureEngineer class)
 - Deployment instructions (API + Streamlit Dashboard)
 - Monitoring and drift detection
 
-**Updated**: February 2026 with hybrid professional format
+**Updated**: March 2026 with hybrid professional format
 
 ---
 
