@@ -211,7 +211,7 @@ jobs:
             -f json -o reports/bandit-report.json -ll || true
           # Blocking scan: fail on HIGH+ severity issues
           bandit -r BankChurn-Predictor/src CarVision-Market-Intelligence/src NLPInsight-Analyzer/src \
-            -ll --severity-level high
+            --severity-level high
       
       - name: Run pip-audit dependency scan
         run: |
