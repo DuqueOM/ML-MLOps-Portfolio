@@ -54,13 +54,13 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Para gitleaks
           lfs: true  # Download Git LFS files
       
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
@@ -121,7 +121,7 @@ jobs:
       
       - name: Upload coverage artifact
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.project }}-py${{ matrix.python-version }}
           path: ${{ matrix.project }}/coverage.xml
@@ -136,10 +136,10 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       
@@ -185,12 +185,12 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       
@@ -229,7 +229,7 @@ jobs:
           echo "✅ No critical security issues found"
       
       - name: Upload security reports
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: security-reports
@@ -251,7 +251,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           lfs: true
       
@@ -303,10 +303,10 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       
@@ -374,7 +374,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           lfs: true
       
@@ -494,7 +494,7 @@ jobs:
           docker compose -f docker-compose.demo.yml logs carvision --tail 50
           echo ""
           echo "=== Git LFS status ==="
-          git lfs ls-files 2>&1 | grep model.joblib
+          git lfs ls-files 2>&1 | grep model.joblib || echo "No LFS model files found (expected in CI - models loaded at runtime)"
 
       - name: Install test dependencies
         run: pip install pytest requests
@@ -527,10 +527,10 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       
@@ -544,7 +544,7 @@ jobs:
           python scripts/benchmark_optimizations.py
       
       - name: Upload benchmark results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: benchmark-results
@@ -578,7 +578,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
       
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -603,7 +603,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
       
       - name: Check for model cards
         run: |
@@ -652,7 +652,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

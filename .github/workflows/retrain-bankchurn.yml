@@ -46,12 +46,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           cache: 'pip'
@@ -92,7 +92,7 @@ jobs:
             ${{ github.event.inputs.promote_to_production == 'true' && '--promote' || '' }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: bankchurn-model-${{ github.run_id }}
           path: |
