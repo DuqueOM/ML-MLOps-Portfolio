@@ -1,10 +1,11 @@
-# GCP Production Deployment Guide
+# Guía de Despliegue en Producción — GCP
 
-Complete guide to deploy the ML-MLOps Portfolio to Google Cloud Platform.
-This document includes the **real deployment experience** with problems encountered and solutions applied.
+Guía completa para desplegar el portafolio ML-MLOps en Google Cloud Platform.
+Este documento incluye la **experiencia real de despliegue** con problemas encontrados y soluciones aplicadas.
 
-> **Deployment Status**: ✅ Successfully deployed on February 18, 2026
-> **Ingress IP**: `34.120.120.57` | **Region**: `us-central1` | **Cluster**: `ml-portfolio-gke-production`
+> **Estado del Despliegue**: ✅ Desplegado exitosamente el 18 de febrero de 2026
+> **Ingress IP**: `34.120.120.57` | **Región**: `us-central1` | **Cluster**: `ml-portfolio-gke-production`
+> **Última actualización**: Marzo 2026 — v7.1.0 (fixes de evaluación senior)
 
 ---
 
@@ -1228,3 +1229,51 @@ grafana-78486fd569-jtmtj                  1/1     Running   94m
 4. **SQLite for MLflow**: Simpler than Cloud SQL proxy for a portfolio demo.
 5. **`NodePort` services**: Required for GCE Ingress (native GKE load balancer).
 6. **`standard-rwo` StorageClass**: GKE's default for ReadWriteOnce persistent disks.
+
+---
+
+## Mejoras v7.1.0 — Evaluación de Reclutador Senior (Marzo 2026)
+
+Cambios aplicados tras una evaluación crítica del portafolio como si fuera revisado por un reclutador senior/staff con 20 años de experiencia.
+
+### Problemas Detectados y Corregidos
+
+| Problema | Severidad | Solución |
+|----------|-----------|----------|
+| HPA huérfano `telecom-hpa` apuntando a deployment inexistente | Crítico | `kubectl delete hpa telecom-hpa -n ml-portfolio` |
+| 2 tests fallando en NLPInsight (Keras 3 + transformers en Python 3.13) | Crítico | Reescritura de `test_training.py` — sys.modules swap en lugar de `@patch("transformers.X")` |
+| Versión inconsistente en README (badge 7.0.0 vs footer 6.3.0) | Alto | Footer actualizado a 7.0.0 |
+| Sin NetworkPolicies (default-allow en todo el namespace) | Medio | `k8s/network-policies.yaml` — default-deny + allow ML API + allow Prometheus scrape + allow monitoring |
+| Sin PodDisruptionBudgets | Medio | `k8s/pod-disruption-budgets.yaml` — minAvailable=1 para los 3 ML services |
+| Metrics API no disponible (transitorio) | Info | Verificado funcional — `kubectl top nodes/pods` operativo |
+
+### Estado Post-Fix
+
+```
+Tests:
+  BankChurn:    185 passed, 1 skipped  — 89.26% coverage ✅
+  CarVision:    37 passed              — 95.41% coverage ✅
+  NLPInsight:   57 passed, 1 xpassed   — 99.57% coverage ✅
+
+Cluster:
+  6 pods Running (3 ML APIs + MLflow + Prometheus + Grafana)
+  3 HPAs activos (bankchurn, carvision, nlpinsight) — CPU-only
+  4 NetworkPolicies (default-deny + 3 allow rules)
+  3 PodDisruptionBudgets (minAvailable=1)
+  5 nodos e2-medium (cluster regional, 3 zonas, autoscaling 1-5)
+
+Linting:
+  black:  ✅ sin cambios necesarios
+  isort:  ✅ sin cambios necesarios
+  flake8: ✅ 0 errores críticos (2 E203 advisory en prediction.py)
+```
+
+### Archivos Nuevos Creados
+
+- `k8s/network-policies.yaml` — NetworkPolicies para namespace ml-portfolio
+- `k8s/pod-disruption-budgets.yaml` — PDBs para los 3 ML services
+
+### Archivos Modificados
+
+- `NLPInsight-Analyzer/tests/test_training.py` — Fix Keras 3 compat con sys.modules stub
+- `README.md` — Footer versión 6.3.0 → 7.0.0

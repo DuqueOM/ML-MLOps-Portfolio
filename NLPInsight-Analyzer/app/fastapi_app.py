@@ -22,6 +22,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, Response
 from pydantic import BaseModel, Field, field_validator
 
+# OpenTelemetry (optional — no-op if not installed)
+try:
+    import sys as _sys
+
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[1].parent))
+    from common_utils.telemetry import init_telemetry, instrument_fastapi
+except ImportError:
+    init_telemetry = None  # type: ignore[assignment]
+    instrument_fastapi = None  # type: ignore[assignment]
+
 # Prometheus metrics (optional dependency)
 try:
     from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
@@ -79,6 +89,11 @@ def load_model_logic() -> bool:
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):
+    # Initialize OpenTelemetry tracing
+    if init_telemetry is not None:
+        init_telemetry(service_name="nlpinsight-analyzer")
+    if instrument_fastapi is not None:
+        instrument_fastapi(application)
     success = load_model_logic()
     if not success:
         logger.warning("Application started without model loaded.")

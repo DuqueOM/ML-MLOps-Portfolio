@@ -113,7 +113,12 @@ if TORCH_AVAILABLE:  # pragma: no cover
               → Linear(64,1)    → output
         """
 
-        def __init__(self, input_dim: int, hidden_dims: List[int] | None = None, dropout: float = 0.3):
+        def __init__(
+            self,
+            input_dim: int,
+            hidden_dims: List[int] | None = None,
+            dropout: float = 0.3,
+        ):
             super().__init__()
             if hidden_dims is None:
                 hidden_dims = [256, 128, 64]

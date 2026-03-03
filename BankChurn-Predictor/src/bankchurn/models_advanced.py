@@ -140,7 +140,12 @@ if TORCH_AVAILABLE:  # pragma: no cover
               → Linear(32,2)   → output (logits)
         """
 
-        def __init__(self, input_dim: int, hidden_dims: List[int] | None = None, dropout: float = 0.3):
+        def __init__(
+            self,
+            input_dim: int,
+            hidden_dims: List[int] | None = None,
+            dropout: float = 0.3,
+        ):
             super().__init__()
             if hidden_dims is None:
                 hidden_dims = [128, 64, 32]
@@ -416,7 +421,11 @@ def build_model(
 
         lr = LogisticRegression(max_iter=1000, random_state=seed, class_weight="balanced")
         rf = RandomForestClassifier(
-            n_estimators=200, max_depth=10, random_state=seed, class_weight="balanced", n_jobs=-1
+            n_estimators=200,
+            max_depth=10,
+            random_state=seed,
+            class_weight="balanced",
+            n_jobs=-1,
         )
         weights = params.get("weights", [0.4, 0.6])
         voting = params.get("voting", "soft")

@@ -1,10 +1,11 @@
-# AWS Production Deployment Guide
+# Guía de Despliegue en Producción — AWS
 
-Complete guide to deploy the ML-MLOps Portfolio to Amazon Web Services.
-This document mirrors the [GCP Production Guide](GCP_PRODUCTION_GUIDE.md) with AWS-specific services and configurations.
+Guía completa para desplegar el portafolio ML-MLOps en Amazon Web Services.
+Este documento es el espejo de la [Guía GCP](GCP_PRODUCTION_GUIDE.md) con servicios y configuraciones específicas de AWS.
 
-> **Deployment Status**: ✅ Live (mirrors GCP deployment)
-> **Region**: `us-east-1` | **Cluster**: `ml-portfolio-eks-production`
+> **Estado del Despliegue**: 🟡 Infraestructura lista (espejo del despliegue GCP)
+> **Región**: `us-east-1` | **Cluster**: `ml-portfolio-eks-production`
+> **Última actualización**: Marzo 2026 — v7.1.0 (fixes de evaluación senior)
 
 ---
 
@@ -1137,3 +1138,41 @@ aws ec2 describe-instances --filters "Name=tag:eks:cluster-name,Values=$EKS_CLUS
 | Phase 9: Init Containers | Already in manifests | Pending | S3 model download |
 | Phase 10: IRSA | 10 min | Pending | IAM role for pods |
 | **Total** | **~2.5 hours** | **Pending** | 6/6 pods + ALB + monitoring |
+
+---
+
+## Mejoras v7.1.0 — Evaluación de Reclutador Senior (Marzo 2026)
+
+Cambios aplicados en GCP que deben replicarse al desplegar en AWS:
+
+### Manifiestos Nuevos para Aplicar en EKS
+
+```bash
+# NetworkPolicies (requiere Calico o VPC CNI network policies habilitado en EKS)
+kubectl apply -f k8s/network-policies.yaml
+
+# PodDisruptionBudgets
+kubectl apply -f k8s/pod-disruption-budgets.yaml
+```
+
+### Notas AWS-Específicas
+
+| Componente | GCP | AWS (equivalente) |
+|-----------|-----|-------------------|
+| NetworkPolicy backend | Calico (habilitado en GKE) | VPC CNI Network Policies o Calico addon |
+| PDB | Funciona igual | Funciona igual |
+| Metrics Server | Pre-instalado en GKE | Instalar: `kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml` |
+| HPA | CPU-only (70%/75%) | Misma configuración |
+
+### Archivos Nuevos
+
+- `k8s/network-policies.yaml` — default-deny + allow rules
+- `k8s/pod-disruption-budgets.yaml` — minAvailable=1 por servicio
+
+### Test Coverage Actual (v7.1.0)
+
+```
+BankChurn:  185 passed — 89.26% ✅
+CarVision:  37 passed  — 95.41% ✅
+NLPInsight: 57 passed  — 99.57% ✅
+```

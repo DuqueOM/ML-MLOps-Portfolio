@@ -302,7 +302,12 @@ def test_predict_without_proba_support():
     y = np.random.choice([0, 1], 100)
 
     # LinearSVC doesn't have predict_proba by default
-    model = Pipeline([("scaler", StandardScaler()), ("clf", LinearSVC(random_state=42, max_iter=1000))])
+    model = Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            ("clf", LinearSVC(random_state=42, max_iter=1000)),
+        ]
+    )
     model.fit(X, y)
 
     predictor = ChurnPredictor(model)

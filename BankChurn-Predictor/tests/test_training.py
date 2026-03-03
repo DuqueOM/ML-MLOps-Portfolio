@@ -411,7 +411,11 @@ def test_compare_models_with_unavailable_skips(config, full_sample_data):
     """Test that compare_models skips unavailable models gracefully."""
     config.mlflow.enabled = False
     # Include a model that may not be installed
-    config.model.advanced.compare_models = ["logistic_regression", "xgboost", "lightgbm"]
+    config.model.advanced.compare_models = [
+        "logistic_regression",
+        "xgboost",
+        "lightgbm",
+    ]
 
     trainer = ChurnTrainer(config, random_state=42)
     X, y = trainer.prepare_features(full_sample_data)

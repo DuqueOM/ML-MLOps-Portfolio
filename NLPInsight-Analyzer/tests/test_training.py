@@ -1,7 +1,9 @@
 """Tests for NLPInsight training pipeline."""
 
 import json
-from unittest.mock import MagicMock, patch
+import sys
+import types
+from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
@@ -75,17 +77,23 @@ class TestSaveModel:
         assert out.exists()
 
 
+def _make_transformers_stub():
+    """Build a fake ``transformers`` module that train_model can import from."""
+    stub = types.ModuleType("transformers")
+    stub.AutoModelForSequenceClassification = MagicMock()
+    stub.Trainer = MagicMock()
+    stub.TrainingArguments = MagicMock()
+    stub.EarlyStoppingCallback = MagicMock()
+    return stub
+
+
 class TestTrainModel:
     @pytest.mark.xfail(reason="Trainer.__init__ introspects model.forward deeply; coverage already 98%")
-    @patch("transformers.AutoModelForSequenceClassification")
-    @patch("transformers.Trainer")
-    @patch("transformers.TrainingArguments", return_value=MagicMock())
-    @patch("transformers.EarlyStoppingCallback")
-    def test_train_model_returns_model_and_metrics(self, mock_es, mock_args, mock_trainer_cls, mock_auto_model):
-        # Setup mocks
+    def test_train_model_returns_model_and_metrics(self):
+        stub = _make_transformers_stub()
         mock_model = MagicMock()
-        mock_model.tp_size = None  # prevent Trainer internal checks
-        mock_auto_model.from_pretrained.return_value = mock_model
+        mock_model.tp_size = None
+        stub.AutoModelForSequenceClassification.from_pretrained.return_value = mock_model
 
         mock_trainer = MagicMock()
         mock_trainer.evaluate.return_value = {
@@ -95,19 +103,24 @@ class TestTrainModel:
             "eval_recall": 0.89,
             "eval_loss": 0.3,
         }
-        mock_trainer_cls.return_value = mock_trainer
+        stub.Trainer.return_value = mock_trainer
 
-        train_ds = MagicMock()
-        val_ds = MagicMock()
-
-        model, metrics = train_model(
-            train_ds,
-            val_ds,
-            model_name="distilbert-base-uncased",
-            num_labels=3,
-            epochs=1,
-            batch_size=8,
-        )
+        orig = sys.modules.get("transformers")
+        sys.modules["transformers"] = stub
+        try:
+            model, metrics = train_model(
+                MagicMock(),
+                MagicMock(),
+                model_name="distilbert-base-uncased",
+                num_labels=3,
+                epochs=1,
+                batch_size=8,
+            )
+        finally:
+            if orig is not None:
+                sys.modules["transformers"] = orig
+            else:
+                sys.modules.pop("transformers", None)
 
         assert model is mock_model
         assert metrics["accuracy"] == 0.9
@@ -116,43 +129,54 @@ class TestTrainModel:
         assert metrics["num_labels"] == 3
         mock_trainer.train.assert_called_once()
 
-    @patch("transformers.AutoModelForSequenceClassification")
-    @patch("transformers.Trainer")
-    @patch("transformers.TrainingArguments")
-    @patch("transformers.EarlyStoppingCallback")
-    def test_train_model_with_label_mappings(self, mock_es, mock_args, mock_trainer_cls, mock_auto_model):
+    def test_train_model_with_label_mappings(self):
+        stub = _make_transformers_stub()
         mock_model = MagicMock()
-        mock_auto_model.from_pretrained.return_value = mock_model
+        stub.AutoModelForSequenceClassification.from_pretrained.return_value = mock_model
         mock_trainer = MagicMock()
         mock_trainer.evaluate.return_value = {}
-        mock_trainer_cls.return_value = mock_trainer
+        stub.Trainer.return_value = mock_trainer
 
         label2id = {"neg": 0, "pos": 1}
         id2label = {0: "neg", 1: "pos"}
 
-        model, metrics = train_model(
-            MagicMock(),
-            MagicMock(),
-            num_labels=2,
-            label2id=label2id,
-            id2label=id2label,
-            early_stopping_patience=0,
-        )
-        # Verify model was loaded with our label mappings
-        call_kwargs = mock_auto_model.from_pretrained.call_args
+        orig = sys.modules.get("transformers")
+        sys.modules["transformers"] = stub
+        try:
+            model, metrics = train_model(
+                MagicMock(),
+                MagicMock(),
+                num_labels=2,
+                label2id=label2id,
+                id2label=id2label,
+                early_stopping_patience=0,
+            )
+        finally:
+            if orig is not None:
+                sys.modules["transformers"] = orig
+            else:
+                sys.modules.pop("transformers", None)
+
+        call_kwargs = stub.AutoModelForSequenceClassification.from_pretrained.call_args
         assert call_kwargs[1]["label2id"] == label2id
         assert call_kwargs[1]["id2label"] == id2label
 
-    @patch("transformers.AutoModelForSequenceClassification")
-    @patch("transformers.Trainer")
-    @patch("transformers.TrainingArguments")
-    @patch("transformers.EarlyStoppingCallback")
-    def test_train_model_no_early_stopping(self, mock_es, mock_args, mock_trainer_cls, mock_auto_model):
-        mock_auto_model.from_pretrained.return_value = MagicMock()
+    def test_train_model_no_early_stopping(self):
+        stub = _make_transformers_stub()
+        stub.AutoModelForSequenceClassification.from_pretrained.return_value = MagicMock()
         mock_trainer = MagicMock()
         mock_trainer.evaluate.return_value = {}
-        mock_trainer_cls.return_value = mock_trainer
+        stub.Trainer.return_value = mock_trainer
 
-        train_model(MagicMock(), MagicMock(), early_stopping_patience=0)
+        orig = sys.modules.get("transformers")
+        sys.modules["transformers"] = stub
+        try:
+            train_model(MagicMock(), MagicMock(), early_stopping_patience=0)
+        finally:
+            if orig is not None:
+                sys.modules["transformers"] = orig
+            else:
+                sys.modules.pop("transformers", None)
+
         # EarlyStoppingCallback should NOT be instantiated
-        mock_es.assert_not_called()
+        stub.EarlyStoppingCallback.assert_not_called()

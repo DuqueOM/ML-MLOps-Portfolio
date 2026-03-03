@@ -1,0 +1,42 @@
+# PodDisruptionBudgets for ml-portfolio namespace
+# Ensures at least 1 replica available during voluntary disruptions
+# (node upgrades, cluster maintenance, etc.)
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: bankchurn-pdb
+  namespace: ml-portfolio
+  labels:
+    app: bankchurn-predictor
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: bankchurn-predictor
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: carvision-pdb
+  namespace: ml-portfolio
+  labels:
+    app: carvision-intelligence
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: carvision-intelligence
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nlpinsight-pdb
+  namespace: ml-portfolio
+  labels:
+    app: nlpinsight-analyzer
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: nlpinsight-analyzer

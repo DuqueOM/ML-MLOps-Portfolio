@@ -21,13 +21,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy production requirements (inference only — no streamlit/plotly/pyarrow)
 COPY requirements-prod.txt ./
 
-# Install dependencies in venv
-# lightgbm installed with --no-deps to avoid unnecessary CUDA deps
+# Install deps in venv; lightgbm --no-deps avoids unnecessary CUDA deps
 RUN python -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
     pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r requirements-prod.txt && \
-    pip install --no-cache-dir --no-deps "lightgbm>=4.0.0,<5.0"
+    pip install --no-cache-dir --no-compile -r requirements-prod.txt && \
+    pip install --no-cache-dir --no-deps "lightgbm>=4.0.0,<5.0" && \
+    find /opt/venv -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null; \
+    find /opt/venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null; \
+    find /opt/venv -type f -name '*.pyc' -delete 2>/dev/null; \
+    find /opt/venv -type f -name '*.pyo' -delete 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/pip 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/setuptools 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/wheel 2>/dev/null; \
+    true
 
 # Stage 2: Runtime
 FROM python:3.11-slim-bookworm AS runtime

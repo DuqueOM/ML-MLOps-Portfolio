@@ -29,8 +29,16 @@ def mock_predictor():
         "all_scores": {"negative": 0.05, "positive": 0.95},
     }
     pred.predict_batch.return_value = [
-        {"label": "positive", "confidence": 0.95, "all_scores": {"negative": 0.05, "positive": 0.95}},
-        {"label": "negative", "confidence": 0.88, "all_scores": {"negative": 0.88, "positive": 0.12}},
+        {
+            "label": "positive",
+            "confidence": 0.95,
+            "all_scores": {"negative": 0.05, "positive": 0.95},
+        },
+        {
+            "label": "negative",
+            "confidence": 0.88,
+            "all_scores": {"negative": 0.88, "positive": 0.12},
+        },
     ]
     return pred
 

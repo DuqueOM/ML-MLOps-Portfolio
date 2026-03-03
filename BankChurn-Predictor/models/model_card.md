@@ -93,12 +93,15 @@ StackingClassifier (5-fold CV):
 
 ### Model Selection Rationale
 
-| Model | Pros | Cons | Weight in Ensemble |
-|-------|------|------|-------------------|
-| **LogisticRegression** | Interpretable, fast inference | Limited feature interactions | 1.0 |
-| **RandomForest** | Robust, non-linear patterns | Longer training | 1.5 (higher weight) |
+| Model | Role in Stack | Pros | Cons |
+|-------|---------------|------|------|
+| **RandomForest** | Base learner | Robust, non-linear patterns | Longer training |
+| **GradientBoosting** | Base learner | Strong sequential learning | Sensitive to noise |
+| **XGBoost** | Base learner | State-of-the-art tabular, regularized | Hyperparameter-sensitive |
+| **LightGBM** | Base learner | Fast training, handles imbalance natively | Overfitting on small data |
+| **LogisticRegression** | Meta-learner | Interpretable combination weights | Linear assumption on meta-features |
 
-**Ensemble Strategy**: Soft voting combines predicted probabilities, leveraging RandomForest's pattern detection while maintaining LogisticRegression's stability.
+**Ensemble Strategy**: StackingClassifier uses 5-fold CV to train 4 diverse base learners, then a LogisticRegression meta-learner combines their out-of-fold predictions — capturing complementary strengths while reducing variance.
 
 ### Advanced Model Comparison Framework
 
@@ -106,7 +109,7 @@ The training pipeline supports automatic comparison across multiple model famili
 
 | Model | Backend | Type | Key Characteristics |
 |-------|---------|------|-------------------|
-| **Ensemble** (default) | scikit-learn | LR + RF VotingClassifier | Interpretable, stable baseline |
+| **Ensemble** (default) | scikit-learn | StackingClassifier (RF+GB+XGB+LGB→LR) | Diverse base learners, meta-learner combination |
 | **XGBoost** | xgboost | Gradient Boosting | State-of-the-art tabular, regularized |
 | **LightGBM** | lightgbm | Gradient Boosting | Fast training, handles imbalance natively |
 | **Neural Network** | PyTorch | Feed-forward MLP | Deep learning, BatchNorm + Dropout |
@@ -412,15 +415,15 @@ curl -X POST "http://localhost:8000/predict" \
 
 ```bash
 # Pull pre-built image
-docker pull ghcr.io/duqueom/bankchurn-api:v1.5.0
+docker pull ghcr.io/duqueom/bankchurn-api:v3.0.0
 
 # Run container
 docker run -d -p 8000:8000 --name bankchurn-api \
-  ghcr.io/duqueom/bankchurn-api:v1.5.0
+  ghcr.io/duqueom/bankchurn-api:v3.0.0
 
 # Health check
 curl http://localhost:8000/health
-# {"status": "healthy", "model_version": "1.5.0", "model_loaded": true}
+# {"status": "healthy", "model_version": "3.0.0", "model_loaded": true}
 ```
 
 ### Kubernetes Deployment

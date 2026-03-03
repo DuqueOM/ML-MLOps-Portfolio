@@ -305,7 +305,9 @@ class TestEdgeCases:
 
         class DummyModel:
             @property
-            def feature_importances_(self):  # pragma: no cover - only used to trigger exception
+            def feature_importances_(
+                self,
+            ):  # pragma: no cover - only used to trigger exception
                 raise ValueError("boom")
 
         dummy_model = DummyModel()

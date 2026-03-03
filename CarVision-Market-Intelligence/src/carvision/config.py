@@ -120,7 +120,10 @@ class BootstrapConfig(BaseModel):
 class EvaluationConfig(BaseModel):
     """Evaluation configuration."""
 
-    metrics: List[str] = Field(default_factory=lambda: ["rmse", "mae", "mape", "r2"], description="Metrics to compute")
+    metrics: List[str] = Field(
+        default_factory=lambda: ["rmse", "mae", "mape", "r2"],
+        description="Metrics to compute",
+    )
     bootstrap: BootstrapConfig = Field(default_factory=BootstrapConfig)
 
     @field_validator("metrics")

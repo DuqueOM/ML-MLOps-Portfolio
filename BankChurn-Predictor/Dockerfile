@@ -1,11 +1,11 @@
-# Multi-stage Dockerfile para BankChurn Predictor
-# Stage 1: Builder - Compila dependencias
+# Multi-stage Dockerfile for BankChurn Predictor
+# Optimized for minimal image size (~600MB target)
+# Stage 1: Builder
 FROM python:3.11-slim-bookworm AS builder
 
-# Metadatos
-LABEL maintainer="Duque Ortega Mutis (DuqueOM) <DuqueOrtegaMutis@gmail.com>"
-LABEL version="1.0.0"
-LABEL description="BankChurn Predictor - Sistema de predicción de abandono de clientes bancarios"
+LABEL maintainer="DuqueOM <DuqueOrtegaMutis@gmail.com>" \
+      version="3.0.0" \
+      description="BankChurn Predictor — Bank customer churn prediction API"
 
 # Variables de entorno de build
 ENV PYTHONUNBUFFERED=1
@@ -25,15 +25,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copiar requirements de producción (sin jupyter, dev tools, torch/CUDA)
 COPY requirements-prod.txt ./
 
-# Instalar dependencias en un virtualenv
-# xgboost se instala con --no-deps para evitar nvidia-nccl-cu12 (~290MB)
-# sus deps reales (numpy, scipy) ya están en requirements-prod.txt
+# Install deps in venv; xgboost/lightgbm --no-deps avoids nvidia-nccl-cu12 (~290MB)
 RUN python -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
     pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r requirements-prod.txt && \
+    pip install --no-cache-dir --no-compile -r requirements-prod.txt && \
     pip install --no-cache-dir --no-deps "xgboost>=1.5.0,<3.0" && \
-    pip install --no-cache-dir --no-deps "lightgbm>=4.0.0,<5.0"
+    pip install --no-cache-dir --no-deps "lightgbm>=4.0.0,<5.0" && \
+    find /opt/venv -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null; \
+    find /opt/venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null; \
+    find /opt/venv -type f -name '*.pyc' -delete 2>/dev/null; \
+    find /opt/venv -type f -name '*.pyo' -delete 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/pip 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/setuptools 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/wheel 2>/dev/null; \
+    true
 
 # Stage 2: Runtime - Imagen final ligera
 FROM python:3.11-slim-bookworm AS runtime
@@ -62,31 +68,28 @@ WORKDIR /app
 # Copiar virtualenv desde builder
 COPY --from=builder --chown=appuser:appuser /opt/venv /opt/venv
 
-# Instalar uvicorn en runtime (pequeño, no afecta cache)
-RUN . /opt/venv/bin/activate && pip install --no-cache-dir "uvicorn>=0.18.0"
-
-# Copiar configs primero (cambian menos, mejor cache)
+# Copy configs first (change less frequently, better cache)
 COPY --chown=appuser:appuser configs/ ./configs/
 COPY --chown=appuser:appuser pyproject.toml ./
 
-# Copiar código fuente (cambia más frecuentemente)
+# Copy source code (changes more frequently)
 COPY --chown=appuser:appuser src/ ./src/
 COPY --chown=appuser:appuser app/ ./app/
 COPY --chown=appuser:appuser monitoring/ ./monitoring/
 
-# Crear directorios necesarios con permisos correctos
+# Create required directories
 RUN mkdir -p logs data/raw data/processed models results && \
     chown -R appuser:appuser /app
 
-# Cambiar a usuario no-root
+# Switch to non-root user
 USER appuser
 
-# Exponer puerto
+# Expose port
 EXPOSE 8000
 
-# Health check mejorado
+# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Comando por defecto (API)
+# Default command (API)
 CMD ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]

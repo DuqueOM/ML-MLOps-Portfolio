@@ -86,23 +86,23 @@ jobs:
         working-directory: ${{ matrix.project }}
         run: |
           pip install flake8 black isort mypy
-          flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics || true
-          black --check src/ || true
-          isort --check-only src/ || true
+          flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          black --check src/ app/
+          isort --check-only src/ app/
       
       - name: Run tests with coverage
         working-directory: ${{ matrix.project }}
         run: |
-          # Coverage thresholds: BankChurn 79%, CarVision 80%, NLPInsight 75%
+          # Coverage thresholds: BankChurn 85%, CarVision 85%, NLPInsight 85%
           if [ "${{ matrix.project }}" = "BankChurn-Predictor" ]; then
             COV_TARGET="src"
-            THRESHOLD=79
+            THRESHOLD=85
           elif [ "${{ matrix.project }}" = "CarVision-Market-Intelligence" ]; then
             COV_TARGET="src/carvision"
-            THRESHOLD=80
+            THRESHOLD=85
           else
             COV_TARGET="src/nlpinsight"
-            THRESHOLD=75
+            THRESHOLD=85
           fi
           pytest --maxfail=1 --disable-warnings -q \
             -m "not slow" \

@@ -25,13 +25,24 @@ COPY requirements.txt requirements.in* ./
 RUN python -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
     pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir --no-compile torch --index-url https://download.pytorch.org/whl/cpu && \
     if [ -f requirements.in ]; then \
         sed -e '/--hash=/d' -e 's/ \\$//' -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' -e '/^torch/d' requirements.in > requirements_clean.txt; \
     else \
         sed -e '/--hash=/d' -e 's/ \\$//' -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' -e '/^torch/d' requirements.txt > requirements_clean.txt; \
     fi && \
-    pip install --no-cache-dir -r requirements_clean.txt
+    pip install --no-cache-dir --no-compile -r requirements_clean.txt && \
+    find /opt/venv -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null; \
+    find /opt/venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null; \
+    find /opt/venv -type d -name 'test' -exec rm -rf {} + 2>/dev/null; \
+    find /opt/venv -type f -name '*.pyc' -delete 2>/dev/null; \
+    find /opt/venv -type f -name '*.pyo' -delete 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/torch/test 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/torch/include 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/pip 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/setuptools 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/wheel 2>/dev/null; \
+    true
 
 # Stage 2: Runtime
 FROM python:3.11-slim-bookworm AS runtime

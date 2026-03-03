@@ -115,7 +115,11 @@ def train_model(cfg: Dict[str, Any]) -> Dict[str, Any]:
                 cmp_params = dict(tr.get(f"{cmp_name}_params", {}))
                 cmp_model = build_model(cmp_name, params=cmp_params, seed=cfg["seed"])
                 cmp_pipe = Pipeline(
-                    steps=[("features", FeatureEngineer(current_year=dataset_year)), ("pre", pre), ("model", cmp_model)]
+                    steps=[
+                        ("features", FeatureEngineer(current_year=dataset_year)),
+                        ("pre", pre),
+                        ("model", cmp_model),
+                    ]
                 )
                 cmp_pipe.fit(X_train, y_train)
                 cmp_preds = cmp_pipe.predict(X_val)

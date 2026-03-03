@@ -21,6 +21,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel, Field, field_validator
 
+# OpenTelemetry (optional — no-op if not installed)
+try:
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1].parent))
+    from common_utils.telemetry import init_telemetry, instrument_fastapi
+except ImportError:
+    init_telemetry = None  # type: ignore[assignment]
+    instrument_fastapi = None  # type: ignore[assignment]
+
 # Prometheus metrics
 try:
     from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
@@ -126,7 +136,7 @@ def load_model_logic() -> bool:
             model_explainer = ModelExplainer(
                 predictor.model,
                 X_background=X_background,
-                feature_names=list(X_background.columns) if X_background is not None else None,
+                feature_names=(list(X_background.columns) if X_background is not None else None),
             )
             if X_background is not None:
                 logger.info(f"ModelExplainer initialized with {len(X_background)} background samples")
@@ -154,6 +164,11 @@ def load_model_logic() -> bool:
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application lifecycle."""
+    # Initialize OpenTelemetry tracing
+    if init_telemetry is not None:
+        init_telemetry(service_name="bankchurn-predictor")
+    if instrument_fastapi is not None:
+        instrument_fastapi(app)
     success = load_model_logic()
     if not success:
         logger.warning("Application started without model loaded.")

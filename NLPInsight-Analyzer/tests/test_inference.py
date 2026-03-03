@@ -25,7 +25,14 @@ def sklearn_model_dir(tmp_path):
         "results were in line with forecasts",
         "no significant change in revenue",
     ]
-    labels = [2, 2, 0, 0, 1, 1]  # positive, positive, negative, negative, neutral, neutral
+    labels = [
+        2,
+        2,
+        0,
+        0,
+        1,
+        1,
+    ]  # positive, positive, negative, negative, neutral, neutral
 
     pipe = Pipeline(
         [

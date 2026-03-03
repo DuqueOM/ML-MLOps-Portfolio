@@ -304,7 +304,11 @@ def test_cli_main_with_seed_success(mock_logging, mock_train):
     fake_module = types.ModuleType("common_utils.seed")
     fake_module.set_seed = MagicMock()
     with patch.dict(
-        "sys.modules", {"common_utils.seed": fake_module, "common_utils": types.ModuleType("common_utils")}
+        "sys.modules",
+        {
+            "common_utils.seed": fake_module,
+            "common_utils": types.ModuleType("common_utils"),
+        },
     ):
         exit_code = cli_main(["--seed", "42", "train", "--config", "c.yaml", "--input", "d.csv"])
     assert exit_code == 0

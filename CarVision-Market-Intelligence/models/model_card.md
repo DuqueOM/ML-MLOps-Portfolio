@@ -96,10 +96,11 @@ LGBMRegressor:
 | Algorithm | Pros | Cons | Selected? |
 |-----------|------|------|-----------|
 | **LinearRegression** | Fast, interpretable | Poor R² (0.42), linear assumption violated | ❌ |
-| **GradientBoosting** | High accuracy (R²=0.78) | Slow training (12s vs 6s), overfitting risk | ❌ |
-| **RandomForest** | Robust, handles non-linearity, good R²=0.77, fast | Less interpretable than linear | ✅ **Production** |
+| **RandomForest** | Robust, handles non-linearity, R²=0.77 | Less accurate than boosting methods | ❌ |
+| **XGBoost** | High accuracy (R²=0.82) | Slower training, hyperparameter-sensitive | ❌ |
+| **LightGBM** | Best R² (0.80), fast training, handles categoricals natively | Requires tuning num_leaves/max_depth | ✅ **Production** |
 
-**Why RandomForest?**: Best balance of accuracy, speed, and robustness to outliers. Ensemble of 100 trees reduces variance without excessive training time.
+**Why LightGBM?**: Best balance of accuracy and training speed. Histogram-based splitting is 3-5× faster than XGBoost with comparable accuracy. Native categorical handling reduces preprocessing overhead.
 
 ### Advanced Model Comparison Framework
 
@@ -228,7 +229,7 @@ Percentiles:
 
 ## 🔍 Feature Importance
 
-### RandomForest Feature Importance
+### LightGBM Feature Importance
 
 | Rank | Feature | Importance | Impact |
 |------|---------|------------|--------|
@@ -357,12 +358,12 @@ streamlit run app/streamlit_app.py
 
 ```bash
 # Pull and run API
-docker pull ghcr.io/duqueom/carvision-api:v1.5.0
-docker run -d -p 8000:8000 ghcr.io/duqueom/carvision-api:v1.5.0
+docker pull ghcr.io/duqueom/carvision-api:v3.0.0
+docker run -d -p 8000:8000 ghcr.io/duqueom/carvision-api:v3.0.0
 
 # Or run dashboard
-docker pull ghcr.io/duqueom/carvision-dashboard:v1.5.0
-docker run -d -p 8501:8501 ghcr.io/duqueom/carvision-dashboard:v1.5.0
+docker pull ghcr.io/duqueom/carvision-dashboard:v3.0.0
+docker run -d -p 8501:8501 ghcr.io/duqueom/carvision-dashboard:v3.0.0
 ```
 
 ---

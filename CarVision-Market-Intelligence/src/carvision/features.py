@@ -20,9 +20,39 @@ from sklearn.base import BaseEstimator, TransformerMixin
 logger = logging.getLogger(__name__)
 
 # Brand tiers based on market positioning (used for target encoding proxy)
-LUXURY_BRANDS = {"bmw", "mercedes-benz", "audi", "lexus", "porsche", "tesla", "jaguar", "land rover", "volvo"}
-ECONOMY_BRANDS = {"nissan", "hyundai", "kia", "mitsubishi", "suzuki", "fiat", "mazda", "subaru"}
-DOMESTIC_BRANDS = {"ford", "chevrolet", "gmc", "dodge", "ram", "jeep", "chrysler", "cadillac", "buick", "lincoln"}
+LUXURY_BRANDS = {
+    "bmw",
+    "mercedes-benz",
+    "audi",
+    "lexus",
+    "porsche",
+    "tesla",
+    "jaguar",
+    "land rover",
+    "volvo",
+}
+ECONOMY_BRANDS = {
+    "nissan",
+    "hyundai",
+    "kia",
+    "mitsubishi",
+    "suzuki",
+    "fiat",
+    "mazda",
+    "subaru",
+}
+DOMESTIC_BRANDS = {
+    "ford",
+    "chevrolet",
+    "gmc",
+    "dodge",
+    "ram",
+    "jeep",
+    "chrysler",
+    "cadillac",
+    "buick",
+    "lincoln",
+}
 
 
 class FeatureEngineer(BaseEstimator, TransformerMixin):
