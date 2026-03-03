@@ -6,6 +6,15 @@ metadata:
     name: ml-portfolio
     env: production
     owner: duqueom
+    # Pod Security Standards (K8s 1.25+)
+    # Enforce baseline: blocks privileged pods
+    # Warn on restricted: alerts on non-restricted pods without blocking
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: latest
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: latest
 ---
 apiVersion: v1
 kind: ResourceQuota

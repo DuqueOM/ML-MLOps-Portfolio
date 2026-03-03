@@ -6,6 +6,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [3.3.0] — 2026-03-03
+
+### Added
+- **Adversarial/robustness tests** (`tests/adversarial/test_robustness.py`) — 43 tests covering edge cases, boundary conditions, SQL injection, XSS, NaN/Inf, unicode for all 3 services
+- **Kubernetes Pod Security Standards** — baseline enforce + restricted warn/audit labels on `ml-portfolio` namespace
+- **Staging environment** — `staging.tfvars` for both GCP and AWS Terraform with reduced resources
+- **CI test model generator** (`scripts/generate_ci_test_models.py`) — creates lightweight sklearn models for Docker Compose integration tests
+
+### Changed
+- **Prometheus alert rules** — replaced generic `http_requests_total` with actual per-service metrics (`bankchurn_requests_total`, `carvision_requests_total`, `nlpinsight_requests_total`); per-service latency and prediction rate alerts
+- **Security scans now blocking** — Gitleaks `continue-on-error` removed; Bandit fails on HIGH+ severity issues; pip-audit remains advisory
+- **Spanish→English comments** — translated all Spanish comments in CI workflows, Dockerfiles, `config.yaml`, `docker-compose.yml`, `run_e2e.sh`
+- **CI integration test** — added `generate_ci_test_models.py` step before Docker Compose spin-up
+- **Helm namespace template** — added Pod Security Standards labels
+
+### Fixed
+- Prometheus rules that would never fire due to metric name mismatch
+- E2E tests skipping in CI due to missing models
+
 ## [3.2.1] — 2026-03-03
 
 ### Added

@@ -1,8 +1,8 @@
-# MLflow Tracking Server con PostgreSQL y MinIO (S3-compatible)
-# Para demo local del portfolio ML/MLOps
+# MLflow Tracking Server with PostgreSQL and MinIO (S3-compatible)
+# For local ML/MLOps portfolio demo
 
 services:
-  # PostgreSQL como backend store
+  # PostgreSQL backend store
   postgres:
     image: postgres:13-alpine
     container_name: mlflow-postgres

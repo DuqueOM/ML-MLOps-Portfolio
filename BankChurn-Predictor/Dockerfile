@@ -7,7 +7,7 @@ LABEL maintainer="DuqueOM <DuqueOrtegaMutis@gmail.com>" \
       version="3.0.0" \
       description="BankChurn Predictor — Bank customer churn prediction API"
 
-# Variables de entorno de build
+# Build environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PIP_NO_CACHE_DIR=1
@@ -15,14 +15,14 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
 WORKDIR /build
 
-# Instalar build dependencies
+# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copiar requirements de producción (sin jupyter, dev tools, torch/CUDA)
+# Copy production requirements (no jupyter, dev tools, torch/CUDA)
 COPY requirements-prod.txt ./
 
 # Install deps in venv; xgboost/lightgbm --no-deps avoids nvidia-nccl-cu12 (~290MB)
@@ -41,17 +41,17 @@ RUN python -m venv /opt/venv && \
     rm -rf /opt/venv/lib/python*/site-packages/wheel 2>/dev/null; \
     true
 
-# Stage 2: Runtime - Imagen final ligera
+# Stage 2: Runtime — Lightweight final image
 FROM python:3.11-slim-bookworm AS runtime
 
-# Variables de entorno
+# Runtime environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONPATH=/app
 ENV PATH="/opt/venv/bin:$PATH"
 ENV MODEL_PATH=models/model.joblib
 
-# Instalar solo runtime dependencies mínimas
+# Install minimal runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
@@ -59,13 +59,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Crear usuario no-root para seguridad
+# Create non-root user for security
 RUN groupadd -r appuser --gid=1000 && \
     useradd -r -g appuser --uid=1000 --home-dir=/app appuser
 
 WORKDIR /app
 
-# Copiar virtualenv desde builder
+# Copy virtualenv from builder
 COPY --from=builder --chown=appuser:appuser /opt/venv /opt/venv
 
 # Copy configs first (change less frequently, better cache)

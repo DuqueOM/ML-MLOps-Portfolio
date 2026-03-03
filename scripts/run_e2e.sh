@@ -1,7 +1,7 @@
 #!/bin/bash
 # End-to-End Pipeline Script
-# Ejecuta el flujo completo: ingest → train → register → serve → inference
-# Para BankChurn-Predictor como proyecto de referencia
+# Runs the full flow: ingest → train → register → serve → inference
+# Uses BankChurn-Predictor as the reference project
 
 set -e
 
@@ -9,7 +9,7 @@ PROJECT="BankChurn-Predictor"
 PORTFOLIO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PROJECT_DIR="$PORTFOLIO_ROOT/$PROJECT"
 
-# Colores
+# Colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
@@ -34,30 +34,30 @@ else
     exit 1
 fi
 
-# Paso 1: Data Ingestion
+# Step 1: Data Ingestion
 echo -e "${YELLOW}[1/6] Data Ingestion${NC}"
 if [ -f "$PORTFOLIO_ROOT/scripts/fetch_data.py" ]; then
     python "$PORTFOLIO_ROOT/scripts/fetch_data.py" --project bankchurn --validate || {
-        echo -e "${YELLOW}[!] Validación de datos falló, continuando...${NC}"
+        echo -e "${YELLOW}[!] Data validation failed, continuing...${NC}"
     }
 else
-    echo -e "${YELLOW}[!] Script fetch_data.py no encontrado${NC}"
+    echo -e "${YELLOW}[!] Script fetch_data.py not found${NC}"
 fi
-echo -e "${GREEN}[✓] Data ingestion completada${NC}"
+echo -e "${GREEN}[✓] Data ingestion completed${NC}"
 echo ""
 
-# Paso 2: DVC Pull (si está configurado)
+# Step 2: DVC Pull (if configured)
 echo -e "${YELLOW}[2/6] DVC Data Pull${NC}"
 if command -v dvc &> /dev/null && [ -f "$PORTFOLIO_ROOT/.dvc/config" ]; then
-    echo "[*] Pulling data con DVC..."
-    dvc pull 2>/dev/null || echo "[!] DVC pull falló o no hay datos remotos"
+    echo "[*] Pulling data with DVC..."
+    dvc pull 2>/dev/null || echo "[!] DVC pull failed or no remote data"
 else
-    echo "[!] DVC no configurado, saltando..."
+    echo "[!] DVC not configured, skipping..."
 fi
-echo -e "${GREEN}[✓] DVC check completado${NC}"
+echo -e "${GREEN}[✓] DVC check completed${NC}"
 echo ""
 
-# Paso 3: Training
+# Step 3: Training
 echo -e "${YELLOW}[3/6] Model Training${NC}"
 # Resolve data file: prefer env var, then standard locations
 DATA_FILE="${E2E_DATA_FILE:-}"
@@ -73,7 +73,7 @@ if [ -z "$DATA_FILE" ]; then
 fi
 
 if [ -z "$DATA_FILE" ] || [ ! -f "$DATA_FILE" ]; then
-    echo -e "${RED}[ERROR] No se encontró el archivo de datos para training${NC}"
+    echo -e "${RED}[ERROR] Data file not found for training${NC}"
     echo "  Probados: data/raw/Churn.csv, data/raw/Churn_Modelling.csv"
     exit 1
 fi
@@ -83,36 +83,36 @@ python -m src.bankchurn.cli train \
     --config configs/config.yaml \
     --input "$DATA_FILE" \
     --model models/model.joblib || {
-    echo -e "${RED}[ERROR] Training falló${NC}"
+    echo -e "${RED}[ERROR] Training failed${NC}"
     exit 1
 }
-echo -e "${GREEN}[✓] Training completado${NC}"
+echo -e "${GREEN}[✓] Training completed${NC}"
 echo ""
 
-# Paso 4: Model Registration (MLflow)
+# Step 4: Model Registration (MLflow)
 echo -e "${YELLOW}[4/6] Model Registration${NC}"
 if command -v mlflow &> /dev/null; then
-    echo "[*] Registrando modelo en MLflow..."
-    # Esto asume que el training ya registró el modelo
-    # Aquí solo verificamos el tracking URI
+    echo "[*] Registering model in MLflow..."
+    # Assumes training already registered the model
+    # Here we just verify the tracking URI
     export MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-"http://localhost:5000"}
     echo "[*] MLflow Tracking URI: $MLFLOW_TRACKING_URI"
 else
-    echo "[!] MLflow no instalado, saltando registro..."
+    echo "[!] MLflow not installed, skipping registration..."
 fi
-echo -e "${GREEN}[✓] Model registration completado${NC}"
+echo -e "${GREEN}[✓] Model registration completed${NC}"
 echo ""
 
-# Paso 5: API Server
+# Step 5: API Server
 echo -e "${YELLOW}[5/6] Starting API Server${NC}"
 if [ -f "app/fastapi_app.py" ]; then
-    echo "[*] Iniciando servidor FastAPI en background..."
+    echo "[*] Starting FastAPI server in background..."
     uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000 > /tmp/api.log 2>&1 &
     API_PID=$!
     echo "[*] API PID: $API_PID"
     
-    # Esperar a que el servidor esté listo
-    echo "[*] Esperando que el servidor esté listo..."
+    # Wait for server to be ready
+    echo "[*] Waiting for server to be ready..."
     for i in {1..30}; do
         if curl -s http://localhost:8000/health > /dev/null 2>&1; then
             echo -e "${GREEN}[✓] API Server listo${NC}"
@@ -123,16 +123,16 @@ if [ -f "app/fastapi_app.py" ]; then
     done
     echo ""
 else
-    echo -e "${RED}[ERROR] API main.py no encontrado${NC}"
+    echo -e "${RED}[ERROR] API fastapi_app.py not found${NC}"
     exit 1
 fi
 echo ""
 
-# Paso 6: Inference Test
+# Step 6: Inference Test
 echo -e "${YELLOW}[6/6] Inference Test${NC}"
-echo "[*] Probando predicción..."
+echo "[*] Testing prediction..."
 
-# Payload de ejemplo
+# Example payload
 PAYLOAD='{
   "CreditScore": 619,
   "Geography": "France",
@@ -146,7 +146,7 @@ PAYLOAD='{
   "EstimatedSalary": 101348.88
 }'
 
-# Hacer request
+# Send request
 RESPONSE=$(curl -s -X POST http://localhost:8000/predict \
     -H "Content-Type: application/json" \
     -d "$PAYLOAD")
@@ -155,28 +155,28 @@ echo "[*] Response:"
 echo "$RESPONSE" | python -m json.tool 2>/dev/null || echo "$RESPONSE"
 echo ""
 
-# Verificar respuesta
+# Verify response
 if echo "$RESPONSE" | grep -q "prediction"; then
-    echo -e "${GREEN}[✓] Inference exitoso${NC}"
+    echo -e "${GREEN}[✓] Inference successful${NC}"
 else
-    echo -e "${RED}[ERROR] Inference falló${NC}"
+    echo -e "${RED}[ERROR] Inference failed${NC}"
     INFERENCE_SUCCESS=false
 fi
 echo ""
 
-# Cleanup: Detener API
-echo "[*] Deteniendo API Server (PID: $API_PID)..."
+# Cleanup: Stop API
+echo "[*] Stopping API Server (PID: $API_PID)..."
 kill $API_PID 2>/dev/null || true
 sleep 2
-echo -e "${GREEN}[✓] API Server detenido${NC}"
+echo -e "${GREEN}[✓] API Server stopped${NC}"
 echo ""
 
-# Resumen
+# Summary
 echo -e "${BLUE}=========================================${NC}"
-echo -e "${BLUE}E2E Pipeline Completado${NC}"
+echo -e "${BLUE}E2E Pipeline Completed${NC}"
 echo -e "${BLUE}=========================================${NC}"
 echo ""
-echo -e "${GREEN}Pasos ejecutados:${NC}"
+echo -e "${GREEN}Steps executed:${NC}"
 echo "  ✓ 1. Data Ingestion"
 echo "  ✓ 2. DVC Pull"
 echo "  ✓ 3. Model Training"
@@ -186,9 +186,9 @@ echo "  ✓ 6. Inference Test"
 echo ""
 
 if [ "$INFERENCE_SUCCESS" != "false" ]; then
-    echo -e "${GREEN}[SUCCESS] Pipeline E2E completado exitosamente${NC}"
+    echo -e "${GREEN}[SUCCESS] E2E Pipeline completed successfully${NC}"
     exit 0
 else
-    echo -e "${YELLOW}[WARNING] Pipeline completado con advertencias${NC}"
+    echo -e "${YELLOW}[WARNING] Pipeline completed with warnings${NC}"
     exit 1
 fi

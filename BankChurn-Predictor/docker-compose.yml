@@ -1,8 +1,8 @@
-# Docker Compose para BankChurn Predictor
+# Docker Compose for BankChurn Predictor
 version: '3.8'
 
 services:
-  # Servicio principal de la API
+  # Main API service
   bankchurn-api:
     build: .
     container_name: bankchurn-predictor-api
@@ -26,7 +26,7 @@ services:
     networks:
       - bankchurn-network
 
-  # Servicio de monitoreo (opcional)
+  # Monitoring service (optional)
   prometheus:
     image: prom/prometheus:latest
     container_name: bankchurn-prometheus
@@ -44,7 +44,7 @@ services:
     profiles:
       - monitoring
 
-  # Grafana para visualización (opcional)
+  # Grafana visualization (optional)
   grafana:
     image: grafana/grafana:latest
     container_name: bankchurn-grafana
@@ -61,7 +61,7 @@ services:
     profiles:
       - monitoring
 
-  # Redis para caching (opcional)
+  # Redis caching (optional)
   redis:
     image: redis:7-alpine
     container_name: bankchurn-redis
@@ -75,7 +75,7 @@ services:
     profiles:
       - caching
 
-  # Nginx como reverse proxy (opcional)
+  # Nginx reverse proxy (optional)
   nginx:
     image: nginx:alpine
     container_name: bankchurn-nginx

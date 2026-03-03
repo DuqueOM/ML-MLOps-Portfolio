@@ -24,7 +24,7 @@ env:
   MLFLOW_TRACKING_URI: http://localhost:5000
 
 jobs:
-  # Job 1: Tests unitarios por proyecto
+  # Job 1: Unit tests per project
   tests:
     name: Tests & Coverage
     runs-on: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Para gitleaks
+          fetch-depth: 0  # Required for gitleaks history scan
           lfs: true  # Download Git LFS files
       
       - name: Set up Python
@@ -199,7 +199,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
-        continue-on-error: true  # Don't fail on false positives
       
       - name: Install security tools
         run: pip install bandit pip-audit
@@ -207,9 +206,12 @@ jobs:
       - name: Run Bandit security scan
         run: |
           mkdir -p reports
+          # JSON report for downstream analysis (allow failure for report generation)
           bandit -r BankChurn-Predictor/src CarVision-Market-Intelligence/src NLPInsight-Analyzer/src \
             -f json -o reports/bandit-report.json -ll || true
-          bandit -r . -f txt -ll || true
+          # Blocking scan: fail on HIGH+ severity issues
+          bandit -r BankChurn-Predictor/src CarVision-Market-Intelligence/src NLPInsight-Analyzer/src \
+            -ll --severity-level high
       
       - name: Run pip-audit dependency scan
         run: |
@@ -414,6 +416,11 @@ jobs:
           tags: ml-portfolio-nlpinsight:latest
           no-cache: true
       
+      - name: Generate CI test models
+        run: |
+          pip install scikit-learn joblib numpy pandas
+          python scripts/generate_ci_test_models.py
+
       - name: Spin up Demo Stack
         run: |
           # Start services using pre-built images
@@ -596,7 +603,7 @@ jobs:
           echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "**Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
 
-  # Job 6: Model cards validation (opcional)
+  # Job 6: Model cards validation
   validate-docs:
     name: Validate Documentation
     runs-on: ubuntu-latest
@@ -610,7 +617,7 @@ jobs:
           echo "Checking for model_card.md files..."
           find . -name "model_card.md" -type f
           
-          # Verificar que existan en proyectos principales
+          # Verify model cards exist in main projects
           for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer; do
             if [ ! -f "$project/model_card.md" ]; then
               echo "⚠️  Missing model_card.md in $project"
