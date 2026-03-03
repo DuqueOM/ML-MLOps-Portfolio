@@ -9,7 +9,7 @@ Terraform-managed, multi-cloud (GCP + AWS) infrastructure for the ML-MLOps Portf
 | Resource | Configuration |
 |----------|---------------|
 | **GKE Cluster** | `ml-portfolio-gke-production`, us-central1, 7 nodes (e2-medium) |
-| **Artifact Registry** | 3 Docker images (bankchurn, carvision, nlpinsight) |
+| **Artifact Registry** | 4 Docker images (bankchurn, carvision API, carvision dashboard, nlpinsight) |
 | **Cloud Storage** | Models bucket + Datasets bucket (versioned, lifecycle policies) |
 | **Cloud SQL** | PostgreSQL for MLflow backend |
 | **VPC** | Custom network with private subnets, VPC peering for Cloud SQL |
@@ -31,8 +31,8 @@ Terraform-managed, multi-cloud (GCP + AWS) infrastructure for the ML-MLOps Portf
 
 | Manifest | Purpose |
 |----------|---------|
-| `k8s/*-deployment.yaml` | 3 ML APIs + MLflow + Prometheus + Grafana |
-| `k8s/ingress.yaml` | External access with path-based routing |
+| `k8s/*-deployment.yaml` | 3 ML APIs + Streamlit Dashboard + MLflow + Prometheus + Grafana (8 pods) |
+| `k8s/ingress.yaml` | External access with path-based routing (incl. `/dashboard/*`) |
 | `k8s/model-configmaps.yaml` | GCS model/dataset paths for init containers |
 | `k8s/overlays/aws/` | AWS-specific Kustomize overlays |
 
@@ -98,7 +98,7 @@ The Terraform configuration includes **production-grade security hardening** tha
 | Flow logs | VPC Flow Logs enabled | VPC Flow Logs enabled |
 | Encryption | GCS/Cloud SQL at-rest | S3 KMS + public access blocks |
 
-> **Architecture Decision**: The running GKE demo cluster was provisioned before the security hardening was added to the Terraform code. Applying these changes would **force cluster recreation** (`private_cluster_config` and `ip_allocation_policy` are ForceNew attributes in the GCP provider), destroying all 8+ running pods and requiring full redeployment.
+> **Architecture Decision**: The running GKE demo cluster was provisioned before the security hardening was added to the Terraform code. Applying these changes would **force cluster recreation** (`private_cluster_config` and `ip_allocation_policy` are ForceNew attributes in the GCP provider), destroying all 8 running pods and requiring full redeployment.
 >
 > Additionally, `master_authorized_networks_config` restricts API access to the VPC subnet (`10.10.0.0/24`), which would require a bastion host or Cloud Shell for kubectl access — appropriate for production but impractical for a portfolio demo that requires frequent local interaction.
 >
@@ -106,4 +106,4 @@ The Terraform configuration includes **production-grade security hardening** tha
 
 ---
 
-*Last Updated: March 2026*
+*Last Updated: March 2026 — v3.3.1*

@@ -298,7 +298,8 @@ make docker-build
 
 # Build individual images
 docker build -t bankchurn:latest ./BankChurn-Predictor
-docker build -t carvision:latest ./CarVision-Market-Intelligence
+docker build --target api -t carvision:latest ./CarVision-Market-Intelligence
+docker build --target dashboard -t carvision-dashboard:latest ./CarVision-Market-Intelligence
 docker build -t nlpinsight:latest ./NLPInsight-Analyzer
 ```
 
@@ -519,13 +520,15 @@ kubectl get pods -l app=ml-mlops-portfolio
 # Check service status
 kubectl get svc
 
-# Expected: 3 Deployments (bankchurn, carvision, nlpinsight) + 3 Services + 3 HPAs
+# Expected: 4 Deployments (bankchurn, carvision API, carvision dashboard, nlpinsight)
+#          + 4 Services + 3 HPAs + MLflow + Prometheus + Grafana = 8 pods
 ```
 
 **Key K8s Resources**:
-- `k8s/bankchurn-deployment.yaml` (3 replicas, HPA 2-10)
-- `k8s/carvision-deployment.yaml` (2 replicas, HPA 2-8)
-- `k8s/nlpinsight-deployment.yaml` (2 replicas, HPA 2-10)
+- `k8s/bankchurn-deployment.yaml` — BankChurn API (HPA 1-3)
+- `k8s/carvision-deployment.yaml` — CarVision API + Dashboard (separate Deployments)
+- `k8s/nlpinsight-deployment.yaml` — NLPInsight API (HPA 1-3)
+- `k8s/ingress.yaml` — GCE Ingress with path-based routing (incl. `/dashboard/*`)
 
 ### Terraform Deployment (AWS)
 
@@ -590,7 +593,7 @@ For **critical production issues**:
 
 <div align="center">
 
-**Runbook Version**: 3.0 | **Last Updated**: March 2026
+**Runbook Version**: 3.3.1 | **Last Updated**: March 2026
 
 ⭐ **Production-Ready Operations** ⭐
 

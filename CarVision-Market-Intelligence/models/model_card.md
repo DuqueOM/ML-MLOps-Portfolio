@@ -23,7 +23,7 @@
 | **Framework** | LightGBM 4.6+, Scikit-learn 1.8+ |
 | **Primary Metric** | R²: **0.80**, RMSE: **$6,744** |
 | **Business Impact** | 18% improvement in pricing accuracy vs manual valuation |
-| **Production Status** | ✅ Active (API + Streamlit Dashboard) |
+| **Production Status** | ✅ Active (API + Streamlit Dashboard on K8s) |
 | **Last Updated** | February 2026 |
 | **Owner** | Duque Ortega Mutis (DuqueOM) |
 
@@ -357,13 +357,19 @@ streamlit run app/streamlit_app.py
 ### Docker Deployment
 
 ```bash
-# Pull and run API
-docker pull ghcr.io/duqueom/carvision-api:v3.0.0
-docker run -d -p 8000:8000 ghcr.io/duqueom/carvision-api:v3.0.0
+# Build from multi-target Dockerfile
+docker build --target api -t carvision-api:latest .
+docker build --target dashboard -t carvision-dashboard:latest .
 
-# Or run dashboard
-docker pull ghcr.io/duqueom/carvision-dashboard:v3.0.0
-docker run -d -p 8501:8501 ghcr.io/duqueom/carvision-dashboard:v3.0.0
+# Run API (518 MB image)
+docker run -d -p 8000:8000 carvision-api:latest
+
+# Run Dashboard (950 MB image)
+docker run -d -p 8501:8501 carvision-dashboard:latest
+
+# Or pull from registry
+docker pull ghcr.io/duqueom/carvision-api:latest
+docker pull ghcr.io/duqueom/carvision-dashboard:latest
 ```
 
 ---
@@ -480,7 +486,7 @@ if drift_score > 0.25:
 
 <div align="center">
 
-**Model Card Version**: 3.0 | **Last Updated**: June 2026  
+**Model Card Version**: 3.3.1 | **Last Updated**: March 2026  
 **Model Version**: 3.0.0 | **Framework**: LightGBM 4.6+, Scikit-learn 1.8+
 
 ⭐ **Production-Ready Vehicle Valuation** ⭐

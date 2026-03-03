@@ -8,31 +8,44 @@
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  GCP (us-central1)             │  AWS (us-east-1)           │
-│                                │                            │
-│  GKE Cluster (7 nodes)         │  EKS Cluster (t3.large)    │
-│  v1.34.3-gke.1318000           │  Terraform-managed         │
-│  ┌──────────┐ ┌──────────┐     │  ┌──────────┐ ┌────────┐   │
-│  │BankChurn │ │CarVision │     │  │BankChurn │ │CarVis. │   │
-│  │  :8000   │ │  :8000   │     │  │  :8000   │ │  :8000 │   │
-│  └────┬─────┘ └────┬─────┘     │  └────┬─────┘ └───┬────┘   │
-│  ┌────┴─────┐ ┌────┴─────┐     │  ┌────┴─────┐ ┌───┴────┐   │
-│  │NLPInsight│ │CarVision │     │  │NLPInsight│ │CarVis. │   │
-│  │  :8000   │ │Dashboard │     │  │  :8000   │ │Dashb.  │   │
-│  └──────────┘ │  :8501   │     │  └──────────┘ │  :8501 │   │
-│               └──────────┘     │               └────────┘   │
-│  MLflow :5000                  │  MLflow :5000              │
-│  Prometheus + Grafana          │  Prometheus + Grafana      │
-│  GCE Ingress (34.120.120.57)   │  ALB (DNS)                 │
-│  Artifact Registry + GCS       │  ECR + S3                  │
-│  Cloud SQL (PostgreSQL)        │  RDS (PostgreSQL)          │
-│  Terraform IaC                 │  Terraform IaC             │
-└─────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────┐
+│  GCP (us-central1)                  │  AWS (us-east-1)             │
+│                                     │                              │
+│  GKE Cluster (7 nodes)              │  EKS Cluster (t3.large)      │
+│  v1.34.3-gke.1318000                │  Terraform-managed           │
+│                                     │                              │
+│  ┌─── ML Services (HPA) ────────┐   │  ┌─── ML Services (HPA) ──┐  │
+│  │ ┌──────────┐ ┌──────────┐    │   │  │ ┌────────┐ ┌────────┐  │  │
+│  │ │BankChurn │ │CarVision │    │   │  │ │BankCh. │ │CarVis. │  │  │
+│  │ │ API:8000 │ │ API:8000 │    │   │  │ │  :8000 │ │  :8000 │  │  │
+│  │ └──────────┘ └──────────┘    │   │  │ └────────┘ └────────┘  │  │
+│  │ ┌──────────┐ ┌──────────┐    │   │  │ ┌────────┐ ┌────────┐  │  │
+│  │ │NLPInsight│ │CarVision │    │   │  │ │NLPIns. │ │CarVis. │  │  │
+│  │ │ API:8000 │ │Dash:8501 │    │   │  │ │  :8000 │ │D.:8501 │  │  │
+│  │ └──────────┘ └──────────┘    │   │  │ └────────┘ └────────┘  │  │
+│  └──────────────────────────────┘   │  └────────────────────────┘  │
+│                                     │                              │
+│  ┌─── Observability Stack ──────┐   │  ┌─── Observability ──────┐  │
+│  │ ┌──────────┐ ┌──────────┐    │   │  │ ┌────────┐ ┌────────┐  │  │
+│  │ │Prometheus│ │ Grafana  │    │   │  │ │Prometh.│ │Grafana │  │  │
+│  │ │  :9090   │ │  :3000   │    │   │  │ │  :9090 │ │  :3000 │  │  │
+│  │ └──────────┘ └──────────┘    │   │  │ └────────┘ └────────┘  │  │
+│  │ ┌──────────┐                 │   │  │ ┌────────┐             │  │
+│  │ │  MLflow  │                 │   │  │ │ MLflow │             │  │
+│  │ │  :5000   │                 │   │  │ │  :5000 │             │  │
+│  │ └──────────┘                 │   │  │ └────────┘             │  │
+│  └──────────────────────────────┘   │  └────────────────────────┘  │
+│                                     │                              │
+│  GCE Ingress (34.120.120.57)        │  ALB (DNS)                   │
+│  Artifact Registry + GCS            │  ECR + S3                    │
+│  Cloud SQL (PostgreSQL)             │  RDS (PostgreSQL)            │
+│  Terraform IaC                      │  Terraform IaC               │
+└────────────────────────────────────────────────────────────────────┘
 
-CarVision Streamlit dashboard runs as a separate K8s pod (multi-target
-Dockerfile: --target api | --target dashboard). Enterprise pattern:
-independent scaling, health checks, and resource limits.
+8 pods total: 3 ML APIs + Streamlit Dashboard + Prometheus + Grafana + MLflow.
+CarVision dashboard is a separate K8s pod (multi-target Dockerfile:
+--target api | --target dashboard). Enterprise pattern: independent
+scaling, health checks, and resource limits.
 ```
 
 ## Verified Capabilities

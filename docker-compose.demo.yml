@@ -61,10 +61,11 @@ services:
 
   # CarVision Market Intelligence API
   carvision:
-    image: ml-portfolio-carvision:latest
+    image: ml-portfolio-carvision-api:latest
     build:
       context: ./CarVision-Market-Intelligence
       dockerfile: Dockerfile
+      target: api
     container_name: carvision-api
     ports:
       - "8002:8000"
@@ -91,7 +92,11 @@ services:
 
   # CarVision Streamlit Dashboard (optional — requires streamlit in image)
   carvision-dashboard:
-    image: ml-portfolio-carvision:latest
+    image: ml-portfolio-carvision-dashboard:latest
+    build:
+      context: ./CarVision-Market-Intelligence
+      dockerfile: Dockerfile
+      target: dashboard
     container_name: carvision-dashboard
     ports:
       - "8501:8501"
