@@ -80,12 +80,12 @@ jobs:
             grep -v '^[[:space:]]*$' > requirements_no_hash.txt
             pip install -r requirements_no_hash.txt
           fi
-          pip install pytest pytest-cov flake8 black isort mypy
+          pip install pytest pytest-cov httpx flake8 "black==26.1.0" isort mypy
       
       - name: Run linting
         working-directory: ${{ matrix.project }}
         run: |
-          pip install flake8 black isort mypy
+          pip install flake8 "black==26.1.0" isort mypy
           flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
           black --check src/ app/
           isort --check-only src/ app/
@@ -144,7 +144,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       
       - name: Install quality tools
-        run: pip install black flake8 coverage
+        run: pip install "black==26.1.0" flake8 coverage
       
       - name: Check Black formatting
         run: |
@@ -453,6 +453,9 @@ jobs:
           echo ""
           echo "=== Git LFS status ==="
           git lfs ls-files 2>&1 | grep model.joblib
+
+      - name: Install test dependencies
+        run: pip install pytest requests
 
       - name: Run Integration Tests
         run: |

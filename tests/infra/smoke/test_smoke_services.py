@@ -14,6 +14,7 @@ Usage:
     # Skip specific services
     pytest tests/infra/smoke/test_smoke_services.py -v -k "not nlpinsight"
 """
+
 import os
 
 import pytest

@@ -3,6 +3,7 @@
 Documentation Generator Script.
 Applies the common DOCS_TEMPLATE.md to the current project by substituting placeholders.
 """
+
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]

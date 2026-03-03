@@ -188,7 +188,15 @@ def split_data(
     val_size: float,
     seed: int,
     shuffle: bool = True,
-) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.Series, pd.Series, pd.Series, Dict[str, List[int]],]:
+) -> Tuple[
+    pd.DataFrame,
+    pd.DataFrame,
+    pd.DataFrame,
+    pd.Series,
+    pd.Series,
+    pd.Series,
+    Dict[str, List[int]],
+]:
     """Split dataframe into train/val/test and return indices mapping for reproducibility."""
     X = df.drop(columns=[target])
     y = df[target]

@@ -6,6 +6,7 @@ Wrapper around src.bankchurn.cli.
 Run from project root: python main.py --mode train --config configs/config.yaml
 Or install the package first: pip install -e .
 """
+
 import sys
 
 from src.bankchurn.cli import cli_main
