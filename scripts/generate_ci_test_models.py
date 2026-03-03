@@ -322,6 +322,48 @@ def generate_carvision_model():
     print(f"[CI] CarVision test model saved: {output} ({output.stat().st_size} bytes)")
 
 
+def generate_nlpinsight_model():
+    """Generate a tiny NLPInsight model (TF-IDF + LogisticRegression).
+
+    The SentimentPredictor looks for model.joblib in the models dir and
+    falls back to transformer loading if not found.  Providing a joblib
+    pipeline lets the Docker Compose integration test pass without
+    downloading the production FinBERT transformer.
+
+    Labels: 0=negative, 1=neutral, 2=positive  (matches LABEL_MAP).
+    """
+    from sklearn.feature_extraction.text import TfidfVectorizer
+
+    output = Path("NLPInsight-Analyzer/models/model.joblib")
+    output.parent.mkdir(parents=True, exist_ok=True)
+
+    texts = [
+        "Earnings fell sharply in Q3",
+        "Revenue declined significantly",
+        "The company reported steady results",
+        "Market conditions remained stable",
+        "Strong quarterly growth exceeded expectations",
+        "Profit surged to record highs",
+        "Losses mounted amid weak demand",
+        "Stock plummeted after guidance cut",
+        "Operations continued as normal",
+        "Flat sales matched analyst estimates",
+        "Outstanding performance across all segments",
+        "Revenue hit an all-time high",
+    ]
+    labels = np.array([0, 0, 1, 1, 2, 2, 0, 0, 1, 1, 2, 2])
+
+    pipe = Pipeline(
+        [
+            ("tfidf", TfidfVectorizer(max_features=200)),
+            ("clf", LogisticRegression(max_iter=200)),
+        ]
+    )
+    pipe.fit(texts, labels)
+    joblib.dump(pipe, output)
+    print(f"[CI] NLPInsight test model saved: {output} ({output.stat().st_size} bytes)")
+
+
 def main():
     # Run from repo root
     repo_root = Path(__file__).resolve().parent.parent
@@ -329,11 +371,7 @@ def main():
 
     generate_bankchurn_model()
     generate_carvision_model()
-
-    # NLPInsight uses a transformer model — skip in CI unless specifically needed
-    nlp_dir = Path("NLPInsight-Analyzer/models")
-    nlp_dir.mkdir(parents=True, exist_ok=True)
-    print("[CI] NLPInsight models dir created (transformer model skipped in CI)")
+    generate_nlpinsight_model()
 
     print("[CI] All test models generated successfully")
 
