@@ -89,9 +89,9 @@ echo ""
 
 # Paso 5: API Server
 echo -e "${YELLOW}[5/6] Starting API Server${NC}"
-if [ -f "app/main.py" ]; then
+if [ -f "app/fastapi_app.py" ]; then
     echo "[*] Iniciando servidor FastAPI en background..."
-    uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/api.log 2>&1 &
+    uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000 > /tmp/api.log 2>&1 &
     API_PID=$!
     echo "[*] API PID: $API_PID"
     

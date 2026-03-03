@@ -98,7 +98,7 @@ curl http://localhost:5000          # MLflow (returns HTML)
 {
   "status": "healthy",
   "model_loaded": true,
-  "model_version": "1.5.0"
+  "model_version": "3.0.0"
 }
 ```
 

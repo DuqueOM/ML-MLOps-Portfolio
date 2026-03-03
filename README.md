@@ -319,7 +319,7 @@ The author maintains and operates all systems independently, including CI/CD pip
 
 <div align="center">
 
-**Portfolio Version**: 7.0.0 · **License**: MIT · **Status**: ✅ Production-Ready (GCP) · 🟡 AWS Ready
+**Portfolio Version**: 3.2.0 · **License**: MIT · **Status**: ✅ Production-Ready (GCP) · 🟡 AWS Ready
 
 *Building ML systems that work at 2am* 🌙
 

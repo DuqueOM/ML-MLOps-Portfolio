@@ -580,7 +580,7 @@ Response 200 OK:
 {
   "status": "healthy",
   "model_loaded": true,
-  "model_version": "v2.1.0",
+  "model_version": "v3.0.0",
   "features_supported": 12,
   "uptime_seconds": 86400
 }

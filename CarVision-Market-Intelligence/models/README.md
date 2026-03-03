@@ -34,11 +34,12 @@ Comprehensive model card following MLOps Staff best practices:
 
 This file contains the **complete pipeline**:
 - FeatureEngineer (vehicle_age, brand extraction)
+- FeatureEngineer (24 engineered features)
 - Preprocessor (StandardScaler + OneHotEncoder)
-- RandomForestRegressor (n_estimators=100, max_depth=15)
+- LightGBM Regressor (n_estimators=500, lr=0.05, max_depth=8)
 
-**Version**: 1.5.0  
-**Framework**: Scikit-learn 1.3+  
+**Version**: 3.0.0  
+**Framework**: LightGBM 4.6+, Scikit-learn 1.8+  
 **Serialization**: joblib
 
 ---

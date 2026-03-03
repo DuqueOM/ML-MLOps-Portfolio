@@ -562,7 +562,7 @@ Response (200 OK):
 {
   "status": "healthy",
   "model_loaded": true,
-  "model_version": "v1.2.0",
+  "model_version": "v3.0.0",
   "uptime_seconds": 3600,
   "predictions_served": 15234
 }
@@ -913,7 +913,7 @@ logger.info(json.dumps({
     "probability": 0.73,
     "risk_level": "HIGH",
     "latency_ms": 35,
-    "model_version": "v1.2.0"
+    "model_version": "v3.0.0"
 }))
 ```
 

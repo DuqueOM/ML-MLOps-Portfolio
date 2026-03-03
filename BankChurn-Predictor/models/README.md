@@ -36,10 +36,10 @@ The following files are **legacy artifacts** from earlier development iterations
 
 This file contains the **complete unified pipeline**:
 - Preprocessor (SimpleImputer + StandardScaler + OneHotEncoder)
-- VotingClassifier (LogisticRegression + RandomForest)
+- StackingClassifier (RF + GradientBoosting + XGBoost + LightGBM → LogisticRegression)
 
-**Version**: 1.5.0  
-**Framework**: Scikit-learn 1.3+  
+**Version**: 3.0.0  
+**Framework**: Scikit-learn 1.8+  
 **Serialization**: joblib
 
 ---

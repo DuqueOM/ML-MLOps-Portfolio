@@ -264,7 +264,7 @@ docker pull ghcr.io/duqueom/nlpinsight-api:v3.0.0
 docker run -d -p 8000:8000 ghcr.io/duqueom/nlpinsight-api:v3.0.0
 
 curl http://localhost:8000/health
-# {"status": "healthy", "model_loaded": true, "version": "1.0.0"}
+# {"status": "healthy", "model_loaded": true, "version": "3.0.0"}
 ```
 
 ### Kubernetes Deployment
