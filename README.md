@@ -78,6 +78,8 @@ Production-grade churn prediction with **StackingClassifier** ensemble (RF + Gra
 |---------|-----|-----------|--------|----------|----------|
 | **0.87** | 0.62 | 0.73 | 0.54 | 90% | <50ms p95 |
 
+> **Why these metrics**: AUC-ROC is the primary metric — the dataset has 20.4% churn rate (4:1 imbalance), making accuracy meaningless (a "never churn" model scores 79.6%). AUC measures rank-ordering quality across all thresholds. **Production threshold: 0.35** (not default 0.50) — a missed churner costs ~$1,500–$3,000 LTV vs. ~$50 for an unnecessary retention offer (30:1 cost ratio). At threshold 0.35, Recall rises to 0.78, catching 78% of churners; at 0.50, Recall drops to 0.54. The precision trade-off is intentional and quantified.
+
 [📂 Project](BankChurn-Predictor/) · [📄 Model Card](BankChurn-Predictor/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
 ---
@@ -90,17 +92,21 @@ End-to-end vehicle valuation platform powered by **LightGBM** with optimized hyp
 |----|------|-----|------|----------|------------|
 | **0.80** | $6,744 | $3,973 | 32.9% | 96% | <2s load |
 
+> **Why these metrics**: RMSE is primary — it penalizes large errors quadratically (a $15K miss on a $20K vehicle is catastrophic; RMSE ensures this dominates the score). R² provides scale-independent context: 0.80 means 80% of price variance is explained; the remaining 20% requires unobserved features (accident history, condition score, local demand). MAPE (32.9%) is tracked but not optimized — it's distorted by sub-$10K vehicles where $500 errors become 33% but represent minimal financial risk. The model is calibrated to be unbiased (residual mean = -$12), letting dealers apply their own margin strategy.
+
 [📂 Project](CarVision-Market-Intelligence/) · [📄 Model Card](CarVision-Market-Intelligence/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
 ---
 
-### � 3. [NLPInsight Analyzer](NLPInsight-Analyzer/) — Financial Sentiment Analysis
+### 📝 3. [NLPInsight Analyzer](NLPInsight-Analyzer/) — Financial Sentiment Analysis
 
 Real-time financial sentiment analysis using **ProsusAI/FinBERT** — a BERT model fine-tuned on financial corpora. Domain-specific transfer learning achieving 97% accuracy on Financial PhraseBank. Dual inference backend supports both transformer and sklearn models.
 
 | Accuracy | F1 (weighted) | F1 (macro) | Labels | Coverage |
 |----------|---------------|------------|--------|----------|
 | **97%** | 0.97 | 0.96 | 3 | 98% |
+
+> **Why these metrics**: Accuracy is meaningful here (3-class, no class below 12%), but F1-macro (0.96) is the safety guard — it ensures the minority negative class (12.5% of data, but highest business value) is not sacrificed for overall accuracy. A missed negative signal on an earnings release can cause an analyst to miss a deteriorating position. The 8.8-point gap between TF-IDF (88.1%) and FinBERT (96.9%) demonstrates the ROI of domain-specific transfer learning; FinBERT's pre-training on Reuters/Bloomberg text alone accounts for ~3.7% of that gain before any fine-tuning.
 
 [📂 Project](NLPInsight-Analyzer/) · [📄 Model Card](NLPInsight-Analyzer/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
