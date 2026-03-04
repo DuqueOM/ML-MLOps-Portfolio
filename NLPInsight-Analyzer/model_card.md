@@ -44,12 +44,13 @@ Classify the **sentiment of financial text** (earnings reports, market commentar
 | **Product Teams** | Customer feedback classification | Domain-adapted sentiment scoring |
 | **Data Scientists** | NLP pipeline component | Pre-trained financial sentiment module |
 
-### Business Context
+### Business Context *(hypothetical scenario for demonstration)*
 
-- **Volume**: Financial markets generate 10,000+ news articles/day
-- **Manual Cost**: $50-100/hour for analyst sentiment review
-- **Model ROI**: 90% reduction in manual review time for sentiment screening
-- **Accuracy**: 97% accuracy vs 88% for traditional TF-IDF approach
+The following values are **illustrative context** based on industry-typical figures, not actual business data:
+
+- **Volume**: Financial markets generate 10,000+ news articles/day (industry estimate)
+- **Manual Cost**: $50-100/hour for analyst sentiment review (industry estimate)
+- **Model Accuracy**: 97% accuracy vs 88% for traditional TF-IDF approach (measured on Financial PhraseBank)
 
 ### Out of Scope
 

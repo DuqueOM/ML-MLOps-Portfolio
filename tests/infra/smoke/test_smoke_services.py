@@ -69,6 +69,13 @@ SERVICES = {
         "metrics": "/metrics",
         "payload": {"text": "The company reported strong quarterly earnings growth"},
     },
+    "chicagotaxi": {
+        "port": int(os.getenv("CHICAGOTAXI_PORT", "8004")),
+        "health": "/health",
+        "predict": "/demand",
+        "metrics": "/metrics",
+        "payload": None,  # GET endpoint, no payload
+    },
 }
 
 
@@ -126,11 +133,14 @@ class TestPredictionEndpoints:
             pytest.skip(f"{service} not reachable")
 
         svc = SERVICES[service]
-        r = requests.post(
-            _url(service, svc["predict"]),
-            json=svc["payload"],
-            timeout=TIMEOUT,
-        )
+        if svc["payload"] is None:
+            r = requests.get(_url(service, svc["predict"]), timeout=TIMEOUT)
+        else:
+            r = requests.post(
+                _url(service, svc["predict"]),
+                json=svc["payload"],
+                timeout=TIMEOUT,
+            )
         assert r.status_code == 200, f"{service} predict returned {r.status_code}: {r.text}"
 
     @pytest.mark.parametrize("service", SERVICES.keys())
@@ -139,13 +149,16 @@ class TestPredictionEndpoints:
             pytest.skip(f"{service} not reachable")
 
         svc = SERVICES[service]
-        r = requests.post(
-            _url(service, svc["predict"]),
-            json=svc["payload"],
-            timeout=TIMEOUT,
-        )
+        if svc["payload"] is None:
+            r = requests.get(_url(service, svc["predict"]), timeout=TIMEOUT)
+        else:
+            r = requests.post(
+                _url(service, svc["predict"]),
+                json=svc["payload"],
+                timeout=TIMEOUT,
+            )
         data = r.json()
-        assert isinstance(data, dict), f"{service} response is not a dict: {type(data)}"
+        assert isinstance(data, (dict, list)), f"{service} response is not a dict/list: {type(data)}"
         assert len(data) > 0, f"{service} returned empty response"
 
     @pytest.mark.parametrize("service", SERVICES.keys())
@@ -155,11 +168,14 @@ class TestPredictionEndpoints:
             pytest.skip(f"{service} not reachable")
 
         svc = SERVICES[service]
-        r = requests.post(
-            _url(service, svc["predict"]),
-            json=svc["payload"],
-            timeout=TIMEOUT,
-        )
+        if svc["payload"] is None:
+            r = requests.get(_url(service, svc["predict"]), timeout=TIMEOUT)
+        else:
+            r = requests.post(
+                _url(service, svc["predict"]),
+                json=svc["payload"],
+                timeout=TIMEOUT,
+            )
         assert r.elapsed.total_seconds() < 2.0, f"{service} predict took {r.elapsed.total_seconds():.2f}s"
 
     @pytest.mark.parametrize("service", SERVICES.keys())
@@ -169,11 +185,18 @@ class TestPredictionEndpoints:
             pytest.skip(f"{service} not reachable")
 
         svc = SERVICES[service]
-        r = requests.post(
-            _url(service, svc["predict"]),
-            json={"invalid_field": "bad_data"},
-            timeout=TIMEOUT,
-        )
+        if svc["payload"] is None:
+            # GET services: test with invalid query params
+            r = requests.get(
+                _url(service, svc["predict"]) + "?area=-999&hour=99",
+                timeout=TIMEOUT,
+            )
+        else:
+            r = requests.post(
+                _url(service, svc["predict"]),
+                json={"invalid_field": "bad_data"},
+                timeout=TIMEOUT,
+            )
         assert r.status_code < 500, f"{service} returned 5xx on invalid input: {r.status_code}"
 
 

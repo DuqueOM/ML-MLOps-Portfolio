@@ -344,3 +344,103 @@ class TestNLPInsightRobustness:
     def test_tabs_preserved(self):
         obj = TextInput(text="Col1\tCol2\tCol3")
         assert "\t" in obj.text
+
+
+# ===================================================================
+# ChicagoTaxi Demand Pipeline — Query Parameter Validation
+# Unlike the other 3 services (POST with JSON body), ChicagoTaxi
+# uses GET with query parameters. We test parameter bounds.
+# ===================================================================
+
+
+class DemandQuery(BaseModel):
+    """Mirror of ChicagoTaxi query parameter validation."""
+
+    area: Optional[int] = Field(None, ge=1, le=77)
+    hour: Optional[int] = Field(None, ge=0, le=23)
+    day_of_week: Optional[int] = Field(None, ge=1, le=7)
+    limit: int = Field(50, ge=1, le=1000)
+
+
+class TestChicagoTaxiDemandQueryBoundaries:
+    """Test boundary conditions for demand query parameters."""
+
+    def test_valid_area_1(self):
+        q = DemandQuery(area=1, hour=12)
+        assert q.area == 1
+
+    def test_valid_area_77(self):
+        q = DemandQuery(area=77, hour=0)
+        assert q.area == 77
+
+    def test_area_zero_rejected(self):
+        with pytest.raises(Exception):
+            DemandQuery(area=0)
+
+    def test_area_78_rejected(self):
+        with pytest.raises(Exception):
+            DemandQuery(area=78)
+
+    def test_area_negative_rejected(self):
+        with pytest.raises(Exception):
+            DemandQuery(area=-1)
+
+    def test_hour_0_valid(self):
+        q = DemandQuery(hour=0)
+        assert q.hour == 0
+
+    def test_hour_23_valid(self):
+        q = DemandQuery(hour=23)
+        assert q.hour == 23
+
+    def test_hour_24_rejected(self):
+        with pytest.raises(Exception):
+            DemandQuery(hour=24)
+
+    def test_hour_negative_rejected(self):
+        with pytest.raises(Exception):
+            DemandQuery(hour=-1)
+
+    def test_day_of_week_1_valid(self):
+        q = DemandQuery(day_of_week=1)
+        assert q.day_of_week == 1
+
+    def test_day_of_week_7_valid(self):
+        q = DemandQuery(day_of_week=7)
+        assert q.day_of_week == 7
+
+    def test_day_of_week_0_rejected(self):
+        with pytest.raises(Exception):
+            DemandQuery(day_of_week=0)
+
+    def test_day_of_week_8_rejected(self):
+        with pytest.raises(Exception):
+            DemandQuery(day_of_week=8)
+
+    def test_limit_1_valid(self):
+        q = DemandQuery(limit=1)
+        assert q.limit == 1
+
+    def test_limit_1000_valid(self):
+        q = DemandQuery(limit=1000)
+        assert q.limit == 1000
+
+    def test_limit_0_rejected(self):
+        with pytest.raises(Exception):
+            DemandQuery(limit=0)
+
+    def test_limit_1001_rejected(self):
+        with pytest.raises(Exception):
+            DemandQuery(limit=1001)
+
+    def test_all_none_valid(self):
+        q = DemandQuery()
+        assert q.area is None
+        assert q.hour is None
+        assert q.day_of_week is None
+        assert q.limit == 50
+
+    def test_full_valid_query(self):
+        q = DemandQuery(area=32, hour=14, day_of_week=2, limit=100)
+        assert q.area == 32
+        assert q.hour == 14

@@ -83,6 +83,14 @@ CarVision-Market-Intelligence/artifacts/*
 # Raw and processed data — tracked via DVC / GCS, never in git
 **/data/raw/*.csv
 **/data/processed/*.csv
+**/data/processed/*.parquet
+
+# Large-scale datasets (downloaded locally, never committed)
+Taxi_Trips_*.csv
+**/data/raw/taxi_trips_*.csv
+
+# Processed data at repo root (ETL pipeline output)
+/data/
 
 # Environment variables
 .env

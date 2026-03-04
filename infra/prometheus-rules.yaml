@@ -11,12 +11,14 @@ groups:
           sum(rate(bankchurn_requests_total{status=~"5.."}[5m]))
           + sum(rate(carvision_requests_total{status=~"5.."}[5m]))
           + sum(rate(nlpinsight_requests_total{status=~"5.."}[5m]))
+          + sum(rate(chicagotaxi_requests_total{status=~"5.."}[5m]))
         )
         /
         (
           sum(rate(bankchurn_requests_total[5m]))
           + sum(rate(carvision_requests_total[5m]))
           + sum(rate(nlpinsight_requests_total[5m]))
+          + sum(rate(chicagotaxi_requests_total[5m]))
         )
       ) > 0.05
     for: 5m
@@ -75,6 +77,22 @@ groups:
       summary: "High error rate on NLPInsight Analyzer"
       description: "NLPInsight error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
 
+  - alert: ChicagoTaxiHighErrorRate
+    expr: |
+      (
+        sum(rate(chicagotaxi_requests_total{status=~"5.."}[5m]))
+        /
+        sum(rate(chicagotaxi_requests_total[5m]))
+      ) > 0.05
+    for: 5m
+    labels:
+      severity: warning
+      team: ml-ops
+      service: chicagotaxi
+    annotations:
+      summary: "High error rate on ChicagoTaxi Pipeline"
+      description: "ChicagoTaxi error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+
   # High latency — uses actual per-service histogram names
   # Apps export: bankchurn_request_duration_seconds, carvision_request_duration_seconds, nlpinsight_request_duration_seconds
   - alert: BankChurnHighLatency
@@ -119,9 +137,23 @@ groups:
       summary: "High latency on NLPInsight Analyzer"
       description: "NLPInsight p95 latency is {{ $value }}s (threshold: 2s)"
 
+  - alert: ChicagoTaxiHighLatency
+    expr: |
+      histogram_quantile(0.95,
+        sum(rate(chicagotaxi_request_latency_seconds_bucket[5m])) by (le)
+      ) > 2
+    for: 5m
+    labels:
+      severity: warning
+      team: ml-ops
+      service: chicagotaxi
+    annotations:
+      summary: "High latency on ChicagoTaxi Pipeline"
+      description: "ChicagoTaxi p95 latency is {{ $value }}s (threshold: 2s)"
+
   # Service down
   - alert: ServiceDown
-    expr: up{job=~".*-intelligence|.*-predictor|.*-analyzer"} == 0
+    expr: up{job=~".*-intelligence|.*-predictor|.*-analyzer|.*-pipeline"} == 0
     for: 2m
     labels:
       severity: critical

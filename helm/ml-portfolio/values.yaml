@@ -73,6 +73,26 @@ nlpinsight:
     maxReplicas: 3
     cpuTarget: 70
 
+# --- ChicagoTaxi ---
+chicagotaxi:
+  enabled: true
+  replicas: 1
+  image: chicagotaxi-pipeline:latest
+  model:
+    gcsPath: chicagotaxi/model.joblib
+    localPath: /models/model.joblib
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  hpa:
+    minReplicas: 1
+    maxReplicas: 3
+    cpuTarget: 70
+
 # --- Monitoring ---
 prometheus:
   enabled: true

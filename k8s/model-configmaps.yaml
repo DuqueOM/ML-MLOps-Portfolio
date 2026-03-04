@@ -42,3 +42,16 @@ data:
   GCS_BUCKET: "ml-portfolio-duque-om-202602-ml-models-production"
   GCS_MODEL_PATH: "nlpinsight/model.tar.gz"
   LOCAL_MODEL_PATH: "/models/model.tar.gz"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chicagotaxi-model-config
+  namespace: ml-portfolio
+  labels:
+    app: chicagotaxi-pipeline
+    component: model-download
+data:
+  GCS_BUCKET: "ml-portfolio-duque-om-202602-ml-models-production"
+  GCS_MODEL_PATH: "chicagotaxi/model.joblib"
+  LOCAL_MODEL_PATH: "/models/model.joblib"

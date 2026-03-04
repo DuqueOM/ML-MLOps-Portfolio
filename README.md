@@ -4,7 +4,7 @@
 
 **Machine Learning & MLOps Portfolio — Built and Deployed**
 
-*3 ML Projects • GKE + EKS • GitHub Actions CI/CD • Prometheus + Grafana + MLflow*
+*4 ML Projects • GKE + EKS • GitHub Actions CI/CD • Prometheus + Grafana + MLflow*
 
 [![Portfolio Site](https://img.shields.io/badge/🌐_Portfolio-Live_Site-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
 [![YouTube Demo](https://img.shields.io/badge/📺_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
@@ -33,7 +33,7 @@
 
 ## ⚡ 30-Second Pitch
 
-> After **14 years managing high-pressure operations** in hospitality and logistics, I discovered that the principles that make great operational systems—reliability, monitoring, reproducibility—are the same ones that make great ML systems.
+> After **a decade of launching and operating ventures** across tech services, digital marketing, restaurants, and events, I discovered that the principles that make great operational systems—reliability, monitoring, reproducibility—are the same ones that make great ML systems.
 >
 > This portfolio demonstrates that transition: **3 ML models deployed on GKE, served via FastAPI, monitored via Prometheus + Grafana, tested at 90–98% coverage, and shipped through a multi-stage CI/CD pipeline.** Every technical decision is documented with the reasoning behind it — not just what was built, but why.
 >
@@ -56,6 +56,7 @@
 | [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | 180ms p50 | StackingClassifier (5 models), Feature Engineering, Drift Detection |
 | [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.80**, RMSE $6.7K | 96% | 110ms p50 | LightGBM + FeatureEngineer, Streamlit Dashboard (4 tabs) |
 | [📝 NLPInsight](NLPInsight-Analyzer/) | Classification | **Acc 97%** (sentiment) | 98% | 220ms p50 | FinBERT (ProsusAI), Transfer Learning, Financial PhraseBank |
+| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.91**, 6.3M rows | — | 19K rows/sec | PySpark ETL, Dask Batch Predict, Parquet Partitioning |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
@@ -68,7 +69,7 @@
 
 ---
 
-## 🌟 TOP-3: Production-Ready Projects
+## 🌟 Production-Ready Projects
 
 ### 🏦 1. [BankChurn Predictor](BankChurn-Predictor/) — Customer Churn Prediction
 
@@ -112,18 +113,32 @@ Real-time financial sentiment analysis using **ProsusAI/FinBERT** — a BERT mod
 
 ---
 
+### 🚕 4. [ChicagoTaxi Demand Pipeline](ChicagoTaxi-Demand-Pipeline/) — Batch Processing at Scale
+
+Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpark ETL into partitioned Parquet, with Dask batch prediction. Demonstrates distributed processing skills complementing the online inference services above.
+
+| Raw Rows | Clean Rows | ETL Throughput | Model R² | Batch Predict | Compression |
+|----------|------------|----------------|----------|---------------|-------------|
+| **6.36M** | 5.37M | 4,741 rows/sec | 0.905 | 19K rows/sec | 97% (2.8GB→95MB) |
+
+> **Why this project**: The other 3 projects demonstrate online ML inference. This one fills the data engineering gap — PySpark for ETL, Dask for batch prediction, Parquet for columnar storage. These are the top-requested skills in ML/Data Engineering job descriptions.
+
+[📂 Project](ChicagoTaxi-Demand-Pipeline/) · [📄 Model Card](ChicagoTaxi-Demand-Pipeline/model_card.md)
+
+---
+
 ## 🛠️ Tech Stack
 
 | Category | Technologies |
 |----------|-------------|
-| **ML/DS** | Scikit-learn, XGBoost, LightGBM, PyTorch, Pandas, NumPy, SHAP, Optuna |
+| **ML/DS** | Scikit-learn, XGBoost, LightGBM, PyTorch, PySpark, Dask, Pandas, NumPy, SHAP, Optuna |
 | **MLOps** | MLflow (9 experiments), DVC, Docker, Kubernetes, Terraform |
 | **API & Dashboard** | FastAPI, Pydantic, Streamlit, Plotly |
 | **Cloud & IaC** | GCP (GKE, GCS, AR, Cloud SQL), AWS (EKS, S3, ECR, RDS), Terraform, K8s |
 | **Monitoring** | Prometheus (16/16 targets, 16 alert rules), Grafana (2 dashboards, 25 panels), Locust load testing, Evidently drift |
 | **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy), Artifact Registry, ECR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
-| **Testing** | pytest (90–98% coverage, 368+ tests), Codecov, pre-commit hooks |
+| **Testing** | pytest (90–98% coverage, 390+ tests), Codecov, pre-commit hooks |
 
 > **v3.3.1 Highlights**: StackingClassifier (BankChurn), LightGBM (CarVision), FinBERT (NLPInsight), Lazy SHAP, dual NLP backend, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests (43), Pod Security Standards, drift-triggered retraining ([ADR-006](docs/decisions/006-drift-triggered-retraining.md)). Load test: 0% error rate, p95 480ms (10 users, 2min). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
@@ -152,18 +167,22 @@ graph TB
         INGRESS --> CV_SVC[CarVision Service]
         INGRESS --> NL_SVC[NLPInsight Service]
         INGRESS --> CV_DASH[CarVision Dashboard<br/>Streamlit :8501]
+        INGRESS --> CT_SVC[ChicagoTaxi Service]
 
         BC_SVC --> BC_POD[BankChurn Pod<br/>StackingClassifier]
         CV_SVC --> CV_POD[CarVision Pod<br/>LightGBM]
         NL_SVC --> NL_POD[NLPInsight Pod<br/>FinBERT]
+        CT_SVC --> CT_POD[ChicagoTaxi Pod<br/>Batch Predictions]
 
         BC_POD -.->|Init Container| GCS
         CV_POD -.->|Init Container| GCS
         NL_POD -.->|Init Container| GCS
+        CT_POD -.->|Init Container| GCS
 
         PROM[Prometheus] --> BC_POD
         PROM --> CV_POD
         PROM --> NL_POD
+        PROM --> CT_POD
         PROM --> GRAF[Grafana Dashboard]
 
         MLF[MLflow Server] --> CLOUDSQL[(Cloud SQL)]
@@ -315,7 +334,7 @@ The author maintains and operates all systems independently, including CI/CD pip
 **Duque Ortega Mutis (DuqueOM)**
 *Machine Learning & MLOps Engineer*
 
-14 years of operational experience transitioning to ML engineering with a focus on production-ready systems, reliability, and operational excellence.
+Serial entrepreneur turned ML engineer. A decade of launching ventures—managing teams, budgets, sales targets, and multi-vendor operations—now applied to production ML systems.
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://linkedin.com/in/duqueom)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow-black?style=flat&logo=github)](https://github.com/DuqueOM)
@@ -326,7 +345,7 @@ The author maintains and operates all systems independently, including CI/CD pip
 
 <div align="center">
 
-**Portfolio Version**: 3.3.1 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) · 🟡 AWS Ready
+**Portfolio Version**: 3.4.0 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) · 🟡 AWS Ready
 
 *Building ML systems that work at 2am* 🌙
 

@@ -334,3 +334,73 @@ class NLPInsightUser(HttpUser):
     @task(1)
     def metrics(self) -> None:
         self.client.get(f"{self._prefix}/metrics", name="nlpinsight:metrics")
+
+
+# ---------------------------------------------------------------------------
+# ChicagoTaxi — http://localhost:8003 (K8s) or http://localhost:8004 (Docker)
+# ---------------------------------------------------------------------------
+
+
+class ChicagoTaxiUser(HttpUser):
+    """
+    Simulates traffic to ChicagoTaxi Demand Pipeline.
+
+    Task weights:
+      - demand (10x): primary demand query endpoint
+      - areas  (3x):  area summary queries
+      - health (1x):  liveness probe
+    """
+
+    host = _INGRESS_HOST or "http://localhost:8003"
+    wait_time = between(0.3, 1.5)
+    weight = 1
+    _prefix = "/chicagotaxi" if _INGRESS_HOST else ""
+
+    def on_start(self) -> None:
+        with self.client.get(f"{self._prefix}/health", name="chicagotaxi:health", catch_response=True) as r:
+            if r.status_code != 200:
+                r.failure(f"Health check failed: {r.status_code}")
+
+    @task(10)
+    def demand(self) -> None:
+        """Query demand predictions — randomized filters."""
+        area = random.randint(1, 77)
+        hour = random.randint(0, 23)
+        with self.client.get(
+            f"{self._prefix}/demand?area={area}&hour={hour}&limit=10",
+            name="chicagotaxi:demand",
+            catch_response=True,
+        ) as r:
+            if r.status_code == 200:
+                data = r.json()
+                if not isinstance(data, list):
+                    r.failure(f"Expected list, got {type(data)}")
+            elif r.status_code == 503:
+                r.failure("Service unavailable — predictions not loaded")
+            else:
+                r.failure(f"Unexpected status {r.status_code}")
+
+    @task(3)
+    def areas(self) -> None:
+        """Area summary query."""
+        with self.client.get(
+            f"{self._prefix}/areas",
+            name="chicagotaxi:areas",
+            catch_response=True,
+        ) as r:
+            if r.status_code == 200:
+                data = r.json()
+                if not isinstance(data, list):
+                    r.failure(f"Expected list, got {type(data)}")
+            elif r.status_code == 503:
+                r.failure("Service unavailable — predictions not loaded")
+            else:
+                r.failure(f"Unexpected status {r.status_code}")
+
+    @task(1)
+    def health(self) -> None:
+        self.client.get(f"{self._prefix}/health", name="chicagotaxi:health")
+
+    @task(1)
+    def metrics(self) -> None:
+        self.client.get(f"{self._prefix}/metrics", name="chicagotaxi:metrics")

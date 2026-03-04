@@ -74,6 +74,7 @@ nav:
     - BankChurn Predictor: projects/bankchurn.md
     - CarVision Market Intelligence: projects/carvision.md
     - NLPInsight Analyzer: projects/nlpinsight.md
+    - ChicagoTaxi Demand Pipeline: projects/chicagotaxi.md
   - Architecture:
     - System Overview: architecture/overview.md
     - Portfolio Architecture: ARCHITECTURE_PORTFOLIO.md

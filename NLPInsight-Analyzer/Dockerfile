@@ -37,8 +37,16 @@ RUN python -m venv /opt/venv && \
     find /opt/venv -type d -name 'test' -exec rm -rf {} + 2>/dev/null; \
     find /opt/venv -type f -name '*.pyc' -delete 2>/dev/null; \
     find /opt/venv -type f -name '*.pyo' -delete 2>/dev/null; \
+    find /opt/venv -name '*.so' -exec strip --strip-unneeded {} + 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/torch/test 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/torch/include 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/torch/share 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/torch/bin 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/torch/_inductor 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/torch/_dynamo 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/torch/_functorch 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/torch/distributed 2>/dev/null; \
+    rm -rf /opt/venv/lib/python*/site-packages/caffe2 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/pip 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/setuptools 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/wheel 2>/dev/null; \

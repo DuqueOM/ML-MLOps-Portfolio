@@ -22,7 +22,7 @@
 | **Algorithm** | LightGBMRegressor |
 | **Framework** | LightGBM 4.6+, Scikit-learn 1.8+ |
 | **Primary Metric** | R²: **0.80**, RMSE: **$6,744** |
-| **Business Impact** | 18% improvement in pricing accuracy vs manual valuation |
+| **Business Impact** | Hypothetical scenario analysis below (portfolio demonstration) |
 | **Production Status** | ✅ Active (API + Streamlit Dashboard on K8s) |
 | **Last Updated** | February 2026 |
 | **Owner** | Duque Ortega Mutis (DuqueOM) |
@@ -37,19 +37,20 @@ Predict the **fair market value** of used vehicles based on specifications (year
 
 ### Intended Users & Applications
 
-| Stakeholder | Application | Value Delivered |
-|-------------|-------------|-----------------|
-| **Dealerships** | Dynamic pricing optimization | 18% improvement in pricing accuracy |
-| **Buyers** | Fair value assessment | Transparency in negotiations |
-| **Market Analysts** | Trend analysis, portfolio valuation | Real-time market intelligence |
-| **Inventory Managers** | ROI calculation per vehicle | Data-driven acquisition decisions |
+| Stakeholder | Application |
+|-------------|-------------|
+| **Dealerships** | Dynamic pricing optimization (RMSE $6,744 vs. $11,200 baseline) |
+| **Buyers** | Fair value assessment with model confidence intervals |
+| **Market Analysts** | Trend analysis, portfolio valuation via feature contributions |
+| **Inventory Managers** | Data-driven acquisition decisions with price predictions |
 
-### Business Context
+### Business Context *(hypothetical scenario for demonstration)*
 
-- **Market Size**: ~40M used vehicle sales/year (US)
-- **Average Price**: $28,000 (2024 data)
-- **Pricing Error Cost**: $500-2,000 per vehicle (over/underpricing)
-- **Model ROI**: $120K/year savings for 1,000-vehicle dealership
+The following values are **illustrative assumptions** based on industry-typical figures, not actual business data:
+
+- **Market Size**: ~40M used vehicle sales/year (US, industry estimate)
+- **Average Price**: ~$28,000 (2024 industry data)
+- **Pricing Error Cost**: $500-2,000 per vehicle (industry estimate for over/underpricing)
 
 ### Out of Scope
 

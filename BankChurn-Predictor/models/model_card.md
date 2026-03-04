@@ -22,7 +22,7 @@
 | **Algorithm** | StackingClassifier (RF + GB + XGB + LGB → LR meta-learner) |
 | **Framework** | Scikit-learn 1.8+, XGBoost, LightGBM |
 | **Primary Metric** | AUC-ROC: **0.87**, F1: **0.62** |
-| **Business Impact** | $2.1M annual savings (retention optimization) |
+| **Business Impact** | Hypothetical scenario analysis below (portfolio demonstration) |
 | **Production Status** | ✅ Active |
 | **Last Updated** | February 2026 |
 | **Owner** | Duque Ortega Mutis (DuqueOM) |
@@ -37,19 +37,21 @@ Predict the probability that a bank customer will **churn (exit)** within the ne
 
 ### Intended Users & Applications
 
-| Stakeholder | Application | Value Delivered |
-|-------------|-------------|-----------------|
-| **Retention Team** | Prioritize high-risk customers for outreach | 3x lift in retention campaign efficiency |
-| **Marketing** | Targeted retention offers | 45% reduction in blanket campaign costs |
-| **Product Analytics** | Identify churn drivers | Data-driven product improvements |
-| **Finance** | Revenue forecasting | 15% more accurate churn projections |
+| Stakeholder | Application |
+|-------------|-------------|
+| **Retention Team** | Prioritize high-risk customers for outreach (3.4x lift vs. random targeting) |
+| **Marketing** | Targeted retention offers instead of blanket campaigns |
+| **Product Analytics** | Identify churn drivers via SHAP feature contributions |
+| **Finance** | Data-driven churn projections for revenue forecasting |
 
-### Business Context
+### Business Context *(hypothetical scenario for demonstration)*
 
-- **Customer Lifetime Value**: $1,500-3,000 (3-year avg)
-- **Acquisition Cost**: $200-400 per customer
-- **Churn Base Rate**: ~20% annually
-- **Model ROI**: $2.1M/year via targeted retention (100K customer base)
+The following values are **illustrative assumptions** based on industry-typical figures, not actual business data:
+
+- **Customer Lifetime Value**: $1,500-3,000 (3-year avg, industry estimate)
+- **Acquisition Cost**: $200-400 per customer (industry estimate)
+- **Churn Base Rate**: ~20% annually (observed in dataset)
+- **Scenario ROI**: See threshold analysis below for projected value under these assumptions
 
 ### Out of Scope
 
@@ -224,9 +226,13 @@ Metrics:
 |--------|-------|----------------|
 | **Precision@10%** | 68.5% | Top 10% of predictions contain 68.5% of actual churners |
 | **Lift@10%** | **3.4x** | 3.4× better than random targeting |
-| **Cost of FN** | $1,500-3,000 | Missed churn = lost customer lifetime value |
-| **Cost of FP** | $50 | Unnecessary retention offer |
-| **Net Savings** | **$2.1M/year** | (TP × $2,000) - (FP × $50) for 100K base |
+
+*The following cost estimates use industry-typical assumptions (see Business Context above):*
+
+| Metric | Value | Interpretation |
+|--------|-------|----------------|
+| **Assumed Cost of FN** | ~$1,500–3,000 | Missed churn = lost customer LTV (industry estimate) |
+| **Assumed Cost of FP** | ~$50 | Unnecessary retention offer (industry estimate) |
 
 ### Cross-Validation Results
 
@@ -271,22 +277,25 @@ At threshold 0.35:
 
 The remaining 22% of missed churners represent the irreducible error given available features; recovering them would require data not captured at prediction time (e.g., recent support interactions, competitor activity).
 
-### Business Trade-off Summary
+### Business Trade-off Summary *(illustrative scenario)*
+
+*The following projections assume a hypothetical 100K customer base with industry-typical LTV and retention costs. These are **not** derived from actual business data — they demonstrate how threshold selection affects business value.*
 
 ```
-For a 100K customer base (~20,400 churners/year):
+Hypothetical scenario: 100K customer base (~20,400 churners/year)
 
 At threshold 0.35 (production setting):
-  Detected churners (TP): ~15,900  →  savings ~$23.8M (at $1,500 avg LTV)
-  Unnecessary offers (FP): ~10,100  →  cost ~$505K (at $50/offer)
-  Net annual value:  ~$23.3M
+  Detected churners (TP): ~15,900
+  Missed churners (FN): ~4,500
+  Unnecessary offers (FP): ~10,100
 
 vs. threshold 0.50 (maximizes F1):
-  Detected churners (TP): ~11,100  →  savings ~$16.6M
-  Unnecessary offers (FP): ~4,100   →  cost ~$205K
-  Net annual value:  ~$16.4M
+  Detected churners (TP): ~11,100
+  Missed churners (FN): ~9,300
+  Unnecessary offers (FP): ~4,100
 
-Production threshold 0.35 delivers +42% net value vs default.
+Threshold 0.35 catches ~43% more churners at the cost of ~2.5x more false positives.
+The right threshold depends on the actual cost ratio between missed churners and unnecessary offers.
 ```
 
 ---

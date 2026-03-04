@@ -36,6 +36,7 @@ jobs:
           - BankChurn-Predictor
           - CarVision-Market-Intelligence
           - NLPInsight-Analyzer
+          - ChicagoTaxi-Demand-Pipeline
     
     services:
       postgres:
@@ -93,12 +94,15 @@ jobs:
       - name: Run tests with coverage
         working-directory: ${{ matrix.project }}
         run: |
-          # Coverage thresholds: BankChurn 85%, CarVision 85%, NLPInsight 85%
+          # Coverage thresholds: BankChurn 85%, CarVision 85%, NLPInsight 85%, ChicagoTaxi 85%
           if [ "${{ matrix.project }}" = "BankChurn-Predictor" ]; then
             COV_TARGET="src"
             THRESHOLD=85
           elif [ "${{ matrix.project }}" = "CarVision-Market-Intelligence" ]; then
             COV_TARGET="src/carvision"
+            THRESHOLD=85
+          elif [ "${{ matrix.project }}" = "ChicagoTaxi-Demand-Pipeline" ]; then
+            COV_TARGET="src/chicagotaxi"
             THRESHOLD=85
           else
             COV_TARGET="src/nlpinsight"
@@ -144,15 +148,16 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       
       - name: Install quality tools
-        run: pip install "black==26.1.0" flake8 coverage
+        run: pip install "black==26.1.0" flake8 coverage mypy
       
       - name: Check Black formatting
         run: |
           echo "::group::Black Formatting Check"
           FAIL=0
-          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer; do
-            if [ -d "$project/src" ]; then
-              black --check "$project/src" "$project/app" 2>/dev/null || FAIL=1
+          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline; do
+            if [ -d "$project/src" ] || [ -d "$project/app" ]; then
+              black --check "$project/app" 2>/dev/null || FAIL=1
+              [ -d "$project/src" ] && black --check "$project/src" 2>/dev/null || true
             fi
           done
           echo "::endgroup::"
@@ -163,9 +168,24 @@ jobs:
       - name: Check Flake8 critical errors
         run: |
           echo "::group::Flake8 Critical Errors"
-          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer; do
+          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline; do
             if [ -d "$project/src" ]; then
               flake8 "$project/src" --count --select=E9,F63,F7,F82 --show-source --statistics
+            fi
+            if [ -d "$project/app" ]; then
+              flake8 "$project/app" --count --select=E9,F63,F7,F82 --show-source --statistics
+            fi
+          done
+          echo "::endgroup::"
+      
+      - name: Run mypy type checks
+        run: |
+          echo "::group::Mypy Type Checking"
+          mypy common_utils/ --config-file mypy.ini || true
+          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline; do
+            if [ -d "$project/app" ]; then
+              echo "--- $project ---"
+              mypy "$project/app/" --config-file mypy.ini || true
             fi
           done
           echo "::endgroup::"
@@ -618,7 +638,7 @@ jobs:
           find . -name "model_card.md" -type f
           
           # Verify model cards exist in main projects
-          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer; do
+          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline; do
             if [ ! -f "$project/model_card.md" ]; then
               echo "⚠️  Missing model_card.md in $project"
             else

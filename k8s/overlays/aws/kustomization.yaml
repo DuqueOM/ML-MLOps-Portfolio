@@ -16,3 +16,4 @@ resources:
   - bankchurn-deployment-aws.yaml
   - carvision-deployment-aws.yaml
   - nlpinsight-deployment-aws.yaml
+  - chicagotaxi-deployment-aws.yaml

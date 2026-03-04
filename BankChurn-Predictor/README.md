@@ -27,7 +27,7 @@
 
 > **The Problem**: Customer acquisition costs in banking are 5-25x higher than retention. Yet most banks react to churn instead of preventing it.
 >
-> **The Solution**: BankChurn Predictor identifies at-risk customers in real-time with **87% AUC discrimination**, enabling proactive retention campaigns that can **reduce churn by 15-25%** and **save $2-5M annually**.
+> **The Solution**: BankChurn Predictor identifies at-risk customers in real-time with **87% AUC discrimination** and **3.4x lift** over random targeting, enabling proactive, data-driven retention campaigns.
 >
 > **The Tech**: Production-grade ML service with StackingClassifier ensemble (RF + GB + XGB + LGB → LR meta-learner), SHAP explainability, and sub-50ms API latency.
 
@@ -70,12 +70,12 @@
 
 BankChurn-Predictor is a **production-grade Machine Learning service** designed to identify customers at high risk of leaving the bank (churn). By predicting churn probability, the bank can proactively engage at-risk customers with targeted retention campaigns, reducing customer acquisition costs and improving lifetime value.
 
-### Business Impact
+### Business Impact *(hypothetical — portfolio demonstration)*
 
-- **Reduce churn by 15-25%** through proactive interventions
-- **Save $2-5M annually** by retaining high-value customers
-- **ROI of 300-500%** on retention campaigns vs acquisition
-- **Real-time predictions** enabling immediate action
+- **3.4x lift** over random targeting at top-10% risk scores
+- **Real-time predictions** via FastAPI with sub-50ms latency
+- **SHAP explainability** for every prediction — actionable churn drivers
+- **Fairness audited** across gender and geography segments
 
 ### Technical Highlights
 
@@ -87,7 +87,6 @@ BankChurn-Predictor is a **production-grade Machine Learning service** designed 
 | **Recall** | **0.54** | 0.50-0.60 | ✅ Acceptable |
 | **API Latency** | **<50ms p95** | <100ms | ✅ Fast |
 | **Test Coverage** | **90%** | 70%+ | ✅ Excellent |
-| **Uptime SLA** | **99.9%** | 99.5% | ✅ Enterprise-grade |
 
 ---
 
@@ -115,24 +114,22 @@ BankChurn-Predictor provides:
 
 ### Use Cases
 
-| Stakeholder | Use Case | Value |
-|-------------|----------|-------|
-| **Marketing** | Target retention offers to high-risk segments | 40% campaign efficiency ↑ |
-| **Product** | Identify features/services causing churn | 20% product satisfaction ↑ |
-| **Customer Success** | Prioritize outreach to at-risk accounts | 30% save rate ↑ |
-| **Finance** | Forecast revenue impact of churn trends | 15% forecast accuracy ↑ |
+| Stakeholder | Use Case |
+|-------------|----------|
+| **Marketing** | Target retention offers to high-risk segments (3.4x lift vs. random) |
+| **Product** | Identify features/services causing churn via SHAP |
+| **Customer Success** | Prioritize outreach to at-risk accounts by risk score |
+| **Finance** | Data-driven churn projections for revenue forecasting |
 
-### ROI Calculation
+### Scenario Analysis *(illustrative, not actual business data)*
 
-**Scenario**: Bank with 100,000 customers
+For a hypothetical 100K customer base with ~20% annual churn:
 
-| Metric | Without ML | With BankChurn | Improvement |
-|--------|-----------|----------------|-------------|
-| Churn Rate | 20% (20,000) | 15% (15,000) | **-25%** |
-| Cost/Acquisition | $500 | $500 | — |
-| Retention Savings | — | $2.5M | **$2.5M/year** |
-| Campaign Cost | — | $500K | -$500K |
-| **Net Benefit** | **$0** | **$2M** | **$2M/year** |
+- At production threshold (0.35): model detects ~78% of churners (15,900 of 20,400)
+- False positive rate: ~10,100 customers flagged who would not churn
+- 3.4x lift at top decile vs. random targeting
+
+The actual business value depends on the cost ratio between missed churners and unnecessary retention offers, which varies by institution. See [model card](models/model_card.md) for detailed threshold analysis.
 
 ---
 

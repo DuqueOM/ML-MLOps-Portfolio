@@ -27,10 +27,12 @@ try:
     import sys as _sys
 
     _sys.path.insert(0, str(Path(__file__).resolve().parents[1].parent))
+    from common_utils.logging import get_logger as _get_logger
     from common_utils.telemetry import init_telemetry, instrument_fastapi
 except ImportError:
     init_telemetry = None  # type: ignore[assignment]
     instrument_fastapi = None  # type: ignore[assignment]
+    _get_logger = None  # type: ignore[assignment]
 
 # Prometheus metrics (optional dependency)
 try:
@@ -58,8 +60,12 @@ except ImportError:
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Configure logging (structured JSON in production via LOG_FORMAT=json)
+if _get_logger is not None:
+    logger = _get_logger(__name__, service="nlpinsight")
+else:
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
 
 MODEL_PATH = os.getenv("MODEL_PATH", str(BASE_DIR / "models"))
 start_time = time.time()

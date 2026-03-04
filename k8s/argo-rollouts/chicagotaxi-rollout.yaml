@@ -1,0 +1,134 @@
+# Argo Rollouts — Canary Deployment for ChicagoTaxi
+# Requires: kubectl apply -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+#
+# Strategy: Canary with automated promotion
+# - 20% traffic → canary for 60s (smoke test window)
+# - 50% traffic → canary for 120s (validation window)
+# - 100% traffic → full promotion
+# - Auto-rollback on error rate > 5% or p95 latency > 500ms
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: chicagotaxi-pipeline
+  namespace: ml-portfolio
+  labels:
+    app: chicagotaxi-pipeline
+    tier: ml-service
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: chicagotaxi-pipeline
+  template:
+    metadata:
+      labels:
+        app: chicagotaxi-pipeline
+        tier: ml-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: ml-workload
+      containers:
+      - name: chicagotaxi-api
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/chicagotaxi-pipeline:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: MODEL_PATH
+          value: "/app/models/model.joblib"
+        - name: PREDICTIONS_PATH
+          value: "/app/data/processed/taxi_predictions"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: LOG_FORMAT
+          value: "json"
+        - name: SERVICE_NAME
+          value: "chicagotaxi"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        volumeMounts:
+        - name: model-volume
+          mountPath: /app/models
+          readOnly: true
+      initContainers:
+      - name: model-download
+        image: python:3.11-alpine
+        command: ["python", "/scripts/download-model.py"]
+        volumeMounts:
+        - name: model-volume
+          mountPath: /models
+        - name: download-script
+          mountPath: /scripts
+        envFrom:
+        - configMapRef:
+            name: chicagotaxi-model-config
+      volumes:
+      - name: model-volume
+        emptyDir: {}
+      - name: download-script
+        configMap:
+          name: download-script
+  strategy:
+    canary:
+      canaryService: chicagotaxi-canary
+      stableService: chicagotaxi-service
+      trafficRouting:
+        nginx:
+          stableIngress: chicagotaxi-ingress
+      steps:
+      - setWeight: 20
+      - pause: {duration: 60s}
+      - analysis:
+          templates:
+          - templateName: error-rate-check
+          args:
+          - name: service-name
+            value: chicagotaxi
+      - setWeight: 50
+      - pause: {duration: 120s}
+      - analysis:
+          templates:
+          - templateName: latency-check
+          args:
+          - name: service-name
+            value: chicagotaxi
+      - setWeight: 100
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chicagotaxi-canary
+  namespace: ml-portfolio
+  labels:
+    app: chicagotaxi-pipeline
+    role: canary
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: chicagotaxi-pipeline

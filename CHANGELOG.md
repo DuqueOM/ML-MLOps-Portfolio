@@ -6,6 +6,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [3.4.0] — 2026-03-04
+
+### Added
+- **ChicagoTaxi Demand Pipeline** — 4th portfolio project: PySpark ETL processing 6.3M taxi trips (2.8 GB CSV → 95 MB Parquet), Dask batch prediction (19K rows/sec), FastAPI serving layer, R² 0.905
+- `ChicagoTaxi-Demand-Pipeline/` — full project structure: scripts, FastAPI app, Dockerfile (Python 3.11), tests (22 passing), model card, config
+- `k8s/chicagotaxi-deployment.yaml` — Deployment + Service + HPA (CPU-only scaling)
+- `k8s/overlays/aws/chicagotaxi-deployment-aws.yaml` — AWS EKS overlay
+- ChicagoTaxi entries in: model-configmaps (GCP + AWS), upload-models-to-gcs.sh, Helm values.yaml, CI pipeline matrix
+- **Structured JSON logging** — `common_utils/logging.py` (JSONFormatter + HumanFormatter), integrated in all 4 FastAPI apps
+- **mypy config** — `mypy.ini` at repo root, mypy step in CI quality gates
+- **Docker optimization** — `.so` stripping, test data removal (BankChurn, CarVision), aggressive torch cleanup (NLPInsight)
+- **Argo Rollouts** — `scripts/deploy-canary.sh`, `docs/decisions/008-argo-rollouts-canary.md`
+
+### Changed
+- **RUNBOOK.md streamlined** — 603 → 124 lines (80% reduction); removed verbose padding, kept essential operations
+- **README.md** — updated to 4 projects, architecture diagram includes ChicagoTaxi, tech stack adds PySpark + Dask, version 3.4.0
+- **CI pipeline** — ChicagoTaxi added to test matrix, quality gates (black, flake8, mypy), model card verification
+- K8s deployments updated with `LOG_FORMAT=json`, `SERVICE_NAME`, `LOG_LEVEL` env vars
+
 ## [3.3.2] — 2026-03-04
 
 ### Changed

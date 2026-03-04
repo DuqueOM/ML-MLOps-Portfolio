@@ -6,10 +6,11 @@
 #   - gsutil available
 #
 # Usage:
-#   ./scripts/upload-models-to-gcs.sh                    # Upload all 3 models
+#   ./scripts/upload-models-to-gcs.sh                    # Upload all 4 models
 #   ./scripts/upload-models-to-gcs.sh bankchurn           # Upload only bankchurn
 #   ./scripts/upload-models-to-gcs.sh carvision           # Upload only carvision
 #   ./scripts/upload-models-to-gcs.sh nlpinsight           # Upload only nlpinsight
+#   ./scripts/upload-models-to-gcs.sh chicagotaxi          # Upload only chicagotaxi
 #
 # After uploading, restart pods to pick up new models:
 #   kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio
@@ -69,10 +70,15 @@ case "$TARGET" in
             "$PROJECT_ROOT/NLPInsight-Analyzer/models/model.tar.gz" \
             "nlpinsight/model.tar.gz"
         ;;&
+    chicagotaxi|all)
+        upload_model "ChicagoTaxi" \
+            "$PROJECT_ROOT/ChicagoTaxi-Demand-Pipeline/models/model.joblib" \
+            "chicagotaxi/model.joblib"
+        ;;&
     all) ;;
-    bankchurn|carvision|nlpinsight) ;;
+    bankchurn|carvision|nlpinsight|chicagotaxi) ;;
     *)
-        echo "Usage: $0 [bankchurn|carvision|nlpinsight|all]"
+        echo "Usage: $0 [bankchurn|carvision|nlpinsight|chicagotaxi|all]"
         exit 1
         ;;
 esac
@@ -84,6 +90,7 @@ echo "  1. Restart deployments to pick up new models:"
 echo "     kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio"
 echo "     kubectl rollout restart deployment/carvision-intelligence -n ml-portfolio"
 echo "     kubectl rollout restart deployment/nlpinsight-analyzer -n ml-portfolio"
+echo "     kubectl rollout restart deployment/chicagotaxi-pipeline -n ml-portfolio"
 echo ""
 echo "  2. Verify pods are running:"
 echo "     kubectl get pods -n ml-portfolio -w"

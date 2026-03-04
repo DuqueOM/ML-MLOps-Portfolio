@@ -27,7 +27,7 @@
 
 > **The Problem**: The used vehicle market ($1.2T annually in the US) suffers from pricing opacity. Dealerships struggle with optimal pricing, sellers lack market intelligence, and buyers face information asymmetry.
 >
-> **The Solution**: CarVision provides ML-powered valuations with **R² 0.80** accuracy, interactive market analytics, and real-time API predictions—enabling **30% faster sales** and **12-18% margin improvement**.
+> **The Solution**: CarVision provides ML-powered valuations with **R² 0.80** accuracy (RMSE $6,744), interactive market analytics via Streamlit, and real-time API predictions with <30ms latency.
 >
 > **The Tech**: LightGBM pipeline with centralized `FeatureEngineer`, Streamlit dashboard with 4 analytics tabs, FastAPI serving with <30ms latency.
 
@@ -89,13 +89,12 @@
 
 CarVision Market Intelligence is a **comprehensive vehicle valuation platform** that combines machine learning price prediction with business intelligence capabilities. It empowers dealerships, lenders, and individual sellers to make data-driven pricing decisions based on real-time market analytics.
 
-### Business Impact
+### Business Impact *(hypothetical — portfolio demonstration)*
 
-- **Optimize pricing strategy** with market-aligned valuations
-- **Reduce time-to-sale by 30%** through accurate pricing
-- **Increase profit margins by 12-18%** via strategic positioning
-- **Minimize inventory holding costs** with faster turnover
-- **Identify high-ROI acquisition opportunities**
+- **R² 0.80** — explains 80% of price variance vs. 0% for a mean-price baseline
+- **RMSE $6,744** — 90% of predictions within ±$8K (acceptable for $20-30K vehicles)
+- **Interactive analytics** — Streamlit dashboard with 4 tabs for market intelligence
+- **Fairness audited** — error ratio analysis across vehicle segments
 
 ### Technical Highlights
 
@@ -146,17 +145,17 @@ CarVision provides three core capabilities:
 - Risk assessment for acquisitions
 - Optimal pricing recommendations
 - Market timing indicators (buy/sell signals)
-- ROI projections for inventory decisions
+- Data-driven inventory decisions
 
 ### Use Cases
 
-| Stakeholder | Primary Use Case | Value Delivered |
-|-------------|------------------|-----------------|
-| **Dealerships** | Inventory pricing optimization | 15% margin improvement, 30% faster sales |
-| **Lenders** | Collateral valuation for auto loans | 40% faster underwriting, 25% default reduction |
-| **Wholesalers** | Auction purchase decisions | 22% ROI increase on acquisitions |
-| **Private Sellers** | Competitive pricing for faster sales | 35% time-to-sale reduction |
-| **Fleet Managers** | Disposal timing and pricing | 18% residual value optimization |
+| Stakeholder | Primary Use Case |
+|-------------|------------------|
+| **Dealerships** | Inventory pricing optimization (RMSE $6,744 vs. $11,200 baseline) |
+| **Lenders** | Collateral valuation with confidence intervals |
+| **Wholesalers** | Auction purchase decisions with feature-level price impact |
+| **Private Sellers** | Competitive pricing with market percentile ranking |
+| **Fleet Managers** | Disposal timing via segment-level price trends |
 
 ---
 

@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chicagotaxi-pipeline
+  namespace: ml-portfolio
+  labels:
+    app: chicagotaxi-pipeline
+    tier: ml-service
+    version: v1.0.0
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: chicagotaxi-pipeline
+  template:
+    metadata:
+      labels:
+        app: chicagotaxi-pipeline
+        tier: ml-service
+        version: v1.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: ml-workload
+      initContainers:
+      - name: model-download
+        image: python:3.11-alpine
+        command: ["python", "/scripts/download-model.py"]
+        volumeMounts:
+        - name: model-volume
+          mountPath: /models
+        - name: download-script
+          mountPath: /scripts
+        envFrom:
+        - configMapRef:
+            name: chicagotaxi-model-config
+      containers:
+      - name: chicagotaxi-api
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/chicagotaxi-pipeline:latest
+        imagePullPolicy: Always
+        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        env:
+        - name: MODEL_PATH
+          value: "/app/models/model.joblib"
+        - name: PREDICTIONS_PATH
+          value: "/app/data/processed/taxi_predictions"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: LOG_LEVEL
+          value: "INFO"
+        - name: LOG_FORMAT
+          value: "json"
+        - name: SERVICE_NAME
+          value: "chicagotaxi"
+        envFrom:
+        - configMapRef:
+            name: chicagotaxi-config
+            optional: true
+        - secretRef:
+            name: chicagotaxi-secrets
+            optional: true
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        volumeMounts:
+        - name: model-volume
+          mountPath: /app/models
+          readOnly: true
+      volumes:
+      - name: model-volume
+        emptyDir: {}
+      - name: download-script
+        configMap:
+          name: download-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chicagotaxi-service
+  namespace: ml-portfolio
+  labels:
+    app: chicagotaxi-pipeline
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: chicagotaxi-pipeline
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: chicagotaxi-hpa
+  namespace: ml-portfolio
+  labels:
+    app: chicagotaxi-pipeline
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: chicagotaxi-pipeline
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70

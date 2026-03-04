@@ -39,6 +39,12 @@ spec:
           value: "/app/models/model.joblib"
         - name: PYTHONUNBUFFERED
           value: "1"
+        - name: LOG_LEVEL
+          value: "INFO"
+        - name: LOG_FORMAT
+          value: "json"
+        - name: SERVICE_NAME
+          value: "carvision"
         envFrom:
         - configMapRef:
             name: carvision-config

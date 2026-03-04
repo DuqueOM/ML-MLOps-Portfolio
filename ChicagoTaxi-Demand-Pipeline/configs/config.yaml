@@ -1,0 +1,46 @@
+paths:
+  raw_data: data/raw/taxi_trips.csv
+  processed_dir: data/processed/taxi_trips_parquet
+  predictions_dir: data/processed/taxi_predictions
+  models_dir: models
+
+etl:
+  driver_memory: "4g"
+  shuffle_partitions: 8
+  compression: snappy
+  partitioning:
+    - year
+    - month
+  filters:
+    min_trip_seconds: 60
+    max_trip_seconds: 86400
+    min_trip_miles: 0.1
+    max_trip_miles: 500
+    min_fare: 0
+    max_speed_mph: 100
+
+model:
+  type: random_forest
+  params:
+    n_estimators: 200
+    max_depth: 10
+    min_samples_leaf: 5
+    n_jobs: -1
+  features:
+    - hour
+    - day_of_week
+    - is_weekend
+    - pickup_community_area
+    - avg_distance_miles
+    - avg_fare
+    - avg_speed_mph
+  target: trip_count
+  test_size: 0.2
+
+serving:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 2
+
+logging:
+  level: INFO

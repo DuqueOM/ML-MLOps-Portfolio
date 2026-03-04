@@ -153,6 +153,34 @@ services:
       - ml-network
     restart: unless-stopped
 
+  # ChicagoTaxi Demand Pipeline API
+  chicagotaxi:
+    image: ml-portfolio-chicagotaxi:latest
+    build:
+      context: ./ChicagoTaxi-Demand-Pipeline
+      dockerfile: Dockerfile
+    container_name: chicagotaxi-api
+    ports:
+      - "8004:8000"
+    volumes:
+      - ./ChicagoTaxi-Demand-Pipeline/models:/app/models:ro
+      - ./data/processed/taxi_predictions:/app/data/processed/taxi_predictions:ro
+    environment:
+      - PREDICTIONS_PATH=/app/data/processed/taxi_predictions
+      - PYTHONUNBUFFERED=1
+      - LOG_FORMAT=json
+      - LOG_LEVEL=INFO
+      - SERVICE_NAME=chicagotaxi
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - ml-network
+    restart: unless-stopped
+
   # Prometheus (Monitoring - Opcional)
   prometheus:
     image: prom/prometheus:v2.48.0
