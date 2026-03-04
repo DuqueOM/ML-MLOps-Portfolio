@@ -450,39 +450,49 @@ jobs:
       
       - name: Generate CI test models
         run: |
-          pip install "scikit-learn>=1.6.0,<1.7.0" joblib numpy pandas
+          pip install "scikit-learn~=1.8.0" joblib numpy pandas
           python scripts/generate_ci_test_models.py
 
       - name: Spin up Demo Stack
         run: |
           # Start services using pre-built images
           docker compose -f docker-compose.demo.yml up -d
-          
-          # Wait for services to be ready (increased for shap/heavy deps)
+
+          # Wait for services to be ready
           echo "Waiting for services to initialize..."
           sleep 60
-          
+
           # Show container status
-          docker compose -f docker-compose.demo.yml ps
-          
-          # Wait for health checks with retry logic
+          docker compose -f docker-compose.demo.yml ps -a
+
+          # Dump full logs per service so crash reasons are visible
+          echo "=== Container logs after initial wait ==="
+          for svc_port in "bankchurn:8001" "carvision:8002" "nlpinsight:8003" "chicagotaxi:8004"; do
+            svc="${svc_port%%:*}"
+            echo "--- $svc logs ---"
+            docker compose -f docker-compose.demo.yml logs "$svc" --tail 80
+          done
+
+          # Wait for health endpoints using host-side curl on mapped ports
           echo "Waiting for health checks..."
-          for service in bankchurn carvision nlpinsight chicagotaxi; do
-            echo "Checking $service..."
+          declare -A SVC_PORTS=([bankchurn]=8001 [carvision]=8002 [nlpinsight]=8003 [chicagotaxi]=8004)
+          for svc in bankchurn carvision nlpinsight chicagotaxi; do
+            port="${SVC_PORTS[$svc]}"
+            echo "Checking $svc on port $port..."
             for i in {1..12}; do
-              if docker compose -f docker-compose.demo.yml exec -T $service curl -sf http://localhost:8000/health > /dev/null 2>&1; then
-                echo "$service is healthy"
+              if curl -sf "http://localhost:$port/health" > /dev/null 2>&1; then
+                echo "  $svc is up"
                 break
               fi
-              echo "  Attempt $i/12 - $service not ready, waiting 10s..."
+              echo "  Attempt $i/12 - $svc not ready, waiting 10s..."
               sleep 10
             done
+            echo "--- $svc final logs ---"
+            docker compose -f docker-compose.demo.yml logs "$svc" --tail 30
           done
-          
+
           # Final status
-          docker compose -f docker-compose.demo.yml ps
-          echo "Recent logs:"
-          docker compose -f docker-compose.demo.yml logs --tail 30
+          docker compose -f docker-compose.demo.yml ps -a
 
       - name: Diagnostic - Check all containers and model files
         if: always()
