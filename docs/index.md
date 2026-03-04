@@ -1,6 +1,6 @@
 # ML-MLOps Portfolio Documentation
 
-**ML/MLOps portfolio with 3 deployed projects** — GKE + EKS, GitHub Actions CI/CD, Prometheus + Grafana + MLflow.
+**ML/MLOps portfolio with 4 deployed projects** — GKE + EKS, GitHub Actions CI/CD, Prometheus + Grafana + MLflow.
 
 [![GitHub](https://img.shields.io/badge/📁_Code-Repository-181717?style=for-the-badge&logo=github)](https://github.com/DuqueOM/ML-MLOps-Portfolio)
 [![YouTube](https://img.shields.io/badge/📺_Video-Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
@@ -9,13 +9,14 @@
 
 ---
 
-## Projects (v3.3.1, Python 3.11.14)
+## Projects (v3.4.0, Python 3.11.14)
 
 | Project | Algorithm | Primary Metric | Tests | Coverage |
 |---------|-----------|----------------|:-----:|:--------:|
 | **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC 0.87 | 199 | 90% |
 | **[CarVision](projects/carvision.md)** | LightGBM + FeatureEngineer (24 features) | R² 0.80 | 52 | 96% |
 | **[NLPInsight](projects/nlpinsight.md)** | FinBERT (ProsusAI) / TF-IDF fallback | Acc 97% | 74 | 98% |
+| **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL + RandomForest (6.3M rows) | R² 0.91 | 122 | 91% |
 
 ## Quick Start
 
@@ -76,4 +77,4 @@ Developed using AI-assisted tools (Cursor/Cascade) for code generation accelerat
 
 **Built by [Duque Ortega Mutis](https://github.com/DuqueOM)** | [Source Code](https://github.com/DuqueOM/ML-MLOps-Portfolio) | [Video Demo](https://youtu.be/qmw9VlgUcn8)
 
-*Last Updated: March 2026 — v3.3.1*
+*Last Updated: March 2026 — v3.4.0*

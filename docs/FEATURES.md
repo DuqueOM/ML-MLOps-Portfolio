@@ -1,6 +1,6 @@
 # Features
 
-## Performance (v3.3.1, March 2026)
+## Performance (v3.4.0, March 2026)
 
 | Feature | Impact |
 |---------|--------|
@@ -32,10 +32,10 @@
 - **Multi-Cloud** — GCP (GKE) + AWS (EKS) parity with Terraform IaC
 - **Locust Load Testing** — Port-forward + Ingress IP modes
 
-## Responsible AI (v3.3.1)
+## Responsible AI (v3.4.0)
 
-- **Fairness Audits** — All 3 projects: disparate impact (BankChurn), error ratio (CarVision), F1 parity (NLPInsight)
-- **Drift Detection** — KS + PSI + Evidently in all 3 projects, vocabulary drift for NLP
+- **Fairness Audits** — BankChurn (disparate impact), CarVision (error ratio), NLPInsight (F1 parity)
+- **Drift Detection** — KS + PSI + Evidently, vocabulary drift for NLP
 - **Data Validation** — Pandera schemas for all projects (raw + inference)
 - **OpenTelemetry** — Distributed tracing in all 3 FastAPI apps (graceful no-op fallback)
 
@@ -51,4 +51,4 @@
 
 ---
 
-*Last Updated: March 2026 — v3.3.1*
+*Last Updated: March 2026 — v3.4.0*

@@ -70,4 +70,4 @@ Automated via K8s CronJob → GitHub Actions `workflow_dispatch`.
 
 ---
 
-*Last Updated: March 2026 — v3.3.1*
+*Last Updated: March 2026 — v3.4.0*

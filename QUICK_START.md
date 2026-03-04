@@ -15,14 +15,14 @@
 
 ## ⚡ One-Command Demo (Recommended)
 
-Start the **entire portfolio stack** (3 ML APIs + Dashboard + MLflow) with a single command:
+Start the **entire portfolio stack** (4 ML APIs + Dashboard + MLflow) with a single command:
 
 ```bash
 make docker-demo
 ```
 
 **What this does**:
-1. ✅ Builds optimized Docker images for all 3 projects
+1. ✅ Builds optimized Docker images for all 4 projects
 2. ✅ Starts MLflow Tracking Server (experiment management)
 3. ✅ Launches BankChurn, CarVision, NLPInsight APIs
 4. ✅ Starts CarVision Streamlit Dashboard
