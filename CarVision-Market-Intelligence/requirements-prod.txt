@@ -7,7 +7,7 @@
 pandas~=2.2.0
 numpy~=1.26.0
 scipy~=1.13.0
-scikit-learn~=1.6.0
+scikit-learn~=1.8.0
 # lightgbm installed separately in Dockerfile with --no-deps
 joblib~=1.4.0
 
