@@ -424,7 +424,8 @@ jobs:
           file: CarVision-Market-Intelligence/Dockerfile
           push: false
           load: true
-          tags: ml-portfolio-carvision:latest
+          tags: ml-portfolio-carvision-api:latest
+          target: api
           no-cache: true
       
       - name: Build NLPInsight image (no cache)
@@ -435,6 +436,16 @@ jobs:
           push: false
           load: true
           tags: ml-portfolio-nlpinsight:latest
+          no-cache: true
+
+      - name: Build ChicagoTaxi image (no cache)
+        uses: docker/build-push-action@v5
+        with:
+          context: ChicagoTaxi-Demand-Pipeline
+          file: ChicagoTaxi-Demand-Pipeline/Dockerfile
+          push: false
+          load: true
+          tags: ml-portfolio-chicagotaxi:latest
           no-cache: true
       
       - name: Generate CI test models
@@ -456,7 +467,7 @@ jobs:
           
           # Wait for health checks with retry logic
           echo "Waiting for health checks..."
-          for service in bankchurn carvision nlpinsight; do
+          for service in bankchurn carvision nlpinsight chicagotaxi; do
             echo "Checking $service..."
             for i in {1..12}; do
               if docker compose -f docker-compose.demo.yml exec -T $service curl -sf http://localhost:8000/health > /dev/null 2>&1; then

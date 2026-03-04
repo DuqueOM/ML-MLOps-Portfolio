@@ -77,6 +77,11 @@ def load_predictions() -> bool:
             logger.warning("Predictions directory not found: %s", pred_dir)
             return False
 
+        parquet_files = list(pred_dir.glob("*.parquet")) + list(pred_dir.glob("**/*.parquet"))
+        if not parquet_files:
+            logger.warning("No parquet files found in predictions directory: %s", pred_dir)
+            return False
+
         predictions_df = pd.read_parquet(pred_dir)
         logger.info("Loaded %d prediction rows from %s", len(predictions_df), pred_dir)
 
