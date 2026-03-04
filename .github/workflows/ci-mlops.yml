@@ -270,6 +270,7 @@ jobs:
           - BankChurn-Predictor
           - CarVision-Market-Intelligence
           - NLPInsight-Analyzer
+          - ChicagoTaxi-Demand-Pipeline
     
     steps:
       - name: Checkout code
@@ -675,6 +676,7 @@ jobs:
           - BankChurn-Predictor
           - CarVision-Market-Intelligence
           - NLPInsight-Analyzer
+          - ChicagoTaxi-Demand-Pipeline
       fail-fast: false
     
     steps:
