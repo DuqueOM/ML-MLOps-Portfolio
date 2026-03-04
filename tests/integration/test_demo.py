@@ -13,7 +13,7 @@ BASE_URLS = {
 }
 
 
-def wait_for_service(url: str, timeout: int = 30):
+def wait_for_service(url: str, timeout: int = 120):
     """Wait for service to become healthy."""
     start = time.time()
     while time.time() - start < timeout:
