@@ -1,0 +1,12 @@
+Data License Notice
+
+Dataset: Chicago Taxi Trips (2013-2023)
+Source: City of Chicago Open Data Portal (https://data.cityofchicago.org/Transportation/Taxi-Trips/wrvz-psew)
+License: Open Data — public domain
+
+Usage:
+- Data is publicly available under Chicago's open data policy.
+- No personally identifiable information (PII) — trip and taxi IDs are anonymized hashes.
+- For non-commercial, educational, and demonstration purposes in this portfolio.
+
+If you plan commercial use, verify the City of Chicago open data terms of use.

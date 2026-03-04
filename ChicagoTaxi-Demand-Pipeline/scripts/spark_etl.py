@@ -12,14 +12,14 @@ Pipeline stages:
   5. Export   — Write partitioned Parquet (by year/month)
 
 Usage:
-    python scripts/data_at_scale/spark_etl_taxi.py \
-        --input "Taxi_Trips_(2013-2023)_20260304.csv" \
+    python scripts/spark_etl.py \
+        --input "data/raw/Taxi_Trips_(2013-2023)_20260304.csv" \
         --output data/processed/taxi_trips_parquet \
         --driver-memory 4g
 
     # Or process a smaller sample for development:
-    python scripts/data_at_scale/spark_etl_taxi.py \
-        --input "Taxi_Trips_(2013-2023)_20260304.csv" \
+    python scripts/spark_etl.py \
+        --input "data/raw/Taxi_Trips_(2013-2023)_20260304.csv" \
         --output data/processed/taxi_trips_parquet \
         --sample 0.1
 

@@ -85,10 +85,6 @@ CarVision-Market-Intelligence/artifacts/*
 **/data/processed/*.csv
 **/data/processed/*.parquet
 
-# Large-scale datasets (downloaded locally, never committed)
-Taxi_Trips_*.csv
-**/data/raw/taxi_trips_*.csv
-
 # Processed data at repo root (ETL pipeline output)
 /data/
 

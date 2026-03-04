@@ -103,6 +103,38 @@ curl -X POST http://localhost:8000/predict \
 | P95 Latency | <540ms (K8s via port-forward) |
 | Load Test | 0% error rate (Locust, 10 users, 2min) |
 
+## Data
+
+| Attribute | Value |
+|-----------|-------|
+| **Records** | 4,845 financial sentences |
+| **Features** | 1 input (`text`) |
+| **Target** | `label` — negative, neutral, positive |
+| **Distribution** | Positive 28.1%, Neutral 59.4%, Negative 12.5% |
+| **Source** | Financial PhraseBank (Malo et al., 2014) |
+| **Versioning** | DVC tracked |
+
+See [data_card.md](data_card.md) for full dataset documentation.
+
+## Project Structure
+
+```
+NLPInsight-Analyzer/
+├── app/fastapi_app.py          # API endpoints (dual-backend)
+├── src/nlpinsight/             # Core ML package
+│   ├── predictor.py            # SentimentPredictor (auto-backend)
+│   ├── training.py             # FinBERT + sklearn training
+│   └── config.py               # Pydantic config validation
+├── tests/                      # 74 tests (98.4% coverage)
+├── configs/config.yaml         # Model + training config
+├── data/raw/                   # Financial PhraseBank (DVC tracked)
+├── models/                     # FinBERT checkpoint or sklearn joblib
+├── monitoring/                 # Drift detection
+├── Dockerfile                  # Production image (CPU-optimized PyTorch)
+├── Makefile                    # Dev commands
+└── pyproject.toml              # Dependencies
+```
+
 ## Tech Stack
 
 - **ML**: ProsusAI/FinBERT (PyTorch + HuggingFace Transformers) / scikit-learn (TF-IDF fallback)
@@ -112,3 +144,5 @@ curl -X POST http://localhost:8000/predict \
 - **Container**: Multi-stage Docker (CPU-optimized PyTorch)
 - **Config**: Pydantic-validated YAML
 - **Data**: Financial PhraseBank (Malo et al., 2014)
+
+📄 [Model Card](model_card.md) · [Data Card](data_card.md) · [Full Docs](https://duqueom.github.io/ML-MLOps-Portfolio/projects/nlpinsight/)

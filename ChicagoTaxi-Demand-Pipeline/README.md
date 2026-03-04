@@ -131,21 +131,39 @@ ChicagoTaxi-Demand-Pipeline/
 └── requirements-prod.txt        # Production API dependencies only
 ```
 
-## Data Source
+## Data
 
-| Field | Details |
-|-------|---------|
-| Source | [Chicago Data Portal](https://data.cityofchicago.org/Transportation/Taxi-Trips/wrvz-psew) |
-| Period | 2013–2023 |
-| Rows | 6,364,313 |
-| Size | 2.8 GB (CSV) |
-| License | [Chicago Open Data Terms](https://www.chicago.gov/city/en/narr/foia/data_702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702702.html) |
+| Attribute | Value |
+|-----------|-------|
+| **Raw Records** | 6,364,313 taxi trips (2013–2023) |
+| **Clean Records** | 5,369,172 (84.4% retained after cleaning) |
+| **Aggregated** | 357,055 hourly demand rows (model input) |
+| **Target** | `demand_count` — trips per hour per community area |
+| **Source** | [Chicago Open Data Portal](https://data.cityofchicago.org/Transportation/Taxi-Trips/wrvz-psew) |
+| **Size** | 2.8 GB CSV → 95 MB Parquet (97% compression) |
+| **Versioning** | Raw CSV in `data/raw/` (gitignored, too large for Git) |
 
-## Why This Matters
+See [data_card.md](data_card.md) for full schema, cleaning rules, and quality details.
 
-This project demonstrates skills often required for ML/Data Engineering roles:
-- **Distributed processing** with PySpark (not just pandas)
-- **Parquet + partitioning** for efficient columnar storage (97% compression)
-- **Batch ML inference** at scale with Dask
-- **Separation of concerns**: ETL → Training → Serving as independent stages
-- **Same infrastructure patterns** as the other portfolio services (K8s, GCS, Prometheus)
+## Operational Metrics
+
+| Metric | Value |
+|--------|-------|
+| Docker Image | Python 3.11-slim |
+| Model Size | ~2 MB (joblib compressed) |
+| P95 Latency | <50ms (pre-computed predictions) |
+| ETL Throughput | 4,741 rows/sec (PySpark local[*]) |
+| Batch Prediction | 19,061 rows/sec (Dask, 4 partitions) |
+| Test Coverage | 91% (22 tests) |
+
+## Tech Stack
+
+- **ETL**: PySpark 4.1 (distributed cleaning, aggregation, Parquet export)
+- **ML**: scikit-learn RandomForestRegressor (R² 0.905)
+- **Batch Inference**: Dask (parallel prediction with partitioned data)
+- **API**: FastAPI + Pydantic + Uvicorn (serves pre-computed predictions)
+- **Monitoring**: Prometheus custom metrics (`chicagotaxi_*`)
+- **Container**: Docker (Python 3.11-slim)
+- **Config**: YAML-based pipeline configuration
+
+📄 [Model Card](model_card.md) · [Data Card](data_card.md) · [Full Docs](https://duqueom.github.io/ML-MLOps-Portfolio/projects/chicagotaxi/)
