@@ -2,7 +2,7 @@
 
 Key technical decisions with rationale. Written for technical reviewers and hiring managers.
 
-**Last Updated**: March 2026 | **Portfolio Version**: 3.3.0
+**Last Updated**: March 2026 | **Portfolio Version**: 3.3.1
 
 > **Granular ADRs**: See [`docs/decisions/`](../decisions/) for detailed per-decision records (ADR-001 through ADR-007).
 
@@ -44,4 +44,4 @@ CPU-only autoscaling for all ML services. Memory-based HPA removed because ML mo
 
 ---
 
-*Last Updated: March 2026*
+*Last Updated: March 2026 — v3.3.1*

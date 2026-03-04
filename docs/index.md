@@ -9,11 +9,11 @@
 
 ---
 
-## Projects (v3.3.0, Python 3.11.14)
+## Projects (v3.3.1, Python 3.11.14)
 
 | Project | Algorithm | Primary Metric | Tests | Coverage |
 |---------|-----------|----------------|:-----:|:--------:|
-| **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC 0.87 | 198 | 90% |
+| **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC 0.87 | 199 | 90% |
 | **[CarVision](projects/carvision.md)** | LightGBM + FeatureEngineer (24 features) | R² 0.80 | 52 | 96% |
 | **[NLPInsight](projects/nlpinsight.md)** | FinBERT (ProsusAI) / TF-IDF fallback | Acc 97% | 74 | 98% |
 
@@ -76,4 +76,4 @@ Developed using AI-assisted tools (Cursor/Cascade) for code generation accelerat
 
 **Built by [Duque Ortega Mutis](https://github.com/DuqueOM)** | [Source Code](https://github.com/DuqueOM/ML-MLOps-Portfolio) | [Video Demo](https://youtu.be/qmw9VlgUcn8)
 
-*Last Updated: March 2026 — v3.3.0*
+*Last Updated: March 2026 — v3.3.1*

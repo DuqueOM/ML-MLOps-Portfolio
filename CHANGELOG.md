@@ -6,10 +6,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [3.3.2] — 2026-03-04
+
+### Changed
+- **Project documentation rewritten** — all 3 MkDocs project pages now explain the business problem, metric rationale, and cost of errors (not just metrics tables)
+- **Overclaiming language removed** — "Enterprise-Grade", "production-grade" replaced with concrete evidence statements across README, docs/index.md, ARCHITECTURE_PORTFOLIO.md, DEPLOYMENT_EVIDENCE.md
+- **Version consistency** — all 40+ docs updated to v3.3.1 with consistent test counts (368 total), Grafana panel counts (25 panels / 2 dashboards), and latency data from canonical DEPLOYMENT_EVIDENCE.md
+
+### Added
+- **ADR-006: Drift-Triggered Retraining** — K8s CronJob queries Prometheus for PSI/AUC/RMSE/F1 drift; triggers GitHub Actions `workflow_dispatch` if thresholds exceeded
+- **ADR-007: Feature Store Decision** — documents why feature stores don't apply to request-time features, and what the Feast architecture would look like at scale
+- **`k8s/drift-retraining-cronjob.yaml`** — lightweight CronJob implementation of ADR-006
+- **NLPInsight model_card.md link fixed** — was pointing to non-existent `models/model_card.md`, corrected to `model_card.md`
+
 ## [3.3.1] — 2026-03-03
 
 ### Added
-- **CarVision Streamlit Dashboard on K8s** — separate Deployment + Service (enterprise pattern: independent scaling, health checks, resource limits)
+- **CarVision Streamlit Dashboard on K8s** — separate Deployment + Service (independent scaling, health checks, resource limits)
 - **Multi-target Dockerfile** (`CarVision-Market-Intelligence/Dockerfile`) — `--target api` (518 MB) and `--target dashboard` (950 MB) from single Dockerfile
 - **Ingress route** `/dashboard/*` → `carvision-dashboard-service:8501`
 - **AWS overlay** for dashboard deployment (`k8s/overlays/aws/carvision-deployment-aws.yaml`)

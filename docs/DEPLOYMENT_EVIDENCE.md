@@ -44,7 +44,7 @@
 
 8 pods total: 3 ML APIs + Streamlit Dashboard + Prometheus + Grafana + MLflow.
 CarVision dashboard is a separate K8s pod (multi-target Dockerfile:
---target api | --target dashboard). Enterprise pattern: independent
+--target api | --target dashboard). Separate pods allow independent
 scaling, health checks, and resource limits.
 ```
 
@@ -75,7 +75,7 @@ scaling, health checks, and resource limits.
 
 ## Test Results (v3.3.0 — Verified 2026-03-03)
 
-### Unit Test Coverage (367 total tests, 0 failures)
+### Unit Test Coverage (368 total tests, 0 failures)
 
 | Project | Tests | Passed | Skipped | Coverage | CI Threshold |
 |---------|-------|--------|---------|----------|--------------|
@@ -83,7 +83,7 @@ scaling, health checks, and resource limits.
 | CarVision | 52 | 52 | 0 | **95.72%** | 80% |
 | NLPInsight | 74 | 73+1 xpassed | 0 | **98.41%** | 60% |
 | Adversarial | 43 | 43 | 0 | — | — |
-| **Total** | **368** | **367+1** | **1** | **~93%** | — |
+| **Total** | **368** | **367+1 xpassed** | **1** | **~93%** | — |
 
 ### Smoke & Integration Tests (Live GKE Cluster)
 

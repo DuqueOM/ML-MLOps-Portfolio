@@ -74,7 +74,7 @@
 
 Production-grade churn prediction with **StackingClassifier** ensemble (RF + GradientBoosting + XGBoost + LightGBM → LogisticRegression meta-learner). Advanced `ChurnFeatureEngineer` with domain-specific ratios, bins, and risk scores. MLflow tracking.
 
-| AUC-ROC | F1 | Precision | Recall | Coverage | Latency |
+| AUC-ROC | F1 | Precision | Recall | Coverage | **Latency (Locust, GKE)** |
 |---------|-----|-----------|--------|----------|----------|
 | **0.87** | 0.62 | 0.73 | 0.54 | 90% | <50ms p95 |
 
@@ -120,12 +120,12 @@ Real-time financial sentiment analysis using **ProsusAI/FinBERT** — a BERT mod
 | **MLOps** | MLflow (9 experiments), DVC, Docker, Kubernetes, Terraform |
 | **API & Dashboard** | FastAPI, Pydantic, Streamlit, Plotly |
 | **Cloud & IaC** | GCP (GKE, GCS, AR, Cloud SQL), AWS (EKS, S3, ECR, RDS), Terraform, K8s |
-| **Monitoring** | Prometheus (multi-service scraping), Grafana (10-panel dashboard), Load Testing (SRE methodology), Evidently |
+| **Monitoring** | Prometheus (16/16 targets, 16 alert rules), Grafana (2 dashboards, 25 panels), Locust load testing, Evidently drift |
 | **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy), Artifact Registry, ECR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
-| **Testing** | pytest (90–98% coverage, 367+ tests), Codecov, pre-commit hooks |
+| **Testing** | pytest (90–98% coverage, 368+ tests), Codecov, pre-commit hooks |
 
-> **v3.3.0 Highlights**: StackingClassifier (BankChurn), LightGBM (CarVision), FinBERT (NLPInsight), Lazy SHAP, dual NLP backend, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests (43), Pod Security Standards. Load test: 0% error rate, p95 500ms (10 users, 2min). Full details in [docs/FEATURES.md](docs/FEATURES.md).
+> **v3.3.1 Highlights**: StackingClassifier (BankChurn), LightGBM (CarVision), FinBERT (NLPInsight), Lazy SHAP, dual NLP backend, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests (43), Pod Security Standards, drift-triggered retraining ([ADR-006](docs/decisions/006-drift-triggered-retraining.md)). Load test: 0% error rate, p95 480ms (10 users, 2min). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
 ## 🏗️ Architecture
 
@@ -326,7 +326,7 @@ The author maintains and operates all systems independently, including CI/CD pip
 
 <div align="center">
 
-**Portfolio Version**: 3.3.0 · **License**: MIT · **Status**: ✅ Production-Ready (GCP) · 🟡 AWS Ready
+**Portfolio Version**: 3.3.1 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) · 🟡 AWS Ready
 
 *Building ML systems that work at 2am* 🌙
 

@@ -87,7 +87,7 @@ bash tests/infra/run_all_tests.sh
 
 ### Security Hardening (Terraform — Production-Grade)
 
-The Terraform configuration includes **production-grade security hardening** that goes beyond what is applied to the running demo cluster:
+The Terraform configuration includes **security hardening** that goes beyond what is applied to the running demo cluster:
 
 | Feature | GCP (`main.tf`) | AWS (`main.tf`) |
 |---------|-----------------|-----------------|

@@ -47,4 +47,4 @@ dvc pull                       # Pull on another machine
 
 ---
 
-*Last Updated: March 2026 — v3.3.0*
+*Last Updated: March 2026 — v3.3.1*

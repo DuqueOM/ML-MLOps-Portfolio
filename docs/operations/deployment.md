@@ -59,9 +59,9 @@ kubectl get hpa -n ml-portfolio                                 # HPA status
 - [x] Health checks passing (GKE)
 - [x] Resource limits calibrated per service
 - [x] Monitoring dashboards (Grafana auto-provisioned)
-- [x] Load testing (Locust — 0% errors, p95 500ms, 967 reqs/2min)
+- [x] Load testing (Locust — 0% errors, p95 480ms, 973 reqs/2min)
 - [x] Security scanning (Trivy, Bandit, Gitleaks)
 
 ---
 
-*Last Updated: March 2026*
+*Last Updated: March 2026 — v3.3.1*

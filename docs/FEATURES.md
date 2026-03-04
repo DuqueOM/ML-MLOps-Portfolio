@@ -1,6 +1,6 @@
 # Features
 
-## Performance (v3.3.0, March 2026)
+## Performance (v3.3.1, March 2026)
 
 | Feature | Impact |
 |---------|--------|
@@ -27,12 +27,12 @@
 - **SHAP Explainability** (BankChurn) — CPU-only, lazy evaluation via `?explain=true`
 - **Redis Caching** — `common_utils/redis_cache.py` with TTL and graceful fallback
 - **MLflow Registry Automation** — `scripts/mlflow_registry_automation.py`
-- **Grafana Dashboards** — Auto-provisioned 10-panel monitoring dashboard
+- **Grafana Dashboards** — 2 auto-provisioned dashboards (25 panels total: ML Performance + ML Portfolio Production)
 - **Pydantic Config** — Type-safe YAML config validation across all projects
 - **Multi-Cloud** — GCP (GKE) + AWS (EKS) parity with Terraform IaC
 - **Locust Load Testing** — Port-forward + Ingress IP modes
 
-## Responsible AI (v3.3.0)
+## Responsible AI (v3.3.1)
 
 - **Fairness Audits** — All 3 projects: disparate impact (BankChurn), error ratio (CarVision), F1 parity (NLPInsight)
 - **Drift Detection** — KS + PSI + Evidently in all 3 projects, vocabulary drift for NLP
@@ -41,10 +41,14 @@
 
 ## Planned
 
-- Feature Store integration (Feast)
-- Drift-based auto-retraining (Evidently PSI/KS triggers)
-- Canary deployments with traffic splitting
+- Feature Store integration — deferred; see [ADR-007](decisions/007-feature-store-decision.md) for rationale and design
+- Canary deployments with traffic splitting (Argo Rollouts manifests exist; not yet exercised)
+
+## Recently Addressed
+
+- **Drift-triggered retraining** — K8s CronJob + GitHub Actions dispatch; see [ADR-006](decisions/006-drift-triggered-retraining.md)
+- **Metric rationale** — all 3 model cards now explain *why* each metric was chosen and what was sacrificed
 
 ---
 
-*Last Updated: March 2026 — v3.3.0*
+*Last Updated: March 2026 — v3.3.1*

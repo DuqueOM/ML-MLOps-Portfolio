@@ -1,6 +1,6 @@
 # Portfolio Architecture
 
-**Production-grade ML/MLOps system** — 3 ML projects, unified infrastructure, multi-cloud deployment.
+**3 ML projects deployed end-to-end** — trained, containerized, served on GKE + EKS, monitored via Prometheus + Grafana.
 
 [![YouTube Demo](https://img.shields.io/badge/📺_Video-Watch_Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
@@ -16,11 +16,11 @@
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Scalability** | Kubernetes HPA, CPU-based autoscaling |
 
-## Projects (v3.3.0, Python 3.11.14 + sklearn 1.8.0)
+## Projects (v3.3.1, Python 3.11.14 + sklearn 1.8.0)
 
 | Project | Algorithm | Primary Metric | Tests | Coverage |
 |---------|-----------|----------------|:-----:|:--------:|
-| **BankChurn** | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87 | 198 | 90% |
+| **BankChurn** | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87 | 199 | 90% |
 | **CarVision** | LightGBM + FeatureEngineer (24 features) | R² 0.80 | 52 | 96% |
 | **NLPInsight** | FinBERT (ProsusAI) / TF-IDF fallback | Acc 97% | 74 | 98% |
 
@@ -30,7 +30,7 @@
 - **Orchestration**: GKE (GCP) + EKS-ready (AWS), Terraform IaC
 - **Model Delivery**: GCS → Init Container → Pod (ConfigMap-driven paths)
 - **CI/CD**: GitHub Actions (tests → security → docker build → Trivy scan → integration)
-- **Monitoring**: Prometheus (15s scrape) → Grafana (auto-provisioned 10-panel dashboard)
+- **Monitoring**: Prometheus (15s scrape, 16/16 targets UP, 16 alert rules) → Grafana (2 auto-provisioned dashboards, 25 panels total)
 
 ## GCP Production Cost (~$51/month)
 
@@ -74,4 +74,4 @@
 
 ---
 
-*Last Updated: March 2026 — Portfolio v3.3.0*
+*Last Updated: March 2026 — Portfolio v3.3.1*

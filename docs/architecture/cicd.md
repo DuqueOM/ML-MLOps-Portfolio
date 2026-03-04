@@ -43,7 +43,7 @@ matrix:
 | Metric | Target | Current |
 |--------|--------|---------|
 | Build Time | <10 min | ~8 min |
-| Test Coverage | >85% | 90–98% (367+ tests) |
+| Test Coverage | >85% | 90–98% (368+ tests) |
 | Security | 0 critical | Pass |
 
 ## Local CI
@@ -55,4 +55,4 @@ pytest tests/ -v --cov        # Tests + coverage
 
 ---
 
-*Last Updated: March 2026 — v3.3.0*
+*Last Updated: March 2026 — v3.3.1*

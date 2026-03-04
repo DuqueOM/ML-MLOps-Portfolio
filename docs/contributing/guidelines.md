@@ -1,6 +1,6 @@
 # Contributing to ML/MLOps Portfolio
 
-Thank you for your interest in contributing to this portfolio! This project demonstrates production-grade MLOps practices.
+Thank you for your interest in contributing to this portfolio! This project demonstrates end-to-end MLOps practices across 3 deployed ML services.
 
 ## Getting Started
 
@@ -77,7 +77,7 @@ make lint
 - **Integration Tests**: Required for API endpoints.
   - Use `tests/integration/test_demo.py` for cross-project validation.
   - Ensure all services pass health checks and prediction tests.
-- **Coverage**: Must remain above 85% (actual: 90–98%, [Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)).
+- **Coverage**: Must remain above 85% (actual: 90–98%, 368+ tests, [Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)).
 
 **Run integration tests**:
 ```bash
@@ -137,4 +137,4 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: March 2026 — v3.3.1

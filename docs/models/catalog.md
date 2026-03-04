@@ -8,7 +8,7 @@
 |---------|----------|-----------|------|----------------|--------|
 | **BankChurn** | `bankchurn-stacking-v3.0.0` | StackingClassifier (RF+GB+XGB+LGB→LR) | 4.1 MB | AUC 0.87 | Production |
 | **CarVision** | `carvision-lgbm-v3.0.0` | LightGBM + FeatureEngineer (24 features) | 5.7 MB | R² 0.80 | Production |
-| **NLPInsight** | `nlpinsight-finbert-v3.0.0` | FinBERT (ProsusAI) / TF-IDF fallback | 309 KB | Acc 97% | Production |
+| **NLPInsight** | `nlpinsight-finbert-v3.0.0` | FinBERT (ProsusAI) / TF-IDF fallback | ~260 MB / 309 KB | Acc 97% | Production |
 
 ## BankChurn Predictor
 
@@ -16,7 +16,7 @@
 |--------|-------|
 | AUC-ROC | **0.87** |
 | F1 (Churn) | 0.62 |
-| Coverage | 90% (198 tests) |
+| Coverage | 90% (199 tests) |
 
 **Pipeline**: `SimpleImputer → StandardScaler/OneHotEncoder → StackingClassifier(RF+GB+XGB+LGB→LR)`
 **Features**: SHAP explainability, drift detection (KS+PSI+Evidently), fairness audits (disparate impact, equal opportunity)
@@ -52,20 +52,22 @@
 5. Clean security scans
 6. Model card updated
 
-## Retraining Triggers
+## Retraining Triggers ([ADR-006](../decisions/006-drift-triggered-retraining.md))
+
+Automated via K8s CronJob → GitHub Actions `workflow_dispatch`.
 
 | Trigger | BankChurn | CarVision | NLPInsight |
 |---------|-----------|-----------|------------|
-| **Performance** | AUC <0.75 | R² <0.70 | Accuracy <0.80 |
-| **Drift** | >30% features | >30% features | >30% features |
+| **Performance** | AUC <0.75 | RMSE >$10K | F1-macro <0.80 |
+| **Drift (PSI)** | PSI >0.20 | PSI >0.20 | Distribution shift >25% |
 | **Scheduled** | Quarterly | Quarterly | Quarterly |
 
 ## Links
 
 - [BankChurn Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/BankChurn-Predictor/models/model_card.md)
 - [CarVision Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/CarVision-Market-Intelligence/models/model_card.md)
-- [NLPInsight Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/NLPInsight-Analyzer/models/model_card.md)
+- [NLPInsight Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/NLPInsight-Analyzer/model_card.md)
 
 ---
 
-*Last Updated: March 2026 — v3.3.0*
+*Last Updated: March 2026 — v3.3.1*
