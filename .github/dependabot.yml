@@ -34,6 +34,15 @@ updates:
     labels:
       - "dependencies"
       - "bankchurn"
+    ignore:
+      - dependency-name: "numpy"
+        versions: [">=2.0.0"]
+      - dependency-name: "scipy"
+        versions: [">=1.14.0"]
+      - dependency-name: "scikit-learn"
+        versions: [">=1.7.0"]
+      - dependency-name: "pandas"
+        versions: [">=2.3.0"]
     groups:
       ml-core:
         patterns:
@@ -57,6 +66,15 @@ updates:
     labels:
       - "dependencies"
       - "carvision"
+    ignore:
+      - dependency-name: "numpy"
+        versions: [">=2.0.0"]
+      - dependency-name: "scipy"
+        versions: [">=1.14.0"]
+      - dependency-name: "scikit-learn"
+        versions: [">=1.7.0"]
+      - dependency-name: "pandas"
+        versions: [">=2.3.0"]
 
   # NLPInsight-Analyzer dependencies
   - package-ecosystem: "pip"
