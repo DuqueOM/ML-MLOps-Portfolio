@@ -4,7 +4,7 @@
 # Streamlit/plotly/pyarrow NOT included — Streamlit runs as separate sidecar.
 
 # Core Data Science
-pandas~=2.2.0
+pandas~=2.2.3
 numpy~=1.26.0
 scipy~=1.13.0
 scikit-learn~=1.6.0
