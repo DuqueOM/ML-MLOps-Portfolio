@@ -130,52 +130,44 @@ groups:
       summary: "Service {{ $labels.job }} is down"
       description: "Service {{ $labels.job }} has been down for more than 2 minutes"
 
-  # High memory usage
-  - alert: HighMemoryUsage
-    expr: |
-      (
-        container_memory_usage_bytes{namespace="ml-portfolio"}
-        / 
-        container_spec_memory_limit_bytes{namespace="ml-portfolio"}
-      ) > 0.9
+  # High memory usage — uses process_resident_memory_bytes from APIs
+  # Thresholds: BankChurn ~300Mi/1Gi, CarVision ~550Mi/1.5Gi, NLPInsight ~650Mi/1Gi
+  - alert: BankChurnHighMemory
+    expr: process_resident_memory_bytes{job="bankchurn-predictor"} > 900e6
     for: 5m
     labels:
       severity: warning
       team: ml-ops
+      service: bankchurn
     annotations:
-      summary: "High memory usage on {{ $labels.pod }}"
-      description: "Pod {{ $labels.pod }} is using {{ $value | humanizePercentage }} of memory limit"
+      summary: "BankChurn memory usage above 900MB"
+      description: "BankChurn process memory: {{ $value | humanize1024 }}B (K8s limit: 1Gi)"
 
-  # High CPU usage
-  - alert: HighCPUUsage
-    expr: |
-      (
-        rate(container_cpu_usage_seconds_total{namespace="ml-portfolio"}[5m])
-        /
-        container_spec_cpu_quota{namespace="ml-portfolio"}
-      ) > 0.9
-    for: 10m
+  - alert: CarVisionHighMemory
+    expr: process_resident_memory_bytes{job="carvision-intelligence"} > 1.3e9
+    for: 5m
     labels:
       severity: warning
       team: ml-ops
+      service: carvision
     annotations:
-      summary: "High CPU usage on {{ $labels.pod }}"
-      description: "Pod {{ $labels.pod }} is using {{ $value | humanizePercentage }} of CPU quota"
+      summary: "CarVision memory usage above 1.3GB"
+      description: "CarVision process memory: {{ $value | humanize1024 }}B (K8s limit: 1.5Gi)"
+
+  - alert: NLPInsightHighMemory
+    expr: process_resident_memory_bytes{job="nlpinsight-analyzer"} > 900e6
+    for: 5m
+    labels:
+      severity: warning
+      team: ml-ops
+      service: nlpinsight
+    annotations:
+      summary: "NLPInsight memory usage above 900MB"
+      description: "NLPInsight process memory: {{ $value | humanize1024 }}B (K8s limit: 1Gi)"
 
 - name: ml_model_alerts
   interval: 1m
   rules:
-  # Model prediction drift
-  - alert: ModelDrift
-    expr: model_drift_score > 0.1
-    for: 15m
-    labels:
-      severity: warning
-      team: ml-ops
-    annotations:
-      summary: "Model drift detected on {{ $labels.model }}"
-      description: "Drift score is {{ $value }} for model {{ $labels.model }}"
-
   # Prediction rate drop — per-service actual metric names
   # Apps export: bankchurn_predictions_total, carvision_predictions_total, nlpinsight_predictions_total
   - alert: BankChurnPredictionRateDrop
@@ -229,40 +221,24 @@ groups:
 - name: infrastructure_alerts
   interval: 30s
   rules:
-  # Kubernetes node not ready
-  - alert: KubernetesNodeNotReady
-    expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+  # Prometheus scrape target unreachable
+  - alert: ScrapeTargetDown
+    expr: up == 0
     for: 5m
-    labels:
-      severity: critical
-      team: platform
-    annotations:
-      summary: "Kubernetes node not ready"
-      description: "Node {{ $labels.node }} has been not ready for more than 5 minutes"
-
-  # Pod restart frequency
-  - alert: PodRestartingFrequently
-    expr: rate(kube_pod_container_status_restarts_total{namespace="ml-portfolio"}[15m]) > 0
-    for: 15m
     labels:
       severity: warning
       team: ml-ops
     annotations:
-      summary: "Pod is restarting frequently"
-      description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is restarting frequently"
+      summary: "Scrape target {{ $labels.job }} is down"
+      description: "Prometheus cannot reach {{ $labels.instance }} (job: {{ $labels.job }}) for 5+ minutes"
 
-  # Persistent volume usage
-  - alert: PersistentVolumeUsageHigh
-    expr: |
-      (
-        kubelet_volume_stats_used_bytes{namespace="ml-portfolio"}
-        /
-        kubelet_volume_stats_capacity_bytes{namespace="ml-portfolio"}
-      ) > 0.85
-    for: 5m
+  # Prometheus self — TSDB growing too large (>2GB for demo cluster)
+  - alert: PrometheusStorageHigh
+    expr: prometheus_tsdb_storage_blocks_bytes > 2e9
+    for: 10m
     labels:
       severity: warning
       team: platform
     annotations:
-      summary: "Persistent volume usage is high"
-      description: "Volume {{ $labels.persistentvolumeclaim }} is {{ $value | humanizePercentage }} full"
+      summary: "Prometheus storage exceeds 2GB"
+      description: "TSDB is using {{ $value | humanize1024 }}B — consider reducing retention"

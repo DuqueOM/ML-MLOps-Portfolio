@@ -101,18 +101,14 @@ scrape_configs:
     - source_labels: [__meta_kubernetes_pod_label_app]
       action: keep
       regex: carvision-intelligence
-
-  # Node Exporter
-  - job_name: 'node-exporter'
-    kubernetes_sd_configs:
-    - role: node
-    relabel_configs:
-    - source_labels: [__address__]
-      regex: ^(.*):\d+$
+    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+      action: keep
+      regex: true
+    - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+      action: replace
+      regex: ([^:]+)(?:\d+)?;(\d+)
+      replacement: $1:$2
       target_label: __address__
-      replacement: $1:9100
-    - source_labels: [__meta_kubernetes_node_name]
-      target_label: node
 
   # Kubernetes Pods
   - job_name: 'kubernetes-pods'
@@ -140,10 +136,6 @@ scrape_configs:
       action: replace
       target_label: kubernetes_pod_name
 
-  # MLflow tracking server
-  - job_name: 'mlflow'
-    static_configs:
-    - targets: ['mlflow-service.ml-portfolio.svc.cluster.local:5000']
-      labels:
-        service: mlflow
-        env: production
+  # NOTE: MLflow is intentionally NOT scraped here.
+  # MLflow doesn't expose a Prometheus /metrics endpoint natively.
+  # Health is monitored via K8s liveness probes on the deployment.

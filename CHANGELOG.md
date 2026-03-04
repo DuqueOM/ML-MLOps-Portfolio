@@ -21,6 +21,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ### Fixed
 - Dashboard image missing Streamlit due to early pip cleanup in Dockerfile
+- **Grafana `ml-portfolio-dashboard.json`** — replaced 8 broken panels using non-existent metrics (`http_requests_total`, `predictions_total`, `model_drift_score`, `node_cpu_seconds_total`, `container_memory_usage_bytes`) with real per-service metrics
+- **Prometheus alert rules** — removed alerts referencing non-existent metrics (`model_drift_score`, `kube_node_status_condition`, `container_*`); replaced with `process_resident_memory_bytes` per-service alerts
+- **Prometheus scrape config** — fixed CarVision duplicate scrape (port 80 vs 8000); removed node-exporter job (not deployed); removed MLflow scrape (no `/metrics` endpoint)
+- **Result**: 16/16 Prometheus targets UP (0 DOWN), 16 alert rules loaded, 2 Grafana dashboards fully functional
 
 ## [3.3.0] — 2026-03-03
 

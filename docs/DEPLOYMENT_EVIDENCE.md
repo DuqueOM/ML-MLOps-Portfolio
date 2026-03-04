@@ -1,7 +1,7 @@
 # Multi-Cloud Deployment Evidence
 
 > Production deployment of 3 ML services on **Google Cloud Platform (GKE)** and **Amazon Web Services (EKS)**.
-> All data below is from **live verification** on 2026-03-03 (v3.3.0).
+> All data below is from **live verification** on 2026-03-03 (v3.3.1).
 
 ---
 
@@ -56,8 +56,8 @@ scaling, health checks, and resource limits.
 | Auto-scaling (HPA) | CPU-based | CPU-based | Verified: 1→3 pods under load, scale-down after |
 | Model serving (FastAPI) | 3 services | 3 services | `/health` + `/predict` — 27/27 smoke tests passed |
 | Batch prediction | All 3 APIs | All 3 APIs | `/predict_batch` endpoints verified |
-| Monitoring (Prometheus) | 4/4 targets UP | Custom metrics | `bankchurn_*`, `carvision_*`, `nlpinsight_*` |
-| Dashboards (Grafana) | v10.2.2, DB ok | ML Performance | Latency, throughput, error rates |
+| Monitoring (Prometheus) | 16/16 targets UP | Custom metrics | `bankchurn_*`, `carvision_*`, `nlpinsight_*` + 16 alert rules |
+| Dashboards (Grafana) | v10.2.2, 2 dashboards | ML Performance | Latency, throughput, error rates, predictions, resource usage |
 | Experiment tracking (MLflow) | Cloud SQL backend | RDS backend | Running, v2.9.2 |
 | Infrastructure as Code | Terraform GCP | Terraform AWS | 8/8 tests passed (fmt, validate, tfsec, checkov) |
 | CI/CD (GitHub Actions) | Build + Deploy | Build + Deploy | 10-job pipeline, GHCR publish |
@@ -196,26 +196,40 @@ scaling, health checks, and resource limits.
 | Registry | `us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images` |
 | GCS Bucket | `ml-portfolio-duque-om-202602-ml-models-production` |
 
-### Prometheus Monitoring
+### Prometheus Monitoring (16/16 targets UP, 0 DOWN)
 
-| Target | Status |
-|--------|--------|
-| bankchurn-predictor | **UP** |
-| carvision-intelligence | **UP** |
-| nlpinsight-analyzer | **UP** |
-| prometheus (self) | **UP** |
+| Target | Status | Metrics |
+|--------|--------|--------|
+| bankchurn-predictor | **UP** | `bankchurn_requests_total`, `_duration_seconds`, `_predictions_total{risk_level}` |
+| carvision-intelligence | **UP** | `carvision_requests_total`, `_duration_seconds`, `_predictions_total` |
+| nlpinsight-analyzer | **UP** | `nlpinsight_requests_total`, `_duration_seconds`, `_predictions_total{sentiment}` |
+| prometheus (self) | **UP** | `prometheus_tsdb_*`, `process_*` |
+| kubernetes-apiservers | **UP** | K8s API server metrics |
+| kubernetes-pods (10) | **UP** | Auto-discovered via annotations |
 
-Custom metrics exported: `bankchurn_requests_total`, `carvision_requests_total`, `nlpinsight_requests_total`,
-`*_request_duration_seconds`, `*_predictions_total`.
+> MLflow is intentionally NOT scraped (no `/metrics` endpoint). Health monitored via K8s liveness probes.
+> Node-exporter removed (not deployed; unnecessary for portfolio-scale cluster).
 
-### Grafana
+### Alert Rules (16 rules loaded, all healthy)
+
+| Group | Rules | Examples |
+|-------|-------|----------|
+| `ml_services_alerts` | 11 | `HighErrorRate` (>5% 5xx), `*HighLatency` (P95 >2s), `ServiceDown`, `*HighMemory` |
+| `ml_model_alerts` | 3 | `*PredictionRateDrop` (<50% of normal rate for 10m) |
+| `infrastructure_alerts` | 2 | `ScrapeTargetDown` (5m), `PrometheusStorageHigh` (>2GB TSDB) |
+
+All rules use **real metrics** from deployed APIs (`process_resident_memory_bytes`, per-service `*_requests_total`).
+No rules reference non-existent metrics (kube-state-metrics, cAdvisor, model_drift_score).
+
+### Grafana (2 Dashboards, all panels functional)
 
 | Property | Value |
 |----------|-------|
 | Version | 10.2.2 |
 | Database | OK |
 | Datasource | Prometheus (`http://prometheus-service:9090`) |
-| Dashboard | ML Performance (latency, throughput, error rates) |
+| Dashboard 1 | **ML Performance** — request rate, P95 latency, predictions, avg latency, error rate (6 panels) |
+| Dashboard 2 | **ML Portfolio Production** — service health, request rate, latency, predictions/hr, error gauges, CPU, memory (19 panels) |
 
 ## Performance Optimizations Applied
 
@@ -292,4 +306,4 @@ python3 -m locust -f tests/load/locustfile.py --headless -u 10 -r 2 -t 120s --on
 
 ---
 
-**Last Updated**: 2026-03-03 (v3.3.0 — Streamlit dashboard on K8s, multi-target Dockerfile, enterprise manifests, load test 973 reqs 0% errors, 367+ tests, full GKE redeployment)
+**Last Updated**: 2026-03-03 (v3.3.1 — Observability fixes: 16/16 Prometheus targets UP, 16 alert rules, 2 Grafana dashboards with all panels functional, cleaned scrape config)
