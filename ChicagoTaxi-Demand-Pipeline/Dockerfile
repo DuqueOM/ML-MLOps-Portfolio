@@ -48,9 +48,6 @@ COPY app/ ./app/
 COPY configs/ ./configs/
 COPY src/ ./src/
 
-# Copy common_utils from parent
-COPY common_utils/ ./common_utils/
-
 # Create directories for mounted volumes
 RUN mkdir -p /app/models /app/data/processed/taxi_predictions && \
     useradd --create-home --shell /bin/bash appuser && \
