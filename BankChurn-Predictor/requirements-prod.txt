@@ -4,7 +4,7 @@
 # SHAP, MLflow, imbalanced-learn are NOT needed at inference time.
 
 # Core Data Science
-pandas~=2.2.0
+pandas~=2.2.3
 numpy~=1.26.0
 scipy~=1.13.0
 
