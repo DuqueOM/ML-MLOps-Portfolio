@@ -1,6 +1,6 @@
 # ML-MLOps Portfolio Documentation
 
-**Production-grade ML/MLOps platform** — 3 projects, multi-cloud deployment, enterprise CI/CD.
+**ML/MLOps portfolio with 3 deployed projects** — GKE + EKS, GitHub Actions CI/CD, Prometheus + Grafana + MLflow.
 
 [![GitHub](https://img.shields.io/badge/📁_Code-Repository-181717?style=for-the-badge&logo=github)](https://github.com/DuqueOM/ML-MLOps-Portfolio)
 [![YouTube](https://img.shields.io/badge/📺_Video-Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)

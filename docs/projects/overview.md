@@ -1,6 +1,6 @@
 # Projects Overview
 
-Three production-ready ML systems demonstrating enterprise MLOps practices.
+Three ML systems built end-to-end: trained, containerized, deployed on Kubernetes, and monitored in production.
 
 [![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 

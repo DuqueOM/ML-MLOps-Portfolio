@@ -81,6 +81,8 @@ nav:
     - CI/CD Pipeline: architecture/cicd.md
     - Infrastructure: architecture/infrastructure.md
     - Architectural Decisions: architecture/decisions.md
+    - ADR-006 Drift Retraining: decisions/006-drift-triggered-retraining.md
+    - ADR-007 Feature Store: decisions/007-feature-store-decision.md
   - API Reference:
     - REST APIs: api/rest-apis.md
     - CLI Tools: api/cli.md

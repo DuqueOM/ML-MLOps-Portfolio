@@ -2,9 +2,9 @@
 
 <div align="center">
 
-**Enterprise-Grade Machine Learning & MLOps Portfolio**
+**Machine Learning & MLOps Portfolio — Built and Deployed**
 
-*3 Production-Ready Projects • Unified CI/CD • Full Observability Stack*
+*3 ML Projects • GKE + EKS • GitHub Actions CI/CD • Prometheus + Grafana + MLflow*
 
 [![Portfolio Site](https://img.shields.io/badge/🌐_Portfolio-Live_Site-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
 [![YouTube Demo](https://img.shields.io/badge/📺_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
@@ -35,9 +35,9 @@
 
 > After **14 years managing high-pressure operations** in hospitality and logistics, I discovered that the principles that make great operational systems—reliability, monitoring, reproducibility—are the same ones that make great ML systems.
 >
-> This portfolio demonstrates that transition: **not just ML models that achieve good metrics, but production-ready systems** built with the discipline of someone who understands that downtime costs real money and poor monitoring creates real problems.
+> This portfolio demonstrates that transition: **3 ML models deployed on GKE, served via FastAPI, monitored via Prometheus + Grafana, tested at 90–98% coverage, and shipped through a multi-stage CI/CD pipeline.** Every technical decision is documented with the reasoning behind it — not just what was built, but why.
 >
-> Every project here answers the question: ***"Would I trust this in production at 2am?"***
+> Every project here answers the question: ***"If this broke at 2am, could I diagnose and fix it?"***
 
 <div align="center">
 

@@ -4,7 +4,7 @@ Key technical decisions with rationale. Written for technical reviewers and hiri
 
 **Last Updated**: March 2026 | **Portfolio Version**: 3.3.0
 
-> **Granular ADRs**: See [`docs/decisions/`](../decisions/) for detailed per-decision records (ADR-001 through ADR-005).
+> **Granular ADRs**: See [`docs/decisions/`](../decisions/) for detailed per-decision records (ADR-001 through ADR-007).
 
 ---
 
@@ -29,6 +29,8 @@ Key technical decisions with rationale. Written for technical reviewers and hiri
 | 015 | Storage | GCS with lifecycle policies | Versioned, Nearline after 90d, public access prevention | N/A |
 | 016 | IaC | Terraform with remote state | GCP + AWS modules, `terraform plan` = no drift | N/A |
 | 017 | Security | Defense in depth | Trivy + Bandit + Gitleaks + non-root + Workload Identity | N/A |
+| **ADR-006** | [Drift-Triggered Retraining](../decisions/006-drift-triggered-retraining.md) | K8s CronJob → GitHub Actions dispatch | No new infra; reuses CI pipeline; auditable retrain history | >5 models or daily retraining frequency |
+| **ADR-007** | [Feature Store](../decisions/007-feature-store-decision.md) | Deferred — not needed | All features in request payload; skew prevented by serialized `model.joblib` | Time-window aggregation features required |
 
 ## HPA Design Decision
 
