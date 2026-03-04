@@ -450,7 +450,7 @@ jobs:
       
       - name: Generate CI test models
         run: |
-          pip install "scikit-learn~=1.8.0" joblib numpy pandas
+          pip install "scikit-learn~=1.6.0" joblib "numpy~=1.26.0" pandas
           python scripts/generate_ci_test_models.py
 
       - name: Spin up Demo Stack
@@ -493,6 +493,38 @@ jobs:
 
           # Final status
           docker compose -f docker-compose.demo.yml ps -a
+
+      - name: Pre-flight container smoke test
+        if: always()
+        run: |
+          echo "=== Container exit codes ==="
+          docker compose -f docker-compose.demo.yml ps -a
+          echo ""
+          echo "=== Import smoke test (runs even if container exited) ==="
+          for svc in bankchurn carvision; do
+            echo "--- $svc python import check ---"
+            docker compose -f docker-compose.demo.yml run --rm --no-deps "$svc" \
+              python -c "
+import sys
+print('Python:', sys.version)
+try:
+    import fastapi; print('fastapi OK:', fastapi.__version__)
+except Exception as e: print('fastapi FAIL:', e)
+try:
+    import sklearn; print('sklearn OK:', sklearn.__version__)
+except Exception as e: print('sklearn FAIL:', e)
+try:
+    import numpy; print('numpy OK:', numpy.__version__)
+except Exception as e: print('numpy FAIL:', e)
+try:
+    import scipy; print('scipy OK:', scipy.__version__)
+except Exception as e: print('scipy FAIL:', e)
+try:
+    import pandas; print('pandas OK:', pandas.__version__)
+except Exception as e: print('pandas FAIL:', e)
+print('All imports done')
+" 2>&1 || echo "CONTAINER RUN FAILED for $svc"
+          done
 
       - name: Diagnostic - Check all containers and model files
         if: always()
