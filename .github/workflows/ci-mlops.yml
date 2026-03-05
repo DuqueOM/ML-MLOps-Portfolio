@@ -81,6 +81,7 @@ jobs:
             pip install -r requirements_no_hash.txt
           fi
           pip install pytest pytest-cov httpx flake8 "black==26.1.0" isort mypy
+          pip install -e ../common_utils
       
       - name: Run linting
         working-directory: ${{ matrix.project }}

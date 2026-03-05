@@ -29,7 +29,7 @@ class DataConfig(BaseModel):
 class ModelConfig(BaseModel):
     """Model architecture and training hyperparameters."""
 
-    pretrained_name: str = "distilbert-base-uncased"
+    pretrained_name: str = "ProsusAI/finbert"
     num_labels: int = 3
     learning_rate: float = Field(2e-5, gt=0)
     weight_decay: float = 0.01

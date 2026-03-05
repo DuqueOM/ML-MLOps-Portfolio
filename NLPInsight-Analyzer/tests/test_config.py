@@ -20,7 +20,7 @@ class TestDataConfig:
 class TestModelConfig:
     def test_defaults(self):
         cfg = ModelConfig()
-        assert cfg.pretrained_name == "distilbert-base-uncased"
+        assert cfg.pretrained_name == "ProsusAI/finbert"
         assert cfg.num_labels == 3
         assert cfg.learning_rate == 2e-5
 
@@ -32,7 +32,7 @@ class TestModelConfig:
 class TestNLPInsightConfig:
     def test_from_yaml(self, config_path):
         cfg = NLPInsightConfig.from_yaml(config_path)
-        assert cfg.model.pretrained_name == "distilbert-base-uncased"
+        assert cfg.model.pretrained_name == "ProsusAI/finbert"
         assert cfg.data.labels == ["negative", "neutral", "positive"]
 
     def test_from_yaml_missing_file(self):
