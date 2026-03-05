@@ -34,7 +34,6 @@ jobs:
         python-version: ['3.11', '3.12']
         project:
           - BankChurn-Predictor
-          - CarVision-Market-Intelligence
           - NLPInsight-Analyzer
           - ChicagoTaxi-Demand-Pipeline
     
@@ -94,12 +93,9 @@ jobs:
       - name: Run tests with coverage
         working-directory: ${{ matrix.project }}
         run: |
-          # Coverage thresholds: BankChurn 85%, CarVision 85%, NLPInsight 85%, ChicagoTaxi 85%
+          # Coverage thresholds: BankChurn 85%, NLPInsight 85%, ChicagoTaxi 85%
           if [ "${{ matrix.project }}" = "BankChurn-Predictor" ]; then
             COV_TARGET="src"
-            THRESHOLD=85
-          elif [ "${{ matrix.project }}" = "CarVision-Market-Intelligence" ]; then
-            COV_TARGET="src/carvision"
             THRESHOLD=85
           elif [ "${{ matrix.project }}" = "ChicagoTaxi-Demand-Pipeline" ]; then
             COV_TARGET="src/chicagotaxi"
@@ -154,7 +150,7 @@ jobs:
         run: |
           echo "::group::Black Formatting Check"
           FAIL=0
-          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline; do
+          for project in BankChurn-Predictor NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline; do
             if [ -d "$project/src" ] || [ -d "$project/app" ]; then
               black --check "$project/app" 2>/dev/null || FAIL=1
               [ -d "$project/src" ] && black --check "$project/src" 2>/dev/null || true
@@ -168,7 +164,7 @@ jobs:
       - name: Check Flake8 critical errors
         run: |
           echo "::group::Flake8 Critical Errors"
-          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline; do
+          for project in BankChurn-Predictor NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline; do
             if [ -d "$project/src" ]; then
               flake8 "$project/src" --count --select=E9,F63,F7,F82 --show-source --statistics
             fi
@@ -182,7 +178,7 @@ jobs:
         run: |
           echo "::group::Mypy Type Checking"
           mypy common_utils/ --config-file mypy.ini || true
-          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline; do
+          for project in BankChurn-Predictor NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline; do
             if [ -d "$project/app" ]; then
               echo "--- $project ---"
               mypy "$project/app/" --config-file mypy.ini || true
@@ -227,10 +223,10 @@ jobs:
         run: |
           mkdir -p reports
           # JSON report for downstream analysis (allow failure for report generation)
-          bandit -r BankChurn-Predictor/src CarVision-Market-Intelligence/src NLPInsight-Analyzer/src \
+          bandit -r BankChurn-Predictor/src NLPInsight-Analyzer/src \
             -f json -o reports/bandit-report.json -ll || true
           # Blocking scan: fail on HIGH+ severity issues
-          bandit -r BankChurn-Predictor/src CarVision-Market-Intelligence/src NLPInsight-Analyzer/src \
+          bandit -r BankChurn-Predictor/src NLPInsight-Analyzer/src \
             --severity-level high
       
       - name: Run pip-audit dependency scan
@@ -268,7 +264,6 @@ jobs:
       matrix:
         project:
           - BankChurn-Predictor
-          - CarVision-Market-Intelligence
           - NLPInsight-Analyzer
           - ChicagoTaxi-Demand-Pipeline
     
@@ -417,17 +412,6 @@ jobs:
           tags: ml-portfolio-bankchurn:latest
           no-cache: true
       
-      - name: Build CarVision image (no cache)
-        uses: docker/build-push-action@v5
-        with:
-          context: CarVision-Market-Intelligence
-          file: CarVision-Market-Intelligence/Dockerfile
-          push: false
-          load: true
-          tags: ml-portfolio-carvision-api:latest
-          target: api
-          no-cache: true
-      
       - name: Build NLPInsight image (no cache)
         uses: docker/build-push-action@v5
         with:
@@ -467,7 +451,7 @@ jobs:
 
           # Dump full logs per service so crash reasons are visible
           echo "=== Container logs after initial wait ==="
-          for svc_port in "bankchurn:8001" "carvision:8002" "nlpinsight:8003" "chicagotaxi:8004"; do
+          for svc_port in "bankchurn:8001" "nlpinsight:8003" "chicagotaxi:8004"; do
             svc="${svc_port%%:*}"
             echo "--- $svc logs ---"
             docker compose -f docker-compose.demo.yml logs "$svc" --tail 80
@@ -475,8 +459,8 @@ jobs:
 
           # Wait for health endpoints using host-side curl on mapped ports
           echo "Waiting for health checks..."
-          declare -A SVC_PORTS=([bankchurn]=8001 [carvision]=8002 [nlpinsight]=8003 [chicagotaxi]=8004)
-          for svc in bankchurn carvision nlpinsight chicagotaxi; do
+          declare -A SVC_PORTS=([bankchurn]=8001 [nlpinsight]=8003 [chicagotaxi]=8004)
+          for svc in bankchurn nlpinsight chicagotaxi; do
             port="${SVC_PORTS[$svc]}"
             echo "Checking $svc on port $port..."
             for i in {1..12}; do
@@ -502,7 +486,7 @@ jobs:
           echo ""
           echo "=== Import smoke test (runs even if container exited) ==="
           PYCHECK="import sys; print('Python:', sys.version); import fastapi; print('fastapi OK:', fastapi.__version__); import sklearn; print('sklearn OK:', sklearn.__version__); import numpy; print('numpy OK:', numpy.__version__); import scipy; print('scipy OK:', scipy.__version__); import pandas; print('pandas OK:', pandas.__version__); print('ALL IMPORTS OK')"
-          for svc in bankchurn carvision; do
+          for svc in bankchurn nlpinsight; do
             echo "--- $svc python import check ---"
             docker compose -f docker-compose.demo.yml run --rm --no-deps "$svc" python -c "$PYCHECK" 2>&1 || echo "CONTAINER RUN FAILED for $svc"
           done
@@ -514,13 +498,13 @@ jobs:
           docker compose -f docker-compose.demo.yml ps -a
           echo ""
           echo "=== sklearn versions inside containers ==="
-          for svc in bankchurn carvision nlpinsight; do
+          for svc in bankchurn nlpinsight chicagotaxi; do
             echo "--- $svc ---"
             docker compose -f docker-compose.demo.yml exec -T $svc python -c "import sklearn; print(f'sklearn={sklearn.__version__}')" 2>&1 || echo "FAILED"
           done
           echo ""
           echo "=== Model files on HOST (all 3 projects) ==="
-          for proj in BankChurn-Predictor CarVision-Market-Intelligence; do
+          for proj in BankChurn-Predictor NLPInsight-Analyzer; do
             echo "--- $proj ---"
             ls -la $proj/models/model.joblib 2>&1 || echo "Not found (models are downloaded at runtime via Init Container)"
           done
@@ -528,32 +512,12 @@ jobs:
           ls -la NLPInsight-Analyzer/models/ 2>&1 || echo "Not found (transformer model downloaded at runtime)"
           echo ""
           echo "=== Model files INSIDE containers ==="
-          for svc in bankchurn carvision; do
+          for svc in bankchurn nlpinsight; do
             echo "--- $svc ---"
             docker compose -f docker-compose.demo.yml exec -T $svc ls -la models/model.joblib 2>&1 || echo "NOT FOUND (expected: loaded via volume mount or Init Container)"
           done
           echo "--- nlpinsight ---"
           docker compose -f docker-compose.demo.yml exec -T nlpinsight ls -la models/ 2>&1 || echo "NOT FOUND"
-          echo ""
-          echo "=== Test model loading inside CarVision container ==="
-          docker compose -f docker-compose.demo.yml exec -T carvision python -c "
-          import os, sys
-          print(f'CWD: {os.getcwd()}')
-          print(f'PYTHONPATH: {os.environ.get(\"PYTHONPATH\", \"not set\")}')
-          print(f'src/__init__.py exists: {os.path.exists(\"src/__init__.py\")}')
-          print(f'src/carvision/__init__.py exists: {os.path.exists(\"src/carvision/__init__.py\")}')
-          print(f'MODEL_PATH env: {os.environ.get(\"MODEL_PATH\", \"not set\")}')
-          print(f'models/model.joblib exists: {os.path.exists(\"models/model.joblib\")}')
-          try:
-              import joblib
-              m = joblib.load('models/model.joblib')
-              print(f'MODEL LOADED OK: {type(m)}')
-          except Exception as e:
-              print(f'MODEL LOAD FAILED: {e}')
-          " 2>&1 || echo "EXEC FAILED"
-          echo ""
-          echo "=== CarVision container logs ==="
-          docker compose -f docker-compose.demo.yml logs carvision --tail 50
           echo ""
           echo "=== Git LFS status ==="
           git lfs ls-files 2>&1 | grep model.joblib || echo "No LFS model files found (expected in CI - models loaded at runtime)"
@@ -571,8 +535,6 @@ jobs:
         run: |
           echo "=== Container Status ==="
           docker compose -f docker-compose.demo.yml ps -a
-          echo "=== CarVision Logs ==="
-          docker compose -f docker-compose.demo.yml logs carvision --tail 100
           echo "=== All Logs ==="
           docker compose -f docker-compose.demo.yml logs --tail 50
 
@@ -673,7 +635,7 @@ jobs:
           find . -name "model_card.md" -type f
           
           # Verify model cards exist in main projects
-          for project in BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline; do
+          for project in BankChurn-Predictor NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline; do
             if [ ! -f "$project/model_card.md" ]; then
               echo "⚠️  Missing model_card.md in $project"
             else
@@ -708,7 +670,6 @@ jobs:
       matrix:
         project:
           - BankChurn-Predictor
-          - CarVision-Market-Intelligence
           - NLPInsight-Analyzer
           - ChicagoTaxi-Demand-Pipeline
       fail-fast: false

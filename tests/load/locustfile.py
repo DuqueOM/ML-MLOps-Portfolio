@@ -13,20 +13,16 @@ ENVIRONMENT SETUP
 ─────────────────────────────────────────────────────────────────────
 Option A — Docker Compose (local dev):
     docker compose -f docker-compose.demo.yml up -d
-    # Ports: BankChurn=8001, CarVision=8002, NLPInsight=8003
 
 Option B — Kubernetes port-forward (GKE / EKS):
     kubectl port-forward svc/bankchurn-service 8000:80 -n ml-portfolio &
-    kubectl port-forward svc/carvision-service 8001:80 -n ml-portfolio &
     kubectl port-forward svc/nlpinsight-service 8002:80 -n ml-portfolio &
-    # Ports: BankChurn=8000, CarVision=8001, NLPInsight=8002
 
 Option C — Ingress IP (production-grade, recommended for real metrics):
     # GCP: Uses GCE Ingress with public IP
     export INGRESS_HOST=http://34.120.120.57
     # AWS: Uses ALB DNS
     export INGRESS_HOST=http://<alb-dns-name>
-    # Routes: /bankchurn/*, /carvision/*, /nlpinsight/*
     # No port-forward overhead (~70ms saved per request)
 
 ─────────────────────────────────────────────────────────────────────
@@ -99,8 +95,6 @@ def _bankchurn_payload() -> dict:
         "EstimatedSalary": round(random.uniform(10_000, 200_000), 2),
     }
 
-
-def _carvision_payload() -> dict:
     return {
         "model_year": random.randint(2000, 2024),
         "model": random.choice(
@@ -189,79 +183,6 @@ class BankChurnUser(HttpUser):
 
 
 # ---------------------------------------------------------------------------
-# CarVision — http://localhost:8001 (K8s) or http://localhost:8002 (Docker)
-# ---------------------------------------------------------------------------
-
-
-class CarVisionUser(HttpUser):
-    """
-    Simulates traffic to CarVision Market Intelligence.
-
-    Task weights:
-      - predict (10x): vehicle price prediction — primary endpoint
-      - health  (1x):  liveness probe
-    """
-
-    host = _INGRESS_HOST or "http://localhost:8001"
-    wait_time = between(0.3, 1.5)
-    weight = 2
-    _prefix = "/carvision" if _INGRESS_HOST else ""
-
-    def on_start(self) -> None:
-        with self.client.get(f"{self._prefix}/health", name="carvision:health", catch_response=True) as r:
-            if r.status_code != 200:
-                r.failure(f"Health check failed: {r.status_code}")
-
-    @task(10)
-    def predict(self) -> None:
-        """Vehicle price prediction — randomized models and conditions."""
-        with self.client.post(
-            f"{self._prefix}/predict",
-            json=_carvision_payload(),
-            name="carvision:predict",
-            catch_response=True,
-        ) as r:
-            if r.status_code == 200:
-                data = r.json()
-                if "predicted_price" not in data:
-                    r.failure("Missing predicted_price field")
-                elif not isinstance(data["predicted_price"], (int, float)):
-                    r.failure(f"Invalid predicted_price type: {type(data['predicted_price'])}")
-            elif r.status_code == 503:
-                r.failure("Service unavailable — model not loaded")
-            else:
-                r.failure(f"Unexpected status {r.status_code}")
-
-    @task(2)
-    def predict_batch(self) -> None:
-        """Batch vehicle price prediction — 5 vehicles per request."""
-        payload = {"vehicles": [_carvision_payload() for _ in range(5)]}
-        with self.client.post(
-            f"{self._prefix}/predict_batch",
-            json=payload,
-            name="carvision:predict_batch",
-            catch_response=True,
-        ) as r:
-            if r.status_code == 200:
-                data = r.json()
-                if data.get("total_vehicles") != 5:
-                    r.failure(f"Expected 5 vehicles, got {data.get('total_vehicles')}")
-            elif r.status_code == 503:
-                r.failure("Service unavailable — model not loaded")
-            else:
-                r.failure(f"Unexpected status {r.status_code}")
-
-    @task(1)
-    def health(self) -> None:
-        self.client.get(f"{self._prefix}/health", name="carvision:health")
-
-    @task(1)
-    def metrics(self) -> None:
-        self.client.get(f"{self._prefix}/metrics", name="carvision:metrics")
-
-
-# ---------------------------------------------------------------------------
-# NLPInsight — http://localhost:8002 (K8s) or http://localhost:8003 (Docker)
 # ---------------------------------------------------------------------------
 
 

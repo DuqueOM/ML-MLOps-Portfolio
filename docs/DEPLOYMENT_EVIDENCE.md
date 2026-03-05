@@ -16,11 +16,11 @@
 │                                     │                              │
 │  ┌─── ML Services (HPA) ────────┐   │  ┌─── ML Services (HPA) ──┐  │
 │  │ ┌──────────┐ ┌──────────┐    │   │  │ ┌────────┐ ┌────────┐  │  │
-│  │ │BankChurn │ │CarVision │    │   │  │ │BankCh. │ │CarVis. │  │  │
+│  │ │BankChurn │ │ │    │   │  │ │BankCh. │ │CarVis. │  │  │
 │  │ │ API:8000 │ │ API:8000 │    │   │  │ │  :8000 │ │  :8000 │  │  │
 │  │ └──────────┘ └──────────┘    │   │  │ └────────┘ └────────┘  │  │
 │  │ ┌──────────┐ ┌──────────┐    │   │  │ ┌────────┐ ┌────────┐  │  │
-│  │ │NLPInsight│ │CarVision │    │   │  │ │NLPIns. │ │CarVis. │  │  │
+│  │ │NLPInsight│ │ │    │   │  │ │NLPIns. │ │CarVis. │  │  │
 │  │ │ API:8000 │ │Dash:8501 │    │   │  │ │  :8000 │ │D.:8501 │  │  │
 │  │ └──────────┘ └──────────┘    │   │  │ └────────┘ └────────┘  │  │
 │  └──────────────────────────────┘   │  └────────────────────────┘  │
@@ -43,7 +43,7 @@
 └────────────────────────────────────────────────────────────────────┘
 
 8 pods total: 3 ML APIs + Streamlit Dashboard + Prometheus + Grafana + MLflow.
-CarVision dashboard is a separate K8s pod (multi-target Dockerfile:
+ dashboard is a separate K8s pod (multi-target Dockerfile:
 --target api | --target dashboard). Separate pods allow independent
 scaling, health checks, and resource limits.
 ```
@@ -56,7 +56,7 @@ scaling, health checks, and resource limits.
 | Auto-scaling (HPA) | CPU-based | CPU-based | Verified: 1→3 pods under load, scale-down after |
 | Model serving (FastAPI) | 3 services | 3 services | `/health` + `/predict` — 27/27 smoke tests passed |
 | Batch prediction | All 3 APIs | All 3 APIs | `/predict_batch` endpoints verified |
-| Monitoring (Prometheus) | 16/16 targets UP | Custom metrics | `bankchurn_*`, `carvision_*`, `nlpinsight_*` + 16 alert rules |
+| Monitoring (Prometheus) | 16/16 targets UP | Custom metrics | `bankchurn_*`, `_*`, `nlpinsight_*` + 16 alert rules |
 | Dashboards (Grafana) | v10.2.2, 2 dashboards | ML Performance | Latency, throughput, error rates, predictions, resource usage |
 | Experiment tracking (MLflow) | Cloud SQL backend | RDS backend | Running, v2.9.2 |
 | Infrastructure as Code | Terraform GCP | Terraform AWS | 8/8 tests passed (fmt, validate, tfsec, checkov) |
@@ -80,7 +80,6 @@ scaling, health checks, and resource limits.
 | Project | Tests | Passed | Skipped | Coverage | CI Threshold |
 |---------|-------|--------|---------|----------|--------------|
 | BankChurn | 199 | 198 | 1 | **90.03%** | 79% |
-| CarVision | 52 | 52 | 0 | **95.72%** | 80% |
 | NLPInsight | 74 | 73+1 xpassed | 0 | **98.41%** | 60% |
 | Adversarial | 43 | 43 | 0 | — | — |
 | **Total** | **368** | **367+1 xpassed** | **1** | **~93%** | — |
@@ -90,7 +89,7 @@ scaling, health checks, and resource limits.
 | Test Suite | Tests | Passed | Failed | Notes |
 |------------|-------|--------|--------|-------|
 | Smoke services (`test_smoke_services.py`) | 27 | **27** | 0 | Health, predict, metrics, OpenAPI |
-| K8s smoke (`test_smoke_k8s.py`) | 14 | **14** | 0 | BankChurn, CarVision, NLPInsight |
+| K8s smoke (`test_smoke_k8s.py`) | 14 | **14** | 0 | BankChurn, NLPInsight |
 | **Total live tests** | **41** | **41** | **0** | All services healthy + predictions correct |
 
 ### Infrastructure Tests
@@ -115,7 +114,6 @@ scaling, health checks, and resource limits.
 | Model | Algorithm | Key Metric | Size |
 |-------|-----------|------------|------|
 | BankChurn | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87, F1 0.62 | 4.1 MB |
-| CarVision | LightGBM + FeatureEngineer (24 features) | R² 0.80, RMSE $6,744 | 5.7 MB |
 | NLPInsight | FinBERT (ProsusAI/finbert) | Acc 97%, F1-w 0.97 | ~260 MB (transformer) |
 
 ## Docker Image Sizes (v3.3.0)
@@ -123,12 +121,10 @@ scaling, health checks, and resource limits.
 | Service | Image | Size | Improvement |
 |---------|-------|------|-------------|
 | BankChurn | `bankchurn-predictor:v3.3.0` | **1.09 GB** | from 2.11 GB (-48%) |
-| CarVision API | `carvision-market-intelligence:v3.3.0` | **518 MB** | from 1.76 GB (-71%) |
-| CarVision Dashboard | `carvision-dashboard:latest` | **950 MB** | Multi-target Dockerfile |
 | NLPInsight | `nlpinsight-analyzer:v3.3.0` | **1.4 GB** | from 2.05 GB (-32%) |
 
 > Optimizations: `--no-compile`, aggressive cleanup (`__pycache__`, `tests/`, `pip/setuptools`), NLPInsight `torch/test` removal.
-> CarVision uses multi-target Dockerfile: `docker build --target api` (518 MB) or `--target dashboard` (950 MB).
+> uses multi-target Dockerfile: `docker build --target api` (518 MB) or `--target dashboard` (950 MB).
 
 ## Load Test Results (Locust, via kubectl port-forward, 2026-03-03)
 
@@ -138,8 +134,6 @@ scaling, health checks, and resource limits.
 |----------|-----|-----|-----|-----|----------|--------|-----|
 | bankchurn:predict | 170ms | 190ms | 350ms | 450ms | 260 | 0 | 2.2 |
 | bankchurn:health | 64ms | 69ms | 560ms | 640ms | 37 | 0 | 0.3 |
-| carvision:predict | 91ms | 98ms | 130ms | 300ms | 265 | 0 | 2.2 |
-| carvision:predict_batch | 92ms | 97ms | 140ms | 240ms | 45 | 0 | 0.4 |
 | nlpinsight:predict | 180ms | 270ms | 450ms | 2400ms | 184 | 0 | 1.5 |
 | nlpinsight:predict_batch | 530ms | 670ms | 850ms | 2300ms | 67 | 0 | 0.6 |
 | **Aggregated** | **160ms** | **190ms** | **480ms** | **820ms** | **973** | **0 (0%)** | **8.1** |
@@ -151,14 +145,12 @@ scaling, health checks, and resource limits.
 | Endpoint | p50 | p95 | Requests | Errors | RPS |
 |----------|-----|-----|----------|--------|-----|
 | bankchurn:predict | 500ms | 1100ms | 711 | 0 (0%) | 6.0 |
-| carvision:predict | 93ms | 130ms | 759 | 0 (0%) | 6.4 |
-| carvision:predict_batch | 94ms | 120ms | 128 | 0 (0%) | 1.1 |
 | nlpinsight:predict | 520ms* | 1700ms* | 437 | 243* | 3.7 |
 | **Aggregated** | **110ms** | **1200ms** | **2595** | **377** | **21.9** |
 
 > \* NLPInsight errors under 30-user stress are **port-forward TCP drops** (`status 0`, `ConnectionRefused`),
 > not application errors. `kubectl port-forward` serializes connections and is not designed for concurrent
-> load testing. BankChurn and CarVision had **0 application errors** under 30-user stress.
+> load testing. BankChurn and had **0 application errors** under 30-user stress.
 > Production testing via Ingress IP (`34.120.120.57`) eliminates this overhead.
 
 ### HPA Auto-Scaling Observed During Load
@@ -166,7 +158,6 @@ scaling, health checks, and resource limits.
 | Service | Idle Replicas | Peak Replicas | CPU at Peak | Scale-Down |
 |---------|---------------|---------------|-------------|------------|
 | BankChurn | 1 | **3** | 15% → target 70% | ~8 min to 1 |
-| CarVision | 1 | 1 | 29% → target 70% | N/A |
 | NLPInsight | 1 | **3** | 39% → target 75% | ~8 min to 1 |
 
 ## Live Cluster State (2026-03-03)
@@ -176,8 +167,6 @@ scaling, health checks, and resource limits.
 | Pod | Status | CPU | Memory | Node |
 |-----|--------|-----|--------|------|
 | bankchurn-predictor | Running 1/1 | 10m | 348Mi | xrch |
-| carvision-intelligence | Running 1/1 | 10m | 294Mi | mf2h |
-| carvision-dashboard | Running 1/1 | — | ~512Mi | 6ls9 |
 | nlpinsight-analyzer | Running 1/1 | 9m | 927Mi | lqbl |
 | prometheus | Running 1/1 | 3m | 29Mi | t8v4 |
 | grafana | Running 1/1 | 3m | 76Mi | lqbl |
@@ -201,7 +190,6 @@ scaling, health checks, and resource limits.
 | Target | Status | Metrics |
 |--------|--------|--------|
 | bankchurn-predictor | **UP** | `bankchurn_requests_total`, `_duration_seconds`, `_predictions_total{risk_level}` |
-| carvision-intelligence | **UP** | `carvision_requests_total`, `_duration_seconds`, `_predictions_total` |
 | nlpinsight-analyzer | **UP** | `nlpinsight_requests_total`, `_duration_seconds`, `_predictions_total{sentiment}` |
 | prometheus (self) | **UP** | `prometheus_tsdb_*`, `process_*` |
 | kubernetes-apiservers | **UP** | K8s API server metrics |
@@ -290,7 +278,7 @@ aws eks update-kubeconfig --name ml-portfolio-eks-production --region us-east-1
 kubectl get pods -n ml-portfolio
 
 # Verify all services
-for svc in bankchurn-predictor carvision-intelligence nlpinsight-analyzer; do
+for svc in bankchurn-predictor  nlpinsight-analyzer; do
   echo "--- $svc ---"
   kubectl exec -n ml-portfolio deploy/$svc -- curl -sf http://localhost:8000/health
 done
@@ -298,7 +286,7 @@ done
 # Run all tests
 bash tests/infra/kubernetes/test_kubernetes.sh all
 bash tests/infra/terraform/test_terraform.sh all
-BANKCHURN_PORT=8000 CARVISION_PORT=8001 NLPINSIGHT_PORT=8002 \
+BANKCHURN_PORT=8000 NLPINSIGHT_PORT=8002 CHICAGOTAXI_PORT=8003 \
   python3 -m pytest tests/infra/smoke/test_smoke_services.py -v
 python3 -m pytest tests/integration/test_smoke_k8s.py -v
 python3 -m locust -f tests/load/locustfile.py --headless -u 10 -r 2 -t 120s --only-summary

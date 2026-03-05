@@ -77,9 +77,9 @@
       "id": 3,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
       "targets": [
-        { "expr": "up{job=\"carvision-intelligence\"}", "legendFormat": "", "refId": "A" }
+        { "expr": "up{job=\"chicagotaxi-intelligence\"}", "legendFormat": "", "refId": "A" }
       ],
-      "title": "🚗 CarVision API",
+      "title": "🚗 ChicagoTaxi API",
       "type": "stat"
     },
     {
@@ -161,7 +161,7 @@
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
         { "expr": "sum(rate(bankchurn_requests_total[5m]))", "legendFormat": "BankChurn", "refId": "A" },
-        { "expr": "sum(rate(carvision_requests_total[5m]))", "legendFormat": "CarVision", "refId": "B" },
+        { "expr": "sum(rate(chicagotaxi_requests_total[5m]))", "legendFormat": "ChicagoTaxi", "refId": "B" },
         { "expr": "sum(rate(nlpinsight_requests_total[5m]))", "legendFormat": "NLPInsight", "refId": "C" }
       ],
       "title": "Request Rate (req/s)",
@@ -183,7 +183,7 @@
       "options": { "legend": { "calcs": ["mean", "p95", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
         { "expr": "histogram_quantile(0.95, sum(rate(bankchurn_request_duration_seconds_bucket[5m])) by (le)) * 1000", "legendFormat": "BankChurn P95", "refId": "A" },
-        { "expr": "histogram_quantile(0.95, sum(rate(carvision_request_duration_seconds_bucket[5m])) by (le)) * 1000", "legendFormat": "CarVision P95", "refId": "B" },
+        { "expr": "histogram_quantile(0.95, sum(rate(chicagotaxi_request_duration_seconds_bucket[5m])) by (le)) * 1000", "legendFormat": "ChicagoTaxi P95", "refId": "B" },
         { "expr": "histogram_quantile(0.95, sum(rate(nlpinsight_request_duration_seconds_bucket[5m])) by (le)) * 1000", "legendFormat": "NLPInsight P95", "refId": "C" }
       ],
       "title": "Request Latency (ms)",
@@ -233,9 +233,9 @@
       "id": 11,
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
-        { "expr": "increase(carvision_predictions_total[1h])", "legendFormat": "Predictions", "refId": "A" }
+        { "expr": "increase(chicagotaxi_predictions_total[1h])", "legendFormat": "Predictions", "refId": "A" }
       ],
-      "title": "🚗 CarVision Predictions/hour",
+      "title": "🚗 ChicagoTaxi Predictions/hour",
       "type": "timeseries"
     },
     {
@@ -304,9 +304,9 @@
       "id": 15,
       "options": { "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
       "targets": [
-        { "expr": "sum(rate(carvision_requests_total{status=~\"5..\"}[5m])) / sum(rate(carvision_requests_total[5m]))", "legendFormat": "", "refId": "A" }
+        { "expr": "sum(rate(chicagotaxi_requests_total{status=~\"5..\"}[5m])) / sum(rate(chicagotaxi_requests_total[5m]))", "legendFormat": "", "refId": "A" }
       ],
-      "title": "🚗 CarVision Error Rate",
+      "title": "🚗 ChicagoTaxi Error Rate",
       "type": "gauge"
     },
     {
@@ -357,7 +357,7 @@
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
         { "expr": "rate(process_cpu_seconds_total{job=\"bankchurn-predictor\"}[5m]) * 100", "legendFormat": "BankChurn", "refId": "A" },
-        { "expr": "rate(process_cpu_seconds_total{job=\"carvision-intelligence\"}[5m]) * 100", "legendFormat": "CarVision", "refId": "B" },
+        { "expr": "rate(process_cpu_seconds_total{job=\"chicagotaxi-intelligence\"}[5m]) * 100", "legendFormat": "ChicagoTaxi", "refId": "B" },
         { "expr": "rate(process_cpu_seconds_total{job=\"nlpinsight-analyzer\"}[5m]) * 100", "legendFormat": "NLPInsight", "refId": "C" }
       ],
       "title": "Process CPU Usage (%)",
@@ -379,7 +379,7 @@
       "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "targets": [
         { "expr": "process_resident_memory_bytes{job=\"bankchurn-predictor\"}", "legendFormat": "BankChurn", "refId": "A" },
-        { "expr": "process_resident_memory_bytes{job=\"carvision-intelligence\"}", "legendFormat": "CarVision", "refId": "B" },
+        { "expr": "process_resident_memory_bytes{job=\"chicagotaxi-intelligence\"}", "legendFormat": "ChicagoTaxi", "refId": "B" },
         { "expr": "process_resident_memory_bytes{job=\"nlpinsight-analyzer\"}", "legendFormat": "NLPInsight", "refId": "C" }
       ],
       "title": "Process Memory (bytes)",

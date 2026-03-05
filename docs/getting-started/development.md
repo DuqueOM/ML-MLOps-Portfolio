@@ -33,10 +33,10 @@ pip install -e ".[dev]"
 pytest tests/ -v
 ```
 
-### CarVision Market Intelligence
+### Market Intelligence
 
 ```bash
-cd CarVision-Market-Intelligence
+cd 
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"

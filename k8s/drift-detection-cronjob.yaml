@@ -44,14 +44,14 @@ spec:
               # Service endpoints (internal K8s DNS)
               SERVICES = {
                   "bankchurn": "http://bankchurn-service.ml-portfolio.svc.cluster.local/health",
-                  "carvision": "http://carvision-service.ml-portfolio.svc.cluster.local/health",
                   "nlpinsight": "http://nlpinsight-service.ml-portfolio.svc.cluster.local/health",
+                  "chicagotaxi": "http://chicagotaxi-service.ml-portfolio.svc.cluster.local/health",
               }
 
               PREDICT_ENDPOINTS = {
                   "bankchurn": "http://bankchurn-service.ml-portfolio.svc.cluster.local/predict",
-                  "carvision": "http://carvision-service.ml-portfolio.svc.cluster.local/predict",
                   "nlpinsight": "http://nlpinsight-service.ml-portfolio.svc.cluster.local/predict",
+                  "chicagotaxi": "http://chicagotaxi-service.ml-portfolio.svc.cluster.local/predict",
               }
 
               # PSI threshold for drift alert
@@ -92,13 +92,6 @@ spec:
                            "Age": 35, "Tenure": 7, "Balance": 125000.0,
                            "NumOfProducts": 2, "HasCrCard": 1, "IsActiveMember": 1,
                            "EstimatedSalary": 80000.0},
-                      ]
-                  elif name == "carvision":
-                      payloads = [
-                          {"region": "north", "year": 2015, "manufacturer": "ford",
-                           "condition": "good", "fuel": "gas", "odometer": 50000,
-                           "transmission": "automatic", "type": "sedan",
-                           "paint_color": "white", "state": "ca"},
                       ]
                   elif name == "nlpinsight":
                       payloads = [

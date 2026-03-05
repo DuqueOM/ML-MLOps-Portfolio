@@ -11,7 +11,7 @@
         "type": "timeseries",
         "targets": [
           { "expr": "sum(rate(bankchurn_requests_total[5m]))", "legendFormat": "BankChurn" },
-          { "expr": "sum(rate(carvision_requests_total[5m]))", "legendFormat": "CarVision" },
+          { "expr": "sum(rate(chicagotaxi_requests_total[5m]))", "legendFormat": "ChicagoTaxi" },
           { "expr": "sum(rate(nlpinsight_requests_total[5m]))", "legendFormat": "NLPInsight" },
           { "expr": "sum(rate(chicagotaxi_requests_total[5m]))", "legendFormat": "ChicagoTaxi" }
         ],
@@ -24,7 +24,7 @@
         "type": "timeseries",
         "targets": [
           { "expr": "histogram_quantile(0.95, sum(rate(bankchurn_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "BankChurn P95" },
-          { "expr": "histogram_quantile(0.95, sum(rate(carvision_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "CarVision P95" },
+          { "expr": "histogram_quantile(0.95, sum(rate(chicagotaxi_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "ChicagoTaxi P95" },
           { "expr": "histogram_quantile(0.95, sum(rate(nlpinsight_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "NLPInsight P95" },
           { "expr": "histogram_quantile(0.95, sum(rate(chicagotaxi_request_latency_seconds_bucket[5m])) by (le))", "legendFormat": "ChicagoTaxi P95" }
         ],
@@ -37,7 +37,7 @@
         "type": "stat",
         "targets": [
           { "expr": "sum(bankchurn_requests_total)", "legendFormat": "BankChurn" },
-          { "expr": "sum(carvision_requests_total)", "legendFormat": "CarVision" },
+          { "expr": "sum(chicagotaxi_requests_total)", "legendFormat": "ChicagoTaxi" },
           { "expr": "sum(nlpinsight_requests_total)", "legendFormat": "NLPInsight" },
           { "expr": "sum(chicagotaxi_requests_total)", "legendFormat": "ChicagoTaxi" }
         ],
@@ -58,7 +58,7 @@
         "type": "timeseries",
         "targets": [
           { "expr": "process_resident_memory_bytes{job='bankchurn-predictor'} / 1024 / 1024", "legendFormat": "BankChurn" },
-          { "expr": "process_resident_memory_bytes{job='carvision-intelligence'} / 1024 / 1024", "legendFormat": "CarVision" },
+          { "expr": "process_resident_memory_bytes{job='chicagotaxi-intelligence'} / 1024 / 1024", "legendFormat": "ChicagoTaxi" },
           { "expr": "process_resident_memory_bytes{job='nlpinsight-analyzer'} / 1024 / 1024", "legendFormat": "NLPInsight" },
           { "expr": "process_resident_memory_bytes{job='chicagotaxi-pipeline'} / 1024 / 1024", "legendFormat": "ChicagoTaxi" }
         ],
@@ -71,7 +71,7 @@
         "type": "timeseries",
         "targets": [
           { "expr": "rate(bankchurn_request_duration_seconds_sum[5m]) / rate(bankchurn_request_duration_seconds_count[5m])", "legendFormat": "BankChurn Avg" },
-          { "expr": "rate(carvision_request_duration_seconds_sum[5m]) / rate(carvision_request_duration_seconds_count[5m])", "legendFormat": "CarVision Avg" },
+          { "expr": "rate(chicagotaxi_request_duration_seconds_sum[5m]) / rate(chicagotaxi_request_duration_seconds_count[5m])", "legendFormat": "ChicagoTaxi Avg" },
           { "expr": "rate(nlpinsight_request_duration_seconds_sum[5m]) / rate(nlpinsight_request_duration_seconds_count[5m])", "legendFormat": "NLPInsight Avg" },
           { "expr": "rate(chicagotaxi_request_latency_seconds_sum[5m]) / rate(chicagotaxi_request_latency_seconds_count[5m])", "legendFormat": "ChicagoTaxi Avg" }
         ],
@@ -95,7 +95,7 @@
         "type": "timeseries",
         "targets": [
           { "expr": "sum(rate(bankchurn_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "BankChurn errors" },
-          { "expr": "sum(rate(carvision_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "CarVision errors" },
+          { "expr": "sum(rate(chicagotaxi_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "ChicagoTaxi errors" },
           { "expr": "sum(rate(nlpinsight_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "NLPInsight errors" },
           { "expr": "sum(rate(chicagotaxi_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "ChicagoTaxi errors" }
         ],

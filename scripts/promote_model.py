@@ -35,14 +35,6 @@ PROJECT_CONFIGS = {
         "metrics_path": "artifacts/metrics.json",
         "default_thresholds": {"f1": 0.50, "auc": 0.75},
     },
-    "carvision": {
-        "dir": "CarVision-Market-Intelligence",
-        "model_name": "CarVision-Regressor",
-        "model_path": "models/model.joblib",
-        "metrics_path": "artifacts/metrics_val.json",
-        "extra_artifacts": ["artifacts/model_comparison.json", "artifacts/feature_columns.json"],
-        "default_thresholds": {"r2": 0.70, "rmse": 6000},
-    },
     "nlpinsight": {
         "dir": "NLPInsight-Analyzer",
         "model_name": "NLPInsight-Classifier",

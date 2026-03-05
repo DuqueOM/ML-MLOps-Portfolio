@@ -1,0 +1,30 @@
+{
+  "total_predictions": 355207,
+  "processing_time_seconds": 2.65,
+  "throughput_rows_per_sec": 133964,
+  "demand_stats": {
+    "mean": 14.9,
+    "median": 2.3,
+    "std": 43.12,
+    "min": 1.0,
+    "max": 474.6
+  },
+  "demand_distribution": {
+    "low": 261588,
+    "medium": 51394,
+    "very_high": 23082,
+    "high": 19143
+  },
+  "top_demand_areas": {
+    "76": 142.13,
+    "8": 138.69,
+    "32": 107.4,
+    "28": 59.04,
+    "56": 25.08,
+    "33": 25.06,
+    "6": 20.92,
+    "7": 13.53,
+    "3": 10.17,
+    "77": 8.1
+  }
+}

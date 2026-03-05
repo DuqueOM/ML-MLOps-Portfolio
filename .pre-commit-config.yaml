@@ -58,7 +58,6 @@ repos:
           - "--ignore-missing-imports"
         files: >
           ^(BankChurn-Predictor|
-            CarVision-Market-Intelligence|
             NLPInsight-Analyzer)/
             (main\.py|app/.*|monitoring/.*|scripts/.*|tests/.*)$
         exclude: >
@@ -78,7 +77,6 @@ repos:
     hooks:
       - id: bandit
         args: ['-ll', '-i']
-        files: ^(BankChurn-Predictor|CarVision-Market-Intelligence|NLPInsight-Analyzer)/
         exclude: ^.*\/tests\/
 
   # Secret detection with gitleaks

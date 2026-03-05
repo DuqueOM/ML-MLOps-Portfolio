@@ -4,9 +4,9 @@ Four ML systems built end-to-end: trained, containerized, deployed on Kubernetes
 
 [![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
-## Comparison (v3.4.0)
+## Comparison (v3.5.0)
 
-| Aspect | BankChurn | CarVision | NLPInsight | ChicagoTaxi |
+| Aspect | BankChurn | | NLPInsight | ChicagoTaxi |
 |--------|-----------|-----------|------------|-------------|
 | **Domain** | Banking (Retention) | Automotive (Pricing) | Finance (Sentiment) | Transportation (Demand) |
 | **Type** | Binary Classification | Regression | Multi-class Classification | Batch Pipeline |
@@ -22,10 +22,9 @@ Each project page explains the business problem, metric rationale, and cost of b
 ## Links
 
 - [BankChurn Predictor](bankchurn.md) — threshold tuning, cost analysis, SHAP
-- [CarVision Market Intelligence](carvision.md) — pricing asymmetry, Streamlit dashboard
 - [NLPInsight Analyzer](nlpinsight.md) — domain transfer learning, dual backend
 - [ChicagoTaxi Demand Pipeline](chicagotaxi.md) — PySpark ETL, Dask batch prediction, 6.3M rows
 
 ---
 
-*Last Updated: March 2026 — v3.4.0*
+*Last Updated: March 2026 — v3.5.0*

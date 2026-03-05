@@ -34,7 +34,7 @@ pandas would OOM on the full CSV. PySpark handles the heavy ETL; Dask handles th
 
 This is a regression problem on aggregated hourly counts. R² 0.905 means 90.5% of demand variance is explained by temporal + spatial features alone — without weather, events, or holiday calendars. RMSE of 13.58 on hourly counts means predictions are off by ~14 trips per hour per area on average.
 
-For comparison, CarVision achieves R² 0.80 on vehicle pricing (a harder, higher-variance problem). The taxi demand model benefits from strong temporal periodicity.
+For comparison, achieves R² 0.80 on vehicle pricing (a harder, higher-variance problem). The taxi demand model benefits from strong temporal periodicity.
 
 ## Operational
 

@@ -28,13 +28,6 @@ DATASET_REGISTRY: Dict[str, Dict] = {
         "checksum": None,  # Se genera automáticamente
         "size_mb": 2,
     },
-    "carvision": {
-        "name": "CarVision Vehicles Dataset",
-        "url": "https://example.com/datasets/vehicles_us.csv",  # Placeholder
-        "path": "CarVision-Market-Intelligence/data/vehicles_us.csv",
-        "checksum": None,
-        "size_mb": 50,
-    },
     "nlpinsight": {
         "name": "NLPInsight Financial PhraseBank",
         "url": "https://example.com/datasets/train.csv",  # Placeholder — use download_financial_phrasebank.py

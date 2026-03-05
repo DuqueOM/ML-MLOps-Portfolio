@@ -1,0 +1,21 @@
+{
+  "rmse": 7.8715242128666505,
+  "mae": 2.8511698459462895,
+  "r2": 0.9649263274044028,
+  "n_train": 284165,
+  "n_test": 71042,
+  "features": [
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "month",
+    "pickup_community_area",
+    "trip_count_lag_1h",
+    "trip_count_lag_24h",
+    "trip_count_lag_168h",
+    "trip_count_rolling_24h"
+  ],
+  "split": "temporal",
+  "train_end": "2023-10-22T15:00:00",
+  "test_start": "2023-10-22T15:00:00"
+}

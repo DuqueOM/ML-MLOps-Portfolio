@@ -1,6 +1,6 @@
 """OpenTelemetry instrumentation for ML portfolio services.
 
-Provides distributed tracing across all 3 ML APIs (BankChurn, CarVision, NLPInsight).
+Provides distributed tracing across all ML APIs (BankChurn, NLPInsight, ChicagoTaxi).
 Traces propagate through HTTP headers enabling end-to-end visibility of:
 - API request lifecycle (receive → validate → predict → respond)
 - Model inference latency

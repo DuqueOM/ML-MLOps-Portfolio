@@ -52,7 +52,7 @@ Please include the following information in your report:
 The following security aspects are within scope:
 
 ### ✅ In Scope
-- Application code in all four projects (BankChurn, CarVision, NLPInsight, ChicagoTaxi)
+- Application code in all three projects (BankChurn, NLPInsight, ChicagoTaxi)
 - API endpoints and authentication mechanisms
 - Docker container configurations
 - CI/CD pipeline security

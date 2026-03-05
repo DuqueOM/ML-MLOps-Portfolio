@@ -42,31 +42,17 @@ spec:
             name: nlpinsight-service
             port:
               number: 80
-      - path: /carvision
+      - path: /chicagotaxi
         pathType: ImplementationSpecific
         backend:
           service:
-            name: carvision-service
+            name: chicagotaxi-service
             port:
               number: 80
-      - path: /carvision/*
+      - path: /chicagotaxi/*
         pathType: ImplementationSpecific
         backend:
           service:
-            name: carvision-service
+            name: chicagotaxi-service
             port:
               number: 80
-      - path: /dashboard
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: carvision-dashboard-service
-            port:
-              number: 8501
-      - path: /dashboard/*
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: carvision-dashboard-service
-            port:
-              number: 8501

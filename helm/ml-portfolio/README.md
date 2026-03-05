@@ -5,8 +5,8 @@ Deploys the full ML/MLOps portfolio stack to Kubernetes.
 ## Components
 
 - **BankChurn Predictor** — StackingClassifier ensemble (AUC 0.87)
-- **CarVision Market Intelligence** — LightGBM regression (R² 0.80)
-- **NLPInsight Analyzer** — FinBERT transformer (Acc 97%)
+- **NLPInsight Analyzer** — TF-IDF + LogReg (Acc 80.6%)
+- **ChicagoTaxi Pipeline** — RandomForest demand forecasting (R² 0.96)
 - **Drift Detection CronJob** — Daily PSI-based monitoring
 - **HPA** — CPU-based autoscaling per service
 
@@ -34,8 +34,8 @@ helm uninstall ml-portfolio -n ml-portfolio
 | `registry.url` | GCP Artifact Registry | Container image registry |
 | `modelStorage.bucket` | GCS bucket | Model storage bucket |
 | `bankchurn.enabled` | `true` | Deploy BankChurn service |
-| `carvision.enabled` | `true` | Deploy CarVision service |
 | `nlpinsight.enabled` | `true` | Deploy NLPInsight service |
+| `chicagotaxi.enabled` | `true` | Deploy ChicagoTaxi service |
 | `driftDetection.enabled` | `true` | Enable drift detection CronJob |
 | `driftDetection.schedule` | `0 6 * * *` | Cron schedule (daily 6am UTC) |
 

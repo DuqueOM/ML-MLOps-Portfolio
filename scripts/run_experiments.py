@@ -18,24 +18,10 @@ import numpy as np
 import pandas as pd
 from mlflow.data.pandas_dataset import from_pandas
 from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import (
-    GradientBoostingClassifier,
-    GradientBoostingRegressor,
-    RandomForestClassifier,
-    RandomForestRegressor,
-)
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.impute import SimpleImputer
-from sklearn.linear_model import LogisticRegression, Ridge
-from sklearn.metrics import (
-    accuracy_score,
-    f1_score,
-    mean_absolute_error,
-    mean_squared_error,
-    precision_score,
-    r2_score,
-    recall_score,
-    roc_auc_score,
-)
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, f1_score, mean_squared_error, precision_score, recall_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -217,164 +203,6 @@ def run_bankchurn_experiments():
 
 
 # =============================================================================
-# CARVISION EXPERIMENTS
-# =============================================================================
-
-
-def run_carvision_experiments():
-    """Run CarVision experiments: baseline, tuned, gradient boosting."""
-    print("\n" + "=" * 60)
-    print(" CARVISION EXPERIMENTS")
-    print("=" * 60)
-
-    mlflow.set_experiment("CarVision-Market-Intelligence")
-
-    # Load data
-    data_path = BASE_DIR / "CarVision-Market-Intelligence/data/raw/vehicles_us.csv"
-    if not data_path.exists():
-        print(f"  Data not found: {data_path}")
-        return
-
-    df = pd.read_csv(data_path)
-
-    # Clean data
-    df = df[(df["price"] >= 1000) & (df["price"] <= 100000)]
-    df = df[((df["model_year"] >= 1990) | (df["year"] >= 1990) if "year" in df.columns else (df["model_year"] >= 1990))]
-    df = df.dropna(subset=["price"])
-
-    # Rename year if needed
-    if "year" in df.columns and "model_year" not in df.columns:
-        df["model_year"] = df["year"]
-
-    print(f" Loaded {len(df)} rows after cleaning")
-
-    # Create MLflow dataset for logging
-    cv_dataset = from_pandas(df.head(1000), source=str(data_path), name="vehicles_us", targets="price")
-
-    # Features
-    cat_features = ["fuel", "transmission", "type"]
-    num_features = ["model_year", "odometer"]
-    target = "price"
-
-    # Filter to available columns
-    cat_features = [c for c in cat_features if c in df.columns]
-    num_features = [c for c in num_features if c in df.columns]
-
-    if not cat_features or not num_features:
-        print("  Required columns not found")
-        return
-
-    X = df[cat_features + num_features].copy()
-    for col in cat_features:
-        X[col] = X[col].fillna("unknown")
-    for col in num_features:
-        X[col] = pd.to_numeric(X[col], errors="coerce").fillna(0)
-
-    y = df[target]
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-    # Preprocessor
-    preprocessor = ColumnTransformer(
-        [
-            (
-                "cat",
-                Pipeline(
-                    [
-                        (
-                            "imputer",
-                            SimpleImputer(strategy="constant", fill_value="unknown"),
-                        ),
-                        (
-                            "onehot",
-                            OneHotEncoder(sparse_output=False, handle_unknown="ignore"),
-                        ),
-                    ]
-                ),
-                cat_features,
-            ),
-            (
-                "num",
-                Pipeline(
-                    [
-                        ("imputer", SimpleImputer(strategy="median")),
-                        ("scaler", StandardScaler()),
-                    ]
-                ),
-                num_features,
-            ),
-        ]
-    )
-
-    experiments = [
-        {
-            "run_name": "CV-1_Baseline_Ridge",
-            "tags": {"run_type": "baseline", "project": "carvision"},
-            "model": Ridge(alpha=1.0, random_state=42),
-            "description": "Simple Ridge regression baseline",
-        },
-        {
-            "run_name": "CV-2_RandomForest_Tuned",
-            "tags": {"run_type": "tuned", "project": "carvision"},
-            "model": RandomForestRegressor(
-                n_estimators=100,
-                max_depth=12,
-                min_samples_leaf=2,
-                random_state=42,
-                n_jobs=-1,
-            ),
-            "description": "Tuned Random Forest regressor",
-        },
-        {
-            "run_name": "CV-3_GradientBoosting",
-            "tags": {"run_type": "alternative", "project": "carvision"},
-            "model": GradientBoostingRegressor(n_estimators=100, max_depth=5, learning_rate=0.1, random_state=42),
-            "description": "Gradient Boosting for comparison",
-        },
-    ]
-
-    for exp in experiments:
-        print(f"\n Running: {exp['run_name']}")
-
-        with mlflow.start_run(run_name=exp["run_name"]):
-            mlflow.set_tags(exp["tags"])
-            mlflow.set_tag("mlflow.note.content", exp["description"])
-            mlflow.set_tag("framework", "scikit-learn")
-            mlflow.set_tag("task", "regression")
-            mlflow.log_input(cv_dataset, context="training")
-
-            pipeline = Pipeline([("preprocessor", preprocessor), ("regressor", exp["model"])])
-
-            # Log params
-            model_params = exp["model"].get_params()
-            mlflow.log_params({k: v for k, v in model_params.items() if not callable(v) and k != "n_jobs"})
-            mlflow.log_param("train_size", len(X_train))
-            mlflow.log_param("test_size", len(X_test))
-            mlflow.log_param("n_features", X_train.shape[1])
-
-            pipeline.fit(X_train, y_train)
-
-            y_train_pred = pipeline.predict(X_train)
-            y_test_pred = pipeline.predict(X_test)
-
-            metrics = {
-                "train_rmse": round(rmse(y_train, y_train_pred), 2),
-                "test_rmse": round(rmse(y_test, y_test_pred), 2),
-                "train_mae": round(mean_absolute_error(y_train, y_train_pred), 2),
-                "test_mae": round(mean_absolute_error(y_test, y_test_pred), 2),
-                "train_r2": round(r2_score(y_train, y_train_pred), 4),
-                "test_r2": round(r2_score(y_test, y_test_pred), 4),
-            }
-
-            mlflow.log_metrics(metrics)
-
-            print(f"   Test RMSE: ${metrics['test_rmse']:,.0f}, R²: {metrics['test_r2']:.4f}")
-
-    print("\n CarVision experiments complete!")
-
-
-# =============================================================================
-# NLPINSIGHT EXPERIMENTS
 # =============================================================================
 
 
@@ -496,7 +324,6 @@ def main():
 
     # Run all experiments
     run_bankchurn_experiments()
-    run_carvision_experiments()
     run_nlpinsight_experiments()
 
     print("\n" + "=" * 60)
@@ -505,7 +332,6 @@ def main():
     print(f"\n👉 View results at: {MLFLOW_URI}")
     print("\nExperiments created:")
     print("  • BankChurn-Predictor (3 runs)")
-    print("  • CarVision-Market-Intelligence (3 runs)")
     print("  • NLPInsight-Analyzer (3 runs)")
 
 

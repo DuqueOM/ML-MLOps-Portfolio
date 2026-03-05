@@ -13,7 +13,6 @@
 #
 # Usage:
 #   ./scripts/deploy-canary.sh bankchurn v3.2.0
-#   ./scripts/deploy-canary.sh carvision v3.2.0
 #   ./scripts/deploy-canary.sh nlpinsight v3.2.0
 #   ./scripts/deploy-canary.sh chicagotaxi v1.0.0
 #   ./scripts/deploy-canary.sh all v3.2.0
@@ -91,9 +90,6 @@ update_image() {
         bankchurn)
             image="${REGISTRY}/bankchurn-predictor:${version}"
             ;;
-        carvision)
-            image="${REGISTRY}/carvision-market-intelligence:${version}"
-            ;;
         nlpinsight)
             image="${REGISTRY}/nlpinsight-analyzer:${version}"
             ;;
@@ -125,8 +121,6 @@ deploy_canary() {
     local rollout_file="${ROLLOUTS_DIR}/${service}-rollout.yaml"
     if [ "$service" = "bankchurn" ]; then
         rollout_file="${ROLLOUTS_DIR}/bankchurn-rollout.yaml"
-    elif [ "$service" = "carvision" ]; then
-        rollout_file="${ROLLOUTS_DIR}/carvision-rollout.yaml"
     elif [ "$service" = "nlpinsight" ]; then
         rollout_file="${ROLLOUTS_DIR}/nlpinsight-rollout.yaml"
     fi
@@ -146,8 +140,8 @@ deploy_canary() {
     local rollout_name
     case "$service" in
         bankchurn)  rollout_name="bankchurn-predictor" ;;
-        carvision)  rollout_name="carvision-intelligence" ;;
         nlpinsight) rollout_name="nlpinsight-analyzer" ;;
+        chicagotaxi) rollout_name="chicagotaxi-pipeline" ;;
     esac
 
     log "Setting image to trigger canary rollout..."
@@ -178,8 +172,8 @@ rollback() {
 
     case "$service" in
         bankchurn)  rollout_name="bankchurn-predictor" ;;
-        carvision)  rollout_name="carvision-intelligence" ;;
         nlpinsight) rollout_name="nlpinsight-analyzer" ;;
+        chicagotaxi) rollout_name="chicagotaxi-pipeline" ;;
         *)          err "Unknown service: $service"; exit 1 ;;
     esac
 
@@ -196,8 +190,8 @@ promote() {
 
     case "$service" in
         bankchurn)  rollout_name="bankchurn-predictor" ;;
-        carvision)  rollout_name="carvision-intelligence" ;;
         nlpinsight) rollout_name="nlpinsight-analyzer" ;;
+        chicagotaxi) rollout_name="chicagotaxi-pipeline" ;;
         *)          err "Unknown service: $service"; exit 1 ;;
     esac
 
@@ -213,8 +207,8 @@ status() {
 
     case "$service" in
         bankchurn)  rollout_name="bankchurn-predictor" ;;
-        carvision)  rollout_name="carvision-intelligence" ;;
         nlpinsight) rollout_name="nlpinsight-analyzer" ;;
+        chicagotaxi) rollout_name="chicagotaxi-pipeline" ;;
         *)          err "Unknown service: $service"; exit 1 ;;
     esac
 
@@ -225,7 +219,7 @@ status() {
 usage() {
     echo "Usage: $0 <service|all> <version> [--rollback|--promote|--status]"
     echo ""
-    echo "Services: bankchurn, carvision, nlpinsight, all"
+    echo "Services: bankchurn, nlpinsight, chicagotaxi, all"
     echo ""
     echo "Examples:"
     echo "  $0 bankchurn v3.2.0           # Start canary deployment"
@@ -248,7 +242,7 @@ main() {
 
     local services=()
     if [ "$service" = "all" ]; then
-        services=(bankchurn carvision nlpinsight chicagotaxi)
+        services=(bankchurn nlpinsight chicagotaxi)
     else
         services=("$service")
     fi

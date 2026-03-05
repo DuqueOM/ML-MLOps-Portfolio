@@ -30,8 +30,6 @@ docker compose -f docker-compose.demo.yml ps
 | Service | URL |
 |---------|-----|
 | BankChurn API | [localhost:8001/docs](http://localhost:8001/docs) |
-| CarVision API | [localhost:8002/docs](http://localhost:8002/docs) |
-| CarVision Dashboard | [localhost:8501](http://localhost:8501) |
 | NLPInsight API | [localhost:8003/docs](http://localhost:8003/docs) |
 | MLflow UI | [localhost:5000](http://localhost:5000) |
 
@@ -42,11 +40,6 @@ docker compose -f docker-compose.demo.yml ps
 curl -X POST http://localhost:8001/predict \
   -H "Content-Type: application/json" \
   -d '{"CreditScore":650,"Geography":"France","Gender":"Male","Age":40,"Tenure":5,"Balance":60000,"NumOfProducts":2,"HasCrCard":1,"IsActiveMember":1,"EstimatedSalary":50000}'
-
-# CarVision
-curl -X POST http://localhost:8002/predict \
-  -H "Content-Type: application/json" \
-  -d '{"model_year":2020,"odometer":30000,"fuel":"gas","transmission":"automatic","type":"sedan","condition":"excellent"}'
 
 # NLPInsight
 curl -X POST http://localhost:8003/predict \

@@ -19,19 +19,6 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: carvision-dataset-config
-  namespace: ml-portfolio
-  labels:
-    app: carvision-intelligence
-    component: dataset-download
-data:
-  GCS_BUCKET: "ml-portfolio-duque-om-202602-datasets-production"
-  GCS_MODEL_PATH: "carvision/v1/vehicles_us.csv"
-  LOCAL_MODEL_PATH: "/data/raw/vehicles_us.csv"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: nlpinsight-dataset-config
   namespace: ml-portfolio
   labels:

@@ -11,9 +11,7 @@ docker compose -f docker-compose.demo.yml ps          # Verify
 | Service | Port | Health Check |
 |---------|------|--------------|
 | BankChurn API | 8001 | `curl localhost:8001/health` |
-| CarVision API | 8002 | `curl localhost:8002/health` |
 | NLPInsight API | 8003 | `curl localhost:8003/health` |
-| CarVision Dashboard | 8501 | `curl localhost:8501` |
 | MLflow | 5000 | `curl localhost:5000/health` |
 
 ## Production (GKE)
@@ -40,7 +38,7 @@ kubectl get pods -n ml-portfolio
 
 ```bash
 kubectl port-forward svc/bankchurn-service 8001:80 -n ml-portfolio
-kubectl port-forward svc/carvision-service 8002:80 -n ml-portfolio
+kubectl port-forward svc/ 8002:80 -n ml-portfolio
 kubectl port-forward svc/nlpinsight-service 8003:80 -n ml-portfolio
 kubectl port-forward svc/grafana-service 3000:3000 -n ml-portfolio
 ```

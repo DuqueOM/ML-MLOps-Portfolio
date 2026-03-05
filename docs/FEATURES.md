@@ -1,6 +1,6 @@
 # Features
 
-## Performance (v3.4.0, March 2026)
+## Performance (v3.5.0, March 2026)
 
 | Feature | Impact |
 |---------|--------|
@@ -16,7 +16,6 @@
 | Service | p50 | p95 | p99 | Requests | Errors |
 |---------|-----|-----|-----|----------|--------|
 | BankChurn:predict | 170ms | 350ms | 450ms | 260 | 0% |
-| CarVision:predict | 91ms | 130ms | 300ms | 265 | 0% |
 | NLPInsight:predict | 180ms | 450ms | 2400ms | 184 | 0% |
 | **Aggregated** | **160ms** | **480ms** | **820ms** | **973** | **0%** |
 
@@ -32,9 +31,9 @@
 - **Multi-Cloud** — GCP (GKE) + AWS (EKS) parity with Terraform IaC
 - **Locust Load Testing** — Port-forward + Ingress IP modes
 
-## Responsible AI (v3.4.0)
+## Responsible AI (v3.5.0)
 
-- **Fairness Audits** — BankChurn (disparate impact), CarVision (error ratio), NLPInsight (F1 parity)
+- **Fairness Audits** — BankChurn (disparate impact), (error ratio), NLPInsight (F1 parity)
 - **Drift Detection** — KS + PSI + Evidently, vocabulary drift for NLP
 - **Data Validation** — Pandera schemas for all projects (raw + inference)
 - **OpenTelemetry** — Distributed tracing in all 3 FastAPI apps (graceful no-op fallback)
@@ -51,4 +50,4 @@
 
 ---
 
-*Last Updated: March 2026 — v3.4.0*
+*Last Updated: March 2026 — v3.5.0*

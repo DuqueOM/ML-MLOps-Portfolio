@@ -113,7 +113,7 @@ Automatic rollback occurs when:
 ## Files
 
 - `k8s/argo-rollouts/bankchurn-rollout.yaml` — BankChurn canary Rollout
-- `k8s/argo-rollouts/carvision-rollout.yaml` — CarVision canary Rollout
+- `k8s/argo-rollouts/-rollout.yaml` — canary Rollout
 - `k8s/argo-rollouts/nlpinsight-rollout.yaml` — NLPInsight canary Rollout
 - `k8s/argo-rollouts/analysis-templates.yaml` — Prometheus analysis templates
 - `scripts/deploy-canary.sh` — Operational deployment script

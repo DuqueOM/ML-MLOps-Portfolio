@@ -6,11 +6,11 @@
 
 ## Context
 
-ML inference services load models into RAM at startup with a fixed memory footprint (~300Mi BankChurn, ~550Mi CarVision, ~140Mi NLPInsight). Memory-based HPA never triggered scale-down because `ceil(replicas × usage / target)` with constant memory always returns the same or higher replica count.
+ML inference services load models into RAM at startup with a fixed memory footprint (~300Mi BankChurn, ~550Mi ~140Mi NLPInsight). Memory-based HPA never triggered scale-down because `ceil(replicas × usage / target)` with constant memory always returns the same or higher replica count.
 
 ## Decision
 
-Remove memory metric from all HPAs. Use CPU-only scaling (70% BankChurn/CarVision, 75% NLPInsight).
+Remove memory metric from all HPAs. Use CPU-only scaling (70% BankChurn/75% NLPInsight).
 
 ## Consequences
 

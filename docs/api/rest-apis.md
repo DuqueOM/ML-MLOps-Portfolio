@@ -22,7 +22,7 @@ All services expose FastAPI with automatic Swagger UI at `/docs`.
 {"prediction":0,"probability":0.15,"risk_level":"LOW"}
 ```
 
-### CarVision (`:8002`)
+### (`:8002`)
 
 | Method | Path | Description |
 |--------|------|-------------|

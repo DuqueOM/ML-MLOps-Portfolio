@@ -1,20 +1,22 @@
 # NLPInsight Analyzer Configuration
+# Dataset: Twitter Financial News Sentiment (11,931 real financial tweets)
+# Source: https://huggingface.co/datasets/zeroshot/twitter-financial-news-sentiment
 
 data:
   train_path: "data/raw/train.csv"
   test_path: "data/raw/test.csv"
   text_column: "text"
   label_column: "label"
-  max_length: 256
+  max_length: 128
   labels: ["negative", "neutral", "positive"]
 
 model:
-  pretrained_name: "distilbert-base-uncased"
+  pretrained_name: "ProsusAI/finbert"
   num_labels: 3
   learning_rate: 2.0e-5
   weight_decay: 0.01
   epochs: 3
-  batch_size: 16
+  batch_size: 32
   warmup_ratio: 0.1
   max_grad_norm: 1.0
   fp16: false

@@ -28,7 +28,6 @@ All APIs expose `/metrics`. Key metrics per service:
 | Experiment | Best Run | Key Metric |
 |------------|----------|------------|
 | **BankChurn** | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87 |
-| **CarVision** | LightGBM + FeatureEngineer (24 features) | R² 0.80 |
 | **NLPInsight** | FinBERT (ProsusAI) | Acc 97% |
 
 ![MLflow Experiments](../media/screenshots/monitoring/39-mlflow-experiments.png)
@@ -38,7 +37,6 @@ All APIs expose `/metrics`. Key metrics per service:
 | Service | Availability | P95 Latency | Error Rate |
 |---------|--------------|-------------|------------|
 | BankChurn | 99.9% | <250ms | <1% |
-| CarVision | 99.5% | <500ms | <2% |
 | NLPInsight | 99.9% | <250ms | <1% |
 
 ## HPA Autoscaling
@@ -48,7 +46,6 @@ CPU-only scaling (memory is fixed for ML models loaded at startup):
 | Service | CPU Target | Min/Max Pods | Memory |
 |---------|-----------|--------------|--------|
 | BankChurn | 70% | 1–3 | ~300Mi |
-| CarVision | 70% | 1–3 | ~550Mi |
 | NLPInsight | 75% | 1–3 | ~650Mi |
 
 ## Testing

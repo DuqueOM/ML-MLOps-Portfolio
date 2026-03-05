@@ -10,14 +10,6 @@ python -m bankchurn.cli predict --input data/sample.json
 python -m bankchurn.cli evaluate --model models/model.joblib
 ```
 
-## CarVision
-
-```bash
-python -m carvision.cli train --config configs/config.yaml
-python -m carvision.cli predict --input data/sample.json
-python -m carvision.cli analyze --type market
-```
-
 ## NLPInsight
 
 ```bash

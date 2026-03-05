@@ -1,22 +1,10 @@
 from __future__ import annotations
 
 import os
-import sys
 from collections.abc import Generator
-from pathlib import Path
 
 import pytest
-
-try:
-    from common_utils.seed import set_seed
-except ModuleNotFoundError:  # pragma: no cover
-    BASE_DIR = Path(__file__).resolve().parents[1]
-    REPO_ROOT = BASE_DIR.parent
-    for candidate in (BASE_DIR, REPO_ROOT):
-        path_str = str(candidate)
-        if path_str not in sys.path:
-            sys.path.insert(0, path_str)
-    from common_utils.seed import set_seed
+from common_utils.seed import set_seed
 
 
 @pytest.fixture(autouse=True)

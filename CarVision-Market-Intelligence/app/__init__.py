@@ -1,1 +1,0 @@
-"""CarVision API application."""

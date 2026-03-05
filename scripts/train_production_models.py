@@ -5,7 +5,6 @@ Train production models for all 3 projects using Python 3.11.
 v3.0.0 — March 2026 upgrade:
   - BankChurn: StackingClassifier (RF + GradientBoosting + XGBoost + LightGBM
                → LogisticRegression meta-learner) with ChurnFeatureEngineer
-  - CarVision: LightGBM with optimized hyperparameters + FeatureEngineer in pipeline
   - NLPInsight: Fine-tuned DistilBERT transformer (real deep learning model)
 
 Usage:
@@ -16,7 +15,6 @@ Usage:
 
 Output:
     BankChurn-Predictor/models/model.joblib
-    CarVision-Market-Intelligence/models/model.joblib
     NLPInsight-Analyzer/models/  (transformer directory: config.json, model.safetensors, tokenizer files)
     NLPInsight-Analyzer/models/model.tar.gz  (packaged for GCS upload)
 """
@@ -36,16 +34,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier, StackingClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import (
-    accuracy_score,
-    f1_score,
-    mean_absolute_error,
-    mean_squared_error,
-    precision_score,
-    r2_score,
-    recall_score,
-    roc_auc_score,
-)
+from sklearn.metrics import accuracy_score, f1_score, mean_squared_error, precision_score, recall_score, roc_auc_score
 from sklearn.model_selection import StratifiedKFold, cross_val_score, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -327,179 +316,9 @@ def train_bankchurn():
 
 
 # =============================================================================
-# CARVISION v3.0 — LightGBM + FeatureEngineer in pipeline
 # =============================================================================
-def train_carvision():
-    print("\n" + "=" * 70)
-    print("  CARVISION v3.0 — LightGBM + FeatureEngineer Pipeline")
-    print("=" * 70)
-
-    from lightgbm import LGBMRegressor
-
-    cv_src = BASE_DIR / "CarVision-Market-Intelligence"
-    # Remove any stale 'src' package from prior project imports
-    for mod_name in list(sys.modules.keys()):
-        if mod_name == "src" or mod_name.startswith("src."):
-            del sys.modules[mod_name]
-    # Ensure CarVision's root is first in path
-    sys.path.insert(0, str(cv_src))
-    from src.carvision.data import clean_data, infer_feature_types, load_data
-    from src.carvision.features import FeatureEngineer
-
-    data_path = cv_src / "data/raw/vehicles_us.csv"
-    if not data_path.exists():
-        print("ERROR: No data file found")
-        return None
-
-    # Load and clean using project's own functions
-    filters = {
-        "min_price": 1000,
-        "max_price": 500000,
-        "min_year": 1990,
-        "max_odometer": 500000,
-    }
-    df = clean_data(load_data(str(data_path)), filters=filters)
-    print(f"Loaded {len(df)} rows after cleaning")
-
-    # Feature engineering (will be inside pipeline for inference)
-    dataset_year = 2026
-    fe = FeatureEngineer(current_year=dataset_year)
-    df_transformed = fe.transform(df)
-
-    # Infer feature types on transformed data
-    drop_columns = ["price_per_mile", "price_category", "model", "date_posted", "brand"]
-    target = "price"
-
-    num_cols, cat_cols = infer_feature_types(
-        df_transformed,
-        target=target,
-        drop_columns=drop_columns,
-    )
-    print(f"Features: {len(cat_cols)} cat + {len(num_cols)} num = {len(cat_cols) + len(num_cols)}")
-
-    # Split raw data (pipeline handles FE)
-    y = df[target]
-    X = df.drop(columns=[target])
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    print(f"Train: {len(X_train)}, Test: {len(X_test)}")
-
-    # Preprocessor
-    preprocessor = ColumnTransformer(
-        [
-            (
-                "cat",
-                Pipeline(
-                    [
-                        ("imputer", SimpleImputer(strategy="constant", fill_value="unknown")),
-                        ("onehot", OneHotEncoder(sparse_output=False, handle_unknown="ignore")),
-                    ]
-                ),
-                cat_cols,
-            ),
-            (
-                "num",
-                Pipeline(
-                    [
-                        ("imputer", SimpleImputer(strategy="median")),
-                        ("scaler", StandardScaler()),
-                    ]
-                ),
-                num_cols,
-            ),
-        ]
-    )
-
-    # LightGBM with optimized hyperparameters
-    model = LGBMRegressor(
-        n_estimators=500,
-        max_depth=8,
-        learning_rate=0.05,
-        num_leaves=63,
-        subsample=0.8,
-        colsample_bytree=0.8,
-        min_child_samples=20,
-        reg_alpha=0.1,
-        reg_lambda=1.0,
-        random_state=42,
-        n_jobs=-1,
-        verbose=-1,
-    )
-
-    # Full pipeline: features → preprocessor → LightGBM
-    pipeline = Pipeline(
-        [
-            ("features", FeatureEngineer(current_year=dataset_year)),
-            ("pre", preprocessor),
-            ("model", model),
-        ]
-    )
-
-    print("Training LightGBM (500 trees, depth=8, lr=0.05)...")
-    t0 = time.time()
-    pipeline.fit(X_train, y_train)
-    train_time = time.time() - t0
-    print(f"Training completed in {train_time:.1f}s")
-
-    y_pred = pipeline.predict(X_test)
-
-    metrics = {
-        "test_rmse": round(rmse(y_test, y_pred), 2),
-        "test_mae": round(float(mean_absolute_error(y_test, y_pred)), 2),
-        "test_mape": round(mape(y_test, y_pred), 2),
-        "test_r2": round(float(r2_score(y_test, y_pred)), 4),
-        "train_time_seconds": round(train_time, 2),
-    }
-
-    # Save
-    save_dir = cv_src / "models"
-    save_dir.mkdir(exist_ok=True)
-    save_path = save_dir / "model.joblib"
-    joblib.dump(pipeline, save_path, compress=3)
-
-    # Save feature columns and metrics
-    feature_columns = sorted(num_cols + cat_cols)
-    artifacts_dir = cv_src / "artifacts"
-    artifacts_dir.mkdir(exist_ok=True)
-    (artifacts_dir / "feature_columns.json").write_text(json.dumps(feature_columns, indent=2))
-    (artifacts_dir / "metrics_val.json").write_text(json.dumps(metrics, indent=2))
-
-    size_kb = save_path.stat().st_size / 1024
-    print(f"Model saved: {save_path} ({size_kb:.0f} KB)")
-    print(f"   R2: {metrics['test_r2']:.4f} | RMSE: ${metrics['test_rmse']:,.0f}")
-    print(f"   MAE: ${metrics['test_mae']:,.0f} | MAPE: {metrics['test_mape']:.1f}%")
-
-    log_mlflow(
-        "CarVision-Market-Intelligence",
-        "CV-v3.0_LightGBM",
-        {
-            "model": "LGBMRegressor",
-            "n_estimators": 800,
-            "max_depth": 10,
-            "learning_rate": 0.03,
-            "num_leaves": 63,
-            "feature_engineering": "FeatureEngineer(age,depreciation,brand_tier,mileage,condition)",
-            "n_features_cat": len(cat_cols),
-            "n_features_num": len(num_cols),
-            "train_size": len(X_train),
-            "test_size": len(X_test),
-        },
-        metrics,
-        {
-            "run_type": "production",
-            "version": "v3.0.0",
-            "project": "carvision",
-            "framework": "lightgbm",
-            "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
-        },
-        save_path,
-    )
-
-    return metrics
 
 
-# =============================================================================
-# NLPINSIGHT v3.0 — FinBERT (ProsusAI) transfer learning for financial sentiment
-# =============================================================================
 def train_nlpinsight():
     print("\n" + "=" * 70)
     print("  NLPINSIGHT v3.0 — FinBERT Transfer Learning")
@@ -678,7 +497,6 @@ def main():
     results = {}
 
     results["bankchurn"] = train_bankchurn()
-    results["carvision"] = train_carvision()
     results["nlpinsight"] = train_nlpinsight()
 
     print("\n" + "=" * 70)
@@ -694,7 +512,6 @@ def main():
     # Verify all model artifacts exist
     expected = [
         ("BankChurn-Predictor/models/model.joblib", "file"),
-        ("CarVision-Market-Intelligence/models/model.joblib", "file"),
         ("NLPInsight-Analyzer/models/config.json", "file"),
         ("NLPInsight-Analyzer/models/model.tar.gz", "file"),
     ]

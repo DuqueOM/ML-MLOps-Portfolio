@@ -9,12 +9,11 @@
 
 ---
 
-## Projects (v3.4.0, Python 3.11.14)
+## Projects (v3.5.0, Python 3.11.14)
 
 | Project | Algorithm | Primary Metric | Tests | Coverage |
 |---------|-----------|----------------|:-----:|:--------:|
 | **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC 0.87 | 199 | 90% |
-| **[CarVision](projects/carvision.md)** | LightGBM + FeatureEngineer (24 features) | R² 0.80 | 52 | 96% |
 | **[NLPInsight](projects/nlpinsight.md)** | FinBERT (ProsusAI) / TF-IDF fallback | Acc 97% | 74 | 98% |
 | **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL + RandomForest (6.3M rows) | R² 0.91 | 122 | 91% |
 
@@ -30,8 +29,6 @@ docker compose -f docker-compose.demo.yml up -d --build
 | Service | URL |
 |---------|-----|
 | BankChurn API | [localhost:8001/docs](http://localhost:8001/docs) |
-| CarVision API | [localhost:8002/docs](http://localhost:8002/docs) |
-| CarVision Dashboard | [localhost:8501](http://localhost:8501) |
 | NLPInsight API | [localhost:8003/docs](http://localhost:8003/docs) |
 | MLflow UI | [localhost:5000](http://localhost:5000) |
 
@@ -77,4 +74,4 @@ Developed using AI-assisted tools (Cursor/Cascade) for code generation accelerat
 
 **Built by [Duque Ortega Mutis](https://github.com/DuqueOM)** | [Source Code](https://github.com/DuqueOM/ML-MLOps-Portfolio) | [Video Demo](https://youtu.be/qmw9VlgUcn8)
 
-*Last Updated: March 2026 — v3.4.0*
+*Last Updated: March 2026 — v3.5.0*

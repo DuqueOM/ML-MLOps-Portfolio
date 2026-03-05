@@ -6,7 +6,6 @@ import requests
 # Configuration
 BASE_URLS = {
     "bankchurn": "http://localhost:8001",
-    "carvision": "http://localhost:8002",
     "nlpinsight": "http://localhost:8003",
     "chicagotaxi": "http://localhost:8004",
     "mlflow": "http://localhost:5000",
@@ -74,30 +73,6 @@ def test_bankchurn_prediction():
     data = response.json()
     assert "churn_prediction" in data
     assert "churn_probability" in data
-
-
-def test_carvision_prediction():
-    url = BASE_URLS["carvision"]
-    if not _model_loaded(url):
-        pytest.skip("CarVision model not loaded (models downloaded at runtime via Init Container)")
-    # Payload matched to CarVision's VehicleFeatures
-    payload = {
-        "model_year": 2015,
-        "model": "ford f-150",
-        "condition": "good",
-        "cylinders": 6.0,
-        "fuel": "gas",
-        "odometer": 50000.0,
-        "transmission": "automatic",
-        "drive": "4wd",
-        "type": "truck",
-        "paint_color": "white",
-    }
-    response = requests.post(f"{url}/predict", json=payload)
-    assert response.status_code == 200, f"CarVision failed: {response.text}"
-    data = response.json()
-    assert "predicted_price" in data
-    assert isinstance(data["predicted_price"], (int, float))
 
 
 def test_nlpinsight_prediction():

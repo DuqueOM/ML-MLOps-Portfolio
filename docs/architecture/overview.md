@@ -15,11 +15,6 @@
 `API Request → Pydantic Validation → ColumnTransformer → StackingClassifier(RF+GB+XGB+LGB→LR) → Prediction + Risk Level`
 - Unified sklearn Pipeline, SHAP explainability via `?explain=true`, fairness audits (disparate impact)
 
-### CarVision
-`Vehicle Data → Data Cleaning → FeatureEngineer (centralized, 24 features) → Preprocessor → LightGBM → Price`
-- No data leakage: `price_per_mile`/`price_category` dropped from features
-- Dual interface: FastAPI + Streamlit (4 tabs), fairness audits (error ratio)
-
 ### NLPInsight
 `Text → FinBERT Tokenizer → FinBERT (ProsusAI) → Sentiment Prediction`
 - Dual backend: FinBERT (production) / TF-IDF+LogReg (lightweight fallback), fairness audits (F1 parity)

@@ -39,10 +39,10 @@ spec:
             name: nlpinsight-service
             port:
               number: 80
-      - path: /carvision
+      - path: /chicagotaxi
         pathType: Prefix
         backend:
           service:
-            name: carvision-service
+            name: chicagotaxi-service
             port:
               number: 80

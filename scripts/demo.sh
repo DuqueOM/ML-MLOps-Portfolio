@@ -63,8 +63,6 @@ echo -e "${GREEN}✓ Servicios iniciados${NC}\n"
 echo -e "${BLUE}[5/6]${NC} Servicios disponibles:"
 echo -e "  ${GREEN}►${NC} MLflow UI:          ${YELLOW}http://localhost:5000${NC}"
 echo -e "  ${GREEN}►${NC} BankChurn API:      ${YELLOW}http://localhost:8001${NC}"
-echo -e "  ${GREEN}►${NC} CarVision API:      ${YELLOW}http://localhost:8002${NC}"
-echo -e "  ${GREEN}►${NC} CarVision Dashboard:${YELLOW}http://localhost:8501${NC}"
 echo -e "  ${GREEN}►${NC} NLPInsight API:     ${YELLOW}http://localhost:8003${NC}\n"
 
 # 6. Ejecutar requests de prueba
@@ -75,7 +73,6 @@ echo -e "${YELLOW}► Testing BankChurn API health...${NC}"
 curl -s http://localhost:8001/health | jq '.' 2>/dev/null || curl -s http://localhost:8001/health
 echo ""
 
-echo -e "${YELLOW}► Testing CarVision API health...${NC}"
 curl -s http://localhost:8002/health | jq '.' 2>/dev/null || curl -s http://localhost:8002/health
 echo ""
 
@@ -115,6 +112,5 @@ echo ""
 
 echo -e "${YELLOW}Próximos pasos:${NC}"
 echo -e "  1. Abre ${YELLOW}http://localhost:5000${NC} para ver MLflow UI"
-echo -e "  2. Abre ${YELLOW}http://localhost:8501${NC} para CarVision Dashboard"
 echo -e "  3. Usa los endpoints de las APIs para hacer predicciones"
 echo ""

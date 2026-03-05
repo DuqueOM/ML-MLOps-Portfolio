@@ -24,7 +24,7 @@
 | **Primary Metric** | AUC-ROC: **0.87**, F1: **0.62** |
 | **Business Impact** | Hypothetical scenario analysis below (portfolio demonstration) |
 | **Production Status** | ✅ Active |
-| **Last Updated** | February 2026 |
+| **Last Updated** | March 2026 |
 | **Owner** | Duque Ortega Mutis (DuqueOM) |
 
 ---
@@ -668,7 +668,7 @@ rate(prediction_confidence_bucket{le="0.7"}[5m])  # Low confidence predictions
 
 <div align="center">
 
-**Model Card Version**: 3.0 | **Last Updated**: June 2026  
+**Model Card Version**: 3.5.0 | **Last Updated**: March 2026  
 **Model Version**: 3.0.0 | **Framework**: Scikit-learn 1.8+, XGBoost, LightGBM
 
 ⭐ **Production-Ready ML** ⭐

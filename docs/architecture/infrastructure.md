@@ -9,7 +9,7 @@ Terraform-managed, multi-cloud (GCP + AWS) infrastructure for the ML-MLOps Portf
 | Resource | Configuration |
 |----------|---------------|
 | **GKE Cluster** | `ml-portfolio-gke-production`, us-central1, 7 nodes (e2-medium) |
-| **Artifact Registry** | 4 Docker images (bankchurn, carvision API, carvision dashboard, nlpinsight) |
+| **Artifact Registry** | 4 Docker images (bankchurn,  API,  dashboard, nlpinsight) |
 | **Cloud Storage** | Models bucket + Datasets bucket (versioned, lifecycle policies) |
 | **Cloud SQL** | PostgreSQL for MLflow backend |
 | **VPC** | Custom network with private subnets, VPC peering for Cloud SQL |
@@ -41,7 +41,6 @@ Terraform-managed, multi-cloud (GCP + AWS) infrastructure for the ML-MLOps Portf
 | Service | Memory (real/limit) | CPU Target | HPA |
 |---------|-------------------|-----------|-----|
 | BankChurn | ~300Mi / 1Gi | 70% | 1–3 pods |
-| CarVision | ~550Mi / 1.5Gi | 70% | 1–3 pods |
 | NLPInsight | ~650Mi / 1Gi | 75% | 1–3 pods |
 
 > CPU-only HPA: ML models have fixed memory footprint. Memory-based scaling would never scale down.

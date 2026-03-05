@@ -13,7 +13,7 @@ These tests are designed to be run AFTER deployment as a post-deploy gate:
 PREREQUISITES
 ─────────────────────────────────────────────────────────────────────
 kubectl port-forward svc/bankchurn-service 8000:80 -n ml-portfolio &
-kubectl port-forward svc/carvision-service 8001:80 -n ml-portfolio &
+kubectl port-forward svc/ 8001:80 -n ml-portfolio &
 kubectl port-forward svc/nlpinsight-service 8002:80 -n ml-portfolio &
 
 ─────────────────────────────────────────────────────────────────────
@@ -39,7 +39,6 @@ import pytest
 # ─── Service base URLs (K8s port-forward convention) ────────────────────────
 
 BANKCHURN_URL = "http://localhost:8000"
-CARVISION_URL = "http://localhost:8001"
 NLPINSIGHT_URL = "http://localhost:8002"
 
 TIMEOUT = httpx.Timeout(15.0)
@@ -59,18 +58,6 @@ BANKCHURN_PAYLOAD = {
     "EstimatedSalary": 50000.0,
 }
 
-CARVISION_PAYLOAD = {
-    "model_year": 2018,
-    "model": "f-150",
-    "condition": "good",
-    "cylinders": 6,
-    "fuel": "gas",
-    "odometer": 50000,
-    "transmission": "automatic",
-    "drive": "4wd",
-    "type": "truck",
-    "paint_color": "white",
-}
 
 NLPINSIGHT_PAYLOAD = {
     "text": "The quarterly earnings report shows strong growth in revenue and margins.",
@@ -140,49 +127,6 @@ class TestBankChurnSmoke:
         _skip_if_down(BANKCHURN_URL, "BankChurn")
         r = httpx.post(f"{BANKCHURN_URL}/predict", json={"invalid": "payload"}, timeout=TIMEOUT)
         assert r.status_code == 422, f"Expected 422 for invalid payload, got {r.status_code}"
-
-
-# ─── CarVision Market Intelligence ───────────────────────────────────────────
-
-
-class TestCarVisionSmoke:
-    """Smoke tests for CarVision Market Intelligence (port 8001)."""
-
-    def test_health(self):
-        _skip_if_down(CARVISION_URL, "CarVision")
-        r = httpx.get(f"{CARVISION_URL}/health", timeout=TIMEOUT)
-        assert r.status_code == 200
-        data = r.json()
-        assert data.get("status") in {"ok", "healthy"}
-        assert data.get("model_loaded") is True
-
-    def test_metrics_endpoint(self):
-        _skip_if_down(CARVISION_URL, "CarVision")
-        r = httpx.get(f"{CARVISION_URL}/metrics", timeout=TIMEOUT)
-        assert r.status_code == 200
-        assert (
-            "carvision_requests_total" in r.text
-        ), "Prometheus metric 'carvision_requests_total' not found in /metrics"
-
-    def test_predict_response_shape(self):
-        _skip_if_down(CARVISION_URL, "CarVision")
-        r = httpx.post(f"{CARVISION_URL}/predict", json=CARVISION_PAYLOAD, timeout=TIMEOUT)
-        assert r.status_code == 200, f"Predict failed: {r.text}"
-        data = r.json()
-        assert "predicted_price" in data, f"Response keys: {list(data.keys())}"
-        assert isinstance(data["predicted_price"], (int, float))
-
-    def test_predict_price_positive(self):
-        _skip_if_down(CARVISION_URL, "CarVision")
-        r = httpx.post(f"{CARVISION_URL}/predict", json=CARVISION_PAYLOAD, timeout=TIMEOUT)
-        assert r.status_code == 200
-        price = r.json()["predicted_price"]
-        assert price > 0, f"Predicted price must be positive, got {price}"
-
-    def test_predict_invalid_payload_returns_422(self):
-        _skip_if_down(CARVISION_URL, "CarVision")
-        r = httpx.post(f"{CARVISION_URL}/predict", json={"bad": "data"}, timeout=TIMEOUT)
-        assert r.status_code == 422
 
 
 # ─── NLPInsight Analyzer ───────────────────────────────────────────────────

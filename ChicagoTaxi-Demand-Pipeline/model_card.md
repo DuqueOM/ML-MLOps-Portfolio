@@ -2,11 +2,11 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Model ID** | `chicagotaxi-rf-v1.0.0` |
+| **Model ID** | `chicagotaxi-rf-v1.1.0` |
 | **Model Type** | Regression (hourly demand count) |
 | **Algorithm** | RandomForestRegressor (scikit-learn 1.8+) |
-| **Primary Metric** | R² 0.905, RMSE 13.58 |
-| **Training Data** | 357,055 aggregated hourly demand records |
+| **Primary Metric** | R² 0.9649, RMSE 7.87 |
+| **Training Data** | 355,207 aggregated hourly demand records (after lag feature computation) |
 | **Source Data** | 6,364,313 Chicago taxi trips (2013–2023) |
 | **Production Status** | Active |
 | **Last Updated** | March 2026 |
@@ -33,11 +33,11 @@ Chicago has 77 community areas with vastly different demand patterns. Area 8 (Ne
 
 | Metric | Value | Context |
 |--------|-------|---------|
-| **R²** | 0.905 | 90.5% of demand variance explained by temporal + spatial features alone |
-| **RMSE** | 13.58 trips | Average hourly prediction error |
-| **MAE** | 4.67 trips | Median error is lower — RMSE penalizes peak-hour outliers |
-| **Training set** | 285,644 rows (80%) | Random split with temporal stratification |
-| **Test set** | 71,411 rows (20%) | Held-out evaluation |
+| **R²** | 0.9649 | 96.5% of demand variance explained by temporal + lag features |
+| **RMSE** | 7.87 trips | Average hourly prediction error |
+| **MAE** | 2.85 trips | Median error is lower — RMSE penalizes peak-hour outliers |
+| **Training set** | 284,165 rows (80%) | Temporal split: data up to 2023-10-22 |
+| **Test set** | 71,042 rows (20%) | Strictly future data: from 2023-10-22 onward |
 
 ### Why R² and Not MAPE
 
@@ -47,8 +47,7 @@ MAPE (Mean Absolute Percentage Error) is undefined when true demand = 0 and dist
 
 | Project | Metric | Value | Type |
 |---------|--------|-------|------|
-| CarVision | R² | 0.80 | Price regression |
-| **ChicagoTaxi** | **R²** | **0.91** | Demand regression |
+| **ChicagoTaxi** | **R²** | **0.96** | Demand regression |
 
 ChicagoTaxi benefits from strong temporal periodicity (rush hours, weekends) that vehicle pricing lacks.
 
@@ -61,10 +60,14 @@ ChicagoTaxi benefits from strong temporal periodicity (rush hours, weekends) tha
 | `hour` | int (0–23) | Hour of day | High — captures rush hour peaks |
 | `day_of_week` | int (1–7) | Day of week (1=Sun, Spark convention) | High — weekday vs weekend |
 | `is_weekend` | binary | Weekend indicator | Medium — derived from day_of_week |
+| `month` | int (1–12) | Month of year | Medium — captures seasonality |
 | `pickup_community_area` | int (1–77) | Chicago community area ID | High — location is key driver |
-| `avg_distance_miles` | float | Mean trip distance in the hour/area | Medium |
-| `avg_fare` | float | Mean trip fare in the hour/area | Medium |
-| `avg_speed_mph` | float | Mean trip speed in the hour/area | Low — correlates with time of day |
+| `trip_count_lag_1h` | float | Demand 1 hour ago (same area) | Very High — strongest predictor |
+| `trip_count_lag_24h` | float | Demand 24 hours ago (same area) | High — daily cycle |
+| `trip_count_lag_168h` | float | Demand 1 week ago (same area) | Medium — weekly pattern |
+| `trip_count_rolling_24h` | float | Rolling 24h mean demand (same area) | High — trend indicator |
+
+**Removed (data leakage fix)**: `avg_fare`, `avg_distance_miles`, `avg_speed_mph` were previously used but are computed from the same group of trips that defines `trip_count`. At prediction time these values would not be available. Replacing them with lag features uses only historical information and actually improved R² from 0.905 → 0.9649.
 
 **Not included (intentional)**: weather, holidays, events. These would improve accuracy but add external data dependencies that complicate the batch pipeline.
 
@@ -90,8 +93,9 @@ ChicagoTaxi benefits from strong temporal periodicity (rush hours, weekends) tha
 | **Clean** | PySpark | 6.3M rows | 5.3M rows (15.6% dropped) | 4,741 rows/sec |
 | **Aggregate** | PySpark | 5.3M trip rows | 357K hourly demand rows | — |
 | **Export** | PySpark | DataFrame | 95 MB Parquet (97% compression) | — |
-| **Train** | scikit-learn | 357K rows | model.joblib (~2 MB) | — |
-| **Predict** | Dask (4 partitions) | 357K rows | Parquet with predictions | 19,061 rows/sec |
+| **Lag features** | pandas | 357K rows | 355K rows (lag computation drops first week) | — |
+| **Train** | scikit-learn | 284K rows | model.joblib (~30 MB) | Temporal split |
+| **Predict** | pandas | 355K rows | Parquet with predictions | — |
 | **Serve** | FastAPI | Parquet | JSON API responses | <50ms p95 |
 
 ### Cleaning Rules
@@ -124,4 +128,4 @@ ChicagoTaxi benefits from strong temporal periodicity (rush hours, weekends) tha
 
 ---
 
-*Model trained with Python 3.13 + scikit-learn locally. Production Docker image uses Python 3.11.*
+*Model v1.1.0: Fixed data leakage (removed same-period aggregates, added lag features, temporal split). Trained with Python 3.13 + scikit-learn. Production Docker image uses Python 3.11.*

@@ -29,7 +29,6 @@ In large-scale production ML, feature stores address three specific failure mode
 | Project | Feature source at inference time | Requires pre-materialization? |
 |---------|----------------------------------|-------------------------------|
 | **BankChurn** | All features in the request payload (CreditScore, Age, Balance, etc.) | ❌ No — caller provides all inputs |
-| **CarVision** | All features in the request payload (year, odometer, fuel, etc.) | ❌ No — caller provides all inputs |
 | **NLPInsight** | Raw text in the request | ❌ No — tokenized at inference time |
 
 None of the three models require **pre-materialized aggregations** (e.g., "this customer's average spend over 90 days"). All features are either directly in the request or derived on the fly by `FeatureEngineer` within the same pipeline. Training-serving skew is prevented by a different mechanism: the `FeatureEngineer` and `ColumnTransformer` are serialized inside the single `model.joblib` artifact and applied identically at both training and inference time.

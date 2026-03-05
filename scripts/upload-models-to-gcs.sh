@@ -6,16 +6,15 @@
 #   - gsutil available
 #
 # Usage:
-#   ./scripts/upload-models-to-gcs.sh                    # Upload all 4 models
+#   ./scripts/upload-models-to-gcs.sh                    # Upload all 3 models
 #   ./scripts/upload-models-to-gcs.sh bankchurn           # Upload only bankchurn
-#   ./scripts/upload-models-to-gcs.sh carvision           # Upload only carvision
 #   ./scripts/upload-models-to-gcs.sh nlpinsight           # Upload only nlpinsight
 #   ./scripts/upload-models-to-gcs.sh chicagotaxi          # Upload only chicagotaxi
 #
 # After uploading, restart pods to pick up new models:
 #   kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio
-#   kubectl rollout restart deployment/carvision-intelligence -n ml-portfolio
 #   kubectl rollout restart deployment/nlpinsight-analyzer -n ml-portfolio
+#   kubectl rollout restart deployment/chicagotaxi-pipeline -n ml-portfolio
 
 set -euo pipefail
 
@@ -60,11 +59,6 @@ case "$TARGET" in
             "$PROJECT_ROOT/BankChurn-Predictor/models/model.joblib" \
             "bankchurn/model.joblib"
         ;;&
-    carvision|all)
-        upload_model "CarVision" \
-            "$PROJECT_ROOT/CarVision-Market-Intelligence/models/model.joblib" \
-            "carvision/model.joblib"
-        ;;&
     nlpinsight|all)
         upload_model "NLPInsight" \
             "$PROJECT_ROOT/NLPInsight-Analyzer/models/model.tar.gz" \
@@ -76,9 +70,9 @@ case "$TARGET" in
             "chicagotaxi/model.joblib"
         ;;&
     all) ;;
-    bankchurn|carvision|nlpinsight|chicagotaxi) ;;
+    bankchurn|nlpinsight|chicagotaxi) ;;
     *)
-        echo "Usage: $0 [bankchurn|carvision|nlpinsight|chicagotaxi|all]"
+        echo "Usage: $0 [bankchurn|nlpinsight|chicagotaxi|all]"
         exit 1
         ;;
 esac
@@ -88,7 +82,6 @@ echo ""
 echo "Next steps:"
 echo "  1. Restart deployments to pick up new models:"
 echo "     kubectl rollout restart deployment/bankchurn-predictor -n ml-portfolio"
-echo "     kubectl rollout restart deployment/carvision-intelligence -n ml-portfolio"
 echo "     kubectl rollout restart deployment/nlpinsight-analyzer -n ml-portfolio"
 echo "     kubectl rollout restart deployment/chicagotaxi-pipeline -n ml-portfolio"
 echo ""

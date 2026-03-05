@@ -43,21 +43,6 @@ class CustomerData(BaseModel):
         return v
 
 
-class VehicleFeatures(BaseModel):
-    """Mirror of CarVision-Market-Intelligence/app/fastapi_app.py::VehicleFeatures"""
-
-    model_year: int = Field(..., ge=1990, le=2030)
-    model: str = Field(...)
-    condition: Optional[str] = "good"
-    cylinders: Optional[float] = 4
-    fuel: Optional[str] = "gas"
-    odometer: Optional[float] = Field(default=0, ge=0)
-    transmission: Optional[str] = "automatic"
-    drive: Optional[str] = "fwd"
-    type: Optional[str] = "sedan"
-    paint_color: Optional[str] = "white"
-
-
 class TextInput(BaseModel):
     """Mirror of NLPInsight-Analyzer/app/fastapi_app.py::TextInput"""
 
@@ -197,83 +182,7 @@ class TestBankChurnRobustness:
 
 
 # ---------------------------------------------------------------------------
-# CarVision adversarial payloads
-# ---------------------------------------------------------------------------
 
-CARVISION_VALID = {
-    "model_year": 2020,
-    "model": "camry",
-    "condition": "good",
-    "cylinders": 4,
-    "fuel": "gas",
-    "odometer": 50000.0,
-    "transmission": "automatic",
-    "drive": "fwd",
-    "type": "sedan",
-    "paint_color": "white",
-}
-
-
-class TestCarVisionRobustness:
-    """Edge-case and adversarial inputs for CarVision API schema."""
-
-    def test_valid_payload_accepted(self):
-        obj = VehicleFeatures(**CARVISION_VALID)
-        assert obj.model_year == 2020
-
-    def test_future_model_year_rejected(self):
-        payload = {**CARVISION_VALID, "model_year": 2099}
-        with pytest.raises(Exception):
-            VehicleFeatures(**payload)
-
-    def test_ancient_model_year_rejected(self):
-        payload = {**CARVISION_VALID, "model_year": 1800}
-        with pytest.raises(Exception):
-            VehicleFeatures(**payload)
-
-    def test_negative_odometer_rejected(self):
-        payload = {**CARVISION_VALID, "odometer": -100}
-        with pytest.raises(Exception):
-            VehicleFeatures(**payload)
-
-    def test_extreme_odometer_accepted(self):
-        payload = {**CARVISION_VALID, "odometer": 99999999}
-        obj = VehicleFeatures(**payload)
-        assert obj.odometer == 99999999
-
-    def test_boundary_model_year_min(self):
-        payload = {**CARVISION_VALID, "model_year": 1990}
-        obj = VehicleFeatures(**payload)
-        assert obj.model_year == 1990
-
-    def test_boundary_model_year_max(self):
-        payload = {**CARVISION_VALID, "model_year": 2030}
-        obj = VehicleFeatures(**payload)
-        assert obj.model_year == 2030
-
-    def test_string_in_numeric_field_rejected(self):
-        payload = {**CARVISION_VALID, "model_year": "not_a_year"}
-        with pytest.raises(Exception):
-            VehicleFeatures(**payload)
-
-    def test_sql_injection_model_field(self):
-        payload = {**CARVISION_VALID, "model": "'; DROP TABLE cars; --"}
-        obj = VehicleFeatures(**payload)
-        assert isinstance(obj.model, str)
-
-    def test_zero_odometer(self):
-        payload = {**CARVISION_VALID, "odometer": 0}
-        obj = VehicleFeatures(**payload)
-        assert obj.odometer == 0
-
-    def test_missing_optional_fields(self):
-        payload = {"model_year": 2020, "model": "camry"}
-        obj = VehicleFeatures(**payload)
-        assert obj.condition == "good"
-        assert obj.cylinders == 4
-
-
-# ---------------------------------------------------------------------------
 # NLPInsight adversarial payloads
 # ---------------------------------------------------------------------------
 

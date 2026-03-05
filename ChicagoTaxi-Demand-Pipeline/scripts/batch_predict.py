@@ -43,7 +43,9 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split
+
+# train_test_split intentionally not used — temporal split prevents
+# future-to-past data leakage in time-series forecasting.
 
 logging.basicConfig(
     level=logging.INFO,
@@ -51,17 +53,61 @@ logging.basicConfig(
 )
 logger = logging.getLogger("batch_predict_taxi")
 
+# Temporal and spatial features only — no same-period aggregates
+# (avg_fare, avg_distance_miles, avg_speed_mph were removed to fix
+# data leakage: those stats are computed from the same trips that
+# define trip_count and would not be available at prediction time.)
 FEATURE_COLS = [
     "hour",
     "day_of_week",
     "is_weekend",
+    "month",
     "pickup_community_area",
-    "avg_distance_miles",
-    "avg_fare",
-    "avg_speed_mph",
+    # Lag features (historical demand — available at prediction time)
+    "trip_count_lag_1h",
+    "trip_count_lag_24h",
+    "trip_count_lag_168h",
+    "trip_count_rolling_24h",
 ]
 
 TARGET_COL = "trip_count"
+
+
+def compute_lag_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Compute lag features from aggregated hourly demand data.
+
+    Uses only historical information available at prediction time,
+    avoiding data leakage from same-period aggregates (avg_fare, etc.).
+    """
+    df = df.copy()
+    df["datetime"] = pd.to_datetime(df[["year", "month", "day"]].assign(hour=df["hour"]))
+    df = df.sort_values(["pickup_community_area", "datetime"])
+
+    # Lag features per community area (shift ensures we only use past data)
+    grouped = df.groupby("pickup_community_area")["trip_count"]
+    df["trip_count_lag_1h"] = grouped.shift(1)
+    df["trip_count_lag_24h"] = grouped.shift(24)
+    df["trip_count_lag_168h"] = grouped.shift(168)  # 1 week
+    df["trip_count_rolling_24h"] = grouped.transform(lambda x: x.shift(1).rolling(24, min_periods=1).mean())
+
+    n_before = len(df)
+    df = df.dropna(subset=["trip_count_lag_1h", "trip_count_lag_24h"])
+    logger.info(
+        "  Lag features: dropped %s rows with insufficient history",
+        f"{n_before - len(df):,}",
+    )
+    return df
+
+
+def temporal_train_test_split(df: pd.DataFrame, test_ratio: float = 0.2) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Split data chronologically to avoid future-to-past leakage.
+
+    For time-series forecasting the test set must be strictly after
+    the training set.  A random split would leak future patterns.
+    """
+    df = df.sort_values("datetime")
+    split_idx = int(len(df) * (1 - test_ratio))
+    return df.iloc[:split_idx], df.iloc[split_idx:]
 
 
 def train_demand_model(input_path: str, model_path: str, seed: int = 42) -> RandomForestRegressor:
@@ -74,6 +120,10 @@ def train_demand_model(input_path: str, model_path: str, seed: int = 42) -> Rand
     df = ddf.compute()
     logger.info("  Loaded %s rows for training", f"{len(df):,}")
 
+    # Compute lag features (replaces leaky same-period aggregates)
+    df = compute_lag_features(df)
+    logger.info("  After lag features: %s rows", f"{len(df):,}")
+
     # Prepare features
     available_features = [c for c in FEATURE_COLS if c in df.columns]
     if len(available_features) < 3:
@@ -82,8 +132,20 @@ def train_demand_model(input_path: str, model_path: str, seed: int = 42) -> Rand
     X = df[available_features].fillna(0)
     y = df[TARGET_COL].fillna(0)
 
-    # Split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
+    # Temporal split (train on past, test on future)
+    df_train, df_test = temporal_train_test_split(df)
+    X_train = df_train[available_features].fillna(0)
+    y_train = df_train[TARGET_COL].fillna(0)
+    X_test = df_test[available_features].fillna(0)
+    y_test = df_test[TARGET_COL].fillna(0)
+
+    logger.info(
+        "  Temporal split: train=%s (up to %s), test=%s (from %s)",
+        f"{len(X_train):,}",
+        df_train["datetime"].max().strftime("%Y-%m-%d"),
+        f"{len(X_test):,}",
+        df_test["datetime"].min().strftime("%Y-%m-%d"),
+    )
 
     # Train
     model = RandomForestRegressor(
@@ -104,6 +166,9 @@ def train_demand_model(input_path: str, model_path: str, seed: int = 42) -> Rand
         "n_train": len(X_train),
         "n_test": len(X_test),
         "features": available_features,
+        "split": "temporal",
+        "train_end": df_train["datetime"].max().isoformat(),
+        "test_start": df_test["datetime"].min().isoformat(),
     }
 
     logger.info("  RMSE: %.2f | MAE: %.2f | R²: %.4f", metrics["rmse"], metrics["mae"], metrics["r2"])
@@ -128,47 +193,35 @@ def batch_predict(model: RandomForestRegressor, input_path: str, output_path: st
     logger.info("Batch prediction on %s", input_path)
     t0 = time.time()
 
-    # Read with Dask
+    # Read with Dask, compute to pandas for lag feature computation
     ddf = dd.read_parquet(input_path)
-    total_rows = len(ddf)
-    n_partitions = ddf.npartitions
-    logger.info(
-        "  Loaded %s rows across %d partitions",
-        f"{total_rows:,}",
-        n_partitions,
-    )
+    df = ddf.compute()
+    logger.info("  Loaded %s rows", f"{len(df):,}")
+
+    # Compute lag features (same as training)
+    df = compute_lag_features(df)
+    total_rows = len(df)
+    logger.info("  After lag features: %s rows", f"{total_rows:,}")
 
     # Determine available features
-    available_features = [c for c in FEATURE_COLS if c in ddf.columns]
+    available_features = [c for c in FEATURE_COLS if c in df.columns]
     logger.info("  Using features: %s", available_features)
 
-    # Define prediction function for map_partitions
-    def predict_partition(partition: pd.DataFrame) -> pd.DataFrame:
-        """Predict on a single Dask partition."""
-        if len(partition) == 0:
-            partition["predicted_demand"] = []
-            partition["demand_category"] = []
-            return partition
+    # Predict
+    X = df[available_features].fillna(0)
+    preds = model.predict(X)
 
-        X = partition[available_features].fillna(0)
-        preds = model.predict(X)
-
-        partition = partition.copy()
-        partition["predicted_demand"] = np.round(preds, 1)
-        partition["demand_category"] = pd.cut(
-            preds,
-            bins=[0, 5, 20, 50, float("inf")],
-            labels=["low", "medium", "high", "very_high"],
-        )
-        return partition
-
-    # Apply predictions across all partitions in parallel
-    logger.info("  Running parallel inference across %d partitions...", n_partitions)
-    ddf_preds = ddf.map_partitions(predict_partition)
+    df = df.copy()
+    df["predicted_demand"] = np.round(preds, 1)
+    df["demand_category"] = pd.cut(
+        preds,
+        bins=[0, 5, 20, 50, float("inf")],
+        labels=["low", "medium", "high", "very_high"],
+    )
 
     # Write predictions to Parquet
     Path(output_path).mkdir(parents=True, exist_ok=True)
-    ddf_preds.to_parquet(output_path, write_index=False, overwrite=True)
+    df.to_parquet(f"{output_path}/predictions.parquet", index=False)
 
     pred_time = time.time() - t0
     throughput = total_rows / pred_time if pred_time > 0 else 0

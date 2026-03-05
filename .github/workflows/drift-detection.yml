@@ -24,8 +24,8 @@ jobs:
       matrix:
         project:
           - BankChurn-Predictor
-          - CarVision-Market-Intelligence
           - NLPInsight-Analyzer
+          - ChicagoTaxi-Demand-Pipeline
     
     steps:
       - name: Checkout code

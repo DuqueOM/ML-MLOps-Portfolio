@@ -5,22 +5,21 @@ on:
     branches: [main]
     paths:
       - 'BankChurn-Predictor/**'
-      - 'CarVision-Market-Intelligence/**'
       - 'NLPInsight-Analyzer/**'
       - 'k8s/overlays/aws/**'
       - '.github/workflows/deploy-aws.yml'
   workflow_dispatch:
     inputs:
       service:
-        description: 'Service to deploy (all, bankchurn, carvision, nlpinsight)'
+        description: 'Service to deploy (all, bankchurn, nlpinsight, chicagotaxi)'
         required: true
         default: 'all'
         type: choice
         options:
           - all
           - bankchurn
-          - carvision
           - nlpinsight
+          - chicagotaxi
       environment:
         description: 'Target environment'
         required: true
@@ -45,7 +44,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       bankchurn: ${{ steps.filter.outputs.bankchurn }}
-      carvision: ${{ steps.filter.outputs.carvision }}
       nlpinsight: ${{ steps.filter.outputs.nlpinsight }}
       k8s: ${{ steps.filter.outputs.k8s }}
     steps:
@@ -56,8 +54,6 @@ jobs:
           filters: |
             bankchurn:
               - 'BankChurn-Predictor/**'
-            carvision:
-              - 'CarVision-Market-Intelligence/**'
             nlpinsight:
               - 'NLPInsight-Analyzer/**'
             k8s:
@@ -76,17 +72,12 @@ jobs:
             context: BankChurn-Predictor
             image: ml-portfolio/bankchurn-predictor
             manifest: k8s/overlays/aws/bankchurn-deployment-aws.yaml
-          - service: carvision
-            context: CarVision-Market-Intelligence
-            image: ml-portfolio/carvision-intelligence
-            manifest: k8s/overlays/aws/carvision-deployment-aws.yaml
           - service: nlpinsight
             context: NLPInsight-Analyzer
             image: ml-portfolio/nlpinsight-analyzer
             manifest: k8s/overlays/aws/nlpinsight-deployment-aws.yaml
     if: >
       needs.detect-changes.outputs.bankchurn == 'true' ||
-      needs.detect-changes.outputs.carvision == 'true' ||
       needs.detect-changes.outputs.nlpinsight == 'true' ||
       github.event_name == 'workflow_dispatch'
     permissions:
@@ -185,11 +176,8 @@ jobs:
           kubectl apply -f k8s/overlays/aws/download-script-aws.yaml
           kubectl apply -f k8s/overlays/aws/model-configmaps-aws.yaml
           kubectl apply -f k8s/overlays/aws/dataset-configmaps-aws.yaml
-          kubectl apply -f k8s/overlays/aws/metrics-configmap-aws.yaml
-
           # Deploy ML services (AWS versions)
           kubectl apply -f k8s/overlays/aws/bankchurn-deployment-aws.yaml
-          kubectl apply -f k8s/overlays/aws/carvision-deployment-aws.yaml
           kubectl apply -f k8s/overlays/aws/nlpinsight-deployment-aws.yaml
 
           # Deploy monitoring (shared manifests)
@@ -203,7 +191,6 @@ jobs:
         run: |
           echo "Waiting for deployments to be ready..."
           kubectl rollout status deployment/bankchurn-predictor -n ${{ env.NAMESPACE }} --timeout=300s || true
-          kubectl rollout status deployment/carvision-intelligence -n ${{ env.NAMESPACE }} --timeout=300s || true
           kubectl rollout status deployment/nlpinsight-analyzer -n ${{ env.NAMESPACE }} --timeout=300s || true
 
       - name: Verify deployment
@@ -221,7 +208,7 @@ jobs:
 
       - name: Smoke test health endpoints
         run: |
-          for SVC in bankchurn-service carvision-service nlpinsight-service; do
+          for SVC in bankchurn-service nlpinsight-service chicagotaxi-service; do
             echo "Testing ${SVC}..."
             kubectl run health-test-${SVC} \
               --namespace=${{ env.NAMESPACE }} \
@@ -252,5 +239,5 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Services" >> $GITHUB_STEP_SUMMARY
           echo "- BankChurn: via ALB" >> $GITHUB_STEP_SUMMARY
-          echo "- CarVision: via ALB" >> $GITHUB_STEP_SUMMARY
           echo "- NLPInsight: via ALB" >> $GITHUB_STEP_SUMMARY
+          echo "- ChicagoTaxi: via ALB" >> $GITHUB_STEP_SUMMARY

@@ -6,6 +6,26 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [3.5.0] — 2026-03-05
+
+### Fixed
+- **ChicagoTaxi data leakage** — removed same-period aggregate features (`avg_fare`, `avg_distance_miles`, `avg_speed_mph`) that leaked future information; replaced with lag features (`trip_count_lag_1h`, `_lag_24h`, `_lag_168h`, `_rolling_24h`); switched from random to temporal train/test split. R² improved from 0.905 → 0.9649 with honest, leak-free features
+- **Version inconsistencies** — unified all docs to v3.4.0, fixed dates (June 2026 → March 2026, February 2026 → March 2026) across README badge, model cards, architecture docs
+- **`sys.path.insert` hack removed** — `common_utils` is now a pip-installable package (`pip install -e ./common_utils`); removed `sys.path.insert(0, ...)` from all 3 FastAPI apps, 3 conftest.py files, and test_integration.py
+
+### Changed
+- **Portfolio reduced to 3 projects** — removed (MAPE 32.9% not defensible); moved to `Applied-ML-Projects` repo alongside recovered TelecomAI project
+- **NLPInsight dataset upgrade** — Financial PhraseBank (4,845 sentences, 97% acc) → Twitter Financial News Sentiment (11,931 real tweets, 80.6% acc). Harder, noisier, more realistic benchmark
+- **NLPInsight production model** — TF-IDF + LogReg for CPU deployment (<5ms); FinBERT fine-tuning supported via training pipeline when GPU available
+- **README.md** — updated to 3 projects, architecture diagram without all metrics updated
+- **common_utils/pyproject.toml** — fixed package discovery (`package-dir` mapping), license reference, version 1.2.0
+- **Version badges** — all docs updated from 3.4.0 → 3.5.0
+
+### Added
+- **ADR-009: Simplification** — documents deliberate evaluation of each infrastructure component, data leakage fix, and removal rationale
+- **ChicagoTaxi lag features** — `compute_lag_features()` and `temporal_train_test_split()` functions in `batch_predict.py`
+- **BankChurn Gradio demo** — `app/gradio_demo.py` interactive churn prediction UI with risk assessment
+
 ## [3.4.0] — 2026-03-04
 
 ### Added
@@ -21,7 +41,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ### Changed
 - **RUNBOOK.md streamlined** — 603 → 124 lines (80% reduction); removed verbose padding, kept essential operations
-- **README.md** — updated to 4 projects, architecture diagram includes ChicagoTaxi, tech stack adds PySpark + Dask, version 3.4.0
+- **README.md** — updated to 3 projects, architecture diagram includes ChicagoTaxi, tech stack adds PySpark + Dask, version 3.4.0
 - **CI pipeline** — ChicagoTaxi added to test matrix, quality gates (black, flake8, mypy), model card verification
 - K8s deployments updated with `LOG_FORMAT=json`, `SERVICE_NAME`, `LOG_LEVEL` env vars
 
@@ -41,21 +61,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 ## [3.3.1] — 2026-03-03
 
 ### Added
-- **CarVision Streamlit Dashboard on K8s** — separate Deployment + Service (independent scaling, health checks, resource limits)
-- **Multi-target Dockerfile** (`CarVision-Market-Intelligence/Dockerfile`) — `--target api` (518 MB) and `--target dashboard` (950 MB) from single Dockerfile
-- **Ingress route** `/dashboard/*` → `carvision-dashboard-service:8501`
-- **AWS overlay** for dashboard deployment (`k8s/overlays/aws/carvision-deployment-aws.yaml`)
+- **Multi-target Dockerfile** (`Dockerfile`) — `--target api` (518 MB) and `--target dashboard` (950 MB) from single Dockerfile
+- **Ingress route** `/dashboard/*` → `-dashboard-service:8501`
+- **AWS overlay** for dashboard deployment (`k8s/overlays/aws/-deployment-aws.yaml`)
 
 ### Changed
 - **FastAPI `root_path`** — all 3 APIs now support `API_ROOT_PATH` env var for Ingress path-based routing
-- **CarVision K8s manifest** — dashboard sidecar removed, replaced with separate Deployment (enterprise pattern)
 - **Load test metrics improved** — p50 160ms, p95 480ms, 973 requests, 0% errors (10 users, 2 min)
 
 ### Fixed
 - Dashboard image missing Streamlit due to early pip cleanup in Dockerfile
 - **Grafana `ml-portfolio-dashboard.json`** — replaced 8 broken panels using non-existent metrics (`http_requests_total`, `predictions_total`, `model_drift_score`, `node_cpu_seconds_total`, `container_memory_usage_bytes`) with real per-service metrics
 - **Prometheus alert rules** — removed alerts referencing non-existent metrics (`model_drift_score`, `kube_node_status_condition`, `container_*`); replaced with `process_resident_memory_bytes` per-service alerts
-- **Prometheus scrape config** — fixed CarVision duplicate scrape (port 80 vs 8000); removed node-exporter job (not deployed); removed MLflow scrape (no `/metrics` endpoint)
+- **Prometheus scrape config** — fixed duplicate scrape (port 80 vs 8000); removed node-exporter job (not deployed); removed MLflow scrape (no `/metrics` endpoint)
 - **Result**: 16/16 Prometheus targets UP (0 DOWN), 16 alert rules loaded, 2 Grafana dashboards fully functional
 
 ## [3.3.0] — 2026-03-03
@@ -67,7 +85,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 - **CI test model generator** (`scripts/generate_ci_test_models.py`) — creates lightweight sklearn models for Docker Compose integration tests
 
 ### Changed
-- **Prometheus alert rules** — replaced generic `http_requests_total` with actual per-service metrics (`bankchurn_requests_total`, `carvision_requests_total`, `nlpinsight_requests_total`); per-service latency and prediction rate alerts
+- **Prometheus alert rules** — replaced generic `http_requests_total` with actual per-service metrics (`bankchurn_requests_total`, `_requests_total`, `nlpinsight_requests_total`); per-service latency and prediction rate alerts
 - **Security scans now blocking** — Gitleaks `continue-on-error` removed; Bandit fails on HIGH+ severity issues; pip-audit remains advisory
 - **Spanish→English comments** — translated all Spanish comments in CI workflows, Dockerfiles, `config.yaml`, `docker-compose.yml`, `run_e2e.sh`
 - **CI integration test** — added `generate_ci_test_models.py` step before Docker Compose spin-up
@@ -80,7 +98,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 ## [3.2.1] — 2026-03-03
 
 ### Added
-- **CarVision fairness module** (`src/carvision/fairness.py`) — error ratio, MAE/RMSE parity by group (15 tests)
 - **NLPInsight fairness module** (`src/nlpinsight/fairness.py`) — per-class F1 parity, group fairness (16 tests)
 - Trivy DB repository override (`ghcr.io/aquasecurity/trivy-db:2`) to fix mirror.gcr.io 404
 
@@ -109,7 +126,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 - **E2E script** (`scripts/run_e2e.sh`): CI-friendly — no longer requires `.venv`
 - **E2E CI job**: removed `|| true` — now fails properly on errors
 - **Benchmarks CI job**: removed `continue-on-error: true` — detects regressions
-- **carvision-dashboard** in `docker-compose.demo.yml`: moved to `profiles: [dashboard]` (streamlit not in prod image)
+- **-dashboard** in `docker-compose.demo.yml`: moved to `profiles: [dashboard]` (streamlit not in prod image)
 - Integration tests accept `degraded` health status (model not loaded in CI)
 - Reformatted 6 files with black 26.1.0
 
@@ -130,7 +147,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 - **CI coverage thresholds** raised to 85% for all 3 projects (was 79-80%)
 - **CI linting made strict** — removed `|| true` from black/isort/flake8 steps
 - **BankChurn model_card.md**: VotingClassifier → StackingClassifier, Docker v1.5.0 → v3.0.0
-- **CarVision model_card.md**: RandomForest → LightGBM, Docker v1.5.0 → v3.0.0
 - **NLPInsight model_card.md**: expanded to match BankChurn/CarVision quality
 - **BankChurn/CarVision requirements-prod.txt**: sklearn 1.8.0, numpy 2.4.x, pandas 2.3.x, scipy 1.17.x
 - Black formatting applied across all 3 projects
@@ -145,10 +161,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ### Added
 - **StackingClassifier** for BankChurn (RF + GB + XGB + LGB → LR meta-learner)
-- **LightGBM** for CarVision with FeatureEngineer pipeline (24 features)
+- **LightGBM** for with FeatureEngineer pipeline (24 features)
 - **FinBERT** (ProsusAI) for NLPInsight with TF-IDF + LogReg fallback
 - SHAP explainability integrated in BankChurn API responses
-- Streamlit dashboard for CarVision (4 tabs: explorer, prediction, analysis, comparison)
+- Streamlit dashboard for (4 tabs: explorer, prediction, analysis, comparison)
 - Multi-stage Docker builds with non-root user
 - Kubernetes manifests with Init Containers for model download from GCS
 - HPA with CPU-only scaling (memory-based removed — fixed footprint)
@@ -180,7 +196,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 ### Added
 - Initial portfolio with 3 ML projects
 - BankChurn: LogisticRegression baseline (AUC 0.812)
-- CarVision: RandomForest baseline
 - NLPInsight: TF-IDF + LogisticRegression
 - Basic FastAPI serving for all projects
 - pytest test suites

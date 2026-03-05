@@ -8,11 +8,9 @@ namespace: ml-portfolio
 resources:
   - ../../base
   - ../../bankchurn-deployment.yaml
-  - ../../carvision-deployment.yaml
   - ../../nlpinsight-deployment.yaml
   - ../../ingress.yaml
   - ../../ml-workload-serviceaccount.yaml
   - ../../download-script-configmap.yaml
   - ../../model-configmaps.yaml
   - ../../dataset-configmaps.yaml
-  - ../../metrics-configmap.yaml

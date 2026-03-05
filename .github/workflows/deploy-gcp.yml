@@ -5,21 +5,20 @@ on:
     branches: [main]
     paths:
       - 'BankChurn-Predictor/**'
-      - 'CarVision-Market-Intelligence/**'
+      
       - 'NLPInsight-Analyzer/**'
       - 'k8s/**'
       - '.github/workflows/deploy-gcp.yml'
   workflow_dispatch:
     inputs:
       service:
-        description: 'Service to deploy (all, bankchurn, carvision, nlpinsight)'
+        description: 'Service to deploy (all, bankchurn, nlpinsight, chicagotaxi)'
         required: true
         default: 'all'
         type: choice
         options:
           - all
           - bankchurn
-          - carvision
           - nlpinsight
       environment:
         description: 'Target environment'
@@ -45,7 +44,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       bankchurn: ${{ steps.filter.outputs.bankchurn }}
-      carvision: ${{ steps.filter.outputs.carvision }}
       nlpinsight: ${{ steps.filter.outputs.nlpinsight }}
       k8s: ${{ steps.filter.outputs.k8s }}
     steps:
@@ -56,8 +54,6 @@ jobs:
           filters: |
             bankchurn:
               - 'BankChurn-Predictor/**'
-            carvision:
-              - 'CarVision-Market-Intelligence/**'
             nlpinsight:
               - 'NLPInsight-Analyzer/**'
             k8s:
@@ -76,17 +72,12 @@ jobs:
             context: BankChurn-Predictor
             image: bankchurn-predictor
             manifest: k8s/bankchurn-deployment.yaml
-          - service: carvision
-            context: CarVision-Market-Intelligence
-            image: carvision-market-intelligence
-            manifest: k8s/carvision-deployment.yaml
           - service: nlpinsight
             context: NLPInsight-Analyzer
             image: nlpinsight-analyzer
             manifest: k8s/nlpinsight-deployment.yaml
     if: >
       needs.detect-changes.outputs.bankchurn == 'true' ||
-      needs.detect-changes.outputs.carvision == 'true' ||
       needs.detect-changes.outputs.nlpinsight == 'true' ||
       github.event_name == 'workflow_dispatch'
     permissions:
@@ -158,7 +149,7 @@ jobs:
           TAG="sha-${GITHUB_SHA::8}"
 
           # Update all deployment manifests with new image + tag
-          for FILE in k8s/bankchurn-deployment.yaml k8s/carvision-deployment.yaml k8s/nlpinsight-deployment.yaml; do
+          for FILE in k8s/bankchurn-deployment.yaml k8s/nlpinsight-deployment.yaml; do
             if [ -f "$FILE" ]; then
               # Replace image references to use Artifact Registry
               sed -i "s|image: duqueom/.*|image: ${{ env.AR_REPO }}/$(basename ${FILE%-deployment.yaml}):${TAG}|g" "$FILE" || true
@@ -177,11 +168,8 @@ jobs:
           kubectl apply -f k8s/download-script-configmap.yaml
           kubectl apply -f k8s/model-configmaps.yaml
           kubectl apply -f k8s/dataset-configmaps.yaml
-          kubectl apply -f k8s/metrics-configmap.yaml
-
           # Deploy ML services
           kubectl apply -f k8s/bankchurn-deployment.yaml
-          kubectl apply -f k8s/carvision-deployment.yaml
           kubectl apply -f k8s/nlpinsight-deployment.yaml
 
           # Deploy monitoring
@@ -195,7 +183,6 @@ jobs:
         run: |
           echo "Waiting for deployments to be ready..."
           kubectl rollout status deployment/bankchurn-predictor -n ${{ env.NAMESPACE }} --timeout=300s || true
-          kubectl rollout status deployment/carvision-intelligence -n ${{ env.NAMESPACE }} --timeout=300s || true
           kubectl rollout status deployment/nlpinsight-analyzer -n ${{ env.NAMESPACE }} --timeout=300s || true
 
       - name: Verify deployment
@@ -214,7 +201,7 @@ jobs:
       - name: Smoke test health endpoints
         run: |
           # Get any running pod for port-forward tests
-          for SVC in bankchurn-service carvision-service nlpinsight-service; do
+          for SVC in bankchurn-service nlpinsight-service chicagotaxi-service; do
             echo "Testing ${SVC}..."
             kubectl run health-test-${SVC} \
               --namespace=${{ env.NAMESPACE }} \
@@ -243,5 +230,4 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Endpoints" >> $GITHUB_STEP_SUMMARY
           echo "- BankChurn: https://bankchurn.ml.duqueom.com/docs" >> $GITHUB_STEP_SUMMARY
-          echo "- CarVision: https://carvision.ml.duqueom.com/docs" >> $GITHUB_STEP_SUMMARY
           echo "- NLPInsight: https://nlpinsight.ml.duqueom.com/docs" >> $GITHUB_STEP_SUMMARY

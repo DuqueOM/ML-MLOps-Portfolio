@@ -143,7 +143,7 @@ test_required_resources() {
     done
 
     # Check required deployments
-    local required_deploys=("bankchurn" "carvision" "nlpinsight" "chicagotaxi" "prometheus" "grafana")
+    local required_deploys=("bankchurn" "nlpinsight" "chicagotaxi" "prometheus" "grafana")
     for deploy in "${required_deploys[@]}"; do
         if grep -rq "name: ${deploy}" "$dir"/*.yaml 2>/dev/null; then
             true

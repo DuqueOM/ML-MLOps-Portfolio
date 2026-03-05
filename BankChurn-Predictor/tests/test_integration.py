@@ -1,29 +1,16 @@
-import sys
 from pathlib import Path
 
+import joblib
 import numpy as np
 import pandas as pd
 import pytest
 from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
 
-# Ensure src is in path
-BASE_DIR = Path(__file__).resolve().parents[1]
-if str(BASE_DIR) not in sys.path:
-    sys.path.insert(0, str(BASE_DIR))
-
-import joblib  # noqa: E402
-from sklearn.pipeline import Pipeline  # noqa: E402
-
-from src.bankchurn.config import (  # noqa: E402
-    BankChurnConfig,
-    DataConfig,
-    MLflowConfig,
-    ModelConfig,
-    RandomForestConfig,
-)
-from src.bankchurn.evaluation import ModelEvaluator  # noqa: E402
-from src.bankchurn.prediction import ChurnPredictor  # noqa: E402
-from src.bankchurn.training import ChurnTrainer  # noqa: E402
+from src.bankchurn.config import BankChurnConfig, DataConfig, MLflowConfig, ModelConfig, RandomForestConfig
+from src.bankchurn.evaluation import ModelEvaluator
+from src.bankchurn.prediction import ChurnPredictor
+from src.bankchurn.training import ChurnTrainer
 
 
 def test_leakage_prevention():

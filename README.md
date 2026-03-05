@@ -4,7 +4,7 @@
 
 **Machine Learning & MLOps Portfolio — Built and Deployed**
 
-*4 ML Projects • GKE + EKS • GitHub Actions CI/CD • Prometheus + Grafana + MLflow*
+*3 ML Projects • GKE + EKS • GitHub Actions CI/CD • Prometheus + Grafana + MLflow*
 
 [![Portfolio Site](https://img.shields.io/badge/🌐_Portfolio-Live_Site-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
 [![YouTube Demo](https://img.shields.io/badge/📺_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
@@ -16,7 +16,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.demo.yml)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-3.3.1-brightgreen.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-3.5.0-brightgreen.svg)](CHANGELOG.md)
 
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow)](https://mlflow.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
@@ -54,13 +54,12 @@
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|---------------|
 | [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | 180ms p50 | StackingClassifier (5 models), Feature Engineering, Drift Detection |
-| [🚗 CarVision](CarVision-Market-Intelligence/) | Regression | **R² 0.80**, RMSE $6.7K | 96% | 110ms p50 | LightGBM + FeatureEngineer, Streamlit Dashboard (4 tabs) |
-| [📝 NLPInsight](NLPInsight-Analyzer/) | Classification | **Acc 97%** (sentiment) | 98% | 220ms p50 | FinBERT (ProsusAI), Transfer Learning, Financial PhraseBank |
-| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.91**, 6.3M rows | — | 19K rows/sec | PySpark ETL, Dask Batch Predict, Parquet Partitioning |
+| [📝 NLPInsight](NLPInsight-Analyzer/) | NLP | **Acc 80.6%** (sentiment) | 98% | <5ms p50 | TF-IDF + LogReg, Twitter Financial News (11.9K tweets) |
+| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96**, 6.3M rows | — | 19K rows/sec | PySpark ETL, Lag Features, Temporal Split |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
-| **GCP Deployment** | ✅ Live | GKE cluster (7 nodes), 8 pods (incl. Streamlit dashboard), Ingress IP, Artifact Registry |
+| **GCP Deployment** | ✅ Live | GKE cluster, pods for 3 ML services + MLflow + monitoring, Artifact Registry |
 | **AWS Deployment** | 🟡 Ready | EKS + ECR + S3 + RDS — Terraform + K8s overlays complete |
 | **CI/CD** | ✅ Unified | GitHub Actions → GKE + EKS (separate deploy workflows) |
 | **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) — parallel provider configs |
@@ -85,43 +84,29 @@ Production-grade churn prediction with **StackingClassifier** ensemble (RF + Gra
 
 ---
 
-### 🚗 2. [CarVision Market Intelligence](CarVision-Market-Intelligence/) — Vehicle Price Prediction
+### � 2. [NLPInsight Analyzer](NLPInsight-Analyzer/) — Financial Sentiment Analysis
 
-End-to-end vehicle valuation platform powered by **LightGBM** with optimized hyperparameters. Centralized `FeatureEngineer` prevents train-serve skew. Streamlit BI Dashboard (4 tabs) and REST API.
+Financial sentiment analysis on **Twitter Financial News** — 11,931 real financial tweets with stock tickers, informal language, and noisy text. TF-IDF + LogReg production model with dual-backend support (FinBERT for GPU environments).
 
-| R² | RMSE | MAE | MAPE | Coverage | Dashboard |
-|----|------|-----|------|----------|------------|
-| **0.80** | $6,744 | $3,973 | 32.9% | 96% | <2s load |
+| Accuracy | F1 (weighted) | F1 (macro) | Labels | Dataset |
+|----------|---------------|------------|--------|---------|
+| **80.6%** | 0.810 | 0.748 | 3 | 11,931 tweets |
 
-> **Why these metrics**: RMSE is primary — it penalizes large errors quadratically (a $15K miss on a $20K vehicle is catastrophic; RMSE ensures this dominates the score). R² provides scale-independent context: 0.80 means 80% of price variance is explained; the remaining 20% requires unobserved features (accident history, condition score, local demand). MAPE (32.9%) is tracked but not optimized — it's distorted by sub-$10K vehicles where $500 errors become 33% but represent minimal financial risk. The model is calibrated to be unbiased (residual mean = -$12), letting dealers apply their own margin strategy.
+> **Why these metrics**: 80.6% accuracy on real financial tweets (vs 97% on the easier Financial PhraseBank) is an honest, defensible metric. F1-macro (0.748) is the guard rail — the negative class (15.1% of data, highest business value) achieves 0.65 F1, showing room for FinBERT improvement when GPU is available. The dataset upgrade from curated sentences to noisy tweets better demonstrates real-world NLP capability.
 
-[📂 Project](CarVision-Market-Intelligence/) · [📄 Model Card](CarVision-Market-Intelligence/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
-
----
-
-### 📝 3. [NLPInsight Analyzer](NLPInsight-Analyzer/) — Financial Sentiment Analysis
-
-Real-time financial sentiment analysis using **ProsusAI/FinBERT** — a BERT model fine-tuned on financial corpora. Domain-specific transfer learning achieving 97% accuracy on Financial PhraseBank. Dual inference backend supports both transformer and sklearn models.
-
-| Accuracy | F1 (weighted) | F1 (macro) | Labels | Coverage |
-|----------|---------------|------------|--------|----------|
-| **97%** | 0.97 | 0.96 | 3 | 98% |
-
-> **Why these metrics**: Accuracy is meaningful here (3-class, no class below 12%), but F1-macro (0.96) is the safety guard — it ensures the minority negative class (12.5% of data, but highest business value) is not sacrificed for overall accuracy. A missed negative signal on an earnings release can cause an analyst to miss a deteriorating position. The 8.8-point gap between TF-IDF (88.1%) and FinBERT (96.9%) demonstrates the ROI of domain-specific transfer learning; FinBERT's pre-training on Reuters/Bloomberg text alone accounts for ~3.7% of that gain before any fine-tuning.
-
-[📂 Project](NLPInsight-Analyzer/) · [📄 Model Card](NLPInsight-Analyzer/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
+[📂 Project](NLPInsight-Analyzer/) · [📄 Model Card](NLPInsight-Analyzer/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
 
 ---
 
-### 🚕 4. [ChicagoTaxi Demand Pipeline](ChicagoTaxi-Demand-Pipeline/) — Batch Processing at Scale
+### 🚕 3. [ChicagoTaxi Demand Pipeline](ChicagoTaxi-Demand-Pipeline/) — Batch Processing at Scale
 
-Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpark ETL into partitioned Parquet, with Dask batch prediction. Demonstrates distributed processing skills complementing the online inference services above.
+Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpark ETL into partitioned Parquet, with batch prediction using lag features and temporal split. Demonstrates distributed processing skills complementing the online inference services above.
 
-| Raw Rows | Clean Rows | ETL Throughput | Model R² | Batch Predict | Compression |
-|----------|------------|----------------|----------|---------------|-------------|
-| **6.36M** | 5.37M | 4,741 rows/sec | 0.905 | 19K rows/sec | 97% (2.8GB→95MB) |
+| Raw Rows | Clean Rows | ETL Throughput | Model R² | RMSE | MAE | Compression |
+|----------|------------|----------------|----------|------|-----|-------------|
+| **6.36M** | 5.37M | 3,320 rows/sec | **0.9649** | 7.87 | 2.85 | 97% (2.8GB→95MB) |
 
-> **Why this project**: The other 3 projects demonstrate online ML inference. This one fills the data engineering gap — PySpark for ETL, Dask for batch prediction, Parquet for columnar storage. These are the top-requested skills in ML/Data Engineering job descriptions.
+> **Why this project**: The other 2 projects demonstrate online ML inference. This one fills the data engineering gap — PySpark for ETL, lag features for leak-free time-series forecasting, Parquet for columnar storage. Data leakage was identified and fixed: same-period aggregates replaced with historical lag features, random split replaced with temporal split (train on past, test on future). R² improved from 0.905 → 0.9649.
 
 [📂 Project](ChicagoTaxi-Demand-Pipeline/) · [📄 Model Card](ChicagoTaxi-Demand-Pipeline/model_card.md)
 
@@ -133,14 +118,14 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 |----------|-------------|
 | **ML/DS** | Scikit-learn, XGBoost, LightGBM, PyTorch, PySpark, Dask, Pandas, NumPy, SHAP, Optuna |
 | **MLOps** | MLflow (9 experiments), DVC, Docker, Kubernetes, Terraform |
-| **API & Dashboard** | FastAPI, Pydantic, Streamlit, Plotly |
+| **API** | FastAPI, Pydantic |
 | **Cloud & IaC** | GCP (GKE, GCS, AR, Cloud SQL), AWS (EKS, S3, ECR, RDS), Terraform, K8s |
 | **Monitoring** | Prometheus (16/16 targets, 16 alert rules), Grafana (2 dashboards, 25 panels), Locust load testing, Evidently drift |
 | **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy), Artifact Registry, ECR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Testing** | pytest (90–98% coverage, 390+ tests), Codecov, pre-commit hooks |
 
-> **v3.3.1 Highlights**: StackingClassifier (BankChurn), LightGBM (CarVision), FinBERT (NLPInsight), Lazy SHAP, dual NLP backend, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests (43), Pod Security Standards, drift-triggered retraining ([ADR-006](docs/decisions/006-drift-triggered-retraining.md)). Load test: 0% error rate, p95 480ms (10 users, 2min). Full details in [docs/FEATURES.md](docs/FEATURES.md).
+> **v3.5.0 Highlights**: StackingClassifier (BankChurn), FinBERT (NLPInsight), PySpark + lag features (ChicagoTaxi), data leakage fix, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests, drift-triggered retraining ([ADR-006](docs/decisions/006-drift-triggered-retraining.md)), simplification ADR ([ADR-009](docs/decisions/009-simplification-when-not-to-build.md)). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
 ## 🏗️ Architecture
 
@@ -163,31 +148,25 @@ graph TB
 
     subgraph "GKE Cluster — ml-portfolio namespace"
         direction TB
-        INGRESS[GCE Ingress<br/>34.120.120.57] --> BC_SVC[BankChurn Service]
-        INGRESS --> CV_SVC[CarVision Service]
+        INGRESS[GCE Ingress] --> BC_SVC[BankChurn Service]
         INGRESS --> NL_SVC[NLPInsight Service]
-        INGRESS --> CV_DASH[CarVision Dashboard<br/>Streamlit :8501]
         INGRESS --> CT_SVC[ChicagoTaxi Service]
 
         BC_SVC --> BC_POD[BankChurn Pod<br/>StackingClassifier]
-        CV_SVC --> CV_POD[CarVision Pod<br/>LightGBM]
         NL_SVC --> NL_POD[NLPInsight Pod<br/>FinBERT]
         CT_SVC --> CT_POD[ChicagoTaxi Pod<br/>Batch Predictions]
 
         BC_POD -.->|Init Container| GCS
-        CV_POD -.->|Init Container| GCS
         NL_POD -.->|Init Container| GCS
         CT_POD -.->|Init Container| GCS
 
         PROM[Prometheus] --> BC_POD
-        PROM --> CV_POD
         PROM --> NL_POD
         PROM --> CT_POD
         PROM --> GRAF[Grafana Dashboard]
 
         MLF[MLflow Server] --> CLOUDSQL[(Cloud SQL)]
         DRIFT[Drift Detection CronJob] --> BC_SVC
-        DRIFT --> CV_SVC
         DRIFT --> NL_SVC
     end
 
@@ -219,9 +198,8 @@ sleep 60 && bash scripts/run_demo_tests.sh
 
 # 5. Access services
 #    🏦 BankChurn API:    http://localhost:8001/docs
-#    🚗 CarVision API:    http://localhost:8002/docs
-#    🚗 CarVision UI:     http://localhost:8501
 #    � NLPInsight API:   http://localhost:8003/docs
+#    � ChicagoTaxi API:  http://localhost:8004/docs
 #    📊 MLflow:           http://localhost:5000
 ```
 
@@ -237,7 +215,7 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 
 ![GKE Workloads Running](docs/media/screenshots/gcp-console/05-gke-workloads-running.png)
 
-*8 services running on GKE: 3 ML APIs (HPA) + Streamlit Dashboard + MLflow + Prometheus + Grafana*
+*Services running on GKE: 3 ML APIs (HPA) + MLflow + Prometheus + Grafana*
 
 </div>
 
@@ -345,7 +323,7 @@ Serial entrepreneur turned ML engineer. A decade of launching ventures—managin
 
 <div align="center">
 
-**Portfolio Version**: 3.4.0 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) · 🟡 AWS Ready
+**Portfolio Version**: 3.5.0 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) · 🟡 AWS Ready
 
 *Building ML systems that work at 2am* 🌙
 

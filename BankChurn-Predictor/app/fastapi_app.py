@@ -23,9 +23,6 @@ from pydantic import BaseModel, Field, field_validator
 
 # OpenTelemetry (optional — no-op if not installed)
 try:
-    import sys
-
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1].parent))
     from common_utils.logging import get_logger as _get_logger
     from common_utils.telemetry import init_telemetry, instrument_fastapi
 except ImportError:

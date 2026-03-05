@@ -40,7 +40,6 @@ Before contributing, please review:
 ### 1. Project Structure
 The portfolio consists of three main microservices:
 - `BankChurn-Predictor/` (FastAPI + Scikit-learn)
-- `CarVision-Market-Intelligence/` (Streamlit + FastAPI)
 - `NLPInsight-Analyzer/` (FastAPI + FinBERT / TF-IDF)
 
 ### 2. Dependency Management
@@ -137,4 +136,4 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-**Last Updated**: March 2026 — v3.4.0
+**Last Updated**: March 2026 — v3.5.0

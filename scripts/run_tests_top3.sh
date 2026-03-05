@@ -13,7 +13,6 @@ mkdir -p reports
 # Array de proyectos top-3
 PROJECTS=(
     "BankChurn-Predictor"
-    "CarVision-Market-Intelligence"
     "NLPInsight-Analyzer"
 )
 

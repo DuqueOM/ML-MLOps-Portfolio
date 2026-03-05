@@ -8,7 +8,7 @@
 
 ## Context
 
-The portfolio deploys three ML models (BankChurn, CarVision, NLPInsight) on GKE with Evidently AI running weekly drift checks (PSI + KS statistics). When drift is detected, the current response is **manual**: a Prometheus alert fires, an on-call engineer investigates, and retraining is triggered by hand.
+The portfolio deploys three ML models (BankChurn, NLPInsight) on GKE with Evidently AI running weekly drift checks (PSI + KS statistics). When drift is detected, the current response is **manual**: a Prometheus alert fires, an on-call engineer investigates, and retraining is triggered by hand.
 
 The question "how do you trigger retraining when you detect drift?" is one of the most common MLOps interview questions. This ADR documents the architectural decision for automated retraining, the trade-offs evaluated, and the lightweight implementation currently in place.
 
@@ -66,7 +66,7 @@ Evidently's monitoring server can POST to a webhook when a drift report exceeds 
 ## Decision
 
 Implement a **K8s CronJob** that:
-1. Queries Prometheus for drift metrics (`bankchurn_psi_score`, `carvision_psi_score`, `nlpinsight_distribution_shift`)
+1. Queries Prometheus for drift metrics (`bankchurn_psi_score`, `_psi_score`, `nlpinsight_distribution_shift`)
 2. Compares against thresholds (PSI > 0.2 = significant drift; PSI > 0.25 = critical)
 3. If threshold exceeded, calls the GitHub API to trigger `workflow_dispatch` on the training pipeline
 4. Logs the decision (triggered/skipped) to stdout for Prometheus scraping
@@ -87,8 +87,6 @@ See `k8s/drift-retraining-cronjob.yaml` — runs daily at 02:00 UTC.
 |-------|--------|---------|----------------------------|
 | BankChurn | PSI (feature distribution) | > 0.10 | > 0.20 |
 | BankChurn | AUC degradation (rolling holdout) | < 0.80 | < 0.75 |
-| CarVision | PSI (feature distribution) | > 0.10 | > 0.20 |
-| CarVision | RMSE regression | > $8,000 | > $10,000 |
 | NLPInsight | Sentiment distribution shift | > ±15% | > ±25% |
 | NLPInsight | F1-macro degradation | < 0.85 | < 0.80 |
 

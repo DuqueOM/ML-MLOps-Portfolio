@@ -19,7 +19,6 @@ from pathlib import Path
 # Add project roots to path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT / "BankChurn-Predictor"))
-sys.path.insert(0, str(ROOT / "CarVision-Market-Intelligence"))
 sys.path.insert(0, str(ROOT / "NLPInsight-Analyzer"))
 
 
@@ -63,46 +62,6 @@ def check_bankchurn():
         return False
 
 
-def check_carvision():
-    """Verify CarVision model loads and predicts."""
-    print("🚗 Checking CarVision-Market-Intelligence...", end=" ")
-    try:
-        import joblib
-        import pandas as pd
-
-        model_path = ROOT / "CarVision-Market-Intelligence" / "models" / "model.joblib"
-        if not model_path.exists():
-            print("⚠️  Model not found (run training first)")
-            return False
-
-        model = joblib.load(model_path)
-
-        # Sample prediction
-        sample = pd.DataFrame(
-            [
-                {
-                    "model_year": 2015,
-                    "model": "civic",
-                    "condition": "good",
-                    "cylinders": 4,
-                    "fuel": "gas",
-                    "odometer": 50000,
-                    "transmission": "automatic",
-                    "drive": "fwd",
-                    "type": "sedan",
-                    "paint_color": "white",
-                }
-            ]
-        )
-
-        pred = model.predict(sample)
-        print(f"✅ OK (prediction: ${pred[0]:,.0f})")
-        return True
-    except Exception as e:
-        print(f"❌ FAILED: {e}")
-        return False
-
-
 def check_nlpinsight():
     """Verify NLPInsight model loads and predicts."""
     print("\U0001f4dd Checking NLPInsight-Analyzer...", end=" ")
@@ -137,7 +96,6 @@ def main():
 
     results = []
     results.append(("BankChurn", check_bankchurn()))
-    results.append(("CarVision", check_carvision()))
     results.append(("NLPInsight", check_nlpinsight()))
 
     print()

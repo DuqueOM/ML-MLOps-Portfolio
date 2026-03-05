@@ -25,10 +25,6 @@ pkill -9 -f "kubectl port-forward" 2>/dev/null || true
 sleep 1
 
 kubectl port-forward svc/bankchurn-service 8000:80 -n ml-portfolio &
-kubectl port-forward svc/carvision-service 8001:80 -n ml-portfolio &
-kubectl port-forward svc/nlpinsight-service 8002:80 -n ml-portfolio &
-sleep 5
-
 # Step 2: Smoke tests via pytest
 echo ""
 echo "=== Running Smoke Tests (pytest) ==="

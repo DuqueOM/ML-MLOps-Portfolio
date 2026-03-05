@@ -31,18 +31,6 @@ updates:
         versions: [">=3.14"]
 
   - package-ecosystem: "docker"
-    directory: "/CarVision-Market-Intelligence"
-    schedule:
-      interval: "monthly"
-    labels:
-      - "dependencies"
-      - "docker"
-    ignore:
-      # Ignore Python 3.14+ (pre-release/development versions)
-      - dependency-name: "python"
-        versions: [">=3.14"]
-
-  - package-ecosystem: "docker"
     directory: "/NLPInsight-Analyzer"
     schedule:
       interval: "monthly"

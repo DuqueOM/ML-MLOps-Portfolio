@@ -30,11 +30,14 @@ model:
     - hour
     - day_of_week
     - is_weekend
+    - month
     - pickup_community_area
-    - avg_distance_miles
-    - avg_fare
-    - avg_speed_mph
+    - trip_count_lag_1h
+    - trip_count_lag_24h
+    - trip_count_lag_168h
+    - trip_count_rolling_24h
   target: trip_count
+  split: temporal  # chronological split to avoid future-to-past leakage
   test_size: 0.2
 
 serving:

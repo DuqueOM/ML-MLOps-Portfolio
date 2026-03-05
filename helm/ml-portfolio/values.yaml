@@ -33,26 +33,6 @@ bankchurn:
     maxReplicas: 3
     cpuTarget: 70
 
-# --- CarVision ---
-carvision:
-  enabled: true
-  replicas: 1
-  image: carvision-market-intelligence:latest
-  model:
-    gcsPath: carvision/model.joblib
-    localPath: /models/model.joblib
-  resources:
-    requests:
-      cpu: 300m
-      memory: 512Mi
-    limits:
-      cpu: 800m
-      memory: 1536Mi
-  hpa:
-    minReplicas: 1
-    maxReplicas: 3
-    cpuTarget: 70
-
 # --- NLPInsight ---
 nlpinsight:
   enabled: true

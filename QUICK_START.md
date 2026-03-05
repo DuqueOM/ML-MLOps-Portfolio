@@ -22,10 +22,10 @@ make docker-demo
 ```
 
 **What this does**:
-1. ✅ Builds optimized Docker images for all 4 projects
+1. ✅ Builds optimized Docker images for all 3 projects
 2. ✅ Starts MLflow Tracking Server (experiment management)
-3. ✅ Launches BankChurn, CarVision, NLPInsight APIs
-4. ✅ Starts CarVision Streamlit Dashboard
+3. ✅ Launches BankChurn, NLPInsight APIs
+4. ✅ Starts Streamlit Dashboard
 5. ✅ Runs automated health checks
 
 **Access Points** (available after `make docker-demo`):
@@ -33,8 +33,6 @@ make docker-demo
 | Service | URL | Description |
 |---------|-----|-------------|
 | **🏦 BankChurn API** | [http://localhost:8001/docs](http://localhost:8001/docs) | Churn prediction (Swagger UI) |
-| **🚗 CarVision API** | [http://localhost:8002/docs](http://localhost:8002/docs) | Vehicle pricing (Swagger UI) |
-| **🚗 CarVision Dashboard** | [http://localhost:8501](http://localhost:8501) | Interactive analytics (Streamlit) |
 | **📝 NLPInsight API** | [http://localhost:8003/docs](http://localhost:8003/docs) | Sentiment analysis (Swagger UI) |
 | **📊 MLflow UI** | [http://localhost:5000](http://localhost:5000) | Experiment tracking |
 
@@ -66,7 +64,7 @@ curl -X POST "http://localhost:8001/predict" \
 # Response: {"churn_probability": 0.23, "churn_prediction": 0, "risk_level": "LOW"}
 ```
 
-### CarVision Price Prediction
+### Price Prediction
 
 ```bash
 curl -X POST "http://localhost:8002/predict" \
@@ -123,7 +121,7 @@ make install
 
 After starting the demo stack, open [http://localhost:5000](http://localhost:5000) to see:
 
-- **3 Experiments**: BankChurn, CarVision, NLPInsight
+- **3 Experiments**: BankChurn, NLPInsight
 - **Performance Metrics**: F1-Score, AUC-ROC, Accuracy, RMSE
 - **Business Metrics**: Revenue impact, retention estimates
 - **Model Artifacts**: Config files, model checkpoints
@@ -136,7 +134,7 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 
 # Run experiments from each project
 cd BankChurn-Predictor && make mlflow-demo && cd ..
-cd CarVision-Market-Intelligence && make mlflow-demo && cd ..
+cd  && make mlflow-demo && cd ..
 cd NLPInsight-Analyzer && make mlflow-demo && cd ..
 ```
 
@@ -154,7 +152,7 @@ make health-check
 
 # Or manually:
 curl http://localhost:8001/health  # BankChurn
-curl http://localhost:8002/health  # CarVision
+curl http://localhost:8002/health  # 
 curl http://localhost:8003/health  # NLPInsight
 ```
 
@@ -206,7 +204,7 @@ For detailed development instructions, see:
 - **[Architecture Docs](docs/ARCHITECTURE_PORTFOLIO.md)** — System design
 - **Project READMEs** — Individual project setup
   - [BankChurn-Predictor/README.md](BankChurn-Predictor/README.md)
-  - [CarVision-Market-Intelligence/README.md](CarVision-Market-Intelligence/README.md)
+  - [README.md](README.md)
   - [NLPInsight-Analyzer/README.md](NLPInsight-Analyzer/README.md)
 
 ---

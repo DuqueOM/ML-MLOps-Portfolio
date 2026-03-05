@@ -1,0 +1,14 @@
+{
+  "input_file": "data/raw/Taxi_Trips_(2013-2023)_20260304.csv",
+  "raw_rows": 6364313,
+  "clean_rows": 5369172,
+  "rows_dropped": 995141,
+  "drop_rate_pct": 15.64,
+  "hourly_demand_rows": 357055,
+  "processing_time_seconds": 1916.8,
+  "throughput_rows_per_sec": 3320,
+  "output_dir": "data/processed/taxi_trips_parquet",
+  "spark_version": "4.1.1",
+  "partitioning": "year/month",
+  "compression": "snappy"
+}

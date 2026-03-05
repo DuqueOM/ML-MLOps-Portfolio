@@ -20,19 +20,6 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: carvision-model-config
-  namespace: ml-portfolio
-  labels:
-    app: carvision-intelligence
-    component: model-download
-data:
-  GCS_BUCKET: "ml-portfolio-duque-om-202602-ml-models-production"
-  GCS_MODEL_PATH: "carvision/model.joblib"
-  LOCAL_MODEL_PATH: "/models/model.joblib"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: nlpinsight-model-config
   namespace: ml-portfolio
   labels:

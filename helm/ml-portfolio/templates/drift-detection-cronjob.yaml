@@ -31,7 +31,7 @@ spec:
                 - -c
                 - |
                   echo "=== Drift Detection Run: $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
-                  SERVICES="bankchurn-service carvision-service nlpinsight-service"
+                  SERVICES="bankchurn-service nlpinsight-service chicagotaxi-service"
                   for svc in $SERVICES; do
                     echo "--- Checking $svc ---"
                     HEALTH=$(curl -s -o /dev/null -w "%{http_code}" http://${svc}.{{ .Values.namespace }}.svc.cluster.local/health || echo "000")

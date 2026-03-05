@@ -124,20 +124,6 @@ spec:
                   else:
                       print(f"[OK] BankChurn — PSI={bc_psi}, AUC={bc_auc}")
 
-                  # --- CarVision: PSI + RMSE regression ---
-                  cv_psi = query_prometheus('carvision_feature_psi_score')
-                  cv_rmse = query_prometheus('carvision_rolling_rmse')
-                  if cv_psi is not None and cv_psi > PSI_CRITICAL:
-                      print(f"[DRIFT] CarVision PSI={cv_psi:.3f} > {PSI_CRITICAL} — triggering retrain")
-                      trigger_retraining("carvision", f"PSI={cv_psi:.3f} exceeds critical threshold {PSI_CRITICAL}")
-                      retrain_triggered = True
-                  elif cv_rmse is not None and cv_rmse > RMSE_CEILING:
-                      print(f"[DRIFT] CarVision RMSE=${cv_rmse:.0f} > ${RMSE_CEILING:.0f} — triggering retrain")
-                      trigger_retraining("carvision", f"RMSE=${cv_rmse:.0f} exceeds ceiling ${RMSE_CEILING:.0f}")
-                      retrain_triggered = True
-                  else:
-                      print(f"[OK] CarVision — PSI={cv_psi}, RMSE={cv_rmse}")
-
                   # --- NLPInsight: sentiment distribution shift + F1-macro ---
                   nlp_shift = query_prometheus(
                       'abs(rate(nlpinsight_predictions_total{sentiment="negative"}[7d]) / '

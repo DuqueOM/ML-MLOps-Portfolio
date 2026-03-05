@@ -18,19 +18,6 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: carvision-pdb
-  namespace: ml-portfolio
-  labels:
-    app: carvision-intelligence
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      app: carvision-intelligence
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
   name: nlpinsight-pdb
   namespace: ml-portfolio
   labels:

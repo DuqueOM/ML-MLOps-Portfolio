@@ -3,20 +3,18 @@ groups:
   interval: 30s
   rules:
   # High error rate — uses actual per-service metric names
-  # Apps export: bankchurn_requests_total, carvision_requests_total, nlpinsight_requests_total
+  # Apps export: bankchurn_requests_total, nlpinsight_requests_total, chicagotaxi_requests_total
   - alert: HighErrorRate
     expr: |
       (
         (
           sum(rate(bankchurn_requests_total{status=~"5.."}[5m]))
-          + sum(rate(carvision_requests_total{status=~"5.."}[5m]))
           + sum(rate(nlpinsight_requests_total{status=~"5.."}[5m]))
           + sum(rate(chicagotaxi_requests_total{status=~"5.."}[5m]))
         )
         /
         (
           sum(rate(bankchurn_requests_total[5m]))
-          + sum(rate(carvision_requests_total[5m]))
           + sum(rate(nlpinsight_requests_total[5m]))
           + sum(rate(chicagotaxi_requests_total[5m]))
         )
@@ -44,22 +42,6 @@ groups:
     annotations:
       summary: "High error rate on BankChurn Predictor"
       description: "BankChurn error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
-
-  - alert: CarVisionHighErrorRate
-    expr: |
-      (
-        sum(rate(carvision_requests_total{status=~"5.."}[5m]))
-        /
-        sum(rate(carvision_requests_total[5m]))
-      ) > 0.05
-    for: 5m
-    labels:
-      severity: warning
-      team: ml-ops
-      service: carvision
-    annotations:
-      summary: "High error rate on CarVision Intelligence"
-      description: "CarVision error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
 
   - alert: NLPInsightHighErrorRate
     expr: |
@@ -94,7 +76,7 @@ groups:
       description: "ChicagoTaxi error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
 
   # High latency — uses actual per-service histogram names
-  # Apps export: bankchurn_request_duration_seconds, carvision_request_duration_seconds, nlpinsight_request_duration_seconds
+  # Apps export: bankchurn_request_duration_seconds, nlpinsight_request_duration_seconds, chicagotaxi_request_latency_seconds
   - alert: BankChurnHighLatency
     expr: |
       histogram_quantile(0.95,
@@ -108,20 +90,6 @@ groups:
     annotations:
       summary: "High latency on BankChurn Predictor"
       description: "BankChurn p95 latency is {{ $value }}s (threshold: 2s)"
-
-  - alert: CarVisionHighLatency
-    expr: |
-      histogram_quantile(0.95,
-        sum(rate(carvision_request_duration_seconds_bucket[5m])) by (le)
-      ) > 2
-    for: 5m
-    labels:
-      severity: warning
-      team: ml-ops
-      service: carvision
-    annotations:
-      summary: "High latency on CarVision Intelligence"
-      description: "CarVision p95 latency is {{ $value }}s (threshold: 2s)"
 
   - alert: NLPInsightHighLatency
     expr: |
@@ -163,7 +131,7 @@ groups:
       description: "Service {{ $labels.job }} has been down for more than 2 minutes"
 
   # High memory usage — uses process_resident_memory_bytes from APIs
-  # Thresholds: BankChurn ~300Mi/1Gi, CarVision ~550Mi/1.5Gi, NLPInsight ~650Mi/1Gi
+  # Thresholds: BankChurn ~300Mi/1Gi, NLPInsight ~650Mi/1Gi
   - alert: BankChurnHighMemory
     expr: process_resident_memory_bytes{job="bankchurn-predictor"} > 900e6
     for: 5m
@@ -174,17 +142,6 @@ groups:
     annotations:
       summary: "BankChurn memory usage above 900MB"
       description: "BankChurn process memory: {{ $value | humanize1024 }}B (K8s limit: 1Gi)"
-
-  - alert: CarVisionHighMemory
-    expr: process_resident_memory_bytes{job="carvision-intelligence"} > 1.3e9
-    for: 5m
-    labels:
-      severity: warning
-      team: ml-ops
-      service: carvision
-    annotations:
-      summary: "CarVision memory usage above 1.3GB"
-      description: "CarVision process memory: {{ $value | humanize1024 }}B (K8s limit: 1.5Gi)"
 
   - alert: NLPInsightHighMemory
     expr: process_resident_memory_bytes{job="nlpinsight-analyzer"} > 900e6
@@ -201,7 +158,7 @@ groups:
   interval: 1m
   rules:
   # Prediction rate drop — per-service actual metric names
-  # Apps export: bankchurn_predictions_total, carvision_predictions_total, nlpinsight_predictions_total
+  # Apps export: bankchurn_predictions_total, nlpinsight_predictions_total, chicagotaxi_predictions_total
   - alert: BankChurnPredictionRateDrop
     expr: |
       (
@@ -217,22 +174,6 @@ groups:
     annotations:
       summary: "BankChurn prediction rate dropped significantly"
       description: "BankChurn prediction rate is {{ $value | humanizePercentage }} of normal"
-
-  - alert: CarVisionPredictionRateDrop
-    expr: |
-      (
-        rate(carvision_predictions_total[5m])
-        /
-        rate(carvision_predictions_total[5m] offset 1h)
-      ) < 0.5
-    for: 10m
-    labels:
-      severity: warning
-      team: ml-ops
-      service: carvision
-    annotations:
-      summary: "CarVision prediction rate dropped significantly"
-      description: "CarVision prediction rate is {{ $value | humanizePercentage }} of normal"
 
   - alert: NLPInsightPredictionRateDrop
     expr: |

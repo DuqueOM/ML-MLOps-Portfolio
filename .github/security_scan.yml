@@ -21,17 +21,6 @@ updates:
       - "BankChurn-Predictor"
     open-pull-requests-limit: 5
 
-  # Python dependencies - CarVision-Market-Intelligence
-  - package-ecosystem: "pip"
-    directory: "/CarVision-Market-Intelligence"
-    schedule:
-      interval: "weekly"
-    labels:
-      - "dependencies"
-      - "python"
-      - "CarVision"
-    open-pull-requests-limit: 5
-
   # Python dependencies - NLPInsight-Analyzer
   - package-ecosystem: "pip"
     directory: "/NLPInsight-Analyzer"

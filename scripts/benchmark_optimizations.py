@@ -19,7 +19,6 @@ import pandas as pd
 
 # Add project roots to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "BankChurn-Predictor"))
-sys.path.insert(0, str(Path(__file__).parent.parent / "CarVision-Market-Intelligence"))
 
 
 def benchmark_joblib_compression():

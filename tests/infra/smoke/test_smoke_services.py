@@ -45,23 +45,6 @@ SERVICES = {
             "EstimatedSalary": 80000.0,
         },
     },
-    "carvision": {
-        "port": int(os.getenv("CARVISION_PORT", "8002")),
-        "health": "/health",
-        "predict": "/predict",
-        "metrics": "/metrics",
-        "payload": {
-            "model_year": 2018,
-            "odometer": 45000,
-            "model": "ford f-150",
-            "fuel": "gas",
-            "transmission": "automatic",
-            "condition": "excellent",
-            "cylinders": 8,
-            "type": "truck",
-            "paint_color": "white",
-        },
-    },
     "nlpinsight": {
         "port": int(os.getenv("NLPINSIGHT_PORT", "8003")),
         "health": "/health",

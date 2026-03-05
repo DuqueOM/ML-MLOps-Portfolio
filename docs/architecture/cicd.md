@@ -18,7 +18,7 @@ GitHub Actions workflows for testing, building, and deploying the ML-MLOps Portf
 
 ```yaml
 matrix:
-  project: [BankChurn-Predictor, CarVision-Market-Intelligence, NLPInsight-Analyzer]
+  project: [BankChurn-Predictor, NLPInsight-Analyzer]
   python-version: ['3.11', '3.12']
 ```
 

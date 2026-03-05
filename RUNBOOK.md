@@ -29,10 +29,8 @@ make docker-demo                     # start all services
 | Service | Port | Health |
 |---------|------|--------|
 | BankChurn API | 8001 | `curl localhost:8001/health` |
-| CarVision API | 8002 | `curl localhost:8002/health` |
 | NLPInsight API | 8003 | `curl localhost:8003/health` |
 | ChicagoTaxi API | 8004 | `curl localhost:8004/health` |
-| CarVision Dashboard | 8501 | `curl localhost:8501` |
 | MLflow | 5000 | `curl localhost:5000` |
 
 ## Per-Project Commands
@@ -42,12 +40,6 @@ make docker-demo                     # start all services
 cd BankChurn-Predictor
 python main.py --mode train --config configs/config.yaml
 uvicorn app.fastapi_app:app --port 8000
-
-# CarVision
-cd CarVision-Market-Intelligence
-python main.py --mode train --config configs/config.yaml
-uvicorn app.fastapi_app:app --port 8000
-streamlit run app/streamlit_app.py --server.port 8501
 
 # NLPInsight
 cd NLPInsight-Analyzer
@@ -120,4 +112,3 @@ git tag -a v3.2.1 -m "Release" && git push --tags # release
 - [README.md](README.md) — Portfolio overview
 - [QUICK_START.md](QUICK_START.md) — 5-minute setup
 - [docs/DEPLOYMENT_EVIDENCE.md](docs/DEPLOYMENT_EVIDENCE.md) — Production evidence
-- Individual READMEs: [BankChurn](BankChurn-Predictor/README.md) · [CarVision](CarVision-Market-Intelligence/README.md) · [NLPInsight](NLPInsight-Analyzer/README.md) · [ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/README.md)

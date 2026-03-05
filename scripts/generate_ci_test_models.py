@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate lightweight test models for CI integration tests.
 
-Creates tiny sklearn pipelines for BankChurn and CarVision so that
+Creates tiny sklearn pipelines for BankChurn so that
 Docker Compose integration tests can validate predictions without
 downloading production models from GCS.
 
@@ -20,7 +20,7 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
-from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 
@@ -166,162 +166,6 @@ def generate_bankchurn_model():
     print(f"[CI] BankChurn test model saved: {output} ({output.stat().st_size} bytes)")
 
 
-def generate_carvision_model():
-    """Generate a tiny CarVision model that accepts the real API schema.
-
-    Columns (matches VehicleFeatures Pydantic schema + _prepare_dataframe extras):
-        model_year, model, condition, cylinders, fuel, odometer,
-        transmission, drive, type, paint_color, is_4wd, date_posted, days_listed
-    """
-    output = Path("CarVision-Market-Intelligence/models/model.joblib")
-    output.parent.mkdir(parents=True, exist_ok=True)
-
-    cat_cols = ["model", "condition", "fuel", "transmission", "drive", "type", "paint_color", "date_posted"]
-    num_cols = ["model_year", "cylinders", "odometer", "is_4wd", "days_listed"]
-
-    rows = [
-        {
-            "model_year": 2015,
-            "model": "ford f-150",
-            "condition": "good",
-            "cylinders": 6.0,
-            "fuel": "gas",
-            "odometer": 50000.0,
-            "transmission": "automatic",
-            "drive": "4wd",
-            "type": "truck",
-            "paint_color": "white",
-            "is_4wd": 1.0,
-            "date_posted": "2021-01-01",
-            "days_listed": 30,
-        },
-        {
-            "model_year": 2012,
-            "model": "toyota camry",
-            "condition": "fair",
-            "cylinders": 4.0,
-            "fuel": "gas",
-            "odometer": 120000.0,
-            "transmission": "automatic",
-            "drive": "fwd",
-            "type": "sedan",
-            "paint_color": "black",
-            "is_4wd": 0.0,
-            "date_posted": "2021-02-01",
-            "days_listed": 15,
-        },
-        {
-            "model_year": 2018,
-            "model": "honda civic",
-            "condition": "excellent",
-            "cylinders": 4.0,
-            "fuel": "gas",
-            "odometer": 20000.0,
-            "transmission": "automatic",
-            "drive": "fwd",
-            "type": "sedan",
-            "paint_color": "blue",
-            "is_4wd": 0.0,
-            "date_posted": "2021-03-01",
-            "days_listed": 7,
-        },
-        {
-            "model_year": 2010,
-            "model": "chevrolet silverado 1500",
-            "condition": "good",
-            "cylinders": 8.0,
-            "fuel": "gas",
-            "odometer": 90000.0,
-            "transmission": "automatic",
-            "drive": "4wd",
-            "type": "truck",
-            "paint_color": "red",
-            "is_4wd": 1.0,
-            "date_posted": "2021-01-15",
-            "days_listed": 45,
-        },
-        {
-            "model_year": 2016,
-            "model": "jeep grand cherokee",
-            "condition": "good",
-            "cylinders": 6.0,
-            "fuel": "gas",
-            "odometer": 60000.0,
-            "transmission": "automatic",
-            "drive": "4wd",
-            "type": "SUV",
-            "paint_color": "silver",
-            "is_4wd": 1.0,
-            "date_posted": "2021-04-01",
-            "days_listed": 20,
-        },
-        {
-            "model_year": 2014,
-            "model": "nissan altima",
-            "condition": "fair",
-            "cylinders": 4.0,
-            "fuel": "gas",
-            "odometer": 80000.0,
-            "transmission": "automatic",
-            "drive": "fwd",
-            "type": "sedan",
-            "paint_color": "white",
-            "is_4wd": 0.0,
-            "date_posted": "2021-02-15",
-            "days_listed": 10,
-        },
-        {
-            "model_year": 2019,
-            "model": "ram 1500",
-            "condition": "excellent",
-            "cylinders": 8.0,
-            "fuel": "gas",
-            "odometer": 15000.0,
-            "transmission": "automatic",
-            "drive": "4wd",
-            "type": "truck",
-            "paint_color": "grey",
-            "is_4wd": 1.0,
-            "date_posted": "2021-05-01",
-            "days_listed": 5,
-        },
-        {
-            "model_year": 2011,
-            "model": "ford f-150",
-            "condition": "good",
-            "cylinders": 6.0,
-            "fuel": "gas",
-            "odometer": 110000.0,
-            "transmission": "manual",
-            "drive": "rwd",
-            "type": "truck",
-            "paint_color": "brown",
-            "is_4wd": 0.0,
-            "date_posted": "2021-01-20",
-            "days_listed": 60,
-        },
-    ]
-    df = pd.DataFrame(rows)
-    X = df[cat_cols + num_cols]
-    y = np.array([18000.0, 8000.0, 22000.0, 12000.0, 25000.0, 10000.0, 38000.0, 11000.0])
-
-    preprocessor = ColumnTransformer(
-        [
-            ("cat", OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1), cat_cols),
-            ("num", StandardScaler(), num_cols),
-        ]
-    )
-    pipe = Pipeline(
-        [
-            ("preprocessor", preprocessor),
-            ("model", LinearRegression()),
-        ]
-    )
-    pipe.fit(X, y)
-    joblib.dump(pipe, output)
-    print(f"[CI] CarVision test model saved: {output} ({output.stat().st_size} bytes)")
-
-
 def generate_nlpinsight_model():
     """Generate a tiny NLPInsight model (TF-IDF + LogisticRegression).
 
@@ -370,7 +214,6 @@ def main():
     os.chdir(repo_root)
 
     generate_bankchurn_model()
-    generate_carvision_model()
     generate_nlpinsight_model()
 
     print("[CI] All test models generated successfully")

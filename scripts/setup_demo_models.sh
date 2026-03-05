@@ -85,22 +85,6 @@ print('✅ BankChurn model saved to models/model.joblib')
 cd ..
 echo -e "${GREEN}BankChurn model ready${NC}"
 
-# CarVision: Train quick baseline model
-echo -e "${BLUE}Training CarVision model...${NC}"
-cd CarVision-Market-Intelligence
-$PYTHON -c "
-import sys
-import json
-sys.path.insert(0, '.')
-from pathlib import Path
-import pandas as pd
-import numpy as np
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
-import joblib
-
 # Features matching the API schema (VehicleFeatures)
 cat_features = ['model', 'condition', 'fuel', 'transmission', 'drive', 'type', 'paint_color']
 num_features = ['model_year', 'cylinders', 'odometer']
@@ -170,11 +154,10 @@ Path('artifacts').mkdir(exist_ok=True)
 feature_columns = cat_features + num_features
 Path('artifacts/feature_columns.json').write_text(json.dumps(feature_columns))
 
-print('✅ CarVision model saved to models/model.joblib')
+print('✅  model saved to models/model.joblib')
 print(f'   Features: {feature_columns}')
 "
 cd ..
-echo -e "${GREEN}CarVision model ready${NC}"
 
 # NLPInsight: Train quick TF-IDF baseline for sentiment analysis
 echo -e "${BLUE}Training NLPInsight model...${NC}"

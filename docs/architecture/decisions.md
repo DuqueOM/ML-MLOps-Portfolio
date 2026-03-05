@@ -2,7 +2,7 @@
 
 Key technical decisions with rationale. Written for technical reviewers and hiring managers.
 
-**Last Updated**: March 2026 | **Portfolio Version**: 3.3.1
+**Last Updated**: March 2026 | **Portfolio Version**: 3.5.0
 
 > **Granular ADRs**: See [`docs/decisions/`](../decisions/) for detailed per-decision records (ADR-001 through ADR-007).
 
@@ -39,7 +39,6 @@ CPU-only autoscaling for all ML services. Memory-based HPA removed because ML mo
 | Service | CPU Target | Pods | Scale-down | Scale-up |
 |---------|-----------|------|------------|----------|
 | BankChurn | 70% | 1–3 | 300s / 50% | 60s / max(100%, +2) |
-| CarVision | 70% | 1–3 | 300s / 50% | 60s / max(100%, +2) |
 | NLPInsight | 75% | 1–3 | 300s / 50% | 60s / max(100%, +2) |
 
 ---

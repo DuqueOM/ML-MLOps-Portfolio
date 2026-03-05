@@ -21,20 +21,6 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: carvision-model-config
-  namespace: ml-portfolio
-  labels:
-    app: carvision-intelligence
-    component: model-download
-    cloud: aws
-data:
-  S3_BUCKET: "ml-portfolio-ml-models-production"
-  S3_MODEL_PATH: "carvision/model.joblib"
-  LOCAL_MODEL_PATH: "/models/model.joblib"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: nlpinsight-model-config
   namespace: ml-portfolio
   labels:
