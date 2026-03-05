@@ -101,6 +101,7 @@ extend_skip_glob = ["data/*", "artifacts/*", "mlruns/*"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
+pythonpath = ["."]
 testpaths = ["tests"]
 python_files = "test_*.py"
 python_classes = "Test*"
