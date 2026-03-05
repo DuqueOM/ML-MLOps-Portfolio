@@ -501,29 +501,10 @@ jobs:
           docker compose -f docker-compose.demo.yml ps -a
           echo ""
           echo "=== Import smoke test (runs even if container exited) ==="
+          PYCHECK="import sys; print('Python:', sys.version); import fastapi; print('fastapi OK:', fastapi.__version__); import sklearn; print('sklearn OK:', sklearn.__version__); import numpy; print('numpy OK:', numpy.__version__); import scipy; print('scipy OK:', scipy.__version__); import pandas; print('pandas OK:', pandas.__version__); print('ALL IMPORTS OK')"
           for svc in bankchurn carvision; do
             echo "--- $svc python import check ---"
-            docker compose -f docker-compose.demo.yml run --rm --no-deps "$svc" \
-              python -c "
-import sys
-print('Python:', sys.version)
-try:
-    import fastapi; print('fastapi OK:', fastapi.__version__)
-except Exception as e: print('fastapi FAIL:', e)
-try:
-    import sklearn; print('sklearn OK:', sklearn.__version__)
-except Exception as e: print('sklearn FAIL:', e)
-try:
-    import numpy; print('numpy OK:', numpy.__version__)
-except Exception as e: print('numpy FAIL:', e)
-try:
-    import scipy; print('scipy OK:', scipy.__version__)
-except Exception as e: print('scipy FAIL:', e)
-try:
-    import pandas; print('pandas OK:', pandas.__version__)
-except Exception as e: print('pandas FAIL:', e)
-print('All imports done')
-" 2>&1 || echo "CONTAINER RUN FAILED for $svc"
+            docker compose -f docker-compose.demo.yml run --rm --no-deps "$svc" python -c "$PYCHECK" 2>&1 || echo "CONTAINER RUN FAILED for $svc"
           done
 
       - name: Diagnostic - Check all containers and model files
