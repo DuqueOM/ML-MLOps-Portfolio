@@ -93,7 +93,11 @@ class TestHealthEndpoints:
 
         data = r.json()
         assert data.get("status") in {"healthy", "ok"}, f"{service}: {data}"
-        assert data.get("model_loaded") is True, f"{service} model not loaded: {data}"
+        # ChicagoTaxi uses predictions_loaded; others use model_loaded
+        if service == "chicagotaxi":
+            assert data.get("predictions_loaded") is True, f"{service} predictions not loaded: {data}"
+        else:
+            assert data.get("model_loaded") is True, f"{service} model not loaded: {data}"
 
     @pytest.mark.parametrize("service", SERVICES.keys())
     def test_health_response_time(self, service):
@@ -227,4 +231,5 @@ class TestAPIDocs:
         assert r.status_code == 200
         schema = r.json()
         assert "paths" in schema
-        assert "/predict" in schema["paths"]
+        predict_path = SERVICES[service]["predict"]
+        assert predict_path in schema["paths"], f"{service}: {predict_path} not in {list(schema['paths'].keys())}"
