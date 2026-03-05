@@ -10,7 +10,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ### Fixed
 - **ChicagoTaxi data leakage** — removed same-period aggregate features (`avg_fare`, `avg_distance_miles`, `avg_speed_mph`) that leaked future information; replaced with lag features (`trip_count_lag_1h`, `_lag_24h`, `_lag_168h`, `_rolling_24h`); switched from random to temporal train/test split. R² improved from 0.905 → 0.9649 with honest, leak-free features
-- **Version inconsistencies** — unified all docs to v3.4.0, fixed dates (June 2026 → March 2026, February 2026 → March 2026) across README badge, model cards, architecture docs
+- **Version inconsistencies** — unified all docs to v3.5.0, fixed dates (June 2026 → March 2026, February 2026 → March 2026) across README badge, model cards, architecture docs
 - **`sys.path.insert` hack removed** — `common_utils` is now a pip-installable package (`pip install -e ./common_utils`); removed `sys.path.insert(0, ...)` from all 3 FastAPI apps, 3 conftest.py files, and test_integration.py
 
 ### Changed
@@ -34,9 +34,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 - `k8s/chicagotaxi-deployment.yaml` — Deployment + Service + HPA (CPU-only scaling)
 - `k8s/overlays/aws/chicagotaxi-deployment-aws.yaml` — AWS EKS overlay
 - ChicagoTaxi entries in: model-configmaps (GCP + AWS), upload-models-to-gcs.sh, Helm values.yaml, CI pipeline matrix
-- **Structured JSON logging** — `common_utils/logging.py` (JSONFormatter + HumanFormatter), integrated in all 4 FastAPI apps
+- **Structured JSON logging** — `common_utils/logging.py` (JSONFormatter + HumanFormatter), integrated in all 3 FastAPI apps
 - **mypy config** — `mypy.ini` at repo root, mypy step in CI quality gates
-- **Docker optimization** — `.so` stripping, test data removal (BankChurn, CarVision), aggressive torch cleanup (NLPInsight)
+- **Docker optimization** — `.so` stripping, test data removal (BankChurn), aggressive torch cleanup (NLPInsight)
 - **Argo Rollouts** — `scripts/deploy-canary.sh`, `docs/decisions/008-argo-rollouts-canary.md`
 
 ### Changed
@@ -50,7 +50,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 ### Changed
 - **Project documentation rewritten** — all 3 MkDocs project pages now explain the business problem, metric rationale, and cost of errors (not just metrics tables)
 - **Overclaiming language removed** — "Enterprise-Grade", "production-grade" replaced with concrete evidence statements across README, docs/index.md, ARCHITECTURE_PORTFOLIO.md, DEPLOYMENT_EVIDENCE.md
-- **Version consistency** — all 40+ docs updated to v3.3.1 with consistent test counts (368 total), Grafana panel counts (25 panels / 2 dashboards), and latency data from canonical DEPLOYMENT_EVIDENCE.md
+- **Version consistency** — all 40+ docs updated to v3.3.1 with consistent Grafana panel counts (25 panels / 2 dashboards) and latency data from canonical DEPLOYMENT_EVIDENCE.md
 
 ### Added
 - **ADR-006: Drift-Triggered Retraining** — K8s CronJob queries Prometheus for PSI/AUC/RMSE/F1 drift; triggers GitHub Actions `workflow_dispatch` if thresholds exceeded
@@ -61,9 +61,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 ## [3.3.1] — 2026-03-03
 
 ### Added
-- **Multi-target Dockerfile** (`Dockerfile`) — `--target api` (518 MB) and `--target dashboard` (950 MB) from single Dockerfile
-- **Ingress route** `/dashboard/*` → `-dashboard-service:8501`
-- **AWS overlay** for dashboard deployment (`k8s/overlays/aws/-deployment-aws.yaml`)
+- **Multi-target Dockerfile** — `--target api` and `--target dashboard` builds from single Dockerfile
 
 ### Changed
 - **FastAPI `root_path`** — all 3 APIs now support `API_ROOT_PATH` env var for Ingress path-based routing
@@ -85,7 +83,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 - **CI test model generator** (`scripts/generate_ci_test_models.py`) — creates lightweight sklearn models for Docker Compose integration tests
 
 ### Changed
-- **Prometheus alert rules** — replaced generic `http_requests_total` with actual per-service metrics (`bankchurn_requests_total`, `_requests_total`, `nlpinsight_requests_total`); per-service latency and prediction rate alerts
+- **Prometheus alert rules** — replaced generic `http_requests_total` with actual per-service metrics (`bankchurn_requests_total`, `nlpinsight_requests_total`); per-service latency and prediction rate alerts
 - **Security scans now blocking** — Gitleaks `continue-on-error` removed; Bandit fails on HIGH+ severity issues; pip-audit remains advisory
 - **Spanish→English comments** — translated all Spanish comments in CI workflows, Dockerfiles, `config.yaml`, `docker-compose.yml`, `run_e2e.sh`
 - **CI integration test** — added `generate_ci_test_models.py` step before Docker Compose spin-up
@@ -105,7 +103,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 - **All 3 projects now have fairness audits** (was only BankChurn)
 - Trivy action pinned to `0.28.0` (was `@master`)
 - Documentation standardized: 30+ files updated to v3.0.0 models / v3.2.0 portfolio
-- Test total: 324 (198 + 52 + 74), coverage 90–98%
+- Test total: 294 (198 + 74 + 22), coverage 90–98%
 
 ### Fixed
 - E2E script: `app/main.py` → `app/fastapi_app.py`
@@ -126,7 +124,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 - **E2E script** (`scripts/run_e2e.sh`): CI-friendly — no longer requires `.venv`
 - **E2E CI job**: removed `|| true` — now fails properly on errors
 - **Benchmarks CI job**: removed `continue-on-error: true` — detects regressions
-- **-dashboard** in `docker-compose.demo.yml`: moved to `profiles: [dashboard]` (streamlit not in prod image)
+- Dashboard in `docker-compose.demo.yml`: moved to `profiles: [dashboard]` (streamlit not in prod image)
 - Integration tests accept `degraded` health status (model not loaded in CI)
 - Reformatted 6 files with black 26.1.0
 
@@ -147,8 +145,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 - **CI coverage thresholds** raised to 85% for all 3 projects (was 79-80%)
 - **CI linting made strict** — removed `|| true` from black/isort/flake8 steps
 - **BankChurn model_card.md**: VotingClassifier → StackingClassifier, Docker v1.5.0 → v3.0.0
-- **NLPInsight model_card.md**: expanded to match BankChurn/CarVision quality
-- **BankChurn/CarVision requirements-prod.txt**: sklearn 1.8.0, numpy 2.4.x, pandas 2.3.x, scipy 1.17.x
+- **NLPInsight model_card.md**: expanded to match BankChurn quality
+- **BankChurn requirements-prod.txt**: sklearn 1.8.0, numpy 2.4.x, pandas 2.3.x, scipy 1.17.x
 - Black formatting applied across all 3 projects
 - All requirements changed from `>=` to `~=` (compatible release)
 
@@ -161,10 +159,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ### Added
 - **StackingClassifier** for BankChurn (RF + GB + XGB + LGB → LR meta-learner)
-- **LightGBM** for with FeatureEngineer pipeline (24 features)
+- **LightGBM** for vehicle pricing with FeatureEngineer pipeline (moved to Applied-ML-Projects)
 - **FinBERT** (ProsusAI) for NLPInsight with TF-IDF + LogReg fallback
 - SHAP explainability integrated in BankChurn API responses
-- Streamlit dashboard for (4 tabs: explorer, prediction, analysis, comparison)
+- Streamlit dashboard for vehicle pricing (moved to Applied-ML-Projects)
 - Multi-stage Docker builds with non-root user
 - Kubernetes manifests with Init Containers for model download from GCS
 - HPA with CPU-only scaling (memory-based removed — fixed footprint)

@@ -313,7 +313,7 @@ resource "aws_ecr_repository" "ml_services" {
   for_each = toset([
     "bankchurn-predictor",
     "nlpinsight-analyzer",
-    "carvision-intelligence",
+    "chicagotaxi-pipeline",
   ])
 
   name                 = "${var.project_name}/${each.key}"

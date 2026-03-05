@@ -41,6 +41,7 @@ Before contributing, please review:
 The portfolio consists of three main microservices:
 - `BankChurn-Predictor/` (FastAPI + Scikit-learn)
 - `NLPInsight-Analyzer/` (FastAPI + FinBERT / TF-IDF)
+- `ChicagoTaxi-Demand-Pipeline/` (FastAPI + PySpark + Dask)
 
 ### 2. Dependency Management
 We use `requirements.in` for direct dependencies and `pip-compile` for locking.
@@ -76,7 +77,7 @@ make lint
 - **Integration Tests**: Required for API endpoints.
   - Use `tests/integration/test_demo.py` for cross-project validation.
   - Ensure all services pass health checks and prediction tests.
-- **Coverage**: Must remain above 85% (actual: 90–98%, 368+ tests, [Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)).
+- **Coverage**: Must remain above 85% (actual: 90–98%, 294+ tests, [Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)).
 
 **Run integration tests**:
 ```bash

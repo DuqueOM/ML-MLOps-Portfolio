@@ -19,7 +19,7 @@ Predict hourly taxi demand per Chicago community area to optimize driver allocat
 |-------|------|-------|--------|
 | **ETL** | PySpark | 2.8 GB CSV (6.3M rows) | 95 MB Parquet (partitioned) |
 | **Aggregation** | PySpark | 5.3M clean trips | 357K hourly demand rows |
-| **Training** | scikit-learn | 357K aggregated rows | RandomForest (R² 0.905) |
+| **Training** | scikit-learn | 357K aggregated rows | RandomForest (R² 0.9649) |
 | **Batch Predict** | Dask | 357K rows × 4 partitions | 19K rows/sec throughput |
 | **Serving** | FastAPI | Pre-computed Parquet | Query API for demand by area/hour |
 
@@ -30,8 +30,8 @@ Predict hourly taxi demand per Chicago community area to optimize driver allocat
 | Raw rows processed | 6,364,313 |
 | Clean rows retained | 5,369,172 (84.4%) |
 | ETL throughput | 4,741 rows/sec |
-| Model R² | 0.9050 |
-| Model RMSE | 13.58 trips |
+| Model R² | 0.9649 |
+| Model RMSE | 7.87 trips |
 | Batch prediction throughput | 19,061 rows/sec |
 | CSV → Parquet compression | 97% (2.8 GB → 95 MB) |
 
@@ -159,7 +159,7 @@ See [data_card.md](data_card.md) for full schema, cleaning rules, and quality de
 ## Tech Stack
 
 - **ETL**: PySpark 4.1 (distributed cleaning, aggregation, Parquet export)
-- **ML**: scikit-learn RandomForestRegressor (R² 0.905)
+- **ML**: scikit-learn RandomForestRegressor (R² 0.9649)
 - **Batch Inference**: Dask (parallel prediction with partitioned data)
 - **API**: FastAPI + Pydantic + Uvicorn (serves pre-computed predictions)
 - **Monitoring**: Prometheus custom metrics (`chicagotaxi_*`)

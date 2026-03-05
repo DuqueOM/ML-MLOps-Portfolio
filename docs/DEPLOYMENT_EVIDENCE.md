@@ -16,13 +16,13 @@
 │                                     │                              │
 │  ┌─── ML Services (HPA) ────────┐   │  ┌─── ML Services (HPA) ──┐  │
 │  │ ┌──────────┐ ┌──────────┐    │   │  │ ┌────────┐ ┌────────┐  │  │
-│  │ │BankChurn │ │ │    │   │  │ │BankCh. │ │CarVis. │  │  │
+│  │ │BankChurn │ │NLPInsight│    │   │  │ │BankCh. │ │NLPIns. │  │  │
 │  │ │ API:8000 │ │ API:8000 │    │   │  │ │  :8000 │ │  :8000 │  │  │
 │  │ └──────────┘ └──────────┘    │   │  │ └────────┘ └────────┘  │  │
-│  │ ┌──────────┐ ┌──────────┐    │   │  │ ┌────────┐ ┌────────┐  │  │
-│  │ │NLPInsight│ │ │    │   │  │ │NLPIns. │ │CarVis. │  │  │
-│  │ │ API:8000 │ │Dash:8501 │    │   │  │ │  :8000 │ │D.:8501 │  │  │
-│  │ └──────────┘ └──────────┘    │   │  │ └────────┘ └────────┘  │  │
+│  │ ┌──────────┐                 │   │  │ ┌────────┐             │  │
+│  │ │Chicago   │                 │   │  │ │Chicago │             │  │
+│  │ │Taxi:8000 │                 │   │  │ │T.:8000 │             │  │
+│  │ └──────────┘                 │   │  │ └────────┘             │  │
 │  └──────────────────────────────┘   │  └────────────────────────┘  │
 │                                     │                              │
 │  ┌─── Observability Stack ──────┐   │  ┌─── Observability ──────┐  │
@@ -42,21 +42,18 @@
 │  Terraform IaC                      │  Terraform IaC               │
 └────────────────────────────────────────────────────────────────────┘
 
-8 pods total: 3 ML APIs + Streamlit Dashboard + Prometheus + Grafana + MLflow.
- dashboard is a separate K8s pod (multi-target Dockerfile:
---target api | --target dashboard). Separate pods allow independent
-scaling, health checks, and resource limits.
+6 pods total: 3 ML APIs + Prometheus + Grafana + MLflow.
 ```
 
 ## Verified Capabilities
 
 | Capability | GCP | AWS | Evidence |
 |------------|-----|-----|----------|
-| Container orchestration (K8s) | GKE v1.34.3 | EKS | 7 nodes, 8 pods running (incl. Streamlit dashboard) |
+| Container orchestration (K8s) | GKE v1.34.3 | EKS | 7 nodes, 6 pods running |
 | Auto-scaling (HPA) | CPU-based | CPU-based | Verified: 1→3 pods under load, scale-down after |
 | Model serving (FastAPI) | 3 services | 3 services | `/health` + `/predict` — 27/27 smoke tests passed |
 | Batch prediction | All 3 APIs | All 3 APIs | `/predict_batch` endpoints verified |
-| Monitoring (Prometheus) | 16/16 targets UP | Custom metrics | `bankchurn_*`, `_*`, `nlpinsight_*` + 16 alert rules |
+| Monitoring (Prometheus) | 16/16 targets UP | Custom metrics | `bankchurn_*`, `nlpinsight_*`, `chicagotaxi_*` + 16 alert rules |
 | Dashboards (Grafana) | v10.2.2, 2 dashboards | ML Performance | Latency, throughput, error rates, predictions, resource usage |
 | Experiment tracking (MLflow) | Cloud SQL backend | RDS backend | Running, v2.9.2 |
 | Infrastructure as Code | Terraform GCP | Terraform AWS | 8/8 tests passed (fmt, validate, tfsec, checkov) |
@@ -68,21 +65,21 @@ scaling, health checks, and resource limits.
 | Pod Security Standards | baseline enforce, restricted warn | baseline enforce | Namespace labels applied |
 | Network Policies | default-deny + 3 allow rules | default-deny + 3 allow rules | Applied to cluster |
 | Pod Disruption Budgets | minAvailable=1 (3 services) | minAvailable=1 | Applied to cluster |
-| Test coverage | 90-98% (367 tests) | 90-98% | Codecov integration, 79-85% CI threshold |
+| Test coverage | 90-98% (294+ tests) | 90-98% | Codecov integration, 85% CI threshold |
 | Adversarial testing | 43 robustness tests | 43 tests | SQL injection, XSS, boundary, Unicode |
 | Infra testing (Terraform) | tfsec + checkov | tfsec + checkov | GCP 51/71, AWS 84/116 |
 | Infra testing (K8s) | kube-linter + conftest | kube-linter + conftest | 9/9 passed, 0 OPA violations |
 
 ## Test Results (v3.3.0 — Verified 2026-03-03)
 
-### Unit Test Coverage (368 total tests, 0 failures)
+### Unit Test Coverage (294+ total tests, 0 failures)
 
-| Project | Tests | Passed | Skipped | Coverage | CI Threshold |
-|---------|-------|--------|---------|----------|--------------|
-| BankChurn | 199 | 198 | 1 | **90.03%** | 79% |
-| NLPInsight | 74 | 73+1 xpassed | 0 | **98.41%** | 60% |
-| Adversarial | 43 | 43 | 0 | — | — |
-| **Total** | **368** | **367+1 xpassed** | **1** | **~93%** | — |
+| Project | Tests | Coverage | CI Threshold |
+|---------|-------|----------|--------------|
+| BankChurn | ~198 | **90%** | 85% |
+| NLPInsight | 74 | **98%** | 85% |
+| ChicagoTaxi | 22 | **91%** | 85% |
+| **Total** | **294+** | **90–98%** | 85% |
 
 ### Smoke & Integration Tests (Live GKE Cluster)
 
@@ -114,7 +111,8 @@ scaling, health checks, and resource limits.
 | Model | Algorithm | Key Metric | Size |
 |-------|-----------|------------|------|
 | BankChurn | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87, F1 0.62 | 4.1 MB |
-| NLPInsight | FinBERT (ProsusAI/finbert) | Acc 97%, F1-w 0.97 | ~260 MB (transformer) |
+| NLPInsight | TF-IDF + LogReg (production) | Acc 80.6%, F1-macro 0.748 | ~5 MB |
+| ChicagoTaxi | RandomForest (lag features) | R² 0.9649, RMSE 7.87 | ~2 MB |
 
 ## Docker Image Sizes (v3.3.0)
 
@@ -124,7 +122,6 @@ scaling, health checks, and resource limits.
 | NLPInsight | `nlpinsight-analyzer:v3.3.0` | **1.4 GB** | from 2.05 GB (-32%) |
 
 > Optimizations: `--no-compile`, aggressive cleanup (`__pycache__`, `tests/`, `pip/setuptools`), NLPInsight `torch/test` removal.
-> uses multi-target Dockerfile: `docker build --target api` (518 MB) or `--target dashboard` (950 MB).
 
 ## Load Test Results (Locust, via kubectl port-forward, 2026-03-03)
 
@@ -150,7 +147,7 @@ scaling, health checks, and resource limits.
 
 > \* NLPInsight errors under 30-user stress are **port-forward TCP drops** (`status 0`, `ConnectionRefused`),
 > not application errors. `kubectl port-forward` serializes connections and is not designed for concurrent
-> load testing. BankChurn and had **0 application errors** under 30-user stress.
+> load testing. BankChurn had **0 application errors** under 30-user stress.
 > Production testing via Ingress IP (`34.120.120.57`) eliminates this overhead.
 
 ### HPA Auto-Scaling Observed During Load
@@ -168,6 +165,7 @@ scaling, health checks, and resource limits.
 |-----|--------|-----|--------|------|
 | bankchurn-predictor | Running 1/1 | 10m | 348Mi | xrch |
 | nlpinsight-analyzer | Running 1/1 | 9m | 927Mi | lqbl |
+| chicagotaxi-pipeline | Running 1/1 | 5m | 150Mi | t8v4 |
 | prometheus | Running 1/1 | 3m | 29Mi | t8v4 |
 | grafana | Running 1/1 | 3m | 76Mi | lqbl |
 | mlflow-server | Running 1/1 | 1m | 420Mi | xrch |
@@ -259,13 +257,12 @@ No rules reference non-existent metrics (kube-state-metrics, cAdvisor, model_dri
 4. **Screenshot: GitHub Actions** — Full green CI/CD pipeline
 5. **Screenshot: `kubectl get all`** — All pods, services, HPAs running
 6. **GIF: MLflow experiment comparison** — Comparing model runs side-by-side
-7. **Screenshot: Codecov** — 367 tests, ~93% coverage
+7. **Screenshot: Codecov** — 294+ tests, 90–98% coverage
 8. **Screenshot: Multi-cloud** — Side-by-side GKE vs EKS terminal
 9. **GIF: Fairness audit CLI** — Disparate impact across 3 projects
 10. **Screenshot: Drift detection report** — Evidently HTML with KS/PSI per feature
 
 ---
-
 ## Deployment Commands Reference
 
 ```bash
@@ -278,7 +275,7 @@ aws eks update-kubeconfig --name ml-portfolio-eks-production --region us-east-1
 kubectl get pods -n ml-portfolio
 
 # Verify all services
-for svc in bankchurn-predictor  nlpinsight-analyzer; do
+for svc in bankchurn-predictor nlpinsight-analyzer chicagotaxi-pipeline; do
   echo "--- $svc ---"
   kubectl exec -n ml-portfolio deploy/$svc -- curl -sf http://localhost:8000/health
 done

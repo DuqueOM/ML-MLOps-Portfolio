@@ -8,7 +8,7 @@
 
 ## Release Checklist
 
-- [ ] All tests passing, coverage >= 85% (actual: 90–98%, 368+ tests)
+- [ ] All tests passing, coverage >= 85% (actual: 90–98%, 294+ tests)
 - [ ] Security scans clean (Gitleaks, Bandit, Trivy)
 - [ ] Model metrics meet thresholds (AUC > 0.80, R² > 0.75, Acc > 0.85)
 - [ ] Docker images built and pushed to Artifact Registry
@@ -34,8 +34,8 @@ kubectl rollout undo deployment/<service> -n ml-portfolio
 
 Images pushed to GCP Artifact Registry:
 - `us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/bankchurn:latest`
-- `us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/:latest`
 - `us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/nlpinsight:latest`
+- `us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/chicagotaxi:latest`
 
 ## Emergency Procedures
 

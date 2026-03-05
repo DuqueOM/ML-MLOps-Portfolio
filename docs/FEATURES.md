@@ -33,7 +33,7 @@
 
 ## Responsible AI (v3.5.0)
 
-- **Fairness Audits** — BankChurn (disparate impact), (error ratio), NLPInsight (F1 parity)
+- **Fairness Audits** — BankChurn (disparate impact), NLPInsight (F1 parity)
 - **Drift Detection** — KS + PSI + Evidently, vocabulary drift for NLP
 - **Data Validation** — Pandera schemas for all projects (raw + inference)
 - **OpenTelemetry** — Distributed tracing in all 3 FastAPI apps (graceful no-op fallback)

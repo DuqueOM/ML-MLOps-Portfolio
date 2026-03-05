@@ -6,7 +6,7 @@ metadata:
   labels:
     app: chicagotaxi-pipeline
     tier: ml-service
-    version: v1.0.0
+    version: v3.5.0
 spec:
   replicas: 1
   strategy:
@@ -22,7 +22,7 @@ spec:
       labels:
         app: chicagotaxi-pipeline
         tier: ml-service
-        version: v1.0.0
+        version: v3.5.0
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8000"
@@ -32,7 +32,12 @@ spec:
       initContainers:
       - name: model-download
         image: python:3.11-alpine
-        command: ["python", "/scripts/download-model.py"]
+        command:
+        - sh
+        - -c
+        - |
+          pip install --quiet google-cloud-storage==2.18.2 && \
+          python /scripts/download-model.py
         volumeMounts:
         - name: model-volume
           mountPath: /models
@@ -41,9 +46,25 @@ spec:
         envFrom:
         - configMapRef:
             name: chicagotaxi-model-config
+      - name: download-predictions
+        image: python:3.11-alpine
+        command:
+        - sh
+        - -c
+        - |
+          pip install --quiet google-cloud-storage==2.18.2 && \
+          python /scripts/download-model.py
+        volumeMounts:
+        - name: predictions-volume
+          mountPath: /data
+        - name: download-script
+          mountPath: /scripts
+        envFrom:
+        - configMapRef:
+            name: chicagotaxi-predictions-config
       containers:
       - name: chicagotaxi-api
-        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/chicagotaxi-pipeline:latest
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/chicagotaxi:v3.5.0
         imagePullPolicy: Always
         command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
         ports:
@@ -93,12 +114,18 @@ spec:
         - name: model-volume
           mountPath: /app/models
           readOnly: true
+        - name: predictions-volume
+          mountPath: /app/data/processed/taxi_predictions
+          readOnly: true
       volumes:
       - name: model-volume
+        emptyDir: {}
+      - name: predictions-volume
         emptyDir: {}
       - name: download-script
         configMap:
           name: download-script
+          defaultMode: 0755
 ---
 apiVersion: v1
 kind: Service

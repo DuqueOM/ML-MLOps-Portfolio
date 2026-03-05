@@ -12,11 +12,11 @@
 
 NLPInsight Analyzer demonstrates **NLP in a production MLOps context** with a **dual-backend inference engine**:
 
-- **Production Model**: ProsusAI/FinBERT transformer (97% accuracy, ~260 MB)
-- **Fallback Model**: TF-IDF + LogisticRegression (88% accuracy, 309 KB)
+- **Production Model**: TF-IDF + LogisticRegression (80.6% accuracy, ~5 MB, <5ms inference)
+- **GPU Model**: ProsusAI/FinBERT transformer (~85-88% accuracy, ~440 MB)
 - **Auto-Detection**: `SentimentPredictor` loads transformer or joblib based on model path
 - **Production API**: FastAPI with Prometheus metrics, batch inference, health checks
-- **Financial Domain**: Trained on Financial PhraseBank (4,845 sentences, 3-class sentiment)
+- **Financial Domain**: Trained on Twitter Financial News Sentiment (11,931 real tweets, 3-class sentiment)
 - **Responsible AI**: Fairness audits (per-class F1 parity), Pandera data validation
 
 ## Architecture
@@ -31,28 +31,30 @@ Text Input → SentimentPredictor ─┤                                        
 
 | Backend | Model Size | Inference | Accuracy | Use Case |
 |---------|-----------|-----------|----------|----------|
-| **FinBERT** (production) | ~260 MB | ~87ms P95 | 97% | Docker/K8s deployment |
-| **sklearn** (fallback) | 309 KB | <10ms P95 | 88% | Low resource, no PyTorch |
+| **sklearn** (production) | ~5 MB | <5ms P95 | 80.6% | Docker/K8s deployment (CPU) |
+| **FinBERT** (GPU) | ~440 MB | ~87ms P95 | ~85-88% | GPU environments |
 
-The production deployment uses FinBERT for accuracy. The TF-IDF fallback provides a lightweight option when PyTorch is unavailable.
+The production deployment uses TF-IDF + LogReg for CPU-optimized inference. FinBERT is available for GPU environments when higher accuracy is needed.
 
 ### Pipeline
-1. **Data**: Financial PhraseBank CSV → label encoding → stratified split
+1. **Data**: Twitter Financial News CSV → label encoding → stratified split
 2. **Training (FinBERT)**: ProsusAI/finbert → HuggingFace Trainer with early stopping
 3. **Training (sklearn)**: TF-IDF vectorization → LogisticRegression with class weights
 4. **Inference**: Unified `SentimentPredictor` with auto-backend detection
 5. **API**: FastAPI + Pydantic validation + Prometheus metrics
 
-## Model Performance (v3.0.0)
+## Model Performance (v3.5.0)
 
-| Metric | FinBERT (production) | TF-IDF + LogReg (fallback) |
-|--------|---------------------|----------------------------|
-| **Accuracy** | **96.91%** | 88.08% |
-| **F1 (weighted)** | **0.9695** | 0.880 |
-| **F1 (macro)** | **0.9629** | 0.826 |
+| Metric | TF-IDF + LogReg (production) | FinBERT (GPU) |
+|--------|------------------------------|---------------|
+| **Accuracy** | **80.6%** | ~85-88%* |
+| **F1 (weighted)** | **0.810** | ~0.85* |
+| **F1 (macro)** | **0.748** | ~0.82* |
 | **Labels** | negative, neutral, positive | negative, neutral, positive |
-| **Model Size** | ~260 MB | 309 KB |
-| **P95 Latency** | <220ms (K8s) | <10ms |
+| **Model Size** | ~5 MB | ~440 MB |
+| **P95 Latency** | <5ms | ~220ms (K8s) |
+
+\* *FinBERT fine-tuning requires GPU. Estimated from published benchmarks.*
 
 ## Quick Start
 
@@ -97,21 +99,21 @@ curl -X POST http://localhost:8000/predict \
 
 | Metric | Value |
 |--------|-------|
-| Test Coverage | 98.4% (74 tests) |
+| Test Coverage | 98% (74 tests) |
 | Docker Image | 1.4 GB (torch CPU-only, optimized) |
-| Model Size | ~260 MB (FinBERT) / 309 KB (TF-IDF fallback) |
-| P95 Latency | <540ms (K8s via port-forward) |
+| Model Size | ~5 MB (TF-IDF production) / ~440 MB (FinBERT GPU) |
+| P95 Latency | <5ms (TF-IDF) / <220ms (FinBERT, K8s) |
 | Load Test | 0% error rate (Locust, 10 users, 2min) |
 
 ## Data
 
 | Attribute | Value |
 |-----------|-------|
-| **Records** | 4,845 financial sentences |
+| **Records** | 11,931 financial tweets |
 | **Features** | 1 input (`text`) |
 | **Target** | `label` — negative, neutral, positive |
-| **Distribution** | Positive 28.1%, Neutral 59.4%, Negative 12.5% |
-| **Source** | Financial PhraseBank (Malo et al., 2014) |
+| **Distribution** | Positive 26.9%, Neutral 58.0%, Negative 15.1% |
+| **Source** | [Twitter Financial News Sentiment](https://huggingface.co/datasets/zeroshot/twitter-financial-news-sentiment) |
 | **Versioning** | DVC tracked |
 
 See [data_card.md](data_card.md) for full dataset documentation.
@@ -125,9 +127,9 @@ NLPInsight-Analyzer/
 │   ├── predictor.py            # SentimentPredictor (auto-backend)
 │   ├── training.py             # FinBERT + sklearn training
 │   └── config.py               # Pydantic config validation
-├── tests/                      # 74 tests (98.4% coverage)
+├── tests/                      # 74 tests (98% coverage)
 ├── configs/config.yaml         # Model + training config
-├── data/raw/                   # Financial PhraseBank (DVC tracked)
+├── data/raw/                   # Twitter Financial News (DVC tracked)
 ├── models/                     # FinBERT checkpoint or sklearn joblib
 ├── monitoring/                 # Drift detection
 ├── Dockerfile                  # Production image (CPU-optimized PyTorch)
@@ -143,6 +145,6 @@ NLPInsight-Analyzer/
 - **Responsible AI**: Fairness audits (F1 parity), Pandera data validation
 - **Container**: Multi-stage Docker (CPU-optimized PyTorch)
 - **Config**: Pydantic-validated YAML
-- **Data**: Financial PhraseBank (Malo et al., 2014)
+- **Data**: Twitter Financial News Sentiment (11,931 tweets)
 
 📄 [Model Card](model_card.md) · [Data Card](data_card.md) · [Full Docs](https://duqueom.github.io/ML-MLOps-Portfolio/projects/nlpinsight/)

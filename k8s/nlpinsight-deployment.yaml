@@ -6,7 +6,7 @@ metadata:
   labels:
     app: nlpinsight-analyzer
     tier: ml-service
-    version: v3.0.0
+    version: v3.5.0
 spec:
   replicas: 1
   strategy:
@@ -22,7 +22,7 @@ spec:
       labels:
         app: nlpinsight-analyzer
         tier: ml-service
-        version: v3.0.0
+        version: v3.5.0
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8000"
@@ -31,7 +31,7 @@ spec:
       serviceAccountName: ml-workload
       containers:
       - name: nlpinsight-api
-        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/nlpinsight-analyzer:latest
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/nlpinsight:v3.5.0
         imagePullPolicy: Always
         command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
         ports:

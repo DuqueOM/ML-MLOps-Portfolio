@@ -15,7 +15,7 @@
 
 ## ⚡ One-Command Demo (Recommended)
 
-Start the **entire portfolio stack** (4 ML APIs + Dashboard + MLflow) with a single command:
+Start the **entire portfolio stack** (3 ML APIs + MLflow) with a single command:
 
 ```bash
 make docker-demo
@@ -24,9 +24,8 @@ make docker-demo
 **What this does**:
 1. ✅ Builds optimized Docker images for all 3 projects
 2. ✅ Starts MLflow Tracking Server (experiment management)
-3. ✅ Launches BankChurn, NLPInsight APIs
-4. ✅ Starts Streamlit Dashboard
-5. ✅ Runs automated health checks
+3. ✅ Launches BankChurn, NLPInsight, ChicagoTaxi APIs
+4. ✅ Runs automated health checks
 
 **Access Points** (available after `make docker-demo`):
 
@@ -64,17 +63,12 @@ curl -X POST "http://localhost:8001/predict" \
 # Response: {"churn_probability": 0.23, "churn_prediction": 0, "risk_level": "LOW"}
 ```
 
-### Price Prediction
+### ChicagoTaxi Demand Query
 
 ```bash
-curl -X POST "http://localhost:8002/predict" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "model_year": 2018, "odometer": 45000, "model": "ford f-150",
-       "fuel": "gas", "transmission": "automatic"
-     }'
+curl "http://localhost:8004/demand?area=8&hour=14&limit=5"
 
-# Response: {"predicted_price": 24500.0, "vehicle_age": 8, "brand": "ford"}
+# Response: [{"pickup_community_area": 8, "hour": 14, "predicted_demand": 45.2, ...}]
 ```
 
 ### NLPInsight Sentiment Analysis
@@ -121,7 +115,7 @@ make install
 
 After starting the demo stack, open [http://localhost:5000](http://localhost:5000) to see:
 
-- **3 Experiments**: BankChurn, NLPInsight
+- **3 Experiments**: BankChurn, NLPInsight, ChicagoTaxi
 - **Performance Metrics**: F1-Score, AUC-ROC, Accuracy, RMSE
 - **Business Metrics**: Revenue impact, retention estimates
 - **Model Artifacts**: Config files, model checkpoints
@@ -134,8 +128,8 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 
 # Run experiments from each project
 cd BankChurn-Predictor && make mlflow-demo && cd ..
-cd  && make mlflow-demo && cd ..
 cd NLPInsight-Analyzer && make mlflow-demo && cd ..
+cd ChicagoTaxi-Demand-Pipeline && make mlflow-demo && cd ..
 ```
 
 **Results**: New runs appear in MLflow UI with full lineage (params, metrics, artifacts)
@@ -152,8 +146,8 @@ make health-check
 
 # Or manually:
 curl http://localhost:8001/health  # BankChurn
-curl http://localhost:8002/health  # 
 curl http://localhost:8003/health  # NLPInsight
+curl http://localhost:8004/health  # ChicagoTaxi
 ```
 
 **Expected**: `{"status": "healthy", "model_loaded": true, "model_version": "..."}`
@@ -204,8 +198,8 @@ For detailed development instructions, see:
 - **[Architecture Docs](docs/ARCHITECTURE_PORTFOLIO.md)** — System design
 - **Project READMEs** — Individual project setup
   - [BankChurn-Predictor/README.md](BankChurn-Predictor/README.md)
-  - [README.md](README.md)
   - [NLPInsight-Analyzer/README.md](NLPInsight-Analyzer/README.md)
+  - [ChicagoTaxi-Demand-Pipeline/README.md](ChicagoTaxi-Demand-Pipeline/README.md)
 
 ---
 
@@ -223,8 +217,7 @@ For detailed development instructions, see:
 
 ## 📚 Next Steps
 
-1. **Explore the Dashboard**: Open [http://localhost:8501](http://localhost:8501) for interactive analytics
-2. **Review Experiments**: Check [http://localhost:5000](http://localhost:5000) for model comparisons
+1. **Review Experiments**: Check [http://localhost:5000](http://localhost:5000) for model comparisons
 3. **Read Documentation**: See [docs/](docs/) for architecture, operations, and deployment
 4. **Customize Models**: Modify configs in each project's `configs/config.yaml`
 5. **Deploy to Production**: Follow guides in [docs/OPERATIONS_PORTFOLIO.md](docs/OPERATIONS_PORTFOLIO.md)
@@ -233,7 +226,7 @@ For detailed development instructions, see:
 
 <div align="center">
 
-**Quick Start Version**: 2.0 | **Last Updated**: February 2026
+**Quick Start Version**: 3.5.0 | **Last Updated**: March 2026
 
 ⭐ **Production-Ready ML Portfolio** ⭐
 

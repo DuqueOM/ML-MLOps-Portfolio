@@ -28,7 +28,8 @@ python scripts/train_production_models.py
 
 # 4. Verify metrics
 # BankChurn: AUC 0.87, F1 0.62 (StackingClassifier)
-# NLPInsight: Acc 97%, F1-w 0.97 (FinBERT)
+# NLPInsight: Acc 80.6%, F1-macro 0.748 (TF-IDF + LogReg)
+# ChicagoTaxi: R² 0.9649, RMSE 7.87 (RandomForest)
 ```
 
 ## Random Seeds
@@ -40,14 +41,16 @@ All models use `random_state=42` for reproducibility.
 | Project | Path | Size | Format |
 |---------|------|------|--------|
 | BankChurn | `models/model.joblib` | 4.1 MB | Joblib (compress=3) |
-| NLPInsight | `models/model.joblib` | 309 KB | Joblib (compress=3) |
+| NLPInsight | `models/model.joblib` | ~5 MB | Joblib (compress=3) |
+| ChicagoTaxi | `models/model.joblib` | ~2 MB | Joblib (compress=3) |
 
 ## Data Sources
 
 | Project | Dataset | Rows | Source |
 |---------|---------|------|--------|
-| BankChurn | Churn.csv | 10,000 | Kaggle |
-| NLPInsight | FinancialPhraseBank | 4,845 | Malo et al. |
+| BankChurn | Churn_Modelling.csv | 10,000 | Kaggle |
+| NLPInsight | Twitter Financial News | 11,931 | HuggingFace (zeroshot) |
+| ChicagoTaxi | Taxi Trips (2013-2023) | 6,364,313 | Chicago Open Data Portal |
 
 ## MLflow Tracking
 

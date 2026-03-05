@@ -33,11 +33,10 @@ RUN python -m venv /opt/venv && \
     fi && \
     pip install --no-cache-dir --no-compile -r requirements_clean.txt && \
     find /opt/venv -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null; \
-    find /opt/venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null; \
+    find /opt/venv -type d -name 'tests' -not -path '*/numpy/*' -exec rm -rf {} + 2>/dev/null; \
     find /opt/venv -type d -name 'test' -exec rm -rf {} + 2>/dev/null; \
     find /opt/venv -type f -name '*.pyc' -delete 2>/dev/null; \
     find /opt/venv -type f -name '*.pyo' -delete 2>/dev/null; \
-    find /opt/venv -name '*.so' -exec strip --strip-unneeded {} + 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/torch/test 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/torch/include 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/torch/share 2>/dev/null; \

@@ -28,3 +28,16 @@ data:
   GCS_BUCKET: "ml-portfolio-duque-om-202602-datasets-production"
   GCS_MODEL_PATH: "nlpinsight/v1/financial_phrasebank.csv"
   LOCAL_MODEL_PATH: "/data/raw/train.csv"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chicagotaxi-predictions-config
+  namespace: ml-portfolio
+  labels:
+    app: chicagotaxi-pipeline
+    component: dataset-download
+data:
+  GCS_BUCKET: "ml-portfolio-duque-om-202602-ml-models-production"
+  GCS_MODEL_PATH: "chicagotaxi/predictions.parquet"
+  LOCAL_MODEL_PATH: "/data/predictions.parquet"

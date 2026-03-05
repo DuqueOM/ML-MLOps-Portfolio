@@ -22,7 +22,7 @@ matrix:
   python-version: ['3.11', '3.12']
 ```
 
-6 parallel test jobs (3 projects × 2 Python versions).
+6 parallel test jobs (3 projects × 2 Python versions). ChicagoTaxi included in matrix.
 
 ### Jobs
 
@@ -43,7 +43,7 @@ matrix:
 | Metric | Target | Current |
 |--------|--------|---------|
 | Build Time | <10 min | ~8 min |
-| Test Coverage | >85% | 90–98% (368+ tests) |
+| Test Coverage | >85% | 90–98% (294+ tests) |
 | Security | 0 critical | Pass |
 
 ## Local CI
@@ -55,4 +55,4 @@ pytest tests/ -v --cov        # Tests + coverage
 
 ---
 
-*Last Updated: March 2026 — v3.3.1*
+*Last Updated: March 2026 — v3.5.0*

@@ -10,16 +10,17 @@ Financial markets generate 10,000+ news articles/day. Manual sentiment review co
 
 ## Why Accuracy Works Here (and F1-Macro as Guard Rail)
 
-The dataset has 3 classes: 59.4% neutral, 28.1% positive, 12.5% negative. No class falls below 12%, making accuracy meaningful (unlike BankChurn's 20/80 split). F1-macro (0.96) guards the minority negative class — the highest-value signal for risk management.
+The dataset has 3 classes: 58.0% neutral, 26.9% positive, 15.1% negative. Trained on **Twitter Financial News Sentiment** (11,931 real tweets) — noisy, informal text with stock tickers and abbreviations. F1-macro (0.748) guards the minority negative class — the highest-value signal for risk management.
 
-| Metric | FinBERT | TF-IDF Fallback | Why It Matters |
-|--------|---------|-----------------|----------------|
-| **Accuracy** | 96.91% | 88.08% | +8.8 points from domain-specific transfer learning |
-| **F1 (weighted)** | 0.9695 | 0.880 | Overall system performance weighted by class frequency |
-| **F1 (macro)** | 0.9595 | 0.826 | Safety guard: ensures minority negative class isn't neglected |
-| **Negative Recall** | 0.94 | — | 94% of actual negative texts are caught |
+| Metric | TF-IDF + LogReg (production) | FinBERT (GPU) | Why It Matters |
+|--------|------------------------------|---------------|----------------|
+| **Accuracy** | **80.6%** | ~85-88%* | Honest metric on hard, noisy tweets |
+| **F1 (weighted)** | 0.810 | ~0.85* | Overall system performance weighted by class frequency |
+| **F1 (macro)** | 0.748 | ~0.82* | Safety guard: ensures minority negative class isn't neglected |
 
-The 8.8-point accuracy gap between TF-IDF and FinBERT comes from **domain-specific pre-training** on Reuters/Bloomberg financial text — ~3.7% of that gain from FinBERT's pre-training alone, before any fine-tuning.
+\* *FinBERT fine-tuning requires GPU. Estimated from published benchmarks.*
+
+80.6% on real financial tweets (vs 97% on the easier Financial PhraseBank) is an honest, defensible metric. The dataset upgrade from curated sentences to noisy tweets better demonstrates real-world NLP capability.
 
 ## Architecture
 
