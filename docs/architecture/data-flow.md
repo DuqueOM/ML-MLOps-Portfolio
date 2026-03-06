@@ -12,8 +12,11 @@ Data pipeline architecture from ingestion to serving across all projects.
 `Churn.csv (10K rows) → Pandera Validation → SimpleImputer(median/constant) → OneHotEncoder(Geography,Gender) → StandardScaler → StackingClassifier(RF+GB+XGB+LGB→LR)`
 
 ### NLPInsight
-`Financial texts → Pandera Validation → FinBERT Tokenizer → FinBERT (ProsusAI) → Sentiment (positive/negative/neutral)`
-- Fallback: TF-IDF + LogisticRegression
+`Financial tweets → Pandera Validation → TF-IDF Vectorizer → LogisticRegression → Sentiment (positive/negative/neutral)`
+- GPU option: FinBERT (ProsusAI) for higher accuracy when GPU available
+
+### ChicagoTaxi
+`6.3M taxi trips (CSV) → PySpark ETL → Hourly aggregation (357K rows) → Lag features → RandomForest → Batch predictions (Parquet) → FastAPI serving`
 
 ## Data Versioning (DVC)
 
@@ -38,7 +41,8 @@ dvc pull                       # Pull on another machine
 |---------|-----------|--------|--------|
 | BankChurn | CreditScore ∈ [300, 850], Age > 0 | `BankChurnRawSchema` + `BankChurnInferenceSchema` | Reject |
 | NLPInsight | Text non-empty, valid labels | `NLPInsightRawSchema` + `NLPInsightInferenceSchema` | Reject |
+| ChicagoTaxi | Duration 60s–86400s, distance 0.1–500mi, area 1–77 | PySpark cleaning rules | Drop |
 
 ---
 
-*Last Updated: March 2026 — v3.3.1*
+*Last Updated: March 2026 — v3.5.0*

@@ -10,21 +10,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ### Fixed
 - **ChicagoTaxi data leakage** — removed same-period aggregate features (`avg_fare`, `avg_distance_miles`, `avg_speed_mph`) that leaked future information; replaced with lag features (`trip_count_lag_1h`, `_lag_24h`, `_lag_168h`, `_rolling_24h`); switched from random to temporal train/test split. R² improved from 0.905 → 0.9649 with honest, leak-free features
-- **Version inconsistencies** — unified all docs to v3.5.0, fixed dates (June 2026 → March 2026, February 2026 → March 2026) across README badge, model cards, architecture docs
+- **Docker numpy 2.x fix** — removed `.so` stripping (corrupts numpy 2.x compiled extensions), excluded numpy from blanket `tests/` directory deletion, pinned scipy~=1.14.0 for BankChurn (1.17.x has ELF alignment issues on slim-bookworm)
+- **Version inconsistencies** — unified all docs to v3.5.0, fixed dates across README badge, model cards, architecture docs
 - **`sys.path.insert` hack removed** — `common_utils` is now a pip-installable package (`pip install -e ./common_utils`); removed `sys.path.insert(0, ...)` from all 3 FastAPI apps, 3 conftest.py files, and test_integration.py
 
 ### Changed
-- **Portfolio reduced to 3 projects** — removed (MAPE 32.9% not defensible); moved to `Applied-ML-Projects` repo alongside recovered TelecomAI project
+- **Portfolio reduced to 3 projects** — removed CarVision (MAPE 32.9% not defensible); moved to `Applied-ML-Projects` repo alongside recovered TelecomAI project
 - **NLPInsight dataset upgrade** — Financial PhraseBank (4,845 sentences, 97% acc) → Twitter Financial News Sentiment (11,931 real tweets, 80.6% acc). Harder, noisier, more realistic benchmark
-- **NLPInsight production model** — TF-IDF + LogReg for CPU deployment (<5ms); FinBERT fine-tuning supported via training pipeline when GPU available
-- **README.md** — updated to 3 projects, architecture diagram without all metrics updated
+- **NLPInsight production model** — TF-IDF + LogReg for CPU deployment (5ms p50 in-pod); FinBERT fine-tuning supported via training pipeline when GPU available. Image size: 1.4 GB → 267 MB
+- **Docker images** — bankchurn:v3.5.0 (342 MB), nlpinsight:v3.5.0 (267 MB), chicagotaxi:v3.5.0 (154 MB) on Artifact Registry
+- **Documentation updated with real production metrics** — in-pod latency (BankChurn 103ms, NLPInsight 5ms, ChicagoTaxi 75ms), load test (2,675 requests, 0% errors), cluster state (4 nodes, 6 pods, avg 17% CPU / 61% memory)
+- **README.md** — updated to 3 projects, real in-pod latency, architecture diagram with TF-IDF+LogReg
 - **common_utils/pyproject.toml** — fixed package discovery (`package-dir` mapping), license reference, version 1.2.0
-- **Version badges** — all docs updated from 3.4.0 → 3.5.0
 
 ### Added
 - **ADR-009: Simplification** — documents deliberate evaluation of each infrastructure component, data leakage fix, and removal rationale
 - **ChicagoTaxi lag features** — `compute_lag_features()` and `temporal_train_test_split()` functions in `batch_predict.py`
+- **ChicagoTaxi predictions init container** — downloads batch prediction Parquet from GCS via `chicagotaxi-predictions-config` ConfigMap
 - **BankChurn Gradio demo** — `app/gradio_demo.py` interactive churn prediction UI with risk assessment
+- **BankChurn SHAP endpoint** — `/predict?explain=true` returns feature contributions (196ms in-pod)
 
 ## [3.4.0] — 2026-03-04
 

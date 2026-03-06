@@ -149,9 +149,9 @@ See [data_card.md](data_card.md) for full schema, cleaning rules, and quality de
 
 | Metric | Value |
 |--------|-------|
-| Docker Image | Python 3.11-slim |
+| Docker Image | 154 MB (`chicagotaxi:v3.5.0`, python:3.11-slim-bookworm) |
 | Model Size | ~2 MB (joblib compressed) |
-| P95 Latency | <50ms (pre-computed predictions) |
+| P50 / P95 Latency | 75ms / 460ms `/demand` (in-pod, GKE) |
 | ETL Throughput | 4,741 rows/sec (PySpark local[*]) |
 | Batch Prediction | 19,061 rows/sec (Dask, 4 partitions) |
 | Test Coverage | 91% (22 tests) |

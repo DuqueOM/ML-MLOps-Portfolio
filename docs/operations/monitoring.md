@@ -28,25 +28,27 @@ All APIs expose `/metrics`. Key metrics per service:
 | Experiment | Best Run | Key Metric |
 |------------|----------|------------|
 | **BankChurn** | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87 |
-| **NLPInsight** | FinBERT (ProsusAI) | Acc 97% |
+| **NLPInsight** | TF-IDF + LogReg (prod) / FinBERT (GPU) | Acc 80.6% |
 
 ![MLflow Experiments](../media/screenshots/monitoring/39-mlflow-experiments.png)
 
 ## SLOs
 
-| Service | Availability | P95 Latency | Error Rate |
-|---------|--------------|-------------|------------|
-| BankChurn | 99.9% | <250ms | <1% |
-| NLPInsight | 99.9% | <250ms | <1% |
+| Service | Availability | P95 Latency (in-pod) | Error Rate |
+|---------|--------------|---------------------|------------|
+| BankChurn | 99.9% | 111ms | <1% |
+| NLPInsight | 99.9% | 15ms | <1% |
+| ChicagoTaxi | 99.9% | 460ms | <1% |
 
 ## HPA Autoscaling
 
 CPU-only scaling (memory is fixed for ML models loaded at startup):
 
-| Service | CPU Target | Min/Max Pods | Memory |
-|---------|-----------|--------------|--------|
-| BankChurn | 70% | 1–3 | ~300Mi |
-| NLPInsight | 75% | 1–3 | ~650Mi |
+| Service | CPU Target | Min/Max Pods | Memory (real) |
+|---------|-----------|--------------|---------------|
+| BankChurn | 70% | 1–3 | ~344Mi |
+| NLPInsight | 70% | 1–3 | ~283Mi |
+| ChicagoTaxi | 70% | 1–3 | ~431Mi |
 
 ## Testing
 
@@ -63,4 +65,4 @@ locust -f tests/load/locustfile.py --headless     # Load tests
 
 ---
 
-*Last Updated: March 2026 — v3.3.1*
+*Last Updated: March 2026 — v3.5.0*

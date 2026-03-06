@@ -9,7 +9,8 @@ All services expose FastAPI with automatic Swagger UI at `/docs`.
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/health` | Health check |
-| POST | `/predict` | Churn prediction |
+| POST | `/predict` | Churn prediction (add `?explain=true` for SHAP contributions) |
+| GET | `/metrics` | Prometheus metrics |
 | GET | `/docs` | Swagger UI |
 
 **Predict Request:**
@@ -22,30 +23,13 @@ All services expose FastAPI with automatic Swagger UI at `/docs`.
 {"prediction":0,"probability":0.15,"risk_level":"LOW"}
 ```
 
-### (`:8002`)
-
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/health` | Health check |
-| POST | `/predict` | Price prediction |
-| GET | `/docs` | Swagger UI |
-
-**Predict Request:**
-```json
-{"model_year":2020,"odometer":30000,"fuel":"gas","transmission":"automatic","type":"sedan","condition":"excellent"}
-```
-
-**Response:**
-```json
-{"predicted_price":25430.50}
-```
-
 ### NLPInsight (`:8003`)
 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/health` | Health check |
 | POST | `/predict` | Sentiment analysis |
+| GET | `/metrics` | Prometheus metrics |
 | GET | `/docs` | Swagger UI |
 
 **Predict Request:**
@@ -58,6 +42,27 @@ All services expose FastAPI with automatic Swagger UI at `/docs`.
 {"label":"positive","confidence":0.92,"scores":{"positive":0.92,"neutral":0.06,"negative":0.02}}
 ```
 
+### ChicagoTaxi (`:8004`)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/health` | Health check |
+| GET | `/demand` | Query demand predictions by area/hour |
+| GET | `/areas` | List all areas ranked by demand |
+| GET | `/pipeline/status` | ETL pipeline metadata |
+| GET | `/metrics` | Prometheus metrics |
+| GET | `/docs` | Swagger UI |
+
+**Demand Request:**
+```bash
+curl "http://localhost:8004/demand?area=8&hour=14&limit=5"
+```
+
+**Response:**
+```json
+{"predictions":[{"pickup_community_area":8,"hour":14,"predicted_demand":42.3}],"total":1}
+```
+
 ## Common Patterns
 
 - **Health Check**: All services return `{"status":"healthy"}` at `/health`
@@ -67,4 +72,4 @@ All services expose FastAPI with automatic Swagger UI at `/docs`.
 
 ---
 
-*Last Updated: March 2026*
+*Last Updated: March 2026 — v3.5.0*

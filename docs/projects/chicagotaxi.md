@@ -40,8 +40,9 @@ This is a regression problem on aggregated hourly counts. R² 0.9649 means 96.5%
 |--------|-------|
 | Test Coverage | 91% (22 tests) |
 | CI Threshold | 85% |
-| Docker Image | Python 3.11-slim, multi-stage |
+| Docker Image | 154 MB (`chicagotaxi:v3.5.0`, python:3.11-slim-bookworm) |
 | Model Size | ~2 MB (RandomForest, joblib) |
+| P50 Latency | 75ms `/demand`, 187ms `/areas` (in-pod, GKE) |
 | API Endpoints | `/demand`, `/areas`, `/pipeline/status`, `/health`, `/metrics` |
 
 ## Data Cleaning Rules

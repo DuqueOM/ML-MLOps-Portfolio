@@ -25,7 +25,7 @@ BankChurn Predictor identifies customers at high risk of leaving the bank using 
 | **F1-Score** | **0.62** | Above average for imbalanced churn (benchmark: 0.45-0.55) |
 | **Precision** | **0.73** | 73% of predicted churns are actual churns |
 | **Recall** | **0.54** | 54% of actual churns caught (precision-recall trade-off) |
-| **API Latency** | **<50ms p95** | Without SHAP; ~500ms with `?explain=true` |
+| **API Latency** | **103ms p50 / 111ms p95** | In-pod (GKE); 196ms with `?explain=true` |
 | **Test Coverage** | **90%** | 199 tests |
 
 ### Pipeline Architecture
@@ -139,10 +139,11 @@ BankChurn-Predictor/
 
 | Metric | Value |
 |--------|-------|
-| Docker Image | 2.1 GB (with SHAP CPU-only) |
+| Docker Image | 342 MB (`bankchurn:v3.5.0`, python:3.11-slim-bookworm) |
 | Model Size | 4.1 MB (joblib compressed) |
-| P95 Latency | <50ms (without SHAP) |
-| Load Test | 0% error rate (Locust, 10 users, 2min) |
+| P50 / P95 Latency | 103ms / 111ms (in-pod, GKE) |
+| SHAP Latency | 196ms in-pod (`?explain=true`) |
+| Load Test | 0% error rate (Locust, 10 users, 2min, 979 requests via Ingress) |
 | Drift Detection | PSI + KS via Evidently (weekly) |
 
 ## Tech Stack

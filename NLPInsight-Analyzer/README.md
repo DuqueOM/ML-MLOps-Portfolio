@@ -1,6 +1,6 @@
 # NLPInsight Analyzer
 
-**Financial Sentiment Analysis — FinBERT (ProsusAI) + TF-IDF Fallback**
+**Financial Sentiment Analysis — TF-IDF + LogReg (Production) / FinBERT (GPU)**
 
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-ee4c2c.svg)](https://pytorch.org)
@@ -100,10 +100,10 @@ curl -X POST http://localhost:8000/predict \
 | Metric | Value |
 |--------|-------|
 | Test Coverage | 98% (74 tests) |
-| Docker Image | 1.4 GB (torch CPU-only, optimized) |
+| Docker Image | 267 MB (`nlpinsight:v3.5.0`, python:3.11-slim-bookworm, no torch) |
 | Model Size | ~5 MB (TF-IDF production) / ~440 MB (FinBERT GPU) |
-| P95 Latency | <5ms (TF-IDF) / <220ms (FinBERT, K8s) |
-| Load Test | 0% error rate (Locust, 10 users, 2min) |
+| P50 / P95 Latency | 5ms / 15ms (in-pod, GKE, TF-IDF) |
+| Load Test | 0% error rate (Locust, 10 users, 2min, 1,030 requests via Ingress) |
 
 ## Data
 

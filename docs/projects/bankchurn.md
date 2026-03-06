@@ -36,10 +36,10 @@ Request → Pydantic Validation → ColumnTransformer(SimpleImputer + StandardSc
 | Metric | Value | Context |
 |--------|-------|---------|
 | Test Coverage | 90% (199 tests) | CI threshold: 85% |
-| Docker Image | 1.09 GB | Optimized from 2.11 GB (-48%) via multi-stage build |
+| Docker Image | 342 MB | `bankchurn:v3.5.0` on Artifact Registry (python:3.11-slim-bookworm) |
 | Model Size | 4.1 MB | Joblib compress=3; includes preprocessor + 4 base learners + meta-learner |
-| P50 / P95 Latency | 170ms / 350ms | Locust, 10 users, GKE via port-forward |
-| SHAP | Lazy, CPU-only | `?explain=true` adds ~200ms; skipped by default |
+| P50 / P95 Latency | 103ms / 111ms | In-pod (GKE), zero network overhead |
+| SHAP | Lazy, CPU-only | `?explain=true` adds ~93ms (196ms total); skipped by default |
 
 ## Responsible AI
 

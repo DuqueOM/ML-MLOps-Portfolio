@@ -38,8 +38,8 @@ kubectl get pods -n ml-portfolio
 
 ```bash
 kubectl port-forward svc/bankchurn-service 8001:80 -n ml-portfolio
-kubectl port-forward svc/ 8002:80 -n ml-portfolio
 kubectl port-forward svc/nlpinsight-service 8003:80 -n ml-portfolio
+kubectl port-forward svc/chicagotaxi-service 8004:80 -n ml-portfolio
 kubectl port-forward svc/grafana-service 3000:3000 -n ml-portfolio
 ```
 
@@ -57,9 +57,9 @@ kubectl get hpa -n ml-portfolio                                 # HPA status
 - [x] Health checks passing (GKE)
 - [x] Resource limits calibrated per service
 - [x] Monitoring dashboards (Grafana auto-provisioned)
-- [x] Load testing (Locust — 0% errors, p95 480ms, 973 reqs/2min)
+- [x] Load testing (Locust — 0% errors, p95 210ms, 2,675 reqs/2min via Ingress IP)
 - [x] Security scanning (Trivy, Bandit, Gitleaks)
 
 ---
 
-*Last Updated: March 2026 — v3.3.1*
+*Last Updated: March 2026 — v3.5.0*

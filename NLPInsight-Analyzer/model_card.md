@@ -341,7 +341,7 @@ curl http://localhost:8000/health
 - **Replicas**: 1 (auto-scaled 1-3 based on CPU)
 - **Resources**: 300m CPU / 512Mi memory (requests), 1000m CPU / 1Gi memory (limits)
 - **Health Probes**: Liveness/Readiness at `/health`
-- **Init Container**: Downloads FinBERT model from GCS at pod startup
+- **Init Container**: Downloads TF-IDF model (model.joblib) from GCS at pod startup
 - **Monitoring**: Prometheus annotations enabled
 
 ---
@@ -386,8 +386,9 @@ rate(nlpinsight_requests_total{status="500"}[5m])
 
 | Version | Date | Changes | Accuracy | Status |
 |---------|------|---------|----------|--------|
-| **3.0.0** | Mar 2026 | ProsusAI/FinBERT (transfer learning), dual-backend | 96.91% | ✅ Active |
-| 2.0.0 | Feb 2026 | TF-IDF + LogisticRegression, balanced classes | 88.08% | Fallback |
+| **3.5.0** | Mar 2026 | TF-IDF + LogReg production (267 MB image), FinBERT GPU option | 80.6% (Twitter Financial News) | ✅ Active |
+| 3.0.0 | Mar 2026 | ProsusAI/FinBERT (transfer learning), dual-backend | 96.91% (Financial PhraseBank) | Deprecated |
+| 2.0.0 | Feb 2026 | TF-IDF + LogisticRegression, balanced classes | 88.08% (Financial PhraseBank) | Deprecated |
 | 1.0.0 | Sep 2025 | Initial TF-IDF baseline | 85.2% | Deprecated |
 
 ### Promotion Criteria (Staging → Production)

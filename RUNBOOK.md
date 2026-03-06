@@ -76,7 +76,7 @@ kubectl apply -f k8s/                              # GKE
 kubectl apply -k k8s/overlays/aws/                 # EKS
 kubectl get pods -n ml-portfolio                   # verify
 ./scripts/upload-models-to-gcs.sh all              # upload models
-./scripts/deploy-canary.sh bankchurn v3.2.0        # canary deploy
+./scripts/deploy-canary.sh bankchurn v3.5.0        # canary deploy
 ```
 
 ## Troubleshooting

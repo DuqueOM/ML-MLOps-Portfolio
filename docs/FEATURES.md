@@ -4,22 +4,33 @@
 
 | Feature | Impact |
 |---------|--------|
-| **Inference optimization** | 0% errors, p95 <250ms, lazy SHAP |
+| **Inference optimization** | 0% errors, in-pod p95: 111ms (BankChurn), 15ms (NLPInsight), 460ms (ChicagoTaxi) |
 | **Uvicorn 2 workers** | Doubled throughput under concurrency |
 | **Joblib compression** | 77% smaller model files |
 | **Pandas dtype optimization** | 93% memory reduction |
 | **NumPy vectorization** | 1.6× speedup |
 | **sklearn parallelization** | `n_jobs=-1` across all transformers |
 
-## Load Test Results (10 users, 2 min, Locust, GKE via port-forward)
+## Load Test Results (10 users, 2 min, Locust, GKE Ingress IP 34.120.120.57)
 
 | Service | p50 | p95 | p99 | Requests | Errors |
 |---------|-----|-----|-----|----------|--------|
-| BankChurn:predict | 170ms | 350ms | 450ms | 260 | 0% |
-| NLPInsight:predict | 180ms | 450ms | 2400ms | 184 | 0% |
-| **Aggregated** | **160ms** | **480ms** | **820ms** | **973** | **0%** |
+| BankChurn:predict | 190ms | 210ms | 340ms | 979 | 0% |
+| NLPInsight:predict | 150ms | 180ms | 190ms | 1,030 | 0% |
+| ChicagoTaxi:demand | 190ms | 230ms | 480ms | 666 | 0% |
+| **Aggregated** | **170ms** | **210ms** | **410ms** | **2,675** | **0%** |
 
-**SLA**: Error rate 0% < 1% ✅ · P95 480ms < 500ms ✅ · P99 820ms < 1000ms ✅
+**SLA**: Error rate 0% < 1% ✅ · P95 210ms < 500ms ✅ · P99 410ms < 1000ms ✅
+
+## In-Pod Latency (measured inside container, zero network overhead)
+
+| Service | Endpoint | P50 | P95 |
+|---------|----------|-----|-----|
+| BankChurn | `/predict` | 103ms | 111ms |
+| BankChurn | `/predict?explain=true` | 196ms | — |
+| NLPInsight | `/predict` | 5ms | 15ms |
+| ChicagoTaxi | `/demand` | 75ms | 460ms |
+| ChicagoTaxi | `/areas` | 187ms | — |
 
 ## Key Capabilities
 

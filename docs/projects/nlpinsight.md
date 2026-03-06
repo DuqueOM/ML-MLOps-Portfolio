@@ -25,25 +25,25 @@ The dataset has 3 classes: 58.0% neutral, 26.9% positive, 15.1% negative. Traine
 ## Architecture
 
 ```
-Production:  Text → FinBERT Tokenizer (max 256 tokens) → ProsusAI/FinBERT (110M params)
-                   → Classification Head → Softmax → {negative, neutral, positive} + confidence scores
+Production:  Text → TfidfVectorizer (max 10K features) → LogisticRegression (class_weight='balanced')
+                   → {negative, neutral, positive} + confidence scores (5ms in-pod)
 
-Fallback:    Text → TfidfVectorizer (max 10K features) → LogisticRegression (class_weight='balanced')
-                   → {negative, neutral, positive}
+GPU option:  Text → FinBERT Tokenizer (max 256 tokens) → ProsusAI/FinBERT (110M params)
+                   → Classification Head → Softmax → {negative, neutral, positive}
 
 Auto-detect: SentimentPredictor checks for model.joblib (sklearn) or config.json (transformer)
 ```
 
-**Why dual backend**: FinBERT adds 87ms per request; TF-IDF runs in <5ms. For latency-critical pipelines, deploy the fallback. For accuracy-critical analyst workflows, use FinBERT. The API auto-detects which backend to use based on model availability.
+**Why TF-IDF in production**: TF-IDF runs in 5ms (in-pod) with a 267 MB image vs FinBERT's 87ms with a 1.4 GB image. For latency-critical pipelines, the accuracy trade-off (80.6% vs ~88%) is acceptable. The training pipeline supports FinBERT fine-tuning when GPU is available.
 
 ## Operational
 
 | Metric | Value | Context |
 |--------|-------|---------|
 | Test Coverage | 98% (74 tests) | CI threshold: 85% |
-| Docker Image | 1.4 GB | PyTorch CPU-only; optimized from 2.05 GB (-32%) |
-| Model Size | ~260 MB (FinBERT) / 309 KB (fallback) | FinBERT downloaded via Init Container from GCS |
-| P50 / P95 Latency | 180ms / 450ms | Locust, 10 users, GKE via port-forward |
+| Docker Image | 267 MB | `nlpinsight:v3.5.0` on Artifact Registry (no torch dependency) |
+| Model Size | ~5 MB (TF-IDF+LogReg) | Downloaded via Init Container from GCS |
+| P50 / P95 Latency | 5ms / 15ms | In-pod (GKE), zero network overhead |
 
 ## Responsible AI
 

@@ -16,12 +16,13 @@
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Scalability** | Kubernetes HPA, CPU-based autoscaling |
 
-## Projects (v3.3.1, Python 3.11.14 + sklearn 1.8.0)
+## Projects (v3.5.0, Python 3.11.14 + sklearn 1.8.0)
 
-| Project | Algorithm | Primary Metric | Tests | Coverage |
-|---------|-----------|----------------|:-----:|:--------:|
-| **BankChurn** | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87 | 199 | 90% |
-| **NLPInsight** | FinBERT (ProsusAI) / TF-IDF fallback | Acc 97% | 74 | 98% |
+| Project | Algorithm | Primary Metric | In-Pod Latency | Tests | Coverage |
+|---------|-----------|----------------|---------------|:-----:|:--------:|
+| **BankChurn** | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87 | 103ms p50 | 199 | 90% |
+| **NLPInsight** | TF-IDF + LogReg (prod) / FinBERT (GPU) | Acc 80.6% | 5ms p50 | 74 | 98% |
+| **ChicagoTaxi** | PySpark ETL + RandomForest (lag features) | R² 0.9649 | 75ms p50 | 22 | 91% |
 
 ## Infrastructure
 
@@ -35,7 +36,7 @@
 
 | Service | Cost | % |
 |---------|------|---|
-| Compute Engine (3× e2-medium) | $20.50 | 40% |
+| Compute Engine (4× e2-medium) | $20.50 | 40% |
 | GKE management | $13.35 | 26% |
 | Container Scanning | $9.10 | 18% |
 | Networking | $6.15 | 12% |
@@ -55,7 +56,7 @@
 | **Containers** | Docker, Kubernetes (GKE/EKS) |
 | **IaC** | Terraform (GCP + AWS modules) |
 | **CI/CD** | GitHub Actions, Trivy, Bandit, Gitleaks |
-| **Testing** | pytest (90–98% coverage, 367+ tests), Locust (load testing), adversarial (43 tests) |
+| **Testing** | pytest (90–98% coverage, 295+ tests), Locust (load testing, 2,675 requests, 0% errors) |
 
 ## Visual Evidence
 
@@ -72,4 +73,4 @@
 
 ---
 
-*Last Updated: March 2026 — Portfolio v3.3.1*
+*Last Updated: March 2026 — Portfolio v3.5.0*

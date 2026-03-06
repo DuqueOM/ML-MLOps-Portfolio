@@ -2,7 +2,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Model ID** | `chicagotaxi-rf-v1.1.0` |
+| **Model ID** | `chicagotaxi-rf-v3.5.0` |
 | **Model Type** | Regression (hourly demand count) |
 | **Algorithm** | RandomForestRegressor (scikit-learn 1.8+) |
 | **Primary Metric** | R² 0.9649, RMSE 7.87 |
@@ -96,7 +96,7 @@ ChicagoTaxi benefits from strong temporal periodicity (rush hours, weekends) tha
 | **Lag features** | pandas | 357K rows | 355K rows (lag computation drops first week) | — |
 | **Train** | scikit-learn | 284K rows | model.joblib (~30 MB) | Temporal split |
 | **Predict** | pandas | 355K rows | Parquet with predictions | — |
-| **Serve** | FastAPI | Parquet | JSON API responses | <50ms p95 |
+| **Serve** | FastAPI | Parquet | JSON API responses | 75ms p50, 460ms p95 (in-pod) |
 
 ### Cleaning Rules
 
@@ -128,4 +128,4 @@ ChicagoTaxi benefits from strong temporal periodicity (rush hours, weekends) tha
 
 ---
 
-*Model v1.1.0: Fixed data leakage (removed same-period aggregates, added lag features, temporal split). Trained with Python 3.13 + scikit-learn. Production Docker image uses Python 3.11.*
+*Model v3.5.0: Fixed data leakage (removed same-period aggregates, added lag features, temporal split). Docker image: 154 MB (`chicagotaxi:v3.5.0`, python:3.11-slim-bookworm). In-pod latency: 75ms p50 `/demand`, 187ms `/areas`.*

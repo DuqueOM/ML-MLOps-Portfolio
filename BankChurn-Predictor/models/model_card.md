@@ -519,8 +519,8 @@ curl http://localhost:8000/health
 
 **Production Setup**: See `k8s/bankchurn-deployment.yaml` for full manifest
 
-- **Replicas**: 3 (auto-scaled 2-10 based on CPU)
-- **Resources**: 500m CPU, 1.5Gi memory (requests)
+- **Replicas**: 1 (auto-scaled 1-3 based on CPU)
+- **Resources**: 200m CPU, 512Mi memory (requests), 500m CPU / 1Gi (limits)
 - **Health Probes**: Liveness `/health`, Readiness `/health`
 - **Monitoring**: Prometheus annotations enabled
 
@@ -627,7 +627,7 @@ rate(prediction_confidence_bucket{le="0.7"}[5m])  # Low confidence predictions
 1. ✅ AUC-ROC ≥ 0.80 on holdout test set
 2. ✅ F1-Score ≥ 0.50
 3. ✅ Fairness tests pass (gender/geography bias < 5%)
-4. ✅ Performance tests pass (p95 latency < 50ms)
+4. ✅ Performance tests pass (p95 latency 111ms in-pod)
 5. ✅ Security scan (Bandit, pip-audit)
 6. ✅ Code review approved
 

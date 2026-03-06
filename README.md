@@ -53,13 +53,13 @@
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|---------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | 180ms p50 | StackingClassifier (5 models), Feature Engineering, Drift Detection |
-| [📝 NLPInsight](NLPInsight-Analyzer/) | NLP | **Acc 80.6%** (sentiment) | 98% | <5ms p50 | TF-IDF + LogReg, Twitter Financial News (11.9K tweets) |
-| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96**, 6.3M rows | — | 19K rows/sec | PySpark ETL, Lag Features, Temporal Split |
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | 103ms p50 | StackingClassifier (5 models), SHAP, Drift Detection |
+| [📝 NLPInsight](NLPInsight-Analyzer/) | NLP | **Acc 80.6%** (sentiment) | 98% | 5ms p50 | TF-IDF + LogReg, Twitter Financial News (11.9K tweets) |
+| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96**, 6.3M rows | 91% | 75ms p50 | PySpark ETL, Lag Features, Temporal Split |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
-| **GCP Deployment** | ✅ Live | GKE cluster, pods for 3 ML services + MLflow + monitoring, Artifact Registry |
+| **GCP Deployment** | ✅ Live | GKE 4 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), 0% error rate |
 | **AWS Deployment** | 🟡 Ready | EKS + ECR + S3 + RDS — Terraform + K8s overlays complete |
 | **CI/CD** | ✅ Unified | GitHub Actions → GKE + EKS (separate deploy workflows) |
 | **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) — parallel provider configs |
@@ -74,9 +74,9 @@
 
 Production-grade churn prediction with **StackingClassifier** ensemble (RF + GradientBoosting + XGBoost + LightGBM → LogisticRegression meta-learner). Advanced `ChurnFeatureEngineer` with domain-specific ratios, bins, and risk scores. MLflow tracking.
 
-| AUC-ROC | F1 | Precision | Recall | Coverage | **Latency (Locust, GKE)** |
+| AUC-ROC | F1 | Precision | Recall | Coverage | **In-Pod Latency (GKE)** |
 |---------|-----|-----------|--------|----------|----------|
-| **0.87** | 0.62 | 0.73 | 0.54 | 90% | <50ms p95 |
+| **0.87** | 0.62 | 0.73 | 0.54 | 90% | 103ms p50 / 111ms p95 |
 
 > **Why these metrics**: AUC-ROC is the primary metric — the dataset has 20.4% churn rate (4:1 imbalance), making accuracy meaningless (a "never churn" model scores 79.6%). AUC measures rank-ordering quality across all thresholds. **Production threshold: 0.35** (not default 0.50) — a missed churner costs ~$1,500–$3,000 LTV vs. ~$50 for an unnecessary retention offer (30:1 cost ratio). At threshold 0.35, Recall rises to 0.78, catching 78% of churners; at 0.50, Recall drops to 0.54. The precision trade-off is intentional and quantified.
 
@@ -153,7 +153,7 @@ graph TB
         INGRESS --> CT_SVC[ChicagoTaxi Service]
 
         BC_SVC --> BC_POD[BankChurn Pod<br/>StackingClassifier]
-        NL_SVC --> NL_POD[NLPInsight Pod<br/>FinBERT]
+        NL_SVC --> NL_POD[NLPInsight Pod<br/>TF-IDF+LogReg]
         CT_SVC --> CT_POD[ChicagoTaxi Pod<br/>Batch Predictions]
 
         BC_POD -.->|Init Container| GCS
@@ -236,7 +236,7 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 
 > **Cloud-Agnostic Design**: Monitoring stack (Prometheus, Grafana, MLflow), K8s deployment patterns (HPA, anti-affinity, health probes), and CI/CD structure are identical across clouds. Only the init container SDK and ingress annotations change.
 
-> **💰 Cost-Aware**: Full GCP stack runs at ~$51 USD/month (3 nodes, 6 pods, monitoring + CI/CD). See [detailed cost analysis](docs/ARCHITECTURE_PORTFOLIO.md#-production-infrastructure--cost-analysis).
+> **💰 Cost-Aware**: Full GCP stack runs on 4× e2-medium nodes (avg 17% CPU, 61% memory). See [detailed cost analysis](docs/ARCHITECTURE_PORTFOLIO.md#-production-infrastructure--cost-analysis).
 
 <div align="center">
 

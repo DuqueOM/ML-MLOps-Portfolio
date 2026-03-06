@@ -51,7 +51,7 @@ docker compose -f docker-compose.demo.yml up -d --build
 | Metric | GCP (GKE) | AWS (EKS) |
 |--------|-----------|-----------|
 | **Pods** | 6 (3 APIs with HPA + MLflow + Prometheus + Grafana) | 6 |
-| **Nodes** | 7 × e2-medium | 2 × t3.large |
+| **Nodes** | 4 × e2-medium | 2 × t3.large |
 | **Cost** | ~$51/month | ~$170/month |
 | **Uptime** | 99.9%+ | 99.9%+ |
 

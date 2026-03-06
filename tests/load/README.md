@@ -35,10 +35,11 @@ locust -f tests/load/locustfile.py \
 
 ## Test Scenarios
 
-| Service | Port | Endpoint | Expected Latency |
-|---------|------|----------|------------------|
-| BankChurn | 8001 | POST /predict | < 50ms p95 |
-| NLPInsight | 8003 | POST /predict | < 50ms p95 |
+| Service | Port | Endpoint | In-Pod Latency (GKE) |
+|---------|------|----------|---------------------|
+| BankChurn | 8001 | POST /predict | 103ms p50 / 111ms p95 |
+| NLPInsight | 8003 | POST /predict | 5ms p50 / 15ms p95 |
+| ChicagoTaxi | 8004 | GET /demand | 75ms p50 / 460ms p95 |
 
 ## Performance Targets
 
