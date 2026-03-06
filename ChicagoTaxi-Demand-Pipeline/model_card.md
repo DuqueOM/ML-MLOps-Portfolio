@@ -5,7 +5,7 @@
 | **Model ID** | `chicagotaxi-rf-v3.5.0` |
 | **Model Type** | Regression (hourly demand count) |
 | **Algorithm** | RandomForestRegressor (scikit-learn 1.8+) |
-| **Primary Metric** | R² 0.905, RMSE 13.58 |
+| **Primary Metric** | R² 0.9649, RMSE 7.87 |
 | **Training Data** | 355,207 aggregated hourly demand records (after lag feature computation) |
 | **Source Data** | 6,364,313 Chicago taxi trips (2013–2023) |
 | **Production Status** | Active |
@@ -33,9 +33,9 @@ Chicago has 77 community areas with vastly different demand patterns. Area 8 (Ne
 
 | Metric | Value | Context |
 |--------|-------|---------|
-| **R²** | 0.905 | 90.5% of demand variance explained by temporal + lag features |
-| **RMSE** | 13.58 trips | Average hourly prediction error |
-| **MAE** | 4.67 trips | Median error is lower — RMSE penalizes peak-hour outliers |
+| **R²** | 0.9649 | 96.5% of demand variance explained by temporal + lag features |
+| **RMSE** | 7.87 trips | Average hourly prediction error |
+| **MAE** | 2.85 trips | Median error is lower — RMSE penalizes peak-hour outliers |
 | **Training set** | 284,165 rows (80%) | Temporal split: data up to 2023-10-22 |
 | **Test set** | 71,042 rows (20%) | Strictly future data: from 2023-10-22 onward |
 
@@ -67,7 +67,7 @@ ChicagoTaxi benefits from strong temporal periodicity (rush hours, weekends) tha
 | `trip_count_lag_168h` | float | Demand 1 week ago (same area) | Medium — weekly pattern |
 | `trip_count_rolling_24h` | float | Rolling 24h mean demand (same area) | High — trend indicator |
 
-**Removed (data leakage fix)**: `avg_fare`, `avg_distance_miles`, `avg_speed_mph` were previously used but are computed from the same group of trips that defines `trip_count`. At prediction time these values would not be available. Replacing them with lag features uses only historical information and actually improved R² to 0.905 (from near-zero with same-period aggregates removed).
+**Removed (data leakage fix)**: `avg_fare`, `avg_distance_miles`, `avg_speed_mph` were previously used but are computed from the same group of trips that defines `trip_count`. At prediction time these values would not be available. Replacing them with lag features uses only historical information and improved R² to 0.9649 (from near-zero with same-period aggregates removed).
 
 **Not included (intentional)**: weather, holidays, events. These would improve accuracy but add external data dependencies that complicate the batch pipeline.
 

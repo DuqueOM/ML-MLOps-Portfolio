@@ -15,7 +15,7 @@
 |---------|-----------|----------------|:-----:|:--------:|
 | **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC 0.87 | 199 | 90% |
 | **[NLPInsight](projects/nlpinsight.md)** | TF-IDF + LogReg (prod) / FinBERT (GPU) | Acc 80.6% | 74 | 98% |
-| **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL + RandomForest (6.3M rows) | R² 0.905 | 22 | 91% |
+| **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL + RandomForest (6.3M rows) | R² 0.96 | 22 | 91% |
 
 ## Quick Start
 

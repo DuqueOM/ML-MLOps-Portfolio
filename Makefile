@@ -11,7 +11,7 @@ BLUE := \033[0;34m
 NC := \033[0m # No Color
 
 # Projects
-PROJECTS := BankChurn-Predictor CarVision-Market-Intelligence NLPInsight-Analyzer
+PROJECTS := BankChurn-Predictor NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline
 
 help: ## Show this help message
 	@echo "$(GREEN)ML-MLOps Portfolio - Available Commands:$(NC)"
@@ -98,8 +98,8 @@ docker-demo-up: ## Start demo without tests (docker-compose up)
 	@echo "$(GREEN)✓ Services started$(NC)"
 	@echo "$(YELLOW)MLflow UI:$(NC)      http://localhost:5000"
 	@echo "$(YELLOW)BankChurn API:$(NC)  http://localhost:8001"
-	@echo "$(YELLOW)CarVision API:$(NC)  http://localhost:8002"
 	@echo "$(YELLOW)NLPInsight API:$(NC) http://localhost:8003"
+	@echo "$(YELLOW)ChicagoTaxi API:$(NC) http://localhost:8004"
 
 docker-demo-down: ## Stop demo stack
 	@echo "$(YELLOW)Stopping demo stack...$(NC)"
@@ -208,8 +208,8 @@ health-check: ## Check health of all demo services
 	@echo "$(GREEN)Checking service health...$(NC)"
 	@curl -s http://localhost:5000/health 2>/dev/null && echo "$(GREEN)✓ MLflow$(NC)" || echo "$(RED)✗ MLflow$(NC)"
 	@curl -s http://localhost:8001/health 2>/dev/null && echo "$(GREEN)✓ BankChurn$(NC)" || echo "$(RED)✗ BankChurn$(NC)"
-	@curl -s http://localhost:8002/health 2>/dev/null && echo "$(GREEN)✓ CarVision$(NC)" || echo "$(RED)✗ CarVision$(NC)"
 	@curl -s http://localhost:8003/health 2>/dev/null && echo "$(GREEN)✓ NLPInsight$(NC)" || echo "$(RED)✗ NLPInsight$(NC)"
+	@curl -s http://localhost:8004/health 2>/dev/null && echo "$(GREEN)✓ ChicagoTaxi$(NC)" || echo "$(RED)✗ ChicagoTaxi$(NC)"
 
 stats: ## Show repository statistics
 	@echo "$(GREEN)Repository Statistics:$(NC)"
