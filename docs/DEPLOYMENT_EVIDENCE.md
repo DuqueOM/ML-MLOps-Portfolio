@@ -113,7 +113,7 @@
 |-------|-----------|------------|------|
 | BankChurn | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87, F1 0.62 | 4.1 MB |
 | NLPInsight | TF-IDF + LogReg (production) | Acc 80.6%, F1-macro 0.748 | ~5 MB |
-| ChicagoTaxi | RandomForest (lag features) | R² 0.9649, RMSE 7.87 | ~2 MB |
+| ChicagoTaxi | RandomForest (lag features) | R² 0.905, RMSE 13.58 | ~2 MB |
 
 ## Docker Image Sizes (v3.5.0 — Artifact Registry, 2026-03-05)
 

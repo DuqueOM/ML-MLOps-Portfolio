@@ -26,13 +26,13 @@ pandas would OOM on the full CSV. PySpark handles the heavy ETL; Dask handles th
 | Hourly demand rows | 357,055 | Aggregated by area × hour × day |
 | CSV → Parquet | 2.8 GB → 95 MB | 97% compression via columnar + snappy |
 | ETL throughput | 4,741 rows/sec | PySpark local[*], 4g driver memory |
-| Model R² | 0.9649 | RandomForest with lag features, temporal split |
-| RMSE | 7.87 trips | On hourly demand counts |
+| Model R² | 0.905 | RandomForest with lag features, temporal split |
+| RMSE | 13.58 trips | On hourly demand counts |
 | Batch prediction | 19,061 rows/sec | Dask, 4 partitions |
 
-## Why R² 0.9649 Is Strong
+## Why R² 0.905 Is Strong
 
-This is a regression problem on aggregated hourly counts. R² 0.9649 means 96.5% of demand variance is explained by temporal + spatial lag features alone — without weather, events, or holiday calendars. RMSE of 7.87 on hourly counts means predictions are off by ~8 trips per hour per area on average. The model benefits from strong temporal periodicity and leak-free lag features (historical counts only).
+This is a regression problem on aggregated hourly counts. R² 0.905 means 90.5% of demand variance is explained by temporal + spatial lag features alone — without weather, events, or holiday calendars. RMSE of 13.58 on hourly counts means predictions are off by ~14 trips per hour per area on average. The model benefits from strong temporal periodicity and leak-free lag features (historical counts only).
 
 ## Operational
 

@@ -22,7 +22,7 @@
 |---------|-----------|----------------|---------------|:-----:|:--------:|
 | **BankChurn** | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87 | 103ms p50 | 199 | 90% |
 | **NLPInsight** | TF-IDF + LogReg (prod) / FinBERT (GPU) | Acc 80.6% | 5ms p50 | 74 | 98% |
-| **ChicagoTaxi** | PySpark ETL + RandomForest (lag features) | R² 0.9649 | 75ms p50 | 22 | 91% |
+| **ChicagoTaxi** | PySpark ETL + RandomForest (lag features) | R² 0.905 | 75ms p50 | 22 | 91% |
 
 ## Infrastructure
 

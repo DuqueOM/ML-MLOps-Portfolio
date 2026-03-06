@@ -29,7 +29,7 @@ python scripts/train_production_models.py
 # 4. Verify metrics
 # BankChurn: AUC 0.87, F1 0.62 (StackingClassifier)
 # NLPInsight: Acc 80.6%, F1-macro 0.748 (TF-IDF + LogReg)
-# ChicagoTaxi: R² 0.9649, RMSE 7.87 (RandomForest)
+# ChicagoTaxi: R² 0.905, RMSE 13.58 (RandomForest)
 ```
 
 ## Random Seeds

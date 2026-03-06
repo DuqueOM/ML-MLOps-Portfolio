@@ -104,9 +104,9 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 
 | Raw Rows | Clean Rows | ETL Throughput | Model R² | RMSE | MAE | Compression |
 |----------|------------|----------------|----------|------|-----|-------------|
-| **6.36M** | 5.37M | 3,320 rows/sec | **0.9649** | 7.87 | 2.85 | 97% (2.8GB→95MB) |
+| **6.36M** | 5.37M | 3,320 rows/sec | **0.905** | 13.58 | 4.67 | 97% (2.8GB→95MB) |
 
-> **Why this project**: The other 2 projects demonstrate online ML inference. This one fills the data engineering gap — PySpark for ETL, lag features for leak-free time-series forecasting, Parquet for columnar storage. Data leakage was identified and fixed: same-period aggregates replaced with historical lag features, random split replaced with temporal split (train on past, test on future). R² improved from 0.905 → 0.9649.
+> **Why this project**: The other 2 projects demonstrate online ML inference. This one fills the data engineering gap — PySpark for ETL, lag features for leak-free time-series forecasting, Parquet for columnar storage. Data leakage was identified and fixed: same-period aggregates replaced with historical lag features, random split replaced with temporal split (train on past, test on future). R² 0.905 with leak-free features only.
 
 [📂 Project](ChicagoTaxi-Demand-Pipeline/) · [📄 Model Card](ChicagoTaxi-Demand-Pipeline/model_card.md)
 

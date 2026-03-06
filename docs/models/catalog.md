@@ -8,7 +8,7 @@
 |---------|----------|-----------|------|----------------|--------|
 | **BankChurn** | `bankchurn-stacking-v3.0.0` | StackingClassifier (RF+GB+XGB+LGB→LR) | 4.1 MB | AUC 0.87 | Production |
 | **NLPInsight** | `nlpinsight-tfidf-v3.5.0` | TF-IDF + LogReg (prod) / FinBERT (GPU) | ~5 MB / ~440 MB | Acc 80.6% | Production |
-| **ChicagoTaxi** | `chicagotaxi-rf-v3.5.0` | RandomForest (lag features) | ~2 MB | R² 0.9649 | Production |
+| **ChicagoTaxi** | `chicagotaxi-rf-v3.5.0` | RandomForest (lag features) | ~2 MB | R² 0.905 | Production |
 
 ## BankChurn Predictor
 
@@ -36,8 +36,8 @@
 
 | Metric | Value |
 |--------|-------|
-| R² | **0.9649** |
-| RMSE | 7.87 trips |
+| R² | **0.905** |
+| RMSE | 13.58 trips |
 | Coverage | 91% (22 tests) |
 
 **Pipeline**: `PySpark ETL → Lag Features → RandomForest (temporal split)`
