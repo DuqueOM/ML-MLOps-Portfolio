@@ -48,6 +48,9 @@ coverage.xml
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 
+# MkDocs build output
+site/
+
 # IPython
 profile_default/
 ipython_config.py
