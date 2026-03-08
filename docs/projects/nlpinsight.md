@@ -24,15 +24,27 @@ The dataset has 3 classes: 58.0% neutral, 26.9% positive, 15.1% negative. Traine
 
 ## Architecture
 
-```
-Production:  Text → TfidfVectorizer (max 10K features) → LogisticRegression (class_weight='balanced')
-                   → {negative, neutral, positive} + confidence scores (5ms in-pod)
+```mermaid
+flowchart TD
+    A[Text Input] --> B[SentimentPredictor\nAuto-detect]
+    B --> C{model.joblib\nexists?}
+    C -->|Yes| D[TF-IDF Vectorizer\nmax 10K features]
+    D --> E[LogisticRegression\nclass_weight=balanced]
+    C -->|No| F{config.json\nexists?}
+    F -->|Yes| G[FinBERT Tokenizer\nmax 256 tokens]
+    G --> H[ProsusAI/FinBERT\n110M params]
+    H --> I[Classification Head\n+ Softmax]
+    E --> J[negative / neutral / positive\n+ confidence scores]
+    I --> J
 
-GPU option:  Text → FinBERT Tokenizer (max 256 tokens) → ProsusAI/FinBERT (110M params)
-                   → Classification Head → Softmax → {negative, neutral, positive}
-
-Auto-detect: SentimentPredictor checks for model.joblib (sklearn) or config.json (transformer)
+    style D fill:#2d6a4f,color:#fff
+    style E fill:#2d6a4f,color:#fff
+    style G fill:#7b2cbf,color:#fff
+    style H fill:#7b2cbf,color:#fff
+    style I fill:#7b2cbf,color:#fff
 ```
+
+> **Green** = Production path (TF-IDF, 5ms, 267 MB) · **Purple** = GPU path (FinBERT, 87ms, 1.4 GB)
 
 **Why TF-IDF in production**: TF-IDF runs in 5ms (in-pod) with a 267 MB image vs FinBERT's 87ms with a 1.4 GB image. For latency-critical pipelines, the accuracy trade-off (80.6% vs ~88%) is acceptable. The training pipeline supports FinBERT fine-tuning when GPU is available.
 
@@ -51,13 +63,39 @@ Auto-detect: SentimentPredictor checks for model.joblib (sklearn) or config.json
 - **Drift**: Sentiment distribution monitored via Prometheus (`nlpinsight_predictions_total{sentiment}`); shift alerts calibrated as relative change from 7-day baseline (not absolute — a market crisis legitimately shifts the distribution)
 - **Validation**: Pandera schemas for input text and label format
 
+## Live Prediction
+
+![NLPInsight Sentiment Prediction](../media/screenshots/apis/29-fastapi-swagger-nlpinsight.png)
+
 ## Try It
 
-```bash
-curl -X POST http://localhost:8003/predict \
-  -H "Content-Type: application/json" \
-  -d '{"text":"The company reported strong quarterly earnings growth"}'
-```
+=== "Single Text"
+
+    ```bash
+    curl -s -X POST http://localhost:8003/predict \
+      -H "Content-Type: application/json" \
+      -d '{"text":"Fed raises interest rates amid inflation concerns, markets tumble"}' \
+      | python3 -m json.tool
+    ```
+
+    Expected: `sentiment` (negative), `confidence` (~0.7+), `probabilities` per class.
+
+=== "Batch (up to 500)"
+
+    ```bash
+    curl -s -X POST http://localhost:8003/predict/batch \
+      -H "Content-Type: application/json" \
+      -d '{"texts":["Revenue beat expectations","Stock crashed after earnings miss","Markets closed flat today"]}' \
+      | python3 -m json.tool
+    ```
+
+    Expected: Array of 3 predictions (positive, negative, neutral).
+
+=== "Health Check"
+
+    ```bash
+    curl -s http://localhost:8003/health | python3 -m json.tool
+    ```
 
 📄 [Full Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/NLPInsight-Analyzer/model_card.md) — includes metric rationale, performance benchmarks, and production decision narrative.
 

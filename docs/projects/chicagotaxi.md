@@ -6,6 +6,28 @@ Process 6.3 million taxi trips into hourly demand predictions — the data engin
 
 Chicago has 77 community areas, each with different taxi demand patterns by hour, day, and season. Predicting hourly demand per area enables driver allocation optimization. The dataset is 2.8 GB (too large for pandas), requiring distributed processing.
 
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph ETL ["PySpark ETL"]
+        A[6.3M Raw Trips\n2.8 GB CSV] --> B[Schema Enforcement\n+ Cleaning]
+        B --> C[5.3M Clean Rows]
+        C --> D[GroupBy\narea × hour × day]
+        D --> E[357K Hourly\nDemand Records]
+    end
+    subgraph ML ["Training"]
+        E --> F[Lag Features\nleak-free]
+        F --> G[RandomForest\ntemporal split]
+        G --> H[R² 0.96\nRMSE 7.87]
+    end
+    subgraph Serve ["Serving"]
+        H --> I[Dask Batch\n19K rows/sec]
+        I --> J[Pre-computed\nPredictions]
+        J --> K[FastAPI\n/demand /areas]
+    end
+```
+
 ## Why PySpark + Dask
 
 | Stage | Tool | Reason |
@@ -57,16 +79,36 @@ This is a regression problem on aggregated hourly counts. R² 0.9649 means 96.5%
 
 ## Try It
 
-```bash
-# Query demand for community area 8 at 2pm
-curl "http://localhost:8004/demand?area=8&hour=14&limit=5"
+=== "Demand Query"
 
-# List all areas ranked by demand
-curl "http://localhost:8004/areas"
+    ```bash
+    curl -s "http://localhost:8004/demand?area=8&hour=17&day_of_week=4&limit=5" \
+      | python3 -m json.tool
+    ```
 
-# Pipeline ETL metadata
-curl "http://localhost:8004/pipeline/status"
-```
+    Expected: Predicted trips for Loop area (#8) at 5pm on Friday — peak demand window.
+
+=== "Top Areas"
+
+    ```bash
+    curl -s "http://localhost:8004/areas" | python3 -m json.tool
+    ```
+
+    Expected: All 77 community areas ranked by total predicted demand.
+
+=== "Pipeline Status"
+
+    ```bash
+    curl -s "http://localhost:8004/pipeline/status" | python3 -m json.tool
+    ```
+
+    Expected: ETL metadata — rows processed, model version, last prediction batch timestamp.
+
+=== "Health Check"
+
+    ```bash
+    curl -s http://localhost:8004/health | python3 -m json.tool
+    ```
 
 📄 [Full Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/ChicagoTaxi-Demand-Pipeline/model_card.md)
 

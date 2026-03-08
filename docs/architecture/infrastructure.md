@@ -2,6 +2,63 @@
 
 Terraform-managed, multi-cloud (GCP + AWS) infrastructure for the ML-MLOps Portfolio.
 
+## Multi-Cloud Architecture
+
+```mermaid
+flowchart TB
+    subgraph GH ["GitHub"]
+        Code[Source Code] --> CI[GitHub Actions\n10 jobs]
+        CI --> |push images| AR[Artifact Registry]
+        CI --> |push images| ECR[ECR]
+    end
+
+    subgraph GCP ["GCP — us-central1"]
+        AR --> GKE[GKE Cluster\n4× e2-medium]
+        GCS[(Cloud Storage\nModels + Datasets)]
+        CSQL[(Cloud SQL\nMLflow Backend)]
+        GKE --> |init containers| GCS
+        GKE --> CSQL
+    end
+
+    subgraph AWS ["AWS — us-east-1"]
+        ECR --> EKS[EKS Cluster\n2-5× t3.medium]
+        S3[(S3\nArtifacts + Datasets)]
+        RDS[(RDS PostgreSQL\nMLflow Backend)]
+        EKS --> S3
+        EKS --> RDS
+    end
+
+    subgraph K8s ["Kubernetes — Same Manifests"]
+        direction LR
+        BC[BankChurn API] ~~~ NLP[NLPInsight API] ~~~ CT[ChicagoTaxi API]
+        PROM[Prometheus] ~~~ GRAF[Grafana] ~~~ MLF[MLflow]
+    end
+
+    GKE --> K8s
+    EKS --> K8s
+
+    TF[Terraform IaC] --> GCP
+    TF --> AWS
+```
+
+## Side-by-Side: GCP vs AWS
+
+| Component | GCP (Live Production) | AWS (EKS-Ready) |
+|-----------|----------------------|------------------|
+| **Cluster** | GKE `ml-portfolio-gke-production` (us-central1) | EKS `ml-mlops-cluster` (us-east-1) |
+| **Nodes** | 4× e2-medium (2 vCPU / 4 GB) | 2-5× t3.medium (2 vCPU / 4 GB) |
+| **Container Registry** | Artifact Registry | ECR |
+| **Object Storage** | Cloud Storage (versioned, lifecycle) | S3 (versioned) |
+| **Database** | Cloud SQL PostgreSQL | RDS PostgreSQL |
+| **Networking** | VPC + Private Subnets + VPC Peering | VPC + NAT Gateway |
+| **Ingress** | GCE Load Balancer (IP: `34.120.120.57`) | ALB |
+| **IaC** | Terraform (GCP modules) | Terraform (AWS modules) |
+| **K8s Manifests** | Shared base + GCP overlays | Shared base + AWS Kustomize overlays |
+| **Cost** | **~$51/month** | ~$170-260/month |
+| **Status** | ✅ Running (6 pods) | ✅ Terraform ready |
+
+> **Cloud-agnostic design**: The same K8s base manifests deploy to both clouds. Only image registry URLs and storage class annotations differ (via Kustomize overlays).
+
 ## Cloud Resources
 
 ### GCP (Live Production)
@@ -103,6 +160,13 @@ The Terraform configuration includes **security hardening** that goes beyond wha
 > Additionally, `master_authorized_networks_config` restricts API access to the VPC subnet (`10.10.0.0/24`), which would require a bastion host or Cloud Shell for kubectl access — appropriate for production but impractical for a portfolio demo that requires frequent local interaction.
 >
 > **The Terraform code represents the production-ready target state.** The running cluster demonstrates deployment capabilities (APIs, monitoring, autoscaling, CI/CD). Both are valid portfolio artifacts — the code shows security engineering, the cluster shows operational execution. A real production deployment would apply the hardened configuration from initial provisioning.
+
+## Monitoring Stack
+
+| Grafana — ML Production Dashboard | Prometheus — 16/16 Targets UP |
+|:---:|:---:|
+| ![Grafana](../media/screenshots/monitoring/34-grafana-dashboard.png) | ![Prometheus](../media/screenshots/monitoring/37-prometheus-targets-up.png) |
+| *Request rate, P95 latency, predictions/hr, error rate, CPU, memory* | *All ML services + K8s auto-discovered pods* |
 
 ---
 

@@ -23,10 +23,21 @@ The dataset is 80/20 retained/churned. A model predicting "no churn" for everyon
 
 ## Architecture
 
-```
-Request → Pydantic Validation → ColumnTransformer(SimpleImputer + StandardScaler + OneHotEncoder)
-        → StackingClassifier(RF + GradientBoosting + XGBoost + LightGBM → LogisticRegression meta-learner)
-        → Prediction + Risk Level + optional SHAP explanation
+```mermaid
+flowchart LR
+    A[API Request] --> B[Pydantic\nValidation]
+    B --> C[ColumnTransformer]
+    C --> D{StackingClassifier}
+    D --> E[RandomForest]
+    D --> F[GradientBoosting]
+    D --> G[XGBoost]
+    D --> H[LightGBM]
+    E & F & G & H --> I[LogisticRegression\nMeta-Learner]
+    I --> J[Prediction +\nRisk Level]
+    J --> K{explain=true?}
+    K -->|Yes| L[SHAP Values\n+93ms]
+    K -->|No| M[JSON Response\n~103ms]
+    L --> M
 ```
 
 **Why StackingClassifier**: 4 diverse base learners capture complementary patterns (bagging + boosting + tree + gradient). AUC improved from 0.84 (best single model) to 0.87. CV variance is tight (±0.006), confirming generalization over memorization. See [ADR-003](../decisions/003-stacking-classifier-bankchurn.md).
@@ -47,13 +58,39 @@ Request → Pydantic Validation → ColumnTransformer(SimpleImputer + StandardSc
 - **Drift**: Evidently AI monitors PSI/KS per feature; alert fires if >30% features drift
 - **Validation**: Pandera schemas reject invalid inputs (CreditScore ∈ [300, 850], Age > 0)
 
+## Live Prediction
+
+| BankChurn Prediction | SHAP Explanation |
+|:---:|:---:|
+| ![Prediction](../media/screenshots/apis/26-bankchurn-prediccion-real.png) | ![SHAP](../media/screenshots/apis/82-shap-prediction-response.png) |
+
 ## Try It
 
-```bash
-curl -X POST http://localhost:8001/predict \
-  -H "Content-Type: application/json" \
-  -d '{"CreditScore":650,"Geography":"France","Gender":"Male","Age":40,"Tenure":5,"Balance":60000,"NumOfProducts":2,"HasCrCard":1,"IsActiveMember":1,"EstimatedSalary":50000}'
-```
+=== "Basic Prediction"
+
+    ```bash
+    curl -s -X POST http://localhost:8001/predict \
+      -H "Content-Type: application/json" \
+      -d '{"CreditScore":650,"Geography":"France","Gender":"Male","Age":40,"Tenure":5,"Balance":60000,"NumOfProducts":2,"HasCrCard":1,"IsActiveMember":1,"EstimatedSalary":50000}' | python3 -m json.tool
+    ```
+
+    Expected: `churn_probability`, `risk_category` (low/medium/high), `churn_prediction` (0/1)
+
+=== "With SHAP Explanation"
+
+    ```bash
+    curl -s -X POST "http://localhost:8001/predict?explain=true" \
+      -H "Content-Type: application/json" \
+      -d '{"CreditScore":450,"Geography":"Germany","Gender":"Female","Age":55,"Tenure":1,"Balance":0,"NumOfProducts":1,"HasCrCard":0,"IsActiveMember":0,"EstimatedSalary":30000}' | python3 -m json.tool
+    ```
+
+    Expected: Same fields + `feature_contributions` (SHAP values per feature). This high-risk customer should show Age and NumOfProducts as top churn drivers.
+
+=== "Health Check"
+
+    ```bash
+    curl -s http://localhost:8001/health | python3 -m json.tool
+    ```
 
 📄 [Full Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/BankChurn-Predictor/models/model_card.md) — includes metric rationale, performance benchmarks, and production decision narrative.
 
