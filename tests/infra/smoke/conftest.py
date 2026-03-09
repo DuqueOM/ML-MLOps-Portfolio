@@ -17,8 +17,13 @@ def _detect_environment() -> str:
         return "local (port-forward)"
     if "staging" in bankchurn_url:
         return "staging"
-    if "prod" in bankchurn_url or bankchurn_url.startswith("https://"):
+    if "prod" in bankchurn_url:
         return "production"
+    if bankchurn_url.startswith("https://"):
+        return "production (TLS)"
+    # Any non-localhost HTTP URL is assumed to be a real cluster (Ingress/LB)
+    if bankchurn_url.startswith("http://") and "/bankchurn" in bankchurn_url:
+        return "GKE Ingress (nginx)"
     return "custom"
 
 

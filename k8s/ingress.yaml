@@ -4,52 +4,31 @@ metadata:
   name: ml-portfolio-ingress
   namespace: ml-portfolio
   annotations:
-    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-body-size: "8m"
 spec:
-  defaultBackend:
-    service:
-      name: bankchurn-service
-      port:
-        number: 80
+  ingressClassName: nginx
   rules:
   - http:
       paths:
-      - path: /bankchurn
+      - path: /bankchurn(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: bankchurn-service
             port:
               number: 80
-      - path: /bankchurn/*
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: bankchurn-service
-            port:
-              number: 80
-      - path: /nlpinsight
+      - path: /nlpinsight(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: nlpinsight-service
             port:
               number: 80
-      - path: /nlpinsight/*
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: nlpinsight-service
-            port:
-              number: 80
-      - path: /chicagotaxi
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: chicagotaxi-service
-            port:
-              number: 80
-      - path: /chicagotaxi/*
+      - path: /chicagotaxi(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:

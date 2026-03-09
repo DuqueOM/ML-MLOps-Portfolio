@@ -129,7 +129,7 @@ metadata:
   labels:
     app: nlpinsight-analyzer
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: nlpinsight-analyzer
   ports:

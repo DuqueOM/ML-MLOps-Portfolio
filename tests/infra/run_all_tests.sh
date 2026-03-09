@@ -7,13 +7,19 @@
 #   bash tests/infra/run_all_tests.sh                  # smoke tests SKIPPED (no services)
 #   bash tests/infra/run_all_tests.sh --skip-smoke     # explicit skip
 #
-#   # With services (port-forward or any environment):
+#   # GKE Ingress (nginx — single IP, path routing):
+#   BANKCHURN_URL=http://136.111.152.72/bankchurn \
+#   NLPINSIGHT_URL=http://136.111.152.72/nlpinsight \
+#   CHICAGOTAXI_URL=http://136.111.152.72/chicagotaxi \
+#   bash tests/infra/run_all_tests.sh
+#
+#   # GKE via port-forward (CI/CD, cluster privado):
 #   BANKCHURN_URL=http://localhost:8001 \
 #   NLPINSIGHT_URL=http://localhost:8003 \
 #   CHICAGOTAXI_URL=http://localhost:8004 \
 #   bash tests/infra/run_all_tests.sh
 #
-#   # Against staging/prod:
+#   # Against staging/prod (hostnames independientes):
 #   BANKCHURN_URL=https://bankchurn.staging.ml-api.com \
 #   NLPINSIGHT_URL=https://nlpinsight.staging.ml-api.com \
 #   CHICAGOTAXI_URL=https://chicagotaxi.staging.ml-api.com \
