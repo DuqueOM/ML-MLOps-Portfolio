@@ -38,6 +38,12 @@ ENV PYTHONUNBUFFERED=1 \
     MODEL_PATH="/app/models/model.joblib" \
     PREDICTIONS_PATH="/app/data/processed/taxi_predictions"
 
+# Install curl for health checks
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY --from=builder /opt/venv /opt/venv
