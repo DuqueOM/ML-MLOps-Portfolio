@@ -2,7 +2,22 @@
 # =============================================================================
 # Infrastructure Test Suite — Master Runner
 # Runs all infrastructure tests: Terraform + Kubernetes + Smoke
-# Usage: bash tests/infra/run_all_tests.sh [--skip-smoke]
+#
+# Usage:
+#   bash tests/infra/run_all_tests.sh                  # smoke tests SKIPPED (no services)
+#   bash tests/infra/run_all_tests.sh --skip-smoke     # explicit skip
+#
+#   # With services (port-forward or any environment):
+#   BANKCHURN_URL=http://localhost:8001 \
+#   NLPINSIGHT_URL=http://localhost:8003 \
+#   CHICAGOTAXI_URL=http://localhost:8004 \
+#   bash tests/infra/run_all_tests.sh
+#
+#   # Against staging/prod:
+#   BANKCHURN_URL=https://bankchurn.staging.ml-api.com \
+#   NLPINSIGHT_URL=https://nlpinsight.staging.ml-api.com \
+#   CHICAGOTAXI_URL=https://chicagotaxi.staging.ml-api.com \
+#   bash tests/infra/run_all_tests.sh
 # =============================================================================
 set -euo pipefail
 
@@ -26,8 +41,8 @@ TOTAL_FAIL=0
 
 echo ""
 echo -e "${BLUE}╔═══════════════════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║   ML-MLOps-Portfolio — Infrastructure Test Suite     ║${NC}"
-echo -e "${BLUE}║   Terraform · Kubernetes · Smoke Tests               ║${NC}"
+echo -e "${BLUE}║   ML-MLOps-Portfolio — Infrastructure Test Suite      ║${NC}"
+echo -e "${BLUE}║   Terraform · Kubernetes · Smoke Tests                ║${NC}"
 echo -e "${BLUE}╚═══════════════════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -73,7 +88,7 @@ fi
 # ---------------------------------------------------------------------------
 echo ""
 echo -e "${BLUE}╔═══════════════════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║   Final Summary                                      ║${NC}"
+echo -e "${BLUE}║   Final Summary                                       ║${NC}"
 echo -e "${BLUE}╚═══════════════════════════════════════════════════════╝${NC}"
 echo -e "  Suites passed: ${GREEN}$TOTAL_PASS${NC}"
 echo -e "  Suites failed: ${RED}$TOTAL_FAIL${NC}"

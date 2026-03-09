@@ -2,14 +2,36 @@
 API Smoke Tests for ML Portfolio Services.
 
 Tests service health, prediction endpoints, and metrics endpoints.
-Supports both local Docker Compose and Kubernetes (port-forward) environments.
+Each service has an independent URL configured via environment variables,
+supporting any target environment without code changes.
 
-Usage:
-    # Local Docker Compose
+Environments:
+    # Local (kubectl port-forward)
     pytest tests/infra/smoke/test_smoke_services.py -v
 
-    # Custom base URL (e.g., Kubernetes Ingress)
-    SMOKE_BASE_URL=http://34.120.120.57 pytest tests/infra/smoke/test_smoke_services.py -v
+    # GKE via port-forward (explicit)
+    BANKCHURN_URL=http://localhost:8001 \
+    NLPINSIGHT_URL=http://localhost:8003 \
+    CHICAGOTAXI_URL=http://localhost:8004 \
+    pytest tests/infra/smoke/test_smoke_services.py -v
+
+    # Kubernetes Ingress (path-based routing, single IP)
+    BANKCHURN_URL=http://34.120.120.57/bankchurn \
+    NLPINSIGHT_URL=http://34.120.120.57/nlpinsight \
+    CHICAGOTAXI_URL=http://34.120.120.57/chicagotaxi \
+    pytest tests/infra/smoke/test_smoke_services.py -v
+
+    # Staging (independent hostnames per service)
+    BANKCHURN_URL=https://bankchurn.staging.ml-api.com \
+    NLPINSIGHT_URL=https://nlpinsight.staging.ml-api.com \
+    CHICAGOTAXI_URL=https://chicagotaxi.staging.ml-api.com \
+    pytest tests/infra/smoke/test_smoke_services.py -v
+
+    # Production (post-deploy verification)
+    BANKCHURN_URL=https://bankchurn.ml-api.com \
+    NLPINSIGHT_URL=https://nlpinsight.ml-api.com \
+    CHICAGOTAXI_URL=https://chicagotaxi.ml-api.com \
+    pytest tests/infra/smoke/test_smoke_services.py -v
 
     # Skip specific services
     pytest tests/infra/smoke/test_smoke_services.py -v -k "not nlpinsight"
@@ -21,14 +43,14 @@ import pytest
 import requests
 
 # ---------------------------------------------------------------------------
-# Configuration
+# Configuration — per-service independent URLs
+# Default: localhost port-forward convention
 # ---------------------------------------------------------------------------
-BASE_URL = os.getenv("SMOKE_BASE_URL", "http://localhost")
 TIMEOUT = int(os.getenv("SMOKE_TIMEOUT", "10"))
 
 SERVICES = {
     "bankchurn": {
-        "port": int(os.getenv("BANKCHURN_PORT", "8001")),
+        "url": os.getenv("BANKCHURN_URL", "http://localhost:8001"),
         "health": "/health",
         "predict": "/predict",
         "metrics": "/metrics",
@@ -46,14 +68,14 @@ SERVICES = {
         },
     },
     "nlpinsight": {
-        "port": int(os.getenv("NLPINSIGHT_PORT", "8003")),
+        "url": os.getenv("NLPINSIGHT_URL", "http://localhost:8003"),
         "health": "/health",
         "predict": "/predict",
         "metrics": "/metrics",
         "payload": {"text": "The company reported strong quarterly earnings growth"},
     },
     "chicagotaxi": {
-        "port": int(os.getenv("CHICAGOTAXI_PORT", "8004")),
+        "url": os.getenv("CHICAGOTAXI_URL", "http://localhost:8004"),
         "health": "/health",
         "predict": "/demand",
         "metrics": "/metrics",
@@ -63,17 +85,17 @@ SERVICES = {
 
 
 def _url(service_name: str, path: str) -> str:
-    """Build URL for a service endpoint."""
-    svc = SERVICES[service_name]
-    return f"{BASE_URL}:{svc['port']}{path}"
+    """Build full URL for a service endpoint."""
+    base = SERVICES[service_name]["url"].rstrip("/")
+    return f"{base}{path}"
 
 
 def _is_service_available(service_name: str) -> bool:
-    """Check if service is reachable."""
+    """Check if service is reachable (any HTTP response counts as reachable)."""
     try:
         r = requests.get(_url(service_name, "/health"), timeout=3)
-        return r.status_code == 200
-    except requests.ConnectionError:
+        return r.status_code < 500
+    except (requests.ConnectionError, requests.Timeout):
         return False
 
 
