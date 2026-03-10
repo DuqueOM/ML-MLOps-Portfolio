@@ -25,16 +25,17 @@ BankChurn Predictor identifies customers at high risk of leaving the bank using 
 | **F1-Score** | **0.62** | Above average for imbalanced churn (benchmark: 0.45-0.55) |
 | **Precision** | **0.73** | 73% of predicted churns are actual churns |
 | **Recall** | **0.54** | 54% of actual churns caught (precision-recall trade-off) |
-| **API Latency** | **103ms p50 / 111ms p95** | In-pod (GKE); 196ms with `?explain=true` |
+| **API Latency** | **103ms p50 / 111ms p95** | In-pod (GKE); ~4.5s with `?explain=true` (KernelExplainer) |
 | **Test Coverage** | **90%** | 199 tests |
 
 ### Pipeline Architecture
 
 ```python
 Pipeline([
+    ('features', ChurnFeatureEngineer()),          # 10 raw features → 25 engineered
     ('preprocessor', ColumnTransformer([
-        ('num', StandardScaler(), ['CreditScore', 'Age', 'Tenure', 'Balance', 'EstimatedSalary']),
-        ('cat', OneHotEncoder(handle_unknown='ignore'), ['Geography', 'Gender'])
+        ('num', StandardScaler(), numerical_cols),  # 25 → 38 encoded features
+        ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_cols)
     ])),
     ('classifier', StackingClassifier(
         estimators=[
@@ -47,6 +48,8 @@ Pipeline([
     ))
 ])
 ```
+
+> **SHAP note**: `KernelExplainer` is used as the SHAP backend because `TreeExplainer` does not support `StackingClassifier`. SHAP values are computed in the original 10-feature space (interpretable by business). See [ADR-010](../docs/decisions/010-shap-kernelexplainer-bankchurn.md).
 
 ### Feature Importance (SHAP)
 
@@ -142,7 +145,7 @@ BankChurn-Predictor/
 | Docker Image | 342 MB (`bankchurn:v3.5.0`, python:3.11-slim-bookworm) |
 | Model Size | 4.1 MB (joblib compressed) |
 | P50 / P95 Latency | 103ms / 111ms (in-pod, GKE) |
-| SHAP Latency | 196ms in-pod (`?explain=true`) |
+| SHAP Latency | ~4.5s in-pod (`?explain=true`, KernelExplainer + StackingClassifier) |
 | Load Test | 0% error rate (Locust, 10 users, 2min, 979 requests via Ingress) |
 | Drift Detection | PSI + KS via Evidently (weekly) |
 

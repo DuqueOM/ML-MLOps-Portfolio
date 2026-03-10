@@ -336,78 +336,95 @@ The 0.869 test AUC with 0.856 CV AUC (gap of 0.013) confirms the production mode
 
 ## 🔍 Model Explainability (SHAP)
 
-### Global Feature Importance
+> **Decision reference**: [ADR-010 — SHAP KernelExplainer for StackingClassifier](../../docs/decisions/010-shap-kernelexplainer-bankchurn.md)
 
-| Rank | Feature | SHAP Value | Impact Direction | Business Insight |
-|------|---------|------------|------------------|------------------|
-| 1 | **Age** | 0.21 | ↑ Higher age → ↑ Churn | Older customers (55+) have 2.3× churn rate |
-| 2 | **NumOfProducts** | 0.18 | ↓ Single product → ↑ Churn | Multi-product users 45% less likely to churn |
-| 3 | **IsActiveMember** | 0.16 | ↓ Inactive → ↑ Churn | Inactive members 3.1× more likely to churn |
-| 4 | **Geography** | 0.14 | Germany → ↑ Churn | Germany customers have 28% higher churn rate |
-| 5 | **Balance** | 0.12 | ↑ High balance → ↑ Churn | Paradoxically, $150K+ balances correlate with exits |
+### Implementation: KernelExplainer
 
-### Individual Prediction Explanation
-
-**Example**: High-risk customer
+`shap.TreeExplainer` does not support `StackingClassifier` (it cannot trace prediction paths through a meta-learner combinator). The implementation uses **`shap.KernelExplainer`** as the backend:
 
 ```python
-from src.bankchurn import ModelExplainer, ChurnPredictor
+# Fallback chain: TreeExplainer → KernelExplainer
+def predict_proba_wrapper(X_array):          # receives 10 raw features
+    X_df = pd.DataFrame(X_array, columns=feature_names)
+    return model.predict_proba(X_df)[:, 1]  # full pipeline (features+preprocessor+classifier)
 
-predictor = ChurnPredictor.from_files("models/model.joblib", None)
-explainer = ModelExplainer(predictor.model, X_train)
-
-customer_profile = {
-    "CreditScore": 650, "Geography": "Germany", "Gender": "Female",
-    "Age": 55, "Tenure": 2, "Balance": 120000, "NumOfProducts": 1,
-    "HasCrCard": 1, "IsActiveMember": 0, "EstimatedSalary": 80000
-}
-
-explanation = explainer.explain_prediction(customer_profile)
+explainer = shap.KernelExplainer(
+    predict_proba_wrapper,
+    background_data[:50]   # 50 samples from Churn.csv as Shapley baseline
+)
 ```
 
-**Output**:
-```json
-{
-  "prediction": 1,
-  "churn_probability": 0.72,
-  "risk_level": "HIGH",
-  "top_positive_contributors": [
-    {"feature": "Age", "contribution": +0.18, "value": 55},
-    {"feature": "IsActiveMember", "contribution": +0.15, "value": 0},
-    {"feature": "Geography", "contribution": +0.12, "value": "Germany"},
-    {"feature": "NumOfProducts", "contribution": +0.08, "value": 1}
-  ],
-  "top_negative_contributors": [
-    {"feature": "HasCrCard", "contribution": -0.02, "value": 1}
-  ],
-  "recommendation": "High churn risk. Priority actions: Activate multi-product offer, engagement campaign"
-}
-```
+**Key design**: SHAP values are computed in the **original 10-feature space** (raw business features), not the expanded 38-column preprocessed space. This means contributions are directly interpretable by stakeholders (e.g., "NumOfProducts contributed +0.106" not "NumOfProducts_1 contributed +0.09").
 
-### API Explainability Endpoint
+**Latency trade-off**: `?explain=true` takes ~4.5s per request (measured in GKE) because KernelExplainer runs ~2068 model evaluations. The standard `/predict` endpoint (103ms p50) is unaffected — explainability is strictly opt-in.
 
-The `/predict` endpoint includes SHAP feature contributions:
+### Global Feature Importance (from training set analysis)
+
+| Rank | Feature | Direction | Business Insight |
+|------|---------|-----------|------------------|
+| 1 | **Age** | Older (55+) → ↑ Churn | 2.3× churn rate for 55+ segment |
+| 2 | **NumOfProducts** | Single product → ↑ Churn | Multi-product users 45% less likely to churn |
+| 3 | **IsActiveMember** | Inactive → ↑ Churn | Inactive members 3.1× more likely to churn |
+| 4 | **Geography** | Germany → ↑ Churn | 28% higher churn rate in Germany |
+| 5 | **Balance** | Zero or very high → ↑ Churn | Zero balance = inactive; $150K+ may seek better returns |
+
+### Individual Prediction — Real Production Output
+
+**Measured in GKE on 2026-03-10** via `GET /predict?explain=true`:
 
 ```bash
-curl -X POST "http://localhost:8000/predict" \
+curl -X POST "http://136.111.152.72/bankchurn/predict?explain=true" \
      -H "Content-Type: application/json" \
-     -d '{"CreditScore": 650, "Geography": "Germany", ...}'
+     -d '{
+       "CreditScore": 619, "Geography": "France", "Gender": "Female",
+       "Age": 42, "Tenure": 2, "Balance": 0,
+       "NumOfProducts": 1, "HasCrCard": 1, "IsActiveMember": 1,
+       "EstimatedSalary": 101348.88
+     }'
 ```
 
-**Response**:
+**Actual API Response**:
 ```json
 {
-  "churn_probability": 0.72,
-  "churn_prediction": 1,
-  "risk_level": "HIGH",
+  "churn_probability": 0.4067,
+  "churn_prediction": 0,
+  "risk_level": "MEDIUM",
+  "confidence": 0.1866,
   "feature_contributions": {
-    "Age": 0.18,
-    "IsActiveMember": 0.15,
-    "Geography": 0.12,
-    "NumOfProducts": 0.08
-  }
+    "NumOfProducts":   0.1059,
+    "Age":             0.0500,
+    "Balance":         0.0267,
+    "Gender":          0.0289,
+    "CreditScore":     0.0241,
+    "Tenure":          0.0168,
+    "IsActiveMember": -0.0510,
+    "Geography":      -0.0130,
+    "EstimatedSalary":-0.0137,
+    "HasCrCard":      -0.0167
+  },
+  "model_version": "1.0.0",
+  "prediction_timestamp": "2026-03-10T16:37:28Z"
 }
 ```
+
+**Interpretation**:
+- **NumOfProducts = +0.1059** (strongest risk factor): Only 1 product — highest churn driver for this customer
+- **IsActiveMember = -0.0510** (strongest protection): Being active reduces churn risk
+- **Age = +0.050**: Age 42 increases risk (approaching the 50+ high-risk segment)
+- **Balance = +0.0267**: Zero balance is a churn signal (inactive relationship with the bank)
+- Positive contributions increase churn probability above the base rate; negative contributions decrease it
+
+### Production Operational Notes
+
+| Aspect | Value |
+|--------|-------|
+| SHAP library | `shap~=0.46.0` (pinned in `requirements-prod.txt`) |
+| Explainer type | `KernelExplainer` (model-agnostic fallback) |
+| Background samples | 50 samples from `Churn.csv` |
+| Latency with `?explain=true` | ~4.5s (KernelExplainer, measured in GKE) |
+| Latency without explain | 103ms p50 / 111ms p95 |
+| Feature space | 10 raw features (interpretable) |
+| Pod startup overhead | +30s (KernelExplainer initialization with background data) |
 
 ---
 

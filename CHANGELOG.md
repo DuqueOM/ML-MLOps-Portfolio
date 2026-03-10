@@ -6,6 +6,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [3.5.1] — 2026-03-10
+
+### Fixed
+- **BankChurn SHAP explainability** — `?explain=true` was returning all-zero feature contributions in production. Root causes: (1) `shap` was absent from `requirements-prod.txt`; (2) `shap.TreeExplainer` does not support `StackingClassifier`. Implemented `KernelExplainer` as model-agnostic fallback with graceful `TreeExplainer → KernelExplainer` chain. SHAP values now computed in the original 10-feature space (interpretable by business stakeholders). See [ADR-010](docs/decisions/010-shap-kernelexplainer-bankchurn.md).
+- **BankChurn pipeline documentation** — `README.md` pipeline architecture now correctly shows the three-step pipeline (`ChurnFeatureEngineer → ColumnTransformer → StackingClassifier`); the `features` step was previously omitted.
+- **BankChurn `?explain=true` latency** — documented as ~4.5s (KernelExplainer + StackingClassifier, measured in GKE); previously stated as 196ms which incorrectly assumed `TreeExplainer` performance.
+
+### Added
+- **ADR-010** — [SHAP KernelExplainer for BankChurn StackingClassifier](docs/decisions/010-shap-kernelexplainer-bankchurn.md): documents alternatives considered, trade-off table (TreeExplainer vs KernelExplainer), production scaling patterns, and verified output with real SHAP values.
+- **`shap~=0.46.0`** added to `BankChurn-Predictor/requirements-prod.txt` (was only in dev requirements).
+
+### Changed
+- **Docker image** — `bankchurn:v3.5.0` rebuilt with `shap~=0.46.0`; image size ~490MB (was 342MB before SHAP).
+- **`model_card.md` explainability section** — replaced illustrative SHAP values with real production output (measured 2026-03-10 on GKE); added KernelExplainer implementation notes and latency table.
+
+---
+
 ## [3.5.0] — 2026-03-05
 
 ### Fixed
