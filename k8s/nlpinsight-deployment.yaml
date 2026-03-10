@@ -51,6 +51,8 @@ spec:
           value: "json"
         - name: SERVICE_NAME
           value: "nlpinsight"
+        - name: API_ROOT_PATH
+          value: "/nlpinsight"
         envFrom:
         - configMapRef:
             name: nlpinsight-config

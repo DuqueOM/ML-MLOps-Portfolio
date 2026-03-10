@@ -49,6 +49,8 @@ spec:
           value: "json"
         - name: SERVICE_NAME
           value: "bankchurn"
+        - name: API_ROOT_PATH
+          value: "/bankchurn"
         envFrom:
         - configMapRef:
             name: bankchurn-config

@@ -84,6 +84,8 @@ spec:
           value: "json"
         - name: SERVICE_NAME
           value: "chicagotaxi"
+        - name: API_ROOT_PATH
+          value: "/chicagotaxi"
         envFrom:
         - configMapRef:
             name: chicagotaxi-config
