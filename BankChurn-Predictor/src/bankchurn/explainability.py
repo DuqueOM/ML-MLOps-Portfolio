@@ -69,6 +69,7 @@ class ModelExplainer:
         self._shap_values_cache = None
         self._transformed_feature_names: Optional[List[str]] = None
         self._preprocessor = None
+        self._uses_kernel_explainer = False  # Track if using KernelExplainer (needs raw features)
 
         if not SHAP_AVAILABLE:  # pragma: no cover
             logger.warning("SHAP not available. Using fallback explanations.")
@@ -111,23 +112,42 @@ class ModelExplainer:
                 classifier = self.model.named_steps.get("classifier", self.model.named_steps.get("clf"))
                 if classifier is not None:
                     inner = self._unwrap_classifier(classifier)
-                    preprocessor = self.model.named_steps.get("preprocessor")
-                    if preprocessor is not None and hasattr(inner, "estimators_"):
-                        X_transformed = preprocessor.transform(X_background)
-                        self.explainer = shap.TreeExplainer(inner)
-                        self._X_background_transformed = X_transformed
-                        self._preprocessor = preprocessor
-                        self.expected_value = self.explainer.expected_value
-                        # Store transformed feature names for aggregation
+                    if hasattr(inner, "estimators_"):
+                        # Apply ALL preprocessing steps (features + preprocessor) before classifier
+                        # Pipeline may have: features → preprocessor → classifier
+                        X_transformed = X_background
+                        steps_applied = []
+
+                        # Apply feature engineering if present
+                        if "features" in self.model.named_steps:
+                            features_step = self.model.named_steps["features"]
+                            X_transformed = features_step.transform(X_transformed)
+                            steps_applied.append("features")
+
+                        # Apply preprocessor if present
+                        if "preprocessor" in self.model.named_steps:
+                            preprocessor = self.model.named_steps["preprocessor"]
+                            X_transformed = preprocessor.transform(X_transformed)
+                            self._preprocessor = preprocessor
+                            steps_applied.append("preprocessor")
+                            # Store transformed feature names for aggregation
+                            try:
+                                self._transformed_feature_names = list(preprocessor.get_feature_names_out())
+                            except Exception:
+                                self._transformed_feature_names = None
+
+                        # Try TreeExplainer (fast but doesn't support all model types like StackingClassifier)
                         try:
-                            self._transformed_feature_names = list(preprocessor.get_feature_names_out())
-                        except Exception:
-                            self._transformed_feature_names = None
-                        logger.info(
-                            f"Initialized TreeExplainer for pipeline "
-                            f"({type(inner).__name__}, {X_transformed.shape[1]} features)"
-                        )
-                        return
+                            self.explainer = shap.TreeExplainer(inner)
+                            self._X_background_transformed = X_transformed
+                            self.expected_value = self.explainer.expected_value
+                            logger.info(
+                                f"Initialized TreeExplainer for pipeline "
+                                f"({type(inner).__name__}, {X_transformed.shape[1]} features, steps: {steps_applied})"
+                            )
+                            return
+                        except Exception as tree_error:
+                            logger.debug(f"TreeExplainer failed ({tree_error}), falling back to KernelExplainer")
 
             # Fallback to KernelExplainer (slower but universal)
             def predict_proba_wrapper(X):
@@ -137,6 +157,7 @@ class ModelExplainer:
 
             self.explainer = shap.KernelExplainer(predict_proba_wrapper, X_background.values[:50])
             self.expected_value = self.explainer.expected_value
+            self._uses_kernel_explainer = True
             logger.info("Initialized KernelExplainer")
 
         except Exception as e:
@@ -237,20 +258,31 @@ class ModelExplainer:
             }
 
         try:  # pragma: no cover
-            # Transform if pipeline
-            if self._preprocessor is not None:
-                X_transformed = self._preprocessor.transform(X_single)
-            elif hasattr(self.model, "named_steps"):
-                preprocessor = self.model.named_steps.get("preprocessor")
-                if preprocessor:
-                    X_transformed = preprocessor.transform(X_single)
-                else:
-                    X_transformed = X_single.values
+            # KernelExplainer expects raw features (wrapper handles preprocessing)
+            # TreeExplainer expects transformed features
+            if self._uses_kernel_explainer:
+                # Use raw features - wrapper will apply pipeline
+                X_for_shap = X_single.values if hasattr(X_single, "values") else X_single
             else:
-                X_transformed = X_single.values
+                # Apply ALL preprocessing steps (features + preprocessor) before SHAP
+                X_transformed = X_single
+
+                if hasattr(self.model, "named_steps"):
+                    # Apply feature engineering if present
+                    if "features" in self.model.named_steps:
+                        features_step = self.model.named_steps["features"]
+                        X_transformed = features_step.transform(X_transformed)
+
+                    # Apply preprocessor if present
+                    if "preprocessor" in self.model.named_steps:
+                        preprocessor = self.model.named_steps["preprocessor"]
+                        X_transformed = preprocessor.transform(X_transformed)
+
+                # Convert to array if still DataFrame
+                X_for_shap = X_transformed.values if hasattr(X_transformed, "values") else X_transformed
 
             # Compute SHAP values
-            shap_values = self.explainer.shap_values(X_transformed)
+            shap_values = self.explainer.shap_values(X_for_shap)
             if isinstance(shap_values, list):
                 # List of arrays per class — pick positive class
                 shap_values = shap_values[1]

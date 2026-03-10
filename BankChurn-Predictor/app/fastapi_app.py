@@ -92,6 +92,8 @@ def _load_background_data(max_samples: int = 100) -> Optional[pd.DataFrame]:
 
     Searches data directories populated by the init container (production)
     or available locally (development).
+
+    Returns only the 10 feature columns (excludes RowNumber, CustomerId, Surname, Exited).
     """
     data_dirs = [
         BASE_DIR / "data" / "raw",  # Local dev
@@ -104,9 +106,10 @@ def _load_background_data(max_samples: int = 100) -> Optional[pd.DataFrame]:
         for csv_file in sorted(data_dir.glob("*.csv")):
             try:
                 df = pd.read_csv(csv_file, nrows=max_samples)
+                # Filter to only the 10 feature columns (exclude metadata and target)
                 available = [c for c in FEATURE_COLUMNS if c in df.columns]
                 if len(available) >= 8:  # Need most features to be useful
-                    logger.info(f"Loaded {len(df)} background samples from {csv_file}")
+                    logger.info(f"Loaded {len(df)} background samples from {csv_file} ({len(available)} features)")
                     return df[available]
             except Exception as e:
                 logger.debug(f"Could not load {csv_file}: {e}")

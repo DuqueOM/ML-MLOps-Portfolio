@@ -1,7 +1,7 @@
-# BankChurn Predictor — Production runtime dependencies (inference only)
+# BankChurn Predictor — Production runtime dependencies (inference + explainability)
 # Pinned with compatible-release (~=) for reproducibility
 # Runtime: Python 3.11 | Model: StackingClassifier (RF+GB+XGB+LGB→LR)
-# SHAP, MLflow, imbalanced-learn are NOT needed at inference time.
+# SHAP included for real-time feature contributions (trade-off: +150MB image, +200ms latency)
 
 # Core Data Science
 pandas~=2.3.0
@@ -12,6 +12,9 @@ scipy~=1.14.0
 scikit-learn~=1.8.0
 # xgboost + lightgbm installed separately in Dockerfile with --no-deps
 joblib~=1.4.0
+
+# Explainability (SHAP for feature contributions)
+shap~=0.46.0
 
 # API Framework
 fastapi~=0.115.0
