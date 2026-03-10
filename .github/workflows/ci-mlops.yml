@@ -57,7 +57,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Required for gitleaks history scan
-          lfs: true  # Download Git LFS files
+          lfs: false  # LFS files not needed for tests (saves LFS bandwidth)
       
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -272,7 +272,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          lfs: true
+          lfs: false  # LFS files not needed for Docker build (models downloaded at runtime)
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -395,7 +395,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          lfs: true
+          lfs: false  # LFS files not needed for integration tests
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
