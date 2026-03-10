@@ -1,0 +1,16 @@
+# GCP Overlay — Set Grafana domain to GKE Ingress IP
+# This ensures GF_SERVER_ROOT_URL resolves correctly behind nginx Ingress.
+# Without this, %(domain)s defaults to "localhost" and Grafana redirects break.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: ml-portfolio
+spec:
+  template:
+    spec:
+      containers:
+      - name: grafana
+        env:
+        - name: GF_SERVER_DOMAIN
+          value: "136.111.152.72"

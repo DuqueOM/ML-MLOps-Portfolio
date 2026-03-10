@@ -79,7 +79,7 @@ The retraining pipeline itself runs in GitHub Actions (same as the CI pipeline),
 
 ### Drift Check CronJob
 
-See `k8s/drift-retraining-cronjob.yaml` — runs daily at 02:00 UTC.
+See `k8s/base/drift-retraining-cronjob.yaml` — runs daily at 02:00 UTC.
 
 ### Thresholds
 
@@ -137,6 +137,6 @@ The interfaces between components (Evidently → webhook, MLflow registry → de
 ## References
 
 - [ADR-001: CPU-Only HPA](001-cpu-only-hpa.md)
-- [K8s CronJob manifest](../../k8s/drift-retraining-cronjob.yaml)
+- [K8s CronJob manifest](../../k8s/base/drift-retraining-cronjob.yaml)
 - [Prometheus alert rules](../../infra/prometheus-rules.yaml)
 - [Evidently drift configuration](../../BankChurn-Predictor/configs/config.yaml)

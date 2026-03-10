@@ -30,7 +30,7 @@ spec:
     spec:
       serviceAccountName: ml-workload
       initContainers:
-      - name: model-download
+      - name: download-model
         image: python:3.11-alpine
         command:
         - sh

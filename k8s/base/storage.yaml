@@ -1,3 +1,9 @@
+# PersistentVolumeClaims — cloud-agnostic (no storageClassName specified).
+# Each cluster uses its default StorageClass:
+#   GKE: standard-rwo (SSD, zonal)
+#   EKS: gp3 (SSD, AZ-scoped)
+# To override, add storageClassName per overlay via Kustomize patch.
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -8,7 +14,6 @@ metadata:
 spec:
   accessModes:
   - ReadWriteOnce
-  storageClassName: standard-rwo
   resources:
     requests:
       storage: 10Gi
@@ -23,7 +28,6 @@ metadata:
 spec:
   accessModes:
   - ReadWriteOnce
-  storageClassName: standard-rwo
   resources:
     requests:
       storage: 50Gi
@@ -38,7 +42,6 @@ metadata:
 spec:
   accessModes:
   - ReadWriteOnce
-  storageClassName: standard-rwo
   resources:
     requests:
       storage: 20Gi
@@ -53,7 +56,6 @@ metadata:
 spec:
   accessModes:
   - ReadWriteOnce
-  storageClassName: standard-rwo
   resources:
     requests:
       storage: 5Gi

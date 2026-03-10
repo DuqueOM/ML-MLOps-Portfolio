@@ -1,5 +1,7 @@
-# GCP Overlay — GKE-specific resources
+# GCP Overlay — GKE-specific resources layered on top of cloud-agnostic base
 # Usage: kubectl apply -k k8s/overlays/gcp/
+# Auth: Workload Identity (GKE SA → GCP SA) — see ml-workload-serviceaccount.yaml
+# Storage: GCS (google-cloud-storage in init containers) — see download-script-configmap.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
@@ -7,10 +9,17 @@ namespace: ml-portfolio
 
 resources:
   - ../../base
-  - ../../bankchurn-deployment.yaml
-  - ../../nlpinsight-deployment.yaml
-  - ../../ingress.yaml
-  - ../../ml-workload-serviceaccount.yaml
-  - ../../download-script-configmap.yaml
-  - ../../model-configmaps.yaml
-  - ../../dataset-configmaps.yaml
+  # Cloud-specific: GKE auth, GCS download script, nginx ingress
+  - serviceaccount-gcp.yaml
+  - download-script-gcp.yaml
+  - ingress-gcp.yaml
+  # Cloud-specific: GCS bucket paths for model/dataset downloads
+  - model-configmaps-gcp.yaml
+  - dataset-configmaps-gcp.yaml
+  # ML service deployments (Artifact Registry images, GCS init containers)
+  - bankchurn-deployment.yaml
+  - nlpinsight-deployment.yaml
+  - chicagotaxi-deployment.yaml
+
+patches:
+  - path: grafana-domain-patch.yaml

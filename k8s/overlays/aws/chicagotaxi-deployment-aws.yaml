@@ -1,6 +1,6 @@
 # ChicagoTaxi Demand Pipeline Deployment — AWS EKS
-# Equivalent to k8s/chicagotaxi-deployment.yaml (GCP GKE version)
-# Differences: ECR image, S3 init container (boto3 instead of google-cloud-storage)
+# Mirror of k8s/chicagotaxi-deployment.yaml (GCP GKE version)
+# Cloud-specific differences: ECR image registry, S3 init containers (boto3), IRSA auth
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -9,7 +9,7 @@ metadata:
   labels:
     app: chicagotaxi-pipeline
     tier: ml-service
-    version: v1.0.0
+    version: v3.5.1
     cloud: aws
 spec:
   replicas: 1
@@ -26,7 +26,7 @@ spec:
       labels:
         app: chicagotaxi-pipeline
         tier: ml-service
-        version: v1.0.0
+        version: v3.5.1
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8000"
@@ -34,9 +34,14 @@ spec:
     spec:
       serviceAccountName: ml-workload
       initContainers:
-      - name: model-download
+      - name: download-model
         image: python:3.11-alpine
-        command: ["python", "/scripts/download-model.py"]
+        command:
+        - sh
+        - -c
+        - |
+          pip install --quiet boto3==1.35.0 && \
+          python /scripts/download-model.py
         volumeMounts:
         - name: model-volume
           mountPath: /models
@@ -45,6 +50,22 @@ spec:
         envFrom:
         - configMapRef:
             name: chicagotaxi-model-config
+      - name: download-predictions
+        image: python:3.11-alpine
+        command:
+        - sh
+        - -c
+        - |
+          pip install --quiet boto3==1.35.0 && \
+          python /scripts/download-model.py
+        volumeMounts:
+        - name: predictions-volume
+          mountPath: /data
+        - name: download-script
+          mountPath: /scripts
+        envFrom:
+        - configMapRef:
+            name: chicagotaxi-predictions-config
       containers:
       - name: chicagotaxi-api
         image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/ml-portfolio/chicagotaxi-pipeline:latest
@@ -67,6 +88,8 @@ spec:
           value: "json"
         - name: SERVICE_NAME
           value: "chicagotaxi"
+        - name: API_ROOT_PATH
+          value: "/chicagotaxi"
         envFrom:
         - configMapRef:
             name: chicagotaxi-config
@@ -97,12 +120,18 @@ spec:
         - name: model-volume
           mountPath: /app/models
           readOnly: true
+        - name: predictions-volume
+          mountPath: /app/data/processed/taxi_predictions
+          readOnly: true
       volumes:
       - name: model-volume
+        emptyDir: {}
+      - name: predictions-volume
         emptyDir: {}
       - name: download-script
         configMap:
           name: download-script
+          defaultMode: 0755
 ---
 apiVersion: v1
 kind: Service

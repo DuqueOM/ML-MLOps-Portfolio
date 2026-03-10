@@ -1,5 +1,5 @@
 # ConfigMap: S3 model download script for AWS EKS
-# Equivalent to k8s/download-script-configmap.yaml (GCS version for GCP)
+# Mirror of k8s/download-script-configmap.yaml (GCS version for GCP)
 # Mounted into Init Containers at /scripts/download-model.py
 ---
 apiVersion: v1
@@ -13,8 +13,10 @@ metadata:
 data:
   download-model.py: |
     #!/usr/bin/env python3
-    """Download ML model from Amazon S3 with retry."""
-    import os, sys, time
+    """Download ML model from Amazon S3 with retry.
+    Auto-extracts .tar.gz archives (used for transformer models).
+    """
+    import os, sys, tarfile, time
 
     MAX_RETRIES = 3
     RETRY_DELAY_SECONDS = 10
@@ -29,7 +31,7 @@ data:
             sys.exit(1)
 
         print(f"Downloading s3://{bucket_name}/{object_key} -> {local_path}")
-        os.makedirs(os.path.dirname(local_path), exist_ok=True)
+        os.makedirs(os.path.dirname(local_path) or ".", exist_ok=True)
 
         import boto3
         s3 = boto3.client("s3")
@@ -39,6 +41,17 @@ data:
                 s3.download_file(bucket_name, object_key, local_path)
                 size_mb = os.path.getsize(local_path) / (1024 * 1024)
                 print(f"OK: Downloaded {size_mb:.2f} MB (attempt {attempt}/{MAX_RETRIES})")
+
+                # Auto-extract tar.gz archives (transformer models)
+                if local_path.endswith(".tar.gz"):
+                    extract_dir = os.path.dirname(local_path) or "."
+                    print(f"Extracting archive to {extract_dir}/")
+                    with tarfile.open(local_path, "r:gz") as tar:
+                        tar.extractall(path=extract_dir)
+                    extracted = [m.name for m in tarfile.open(local_path, "r:gz").getmembers()]
+                    print(f"Extracted {len(extracted)} files: {extracted}")
+                    os.remove(local_path)
+
                 sys.exit(0)
             except Exception as e:
                 print(f"WARN: Attempt {attempt}/{MAX_RETRIES} failed: {e}")

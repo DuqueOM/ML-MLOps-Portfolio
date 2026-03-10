@@ -27,3 +27,16 @@ spec:
   selector:
     matchLabels:
       app: nlpinsight-analyzer
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: chicagotaxi-pdb
+  namespace: ml-portfolio
+  labels:
+    app: chicagotaxi-pipeline
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: chicagotaxi-pipeline

@@ -88,10 +88,9 @@ flowchart TB
 
 | Manifest | Purpose |
 |----------|---------|
-| `k8s/*-deployment.yaml` | 3 ML APIs + MLflow + Prometheus + Grafana (6 pods) |
-| `k8s/ingress.yaml` | External access with path-based routing |
-| `k8s/model-configmaps.yaml` | GCS model/dataset paths for init containers |
-| `k8s/overlays/aws/` | AWS-specific Kustomize overlays |
+| `k8s/base/` | Cloud-agnostic: namespace, storage, monitoring, network policies, PDBs, drift cronjobs |
+| `k8s/overlays/gcp/` | GCP overlay: GKE deployments, GCS configmaps, Workload Identity SA, ingress |
+| `k8s/overlays/aws/` | AWS overlay: EKS deployments, S3 configmaps, IRSA SA, ingress |
 
 ### Resource Calibration (2 uvicorn workers)
 

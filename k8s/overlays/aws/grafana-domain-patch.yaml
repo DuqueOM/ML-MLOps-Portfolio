@@ -1,0 +1,16 @@
+# AWS Overlay — Set Grafana domain to EKS nginx Ingress hostname
+# Replace <AWS_INGRESS_HOSTNAME> with the actual ELB DNS after deploying nginx-ingress on EKS.
+# Example: k8s-mlportf-XXXXXXX.elb.us-east-1.amazonaws.com
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: ml-portfolio
+spec:
+  template:
+    spec:
+      containers:
+      - name: grafana
+        env:
+        - name: GF_SERVER_DOMAIN
+          value: "<AWS_INGRESS_HOSTNAME>"

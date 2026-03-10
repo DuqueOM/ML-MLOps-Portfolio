@@ -1,12 +1,21 @@
-# Base Kustomization — shared resources for all clouds
+# Base Kustomization — cloud-agnostic resources shared by GCP and AWS overlays
 # Usage: kubectl apply -k k8s/overlays/gcp/ or k8s/overlays/aws/
+# NEVER apply base directly — always use an overlay.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 namespace: ml-portfolio
 
 resources:
-  - ../namespace.yaml
-  - ../storage.yaml
-  - ../prometheus-deployment.yaml
-  - ../grafana-deployment.yaml
+  # Cluster setup
+  - namespace.yaml
+  - storage.yaml
+  # Monitoring (cloud-agnostic — Grafana domain patched per overlay)
+  - prometheus-deployment.yaml
+  - grafana-deployment.yaml
+  # Security & reliability (cloud-agnostic)
+  - network-policies.yaml
+  - pod-disruption-budgets.yaml
+  # MLOps automation (cloud-agnostic — uses internal K8s DNS)
+  - drift-detection-cronjob.yaml
+  - drift-retraining-cronjob.yaml
