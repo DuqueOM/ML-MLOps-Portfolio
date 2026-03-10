@@ -150,7 +150,7 @@ metadata:
   labels:
     app: bankchurn-predictor
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: bankchurn-predictor
   ports:
