@@ -16,7 +16,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.demo.yml)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-3.5.0-brightgreen.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-3.5.2-brightgreen.svg)](CHANGELOG.md)
 
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow)](https://mlflow.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
@@ -59,7 +59,7 @@
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
-| **GCP Deployment** | ✅ Live | GKE 4 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), 0% error rate |
+| **GCP Deployment** | ✅ Live | GKE 4 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), 0.07% error rate (load tested) |
 | **AWS Deployment** | 🟡 Ready | EKS + ECR + S3 + RDS — Terraform + K8s overlays complete |
 | **CI/CD** | ✅ Unified | GitHub Actions → GKE + EKS (separate deploy workflows) |
 | **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) — parallel provider configs |
@@ -120,12 +120,12 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 | **MLOps** | MLflow (9 experiments), DVC, Docker, Kubernetes, Terraform |
 | **API** | FastAPI, Pydantic |
 | **Cloud & IaC** | GCP (GKE, GCS, AR, Cloud SQL), AWS (EKS, S3, ECR, RDS), Terraform, K8s |
-| **Monitoring** | Prometheus (16/16 targets, 16 alert rules), Grafana (2 dashboards, 25 panels), Locust load testing, Evidently drift |
+| **Monitoring** | Prometheus (4 targets), Grafana (26-panel enterprise dashboard), Locust load testing, Evidently drift |
 | **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy), Artifact Registry, ECR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Testing** | pytest (90–98% coverage, 390+ tests), Codecov, pre-commit hooks |
 
-> **v3.5.0 Highlights**: StackingClassifier (BankChurn), FinBERT (NLPInsight), PySpark + lag features (ChicagoTaxi), data leakage fix, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests, drift-triggered retraining ([ADR-006](docs/decisions/006-drift-triggered-retraining.md)), simplification ADR ([ADR-009](docs/decisions/009-simplification-when-not-to-build.md)). Full details in [docs/FEATURES.md](docs/FEATURES.md).
+> **v3.5.2 Highlights**: StackingClassifier (BankChurn), FinBERT (NLPInsight), PySpark + lag features (ChicagoTaxi), data leakage fix, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests, drift-triggered retraining ([ADR-006](docs/decisions/006-drift-triggered-retraining.md)), simplification ADR ([ADR-009](docs/decisions/009-simplification-when-not-to-build.md)). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
 ## 🏗️ Architecture
 
@@ -323,7 +323,7 @@ Serial entrepreneur turned ML engineer. A decade of launching ventures—managin
 
 <div align="center">
 
-**Portfolio Version**: 3.5.0 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) · 🟡 AWS Ready
+**Portfolio Version**: 3.5.2 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) · 🟡 AWS Ready
 
 *Building ML systems that work at 2am* 🌙
 
