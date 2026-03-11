@@ -1,3 +1,4 @@
+# Ingress 1: ML API services — rewrite-target strips prefix so FastAPI receives requests at /
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -35,15 +36,34 @@ spec:
             name: chicagotaxi-service
             port:
               number: 80
-      - path: /grafana(/|$)(.*)
-        pathType: ImplementationSpecific
+---
+# Ingress 2: Monitoring tools — NO rewrite-target so Grafana/MLflow receive the full /grafana/ prefix.
+# Grafana requires GF_SERVER_SERVE_FROM_SUB_PATH=true and needs the sub-path intact.
+# Stripping the prefix (as in Ingress 1) causes an infinite 301 redirect loop.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ml-portfolio-monitoring-ingress
+  namespace: ml-portfolio
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-body-size: "8m"
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /grafana
+        pathType: Prefix
         backend:
           service:
             name: grafana-service
             port:
               number: 3000
-      - path: /mlflow(/|$)(.*)
-        pathType: ImplementationSpecific
+      - path: /mlflow
+        pathType: Prefix
         backend:
           service:
             name: mlflow-service
