@@ -9,7 +9,7 @@ Prometheus + Grafana + MLflow + Evidently monitoring stack deployed on GKE.
 | Component | Purpose | Access |
 |-----------|---------|--------|
 | **Prometheus** | Metrics collection (15s scrape) | `:9090` |
-| **Grafana** | Auto-provisioned 10-panel dashboard | `:3000` |
+| **Grafana** | Auto-provisioned 26-panel dashboard (6 rows) | `:3000` |
 | **MLflow** | Experiment tracking (9 runs, 3 projects) | `:5000` |
 | **Evidently** | Data drift detection (PSI/KS) | All 3 projects |
 
@@ -17,9 +17,19 @@ Prometheus + Grafana + MLflow + Evidently monitoring stack deployed on GKE.
 
 All APIs expose `/metrics`. Key metrics per service:
 
-- `{service}_requests_total` — Counter: total HTTP requests
-- `{service}_predictions_total` — Counter: predictions made
-- `{service}_request_duration_seconds` — Histogram: latency
+| Metric | BankChurn | NLPInsight | ChicagoTaxi |
+|--------|-----------|------------|-------------|
+| `{svc}_requests_total` | `bankchurn_requests_total` | `nlpinsight_requests_total` | `chicagotaxi_requests_total` |
+| `{svc}_predictions_total` | `{risk_level}` label | `{sentiment}` label | `{demand_category}` label |
+| `{svc}_request_*_seconds` | `_duration_seconds` (histogram) | `_duration_seconds` (histogram) | `_latency_seconds` (histogram) |
+
+### Real Production Counters (measured 2026-03-11, post load-test)
+
+| Service | Total Requests | Predictions (breakdown) |
+|---------|---------------|-------------------------|
+| BankChurn | 416 | HIGH=211 · MEDIUM=100 · LOW=105 |
+| NLPInsight | 919 | neutral=1110 · negative=449 · positive=212 |
+| ChicagoTaxi | 225 | 1709 demand predictions across all categories |
 
 ![Prometheus Targets](../media/screenshots/monitoring/37-prometheus-targets-up.png)
 
@@ -34,11 +44,14 @@ All APIs expose `/metrics`. Key metrics per service:
 
 ## SLOs
 
-| Service | Availability | P95 Latency (in-pod) | Error Rate |
-|---------|--------------|---------------------|------------|
-| BankChurn | 99.9% | 111ms | <1% |
-| NLPInsight | 99.9% | 15ms | <1% |
-| ChicagoTaxi | 99.9% | 460ms | <1% |
+| Service | Availability | P95 Latency (in-pod) | P95 Latency (via ingress) | Error Rate |
+|---------|--------------|---------------------|--------------------------|------------|
+| BankChurn | 99.9% | 111ms | 481ms | <1% |
+| NLPInsight | 99.9% | 15ms | 9.6ms | <1% |
+| ChicagoTaxi | 99.9% | 460ms | 35.5ms | <1% |
+
+> **Load test baseline** (2026-03-11): 2673 requests · 30 users · 120s · **0.07% error rate** · 22.35 req/s aggregate throughput.
+> Locust per-endpoint P50/P95: BankChurn predict 770ms/1700ms · NLPInsight predict 80ms/160ms · ChicagoTaxi demand 90ms/170ms.
 
 ## HPA Autoscaling
 
@@ -65,4 +78,4 @@ locust -f tests/load/locustfile.py --headless     # Load tests
 
 ---
 
-*Last Updated: March 2026 — v3.5.0*
+*Last Updated: March 2026 — v3.5.2*

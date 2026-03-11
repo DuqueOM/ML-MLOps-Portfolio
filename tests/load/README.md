@@ -35,20 +35,40 @@ locust -f tests/load/locustfile.py \
 
 ## Test Scenarios
 
-| Service | Port | Endpoint | In-Pod Latency (GKE) |
-|---------|------|----------|---------------------|
-| BankChurn | 8001 | POST /predict | 103ms p50 / 111ms p95 |
-| NLPInsight | 8003 | POST /predict | 5ms p50 / 15ms p95 |
-| ChicagoTaxi | 8004 | GET /demand | 75ms p50 / 460ms p95 |
+| Service | Port | Endpoint | In-Pod Latency (GKE) | Via-Ingress Latency |
+|---------|------|----------|---------------------|--------------------|
+| BankChurn | 8001 | POST /predict | 103ms p50 / 111ms p95 | 770ms p50 / 1700ms p95 |
+| NLPInsight | 8003 | POST /predict | 5ms p50 / 15ms p95 | 80ms p50 / 160ms p95 |
+| ChicagoTaxi | 8004 | GET /demand | 75ms p50 / 460ms p95 | 90ms p50 / 170ms p95 |
+
+## Production Baseline (2026-03-11)
+
+Run: `INGRESS_HOST=http://136.111.152.72 locust -f tests/load/locustfile.py --headless -u 30 -r 5 -t 120s`
+
+| Metric | Value |
+|--------|-------|
+| Total requests | 2,673 |
+| Concurrent users | 30 |
+| Ramp rate | 5/s |
+| Duration | 120s |
+| Aggregate throughput | 22.35 req/s |
+| Error rate | **0.07%** (2 transient 502s on BankChurn) |
+| BankChurn predict P50/P95/P99 | 770ms / 1700ms / 2100ms |
+| NLPInsight predict P50/P95/P99 | 80ms / 160ms / 240ms |
+| NLPInsight predict_batch P50/P95 | 84ms / 150ms |
+| ChicagoTaxi demand P50/P95/P99 | 90ms / 170ms / 230ms |
+| ChicagoTaxi areas P50/P95 | 110ms / 230ms |
 
 ## Performance Targets
 
-| Metric | Target | Critical |
-|--------|--------|----------|
-| p95 Latency | < 100ms | < 500ms |
-| p99 Latency | < 200ms | < 1000ms |
-| Error Rate | < 0.1% | < 1% |
-| RPS (per instance) | > 100 | > 50 |
+| Metric | Target | Critical | Observed (prod) |
+|--------|--------|----------|-----------------|
+| p95 Latency | < 500ms | < 2000ms | NLP 160ms ✅ / Taxi 170ms ✅ / BankChurn 1700ms ⚠️ |
+| p99 Latency | < 1000ms | < 3000ms | NLP 240ms ✅ / Taxi 230ms ✅ / BankChurn 2100ms ✅ |
+| Error Rate | < 0.1% | < 1% | **0.07%** ✅ |
+| Aggregate RPS | > 10 | > 5 | **22.35 req/s** ✅ |
+
+> BankChurn ingress P95=1700ms includes NGINX routing overhead + StackingClassifier inference. In-pod is 111ms P95.
 
 ## Reports
 

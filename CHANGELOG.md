@@ -6,6 +6,35 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [3.5.2] — 2026-03-11
+
+### Fixed
+- **Grafana dashboard** — Complete overhaul of `ml-portfolio-dashboard.json` and the `grafana-dashboards` ConfigMap:
+  - Removed deprecated `CarVision` panels (service removed in v3.5.0)
+  - Fixed wrong metric name: `chicagotaxi_request_duration_seconds` → `chicagotaxi_request_latency_seconds` (was breaking all ChicagoTaxi latency panels)
+  - Fixed wrong Prometheus job name: `chicagotaxi-intelligence` → `chicagotaxi-pipeline` (was breaking health, CPU, and memory panels)
+- **ChicagoTaxi `/demand` endpoint** — duplicate `REQUEST_COUNT.inc()` call removed (was double-counting all demand requests)
+
+### Added
+- **`chicagotaxi_predictions_total` counter** — new Prometheus metric in `chicagotaxi:v3.5.2` tracking demand predictions served, labelled by `demand_category` (high/medium/low/very_high). Brings ChicagoTaxi to full parity with BankChurn (`risk_level`) and NLPInsight (`sentiment`)
+- **Grafana dashboard v3 (26 panels, 6 rows)** — enterprise-grade production dashboard replacing the previous 10-panel version:
+  - Row 1: Service Health (BankChurn / ChicagoTaxi / NLPInsight / Prometheus UP/DOWN stats)
+  - Row 2: Request Metrics (rate timeseries, P95 latency, per-service total request stats)
+  - Row 3: Latency Analysis (avg latency, P99/P50 distribution — all 3 services)
+  - Row 4: ML Prediction Metrics (BankChurn by risk level, NLPInsight by sentiment, ChicagoTaxi by demand category)
+  - Row 5: Error Rates (gauge per service — green/yellow/red thresholds)
+  - Row 6: Resource Utilization (process CPU %, resident memory — all 3 services)
+- **`/areas` endpoint metrics** — `chicagotaxi_requests_total{endpoint="/areas"}` now incremented on `/areas` calls
+- **Production load test baseline** (2026-03-11, GKE via ingress, 30 users, 120s): 2673 requests · **0.07% error rate** · 22.35 req/s · NLP P95=160ms · Taxi P95=170ms · BankChurn P95=1700ms (ingress overhead + StackingClassifier)
+
+### Changed
+- **`chicagotaxi:v3.5.2`** — rebuilt and pushed to Artifact Registry with `chicagotaxi_predictions_total` counter
+- **K8s deployment** — `chicagotaxi-pipeline` updated to `chicagotaxi:v3.5.2`
+- **`docs/operations/monitoring.md`** — SLO table updated with real via-ingress P95 latency; real production counters added
+- **`tests/load/README.md`** — production baseline table added with real Locust numbers
+
+---
+
 ## [3.5.1] — 2026-03-10
 
 ### Fixed

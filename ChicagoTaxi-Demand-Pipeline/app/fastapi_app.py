@@ -49,6 +49,11 @@ try:
         "Request latency",
         ["endpoint"],
     )
+    DEMAND_COUNT = Counter(
+        "chicagotaxi_predictions_total",
+        "Total demand predictions served",
+        ["demand_category"],
+    )
 except ImportError:
     PROMETHEUS_AVAILABLE = False
 
@@ -236,6 +241,7 @@ async def get_demand(
 
     results = []
     for _, row in df.iterrows():
+        category = str(row.get("demand_category", "unknown"))
         results.append(
             DemandResponse(
                 pickup_community_area=int(row.get("pickup_community_area", 0)),
@@ -243,11 +249,13 @@ async def get_demand(
                 day_of_week=int(row.get("day_of_week", 0)),
                 is_weekend=int(row.get("is_weekend", 0)),
                 predicted_demand=round(float(row.get("predicted_demand", 0)), 2),
-                demand_category=str(row.get("demand_category", "unknown")),
+                demand_category=category,
                 avg_fare=round(float(row.get("avg_fare", 0)), 2),
                 avg_distance_miles=round(float(row.get("avg_distance_miles", 0)), 2),
             )
         )
+        if PROMETHEUS_AVAILABLE:
+            DEMAND_COUNT.labels(demand_category=category).inc()
     return results
 
 
@@ -256,6 +264,9 @@ async def list_areas():
     """List community areas with demand summaries."""
     if predictions_df is None:
         raise HTTPException(status_code=503, detail="Predictions not loaded")
+
+    if PROMETHEUS_AVAILABLE:
+        REQUEST_COUNT.labels(method="GET", endpoint="/areas", status="200").inc()
 
     grouped = (
         predictions_df.groupby("pickup_community_area")
@@ -294,4 +305,4 @@ async def pipeline_status():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)  # nosec B104
