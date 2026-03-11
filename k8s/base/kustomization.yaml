@@ -13,6 +13,7 @@ resources:
   # Monitoring (cloud-agnostic — Grafana domain patched per overlay)
   - prometheus-deployment.yaml
   - grafana-deployment.yaml
+  - mlflow-deployment.yaml
   # Security & reliability (cloud-agnostic)
   - network-policies.yaml
   - pod-disruption-budgets.yaml

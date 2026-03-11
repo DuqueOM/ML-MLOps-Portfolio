@@ -37,9 +37,9 @@ spec:
             port:
               number: 80
 ---
-# Ingress 2: Monitoring tools — NO rewrite-target so Grafana/MLflow receive the full /grafana/ prefix.
-# Grafana requires GF_SERVER_SERVE_FROM_SUB_PATH=true and needs the sub-path intact.
-# Stripping the prefix (as in Ingress 1) causes an infinite 301 redirect loop.
+# Ingress 2: Monitoring tools — NO rewrite-target; both tools are configured to serve from sub-paths.
+# Grafana: GF_SERVER_SERVE_FROM_SUB_PATH=true + GF_SERVER_ROOT_URL handles /grafana prefix.
+# MLflow: --static-prefix /mlflow flag handles /mlflow prefix (added in v3.5.2).
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
