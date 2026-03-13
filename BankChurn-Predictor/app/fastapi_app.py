@@ -109,8 +109,9 @@ def _load_background_data(max_samples: int = 100) -> Optional[pd.DataFrame]:
                 # Filter to only the 10 feature columns (exclude metadata and target)
                 available = [c for c in FEATURE_COLUMNS if c in df.columns]
                 if len(available) >= 8:  # Need most features to be useful
-                    logger.info(f"Loaded {len(df)} background samples from {csv_file} ({len(available)} features)")
-                    return df[available]
+                    clean = df[available].dropna()
+                    logger.info(f"Loaded {len(clean)} background samples from {csv_file} ({len(available)} features)")
+                    return clean
             except Exception as e:
                 logger.debug(f"Could not load {csv_file}: {e}")
     logger.warning("No background data found for SHAP initialization")
