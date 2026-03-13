@@ -166,10 +166,10 @@ jobs:
       - name: Apply Kubernetes manifests (AWS overlay)
         run: |
           # Ensure namespace exists
-          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/base/namespace.yaml
 
           # Apply shared resources
-          kubectl apply -f k8s/storage.yaml
+          kubectl apply -f k8s/base/storage.yaml
 
           # Apply AWS-specific overlay (ConfigMaps must be before deployments — init containers depend on them)
           kubectl apply -f k8s/overlays/aws/serviceaccount-aws.yaml
@@ -181,10 +181,10 @@ jobs:
           kubectl apply -f k8s/overlays/aws/nlpinsight-deployment-aws.yaml
 
           # Deploy monitoring (shared manifests)
-          kubectl apply -f k8s/prometheus-deployment.yaml
-          kubectl apply -f k8s/grafana-deployment.yaml
+          kubectl apply -f k8s/base/prometheus-deployment.yaml
+          kubectl apply -f k8s/base/grafana-deployment.yaml
 
-          # Apply AWS ALB ingress
+          # Apply AWS nginx ingress
           kubectl apply -f k8s/overlays/aws/ingress-aws.yaml
 
       - name: Wait for rollouts
