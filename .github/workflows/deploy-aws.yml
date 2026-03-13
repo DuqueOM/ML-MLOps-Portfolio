@@ -70,11 +70,11 @@ jobs:
         include:
           - service: bankchurn
             context: BankChurn-Predictor
-            image: ml-portfolio/bankchurn-predictor
+            image: ml-portfolio/bankchurn
             manifest: k8s/overlays/aws/bankchurn-deployment-aws.yaml
           - service: nlpinsight
             context: NLPInsight-Analyzer
-            image: ml-portfolio/nlpinsight-analyzer
+            image: ml-portfolio/nlpinsight
             manifest: k8s/overlays/aws/nlpinsight-deployment-aws.yaml
     if: >
       needs.detect-changes.outputs.bankchurn == 'true' ||
