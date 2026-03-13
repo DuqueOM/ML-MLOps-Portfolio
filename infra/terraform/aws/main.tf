@@ -31,6 +31,8 @@ provider "aws" {
 }
 
 # EKS Cluster
+#tfsec:ignore:AVD-AWS-0040 -- Public API access restricted to allowed_cidr_blocks (not 0.0.0.0/0). Required for CI/CD and developer kubectl access. Private access also enabled. See ADR-012.
+#tfsec:ignore:AVD-AWS-0104 -- Node egress to internet required for ECR image pulls, S3 model downloads, and CloudWatch logs. NAT Gateway restricts to private subnets only. See ADR-012.
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 19.0"
@@ -74,6 +76,7 @@ module "eks" {
 }
 
 # VPC
+#tfsec:ignore:AVD-AWS-0178 -- VPC Flow Logs add ~$0.50/GB storage cost. Enabled in production via enable_flow_log variable. Staging uses CloudWatch EKS audit logs instead. See ADR-012.
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"
@@ -122,6 +125,7 @@ resource "aws_s3_bucket_versioning" "ml_models" {
   }
 }
 
+#tfsec:ignore:AVD-AWS-0132 -- Uses AWS-managed KMS key (aws:kms). Customer-managed CMK adds $1/month/key + rotation management; reserved for production PII data. See ADR-012.
 resource "aws_s3_bucket_server_side_encryption_configuration" "ml_models" {
   bucket = aws_s3_bucket.ml_models.id
 
@@ -167,6 +171,7 @@ resource "aws_s3_bucket_versioning" "ml_datasets" {
   }
 }
 
+#tfsec:ignore:AVD-AWS-0132 -- Uses AWS-managed KMS key (aws:kms). CMK reserved for production. See ADR-012.
 resource "aws_s3_bucket_server_side_encryption_configuration" "ml_datasets" {
   bucket = aws_s3_bucket.ml_datasets.id
 
@@ -212,6 +217,7 @@ resource "aws_s3_bucket_versioning" "mlflow_artifacts" {
   }
 }
 
+#tfsec:ignore:AVD-AWS-0132 -- Uses AWS-managed KMS key (aws:kms). CMK reserved for production. See ADR-012.
 resource "aws_s3_bucket_server_side_encryption_configuration" "mlflow_artifacts" {
   bucket = aws_s3_bucket.mlflow_artifacts.id
 
@@ -239,6 +245,7 @@ resource "aws_s3_bucket_logging" "mlflow_artifacts" {
 }
 
 # RDS for MLflow Backend
+#tfsec:ignore:AVD-AWS-0133 -- Performance Insights not needed for staging MLflow DB (minimal query load). Enable in production via performance_insights_enabled variable. See ADR-012.
 resource "aws_db_instance" "mlflow_db" {
   identifier     = "${var.project_name}-mlflow-db-${var.environment}"
   engine         = "postgres"
@@ -323,6 +330,7 @@ resource "aws_ecr_repository" "ml_services" {
     scan_on_push = true
   }
 
+  #tfsec:ignore:AVD-AWS-0033 -- ECR uses AES256 (AWS-managed). KMS encryption adds $1/month/key per repo; reserved for production with compliance requirements. See ADR-012.
   encryption_configuration {
     encryption_type = "AES256"
   }
@@ -371,6 +379,7 @@ resource "aws_ecr_lifecycle_policy" "ml_services" {
 }
 
 # CloudWatch Log Group
+#tfsec:ignore:AVD-AWS-0017 -- Log group uses AWS-managed encryption (default). CMK encryption adds key management overhead; reserved for production with audit requirements. See ADR-012.
 resource "aws_cloudwatch_log_group" "ml_services" {
   name              = "/aws/eks/${var.project_name}-${var.environment}"
   retention_in_days = 30

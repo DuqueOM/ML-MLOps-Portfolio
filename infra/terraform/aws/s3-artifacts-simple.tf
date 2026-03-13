@@ -2,6 +2,7 @@
 # Staff Engineer Demo: Infrastructure as Code for ML Model Storage
 # This demonstrates best practices for versioned, secure artifact storage
 
+#tfsec:ignore:AVD-AWS-0089 -- Access logging adds storage cost for staging artifact store. Enable via access_logging variable in production. See ADR-012.
 resource "aws_s3_bucket" "ml_models_artifact_store" {
   bucket = "${var.project_name}-mlops-models-store-${var.environment}"
 
@@ -24,6 +25,7 @@ resource "aws_s3_bucket_versioning" "artifact_versioning" {
 }
 
 # Server-side encryption for compliance
+#tfsec:ignore:AVD-AWS-0132 -- Staging uses AES256 (AWS-managed). CMK (aws:kms + customer key) reserved for production PII data. See ADR-012.
 resource "aws_s3_bucket_server_side_encryption_configuration" "artifact_encryption" {
   bucket = aws_s3_bucket.ml_models_artifact_store.id
 
@@ -73,6 +75,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "artifact_lifecycle" {
 }
 
 # Bucket for MLflow experiment artifacts
+#tfsec:ignore:AVD-AWS-0089 -- Access logging adds storage cost for staging. Enable in production. See ADR-012.
 resource "aws_s3_bucket" "mlflow_artifacts_store" {
   bucket = "${var.project_name}-mlflow-artifacts-${var.environment}"
 
@@ -93,6 +96,7 @@ resource "aws_s3_bucket_versioning" "mlflow_versioning" {
   }
 }
 
+#tfsec:ignore:AVD-AWS-0132 -- Staging uses AES256 (AWS-managed). CMK reserved for production. See ADR-012.
 resource "aws_s3_bucket_server_side_encryption_configuration" "mlflow_encryption" {
   bucket = aws_s3_bucket.mlflow_artifacts_store.id
 

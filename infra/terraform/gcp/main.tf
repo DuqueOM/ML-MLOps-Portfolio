@@ -34,6 +34,8 @@ locals {
 }
 
 # GKE Cluster
+#tfsec:ignore:AVD-GCP-0047 -- PodSecurityPolicy is deprecated since K8s 1.21; replaced by Pod Security Standards (PSS) enforced via namespace labels (baseline enforce, restricted warn). See ADR-012.
+#tfsec:ignore:AVD-GCP-0048 -- Legacy metadata endpoint is disabled at node level via workload_metadata_config SECURE. GKE Metadata Server (GKE_METADATA) blocks legacy /computeMetadata/v1beta1. See ADR-012.
 resource "google_container_cluster" "ml_portfolio" {
   name                = "${var.project_name}-gke-${var.environment}"
   location            = var.region
@@ -123,6 +125,7 @@ resource "google_container_cluster" "ml_portfolio" {
 }
 
 # GKE Node Pool
+#tfsec:ignore:AVD-GCP-0048 -- Legacy metadata endpoint disabled via workload_metadata_config GKE_METADATA on node pool. See ADR-012.
 resource "google_container_node_pool" "ml_services" {
   name       = "ml-services-pool"
   location   = var.region
@@ -216,6 +219,7 @@ resource "google_service_networking_connection" "private_vpc_connection" {
 }
 
 # Cloud Storage Buckets
+#tfsec:ignore:AVD-GCP-0066 -- Staging uses Google-managed encryption (default). CMEK adds $0.06/10K ops + key management overhead; reserved for production PII/PHI data. See ADR-012.
 resource "google_storage_bucket" "ml_models" {
   name          = "${var.project_id}-ml-models-${var.environment}"
   location      = var.region
@@ -238,6 +242,7 @@ resource "google_storage_bucket" "ml_models" {
   }
 }
 
+#tfsec:ignore:AVD-GCP-0066 -- Staging uses Google-managed encryption. CMEK reserved for production. See ADR-012.
 resource "google_storage_bucket" "mlflow_artifacts" {
   name          = "${var.project_id}-mlflow-artifacts-${var.environment}"
   location      = var.region
