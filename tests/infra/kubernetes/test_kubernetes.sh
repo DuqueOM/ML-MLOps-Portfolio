@@ -124,17 +124,17 @@ test_conftest() {
 }
 
 # ---------------------------------------------------------------------------
-# 4. Required resources check
+# 4. Required resources check (recursive across overlay + base)
 # ---------------------------------------------------------------------------
 test_required_resources() {
-    local dir="$1" name="$2"
+    local overlay_dir="$1" name="$2"
     log_info "[$name] Required Kubernetes resources"
 
     local missing=0
     local required_kinds=("Namespace" "Deployment" "Service" "ConfigMap" "HorizontalPodAutoscaler" "Ingress")
 
     for kind in "${required_kinds[@]}"; do
-        if grep -rq "kind: $kind" "$dir"/*.yaml 2>/dev/null; then
+        if grep -rq "^kind: $kind" "$overlay_dir" "$K8S_DIR/base" 2>/dev/null; then
             true
         else
             echo "  Missing: $kind"
@@ -142,10 +142,10 @@ test_required_resources() {
         fi
     done
 
-    # Check required deployments
+    # Check required deployments by name
     local required_deploys=("bankchurn" "nlpinsight" "chicagotaxi" "prometheus" "grafana")
     for deploy in "${required_deploys[@]}"; do
-        if grep -rq "name: ${deploy}" "$dir"/*.yaml 2>/dev/null; then
+        if grep -rq "name: ${deploy}" "$overlay_dir" "$K8S_DIR/base" 2>/dev/null; then
             true
         else
             echo "  Missing deployment: $deploy"
@@ -161,34 +161,34 @@ test_required_resources() {
 }
 
 # ---------------------------------------------------------------------------
-# 5. Security checks
+# 5. Security checks (recursive across overlay + base)
 # ---------------------------------------------------------------------------
 test_security() {
-    local dir="$1" name="$2"
+    local overlay_dir="$1" name="$2"
     log_info "[$name] Security checks"
 
     local issues=0
 
     # Check for privileged containers
-    if grep -rq "privileged: true" "$dir"/*.yaml 2>/dev/null; then
+    if grep -rq "privileged: true" "$overlay_dir" "$K8S_DIR/base" 2>/dev/null; then
         echo "  ⚠️ Found privileged containers"
         issues=$((issues+1))
     fi
 
     # Check for hostNetwork
-    if grep -rq "hostNetwork: true" "$dir"/*.yaml 2>/dev/null; then
+    if grep -rq "hostNetwork: true" "$overlay_dir" "$K8S_DIR/base" 2>/dev/null; then
         echo "  ⚠️ Found hostNetwork: true"
         issues=$((issues+1))
     fi
 
     # Check for hostPID
-    if grep -rq "hostPID: true" "$dir"/*.yaml 2>/dev/null; then
+    if grep -rq "hostPID: true" "$overlay_dir" "$K8S_DIR/base" 2>/dev/null; then
         echo "  ⚠️ Found hostPID: true"
         issues=$((issues+1))
     fi
 
-    # Check ServiceAccount exists
-    if ! grep -rq "kind: ServiceAccount" "$dir"/*.yaml 2>/dev/null; then
+    # Check ServiceAccount exists in overlay (cloud-specific)
+    if ! grep -rq "^kind: ServiceAccount" "$overlay_dir" 2>/dev/null; then
         echo "  ⚠️ No ServiceAccount defined"
         issues=$((issues+1))
     fi
@@ -209,11 +209,9 @@ run_base_tests() {
     echo -e "${BLUE}  Kubernetes Tests: Base Manifests${NC}"
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
-    test_yaml_syntax "$K8S_DIR" "base"
-    test_kubelinter "$K8S_DIR" "base"
-    test_conftest "$K8S_DIR" "base"
-    test_required_resources "$K8S_DIR" "base"
-    test_security "$K8S_DIR" "base"
+    test_yaml_syntax "$K8S_DIR/base" "base"
+    test_kubelinter "$K8S_DIR/base" "base"
+    test_conftest "$K8S_DIR/base" "base"
 }
 
 run_overlay_tests() {
@@ -229,6 +227,8 @@ run_overlay_tests() {
 
         test_yaml_syntax "$overlay_dir" "overlay-$overlay_name"
         test_conftest "$overlay_dir" "overlay-$overlay_name"
+        test_required_resources "$overlay_dir" "overlay-$overlay_name"
+        test_security "$overlay_dir" "overlay-$overlay_name"
     done
 }
 

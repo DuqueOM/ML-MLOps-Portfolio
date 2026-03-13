@@ -68,7 +68,7 @@ spec:
             name: chicagotaxi-predictions-config
       containers:
       - name: chicagotaxi-api
-        image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/ml-portfolio/chicagotaxi-pipeline:latest
+        image: 531948420830.dkr.ecr.us-east-1.amazonaws.com/ml-portfolio/chicagotaxi:latest
         imagePullPolicy: Always
         command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
         ports:

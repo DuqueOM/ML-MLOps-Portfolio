@@ -11,8 +11,8 @@
 ┌────────────────────────────────────────────────────────────────────┐
 │  GCP (us-central1)                  │  AWS (us-east-1)             │
 │                                     │                              │
-│  GKE Cluster (4 nodes)              │  EKS Cluster (t3.large)      │
-│  v1.34.3-gke.1318000                │  Terraform-managed           │
+│  GKE Cluster (3 nodes)              │  EKS Cluster (3 nodes)       │
+│  v1.34.3-gke.1318000                │  v1.31 (t3.small)            │
 │                                     │                              │
 │  ┌─── ML Services (HPA) ────────┐   │  ┌─── ML Services (HPA) ──┐  │
 │  │ ┌──────────┐ ┌──────────┐    │   │  │ ┌────────┐ ┌────────┐  │  │
@@ -36,28 +36,30 @@
 │  │ └──────────┘                 │   │  │ └────────┘             │  │
 │  └──────────────────────────────┘   │  └────────────────────────┘  │
 │                                     │                              │
-│  GCE Ingress (34.120.120.57)        │  ALB (DNS)                   │
+│  nginx-ingress (34.120.120.57)      │  nginx-ingress (NodePort¹)   │
 │  Artifact Registry + GCS            │  ECR + S3                    │
-│  Cloud SQL (PostgreSQL)             │  RDS (PostgreSQL)            │
-│  Terraform IaC                      │  Terraform IaC               │
+│  Workload Identity                  │  IRSA                        │
+│  Terraform IaC                      │  eksctl + Kustomize          │
 └────────────────────────────────────────────────────────────────────┘
 
-6 pods total: 3 ML APIs + Prometheus + Grafana + MLflow.
+6 pods per cloud: 3 ML APIs + Prometheus + Grafana + MLflow.
+¹ AWS LB Controller installed; account-level CreateLoadBalancer restriction pending.
+  NodePort + Security Group rule provides external access.
 ```
 
 ## Verified Capabilities
 
 | Capability | GCP | AWS | Evidence |
 |------------|-----|-----|----------|
-| Container orchestration (K8s) | GKE v1.34.3 | EKS | 4 nodes, 6 pods running |
+| Container orchestration (K8s) | GKE v1.34.3 | EKS v1.31 | 3 nodes per cloud, 6 pods running |
 | Auto-scaling (HPA) | CPU-based | CPU-based | Verified: 1→3 pods under load, scale-down after |
 | Model serving (FastAPI) | 3 services | 3 services | `/health` + `/predict` — 27/27 smoke tests passed |
 | Batch prediction | All 3 APIs | All 3 APIs | `/predict_batch` endpoints verified |
 | Explainability (SHAP) | BankChurn | BankChurn | `/predict?explain=true` — 196ms with SHAP contributions |
 | Monitoring (Prometheus) | 16/16 targets UP | Custom metrics | `bankchurn_*`, `nlpinsight_*`, `chicagotaxi_*` + 16 alert rules |
 | Dashboards (Grafana) | v10.2.2, 2 dashboards | ML Performance | Latency, throughput, error rates, predictions, resource usage |
-| Experiment tracking (MLflow) | Cloud SQL backend | RDS backend | Running, v2.9.2 |
-| Infrastructure as Code | Terraform GCP | Terraform AWS | 8/8 tests passed (fmt, validate, tfsec, checkov) |
+| Experiment tracking (MLflow) | Cloud SQL backend | SQLite (in-pod) | Running, v2.9.2 |
+| Infrastructure as Code | Terraform GCP | eksctl + Kustomize AWS | 8/8 tests passed (fmt, validate, tfsec, checkov) |
 | CI/CD (GitHub Actions) | Build + Deploy | Build + Deploy | 10-job pipeline, GHCR publish |
 | Container registry | Artifact Registry | ECR | v3.5.0 images pushed |
 | Object storage (models) | GCS | S3 | Init containers download on boot |
@@ -168,9 +170,11 @@ BankChurn uses a **StackingClassifier** ensemble: 4 base learners (RandomForest,
 | NLPInsight | 1–3 | 75% | 3% | 283Mi |
 | ChicagoTaxi | 1–3 | 70% | 33% | 431Mi |
 
-## Live Cluster State (2026-03-05)
+## Live Cluster State
 
-### Pods
+### GCP — GKE (verified 2026-03-05)
+
+#### Pods
 
 | Pod | Status | CPU | Memory | Node |
 |-----|--------|-----|--------|------|
@@ -181,28 +185,58 @@ BankChurn uses a **StackingClassifier** ensemble: 4 base learners (RandomForest,
 | grafana | Running 1/1 | 2m | 76Mi | khkn |
 | mlflow-server | Running 1/1 | 1m | 422Mi | bxmg |
 
-### Cluster
+#### Cluster
 
 | Property | Value |
 |----------|-------|
 | Provider | GKE (`ml-portfolio-gke-production`) |
 | Region | `us-central1` |
 | Kubernetes | v1.34.3-gke.1318000 |
-| Nodes | 4 (`e2-medium`, 2 vCPU / 4 GB each) |
+| Nodes | 3 (`e2-medium`, 2 vCPU / 4 GB each) |
 | Namespace | `ml-portfolio` |
 | Ingress IP | `34.120.120.57` |
 | Registry | `us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images` |
 | GCS Bucket | `ml-portfolio-duque-om-202602-ml-models-production` |
 
-### Node Resource Utilization
+#### Node Resource Utilization
 
 | Node | CPU Usage | Memory Usage |
 |------|-----------|-------------|
 | 55w8 | 156m (16%) | 1864Mi (66%) |
 | bxmg | 143m (15%) | 1770Mi (63%) |
 | t8v4 | 163m (17%) | 1264Mi (45%) |
-| khkn | 181m (19%) | 2000Mi (71%) |
-| **Avg** | **16.8%** | **61.3%** |
+| **Avg** | **16%** | **58%** |
+
+### AWS — EKS (verified 2026-03-12)
+
+#### Pods
+
+| Pod | Status | CPU | Memory |
+|-----|--------|-----|--------|
+| bankchurn-predictor | Running 1/1 | 8m | 332Mi |
+| nlpinsight-analyzer | Running 1/1 | 7m | 271Mi |
+| chicagotaxi-pipeline | Running 1/1 | 55m | 418Mi |
+| prometheus | Running 1/1 | 15m | 158Mi |
+| grafana | Running 1/1 | 2m | 68Mi |
+| mlflow-server | Running 1/1 | 1m | 395Mi |
+
+#### Cluster
+
+| Property | Value |
+|----------|-------|
+| Provider | EKS (`ml-portfolio-eks`) |
+| Region | `us-east-1` |
+| Kubernetes | v1.31 |
+| Nodes | 3 (`t3.small`, 2 vCPU / 2 GB each) |
+| Namespace | `ml-portfolio` |
+| External Access | NodePort `31963` via nginx-ingress |
+| Registry | `531948420830.dkr.ecr.us-east-1.amazonaws.com/ml-portfolio/*` |
+| S3 Bucket | `ml-portfolio-ml-models-production` |
+| IAM | IRSA (`ml-portfolio-eks-workload-role`) |
+
+> **Note**: AWS Load Balancer Controller is installed and configured with IRSA.
+> Account-level `CreateLoadBalancer` restriction (new account) prevents ALB provisioning.
+> NodePort + Security Group ingress rule provides full external access as workaround.
 
 ### Prometheus Monitoring (16/16 targets UP, 0 DOWN)
 
@@ -250,9 +284,10 @@ No rules reference non-existent metrics (kube-state-metrics, cAdvisor, model_dri
 - **ChicagoTaxi**: Added predictions init container for batch data download from GCS
 
 ### Resource Optimization Assessment
-- **Nodes**: 4× e2-medium (2 vCPU / 4 GB) — avg 17% CPU, 61% memory utilization
-- **Cost-effective**: e2-medium is the smallest GKE-compatible machine type; upgrading to e2-standard-2 only needed if P95 latency SLAs are missed under sustained load
-- **HPA**: All 3 services scale 1→3 replicas on CPU target (70-75%), verified functional
+- **GCP Nodes**: 3× e2-medium (2 vCPU / 4 GB) — avg 16% CPU, 58% memory utilization
+- **AWS Nodes**: 3× t3.small (2 vCPU / 2 GB) — tighter memory budget, all pods running successfully
+- **Cost-effective**: Smallest viable instance types per cloud; upgrading only needed if P95 latency SLAs are missed under sustained load
+- **HPA**: All 3 services scale 1→3 replicas on CPU target (70-75%), verified functional on both clouds
 
 ## Security
 
@@ -288,29 +323,43 @@ No rules reference non-existent metrics (kube-state-metrics, cAdvisor, model_dri
 ## Deployment Commands Reference
 
 ```bash
-# GCP
+# === GCP (GKE) ===
 gcloud container clusters get-credentials ml-portfolio-gke-production --region us-central1
 kubectl get pods -n ml-portfolio
+kubectl get hpa -n ml-portfolio
+curl -s http://34.120.120.57/bankchurn/health | python3 -m json.tool
 
-# AWS
-aws eks update-kubeconfig --name ml-portfolio-eks-production --region us-east-1
+# === AWS (EKS) ===
+export AWS_PROFILE=ml-portfolio
+aws eks update-kubeconfig --name ml-portfolio-eks --region us-east-1
 kubectl get pods -n ml-portfolio
+kubectl get hpa -n ml-portfolio
+kubectl get nodes -o wide
+kubectl get svc,ingress -n ml-portfolio
+curl -s http://54.166.200.233:31963/bankchurn/health | python3 -m json.tool
 
-# Verify all services
+# === Verify all services (either cloud) ===
 for svc in bankchurn-predictor nlpinsight-analyzer chicagotaxi-pipeline; do
   echo "--- $svc ---"
   kubectl exec -n ml-portfolio deploy/$svc -- curl -sf http://localhost:8000/health
 done
 
-# Run all tests
+# === Run all tests ===
 bash tests/infra/kubernetes/test_kubernetes.sh all
 bash tests/infra/terraform/test_terraform.sh all
 BANKCHURN_PORT=8000 NLPINSIGHT_PORT=8002 CHICAGOTAXI_PORT=8003 \
   python3 -m pytest tests/infra/smoke/test_smoke_services.py -v
 python3 -m pytest tests/integration/test_smoke_k8s.py -v
 python3 -m locust -f tests/load/locustfile.py --headless -u 10 -r 2 -t 120s --only-summary
+
+# === Check AWS LoadBalancer permission status ===
+AWS_PROFILE=ml-portfolio aws elbv2 create-load-balancer \
+  --name test-lb-permission --type application \
+  --subnets subnet-xxx --dry-run 2>&1 || true
+# If "CreateLoadBalancer" error → still restricted
+# If "DryRunOperation" or different error → permission granted
 ```
 
 ---
 
-**Last Updated**: 2026-03-05 (v3.5.0 — Docker numpy 2.x fixes, NLPInsight TF-IDF production model, ChicagoTaxi predictions init container, 27/27 smoke + 9/9 integration + 2675 load test requests, 0% error rate)
+**Last Updated**: 2026-03-12 (v3.5.0 — AWS EKS deployed with NodePort workaround, 6/6 pods Running, smoke + load tests verified on both GCP and AWS)

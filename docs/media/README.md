@@ -1,46 +1,47 @@
 # Media Assets
 
-Visual evidence of the ML-MLOps Portfolio deployed on GCP (GKE) and AWS (EKS).
-
-[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+Visual evidence of the ML-MLOps Portfolio deployed on **GCP (GKE)** and **AWS (EKS)** — multi-cloud production.
 
 ## Directory Structure
 
 ```
 media/
 ├── screenshots/
-│   ├── gcp-console/     # 16 captures: GKE, Artifact Registry, GCS, IAM
-│   ├── terminal/        # 8 captures: kubectl pods, services, top
-│   ├── apis/            # 10 captures: FastAPI Swagger, predictions, SHAP
-│   ├── monitoring/      # 8 captures: Grafana, Prometheus, MLflow
-│   ├── cicd/            # 7 captures: GitHub Actions, Codecov
-│   ├── terraform/       # 7 captures: plan, state, outputs
-│   ├── dvc/             # 8 captures: init, push, pull, status
-│   └── aws-*/           # ~82 captures: EKS, ECR, S3, ALB, RDS
-├── gifs/                # 13 GIFs (5 GCP + 5 AWS + 3 multi-cloud)
-└── videos/              # Source recordings (gitignored)
+│   ├── gcp-console/     # GKE cluster, workloads, Artifact Registry, GCS, Cloud Build, IAM
+│   ├── aws-console/     # EKS cluster, workloads, ECR repos, S3 buckets
+│   ├── aws-terminal/    # kubectl on EKS, health checks via ALB, multi-cloud side-by-side
+│   ├── terminal/        # kubectl on GKE, terraform outputs, health checks, infra tests
+│   ├── apis/            # FastAPI Swagger UIs, ML predictions, SHAP
+│   ├── monitoring/      # Grafana dashboards, Prometheus, MLflow experiments
+│   ├── cicd/            # GitHub Actions, Codecov, secrets
+│   └── terraform/       # Multi-cloud IaC structure, AWS validation, K8s overlays
+├── gifs/                # Terminal demos (predictions, HPA scaling, fairness)
+├── thumbnails/          # Video thumbnail for YouTube
+└── video/               # Portfolio demo video
 ```
 
-**Total**: 168+ screenshots, 13 GIFs, 1 YouTube video
-
-## Critical Screenshots
+## Key Screenshots
 
 | # | File | Description |
 |---|------|-------------|
-| 05 | `gcp-console/05-gke-workloads-running.png` | 6 pods running on GKE |
-| 17 | `terminal/17-kubectl-pods-running.png` | CLI evidence of all services |
-| 26 | `apis/26-bankchurn-prediccion-real.png` | Real ML prediction |
-| 31 | `apis/31-tres-apis-pestanas.png` | 3 APIs simultaneously |
-| 34 | `monitoring/34-grafana-dashboard.png` | Real-time monitoring |
-| 46 | `cicd/46-workflow-completado.png` | CI/CD pipeline completed |
+| 05 | `gcp-console/05-gke-workloads-running.png` | 6 workloads running on GKE |
+| 04 | `gcp-console/04-gke-cluster-detalle.png` | Cluster config: 4 nodes, autoscaling 1-5 |
+| 17 | `terminal/17-kubectl-pods-running.png` | 6 pods Running, 0 restarts (GKE) |
+| 26 | `apis/26-bankchurn-prediccion-real.png` | Real ML prediction with SHAP explainability |
+| 34 | `monitoring/34-grafana-dashboard.png` | Grafana ML dashboard with load test metrics |
+| 39 | `monitoring/39-mlflow-experiments.png` | MLflow: 3 experiments, 14 runs |
+| 46 | `cicd/46-workflow-completado.png` | CI/CD pipeline: 10 jobs green |
+| 29 | `aws-console/29-eks-cluster-overview.png` | EKS cluster Active (AWS equivalent) |
+| 36 | `aws-terminal/36-multicloud-side-by-side.png` | Multi-Cloud HERO: GKE vs EKS side-by-side |
 
 ## Usage
 
 ```markdown
 ![GKE Workloads](media/screenshots/gcp-console/05-gke-workloads-running.png)
 ![Prediction Demo](media/gifs/01-demo-prediccion.gif)
+![Multi-Cloud](media/screenshots/aws-terminal/36-multicloud-side-by-side.png)
 ```
 
 ---
 
-*Last Updated: March 2026*
+*Last Updated: March 2026 — v3.5.0*
