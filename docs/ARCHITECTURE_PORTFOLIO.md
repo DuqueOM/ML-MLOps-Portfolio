@@ -8,6 +8,34 @@
 
 ## System Overview
 
+```mermaid
+graph TB
+    subgraph "CI/CD — GitHub Actions"
+        GH[GitHub Actions] --> BUILD[Docker Build]
+        BUILD --> AR[GCP Artifact Registry]
+        BUILD --> ECR[AWS ECR]
+    end
+
+    subgraph "GCP — GKE (us-central1, 4 nodes)"
+        GCE[nginx Ingress LB] --> BC1[BankChurn] & NL1[NLPInsight] & CT1[ChicagoTaxi]
+        P1[Prometheus] --> G1[Grafana]
+        D1[Drift CronJob] --> BC1
+        M1[MLflow]
+    end
+
+    subgraph "AWS — EKS (us-east-1, 3 nodes)"
+        AWS[nginx Ingress NodePort] --> BC2[BankChurn] & NL2[NLPInsight] & CT2[ChicagoTaxi]
+        P2[Prometheus] --> G2[Grafana]
+        D2[Drift CronJob] --> BC2
+        M2[MLflow]
+    end
+
+    subgraph "IaC"
+        TF[Terraform GCP+AWS] --> GCE & AWS
+        KS[Kustomize Overlays] --> GCE & AWS
+    end
+```
+
 | Principle | Implementation |
 |-----------|---------------|
 | **Modularity** | Each project is self-contained with its own pipeline |
@@ -15,6 +43,7 @@
 | **Observability** | MLflow + Prometheus + Grafana |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Scalability** | Kubernetes HPA, CPU-based autoscaling |
+| **Multi-Cloud** | GKE + EKS with Kustomize overlays ([ADR-013](decisions/013-multicloud-parity-policy.md)) |
 
 ## Projects (v3.5.0, Python 3.11.14 + sklearn 1.8.0)
 
@@ -27,10 +56,11 @@
 ## Infrastructure
 
 - **Containers**: Multi-stage Docker builds, non-root execution, `--no-deps` for heavy packages
-- **Orchestration**: GKE (GCP) + EKS-ready (AWS), Terraform IaC
-- **Model Delivery**: GCS → Init Container → Pod (ConfigMap-driven paths)
-- **CI/CD**: GitHub Actions (tests → security → docker build → Trivy scan → integration)
-- **Monitoring**: Prometheus (15s scrape, 16/16 targets UP, 16 alert rules) → Grafana (2 auto-provisioned dashboards, 25 panels total)
+- **Orchestration**: GKE (GCP) + EKS (AWS), both live — Terraform IaC + Kustomize overlays
+- **Model Delivery**: GCS/S3 → Init Container → Pod (ConfigMap-driven paths)
+- **CI/CD**: GitHub Actions (`deploy-gcp.yml` + `deploy-aws.yml`) → build → push → deploy
+- **Monitoring**: Prometheus + Grafana + MLflow — cloud-agnostic, deployed on both clouds
+- **Drift Detection**: Daily CronJob checking health + prediction stability (PSI) across all services
 
 ## GCP Production Cost (~$51/month)
 
@@ -60,17 +90,37 @@
 
 ## Visual Evidence
 
+### Multi-Cloud Deployment
+
+| GKE vs EKS (HERO) | EKS Cluster Active | EKS Workloads Running |
+|-------------------|-------------------|----------------------|
+| ![Multi-Cloud](../media/screenshots/aws-terminal/36-multicloud-side-by-side.png) | ![EKS](../media/screenshots/aws-console/29-eks-cluster-overview.png) | ![EKS Pods](../media/screenshots/aws-console/30-eks-workloads-running.png) |
+
+### GCP Production
+
 | GKE Workloads | Grafana Monitoring | MLflow Experiments |
 |---------------|-------------------|-------------------|
-| ![GKE](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/gcp-console/05-gke-workloads-running.png) | ![Grafana](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/monitoring/34-grafana-dashboard.png) | ![MLflow](https://raw.githubusercontent.com/DuqueOM/ML-MLOps-Portfolio/main/docs/media/screenshots/monitoring/39-mlflow-experiments.png) |
+| ![GKE](../media/screenshots/gcp-console/05-gke-workloads-running.png) | ![Grafana](../media/screenshots/monitoring/34-grafana-dashboard.png) | ![MLflow](../media/screenshots/monitoring/39-mlflow-experiments.png) |
+
+### Live Demos
+
+| Demo | File | Description |
+|------|------|-------------|
+| ![Demo](../media/gifs/01-demo-prediccion.gif) | `01-demo-prediccion.gif` | ML predictions: BankChurn (SHAP) + NLPInsight + ChicagoTaxi |
+| ![HPA](../media/gifs/02-hpa-autoscaling.gif) | `02-hpa-autoscaling.gif` | HPA auto-scaling under load (1→3 replicas) |
+| ![Fairness](../media/gifs/03-fairness-audit.gif) | `03-fairness-audit.gif` | Fairness audit CLI (disparate impact ratios) |
+
+> **Video**: [Portfolio Demo (3:30 min)](https://youtu.be/qmw9VlgUcn8) — full multi-cloud walkthrough
 
 ## Related Docs
 
 - [Model Catalog](models/catalog.md) — Production model registry
 - [Deployment Evidence](DEPLOYMENT_EVIDENCE.md) — Multi-cloud verification
+- [Multi-Cloud Comparison](MULTI_CLOUD_COMPARISON.md) — GKE vs EKS performance
 - [API Reference](api/rest-apis.md) — REST API documentation
+- [ADR-013: Multi-Cloud Parity](decisions/013-multicloud-parity-policy.md) — Parity policy
 - [Quick Start](getting-started/quickstart.md) — Get running in 5 minutes
 
 ---
 
-*Last Updated: March 2026 — Portfolio v3.5.0*
+*Last Updated: March 2026 — Portfolio v3.5.2 (GKE + EKS deployed)*

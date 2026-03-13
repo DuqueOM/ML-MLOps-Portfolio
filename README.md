@@ -21,7 +21,7 @@
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow)](https://mlflow.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![GCP](https://img.shields.io/badge/GCP-Deployed-4285F4.svg?logo=googlecloud&logoColor=white)](docs/DEPLOYMENT_EVIDENCE.md)
-[![AWS](https://img.shields.io/badge/AWS-Ready-FF9900.svg?logo=amazonaws&logoColor=white)](infra/terraform/aws/)
+[![AWS](https://img.shields.io/badge/AWS-Deployed-FF9900.svg?logo=amazonaws&logoColor=white)](docs/DEPLOYMENT_EVIDENCE.md)
 [![Kubernetes](https://img.shields.io/badge/K8s-GKE_%2B_EKS-326CE5.svg?logo=kubernetes&logoColor=white)](k8s/)
 [![Terraform](https://img.shields.io/badge/Terraform-Multi--Cloud-7B42BC.svg?logo=terraform&logoColor=white)](infra/terraform/)
 [![Prometheus](https://img.shields.io/badge/Prometheus-Metrics-E6522C.svg?logo=prometheus&logoColor=white)](infra/prometheus-config.yaml)
@@ -60,7 +60,7 @@
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
 | **GCP Deployment** | ✅ Live | GKE 4 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), 0.07% error rate (load tested) |
-| **AWS Deployment** | 🟡 Ready | EKS + ECR + S3 + RDS — Terraform + K8s overlays complete |
+| **AWS Deployment** | ✅ Live | EKS 3 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), CI/CD via GitHub Actions |
 | **CI/CD** | ✅ Unified | GitHub Actions → GKE + EKS (separate deploy workflows) |
 | **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) — parallel provider configs |
 | **Monitoring** | ✅ Full Stack | Prometheus + Grafana + MLflow — cloud-agnostic on K8s |
@@ -131,9 +131,9 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 
 ```mermaid
 graph TB
-    subgraph "CI/CD Pipeline"
-        GH[GitHub Actions] --> LINT[Lint + Security]
-        GH --> TEST[pytest + Coverage]
+    subgraph "CI/CD Pipeline — GitHub Actions"
+        GH[GitHub Actions] --> LINT[Lint + Security<br/>Bandit · Gitleaks · Trivy]
+        GH --> TEST[pytest · 295+ tests<br/>90-98% coverage]
         GH --> BUILD[Docker Build]
         BUILD --> AR[GCP Artifact Registry]
         BUILD --> ECR[AWS ECR]
@@ -141,39 +141,42 @@ graph TB
 
     subgraph "Training Pipeline"
         DATA[Raw Data] --> FE[Feature Engineering]
-        FE --> TRAIN[Model Training]
-        TRAIN --> MLFLOW[MLflow Tracking]
-        TRAIN --> GCS[GCS Model Storage]
+        FE --> TRAIN[Model Training<br/>MLflow Tracking]
+        TRAIN --> GCS[GCS Models]
+        TRAIN --> S3[S3 Models]
     end
 
-    subgraph "GKE Cluster — ml-portfolio namespace"
+    subgraph "GCP — GKE Cluster (us-central1)"
         direction TB
-        INGRESS[GCE Ingress] --> BC_SVC[BankChurn Service]
-        INGRESS --> NL_SVC[NLPInsight Service]
-        INGRESS --> CT_SVC[ChicagoTaxi Service]
-
-        BC_SVC --> BC_POD[BankChurn Pod<br/>StackingClassifier]
-        NL_SVC --> NL_POD[NLPInsight Pod<br/>TF-IDF+LogReg]
-        CT_SVC --> CT_POD[ChicagoTaxi Pod<br/>Batch Predictions]
-
-        BC_POD -.->|Init Container| GCS
-        NL_POD -.->|Init Container| GCS
-        CT_POD -.->|Init Container| GCS
-
-        PROM[Prometheus] --> BC_POD
-        PROM --> NL_POD
-        PROM --> CT_POD
-        PROM --> GRAF[Grafana Dashboard]
-
-        MLF[MLflow Server] --> CLOUDSQL[(Cloud SQL)]
-        DRIFT[Drift Detection CronJob] --> BC_SVC
-        DRIFT --> NL_SVC
+        GCE_ING[nginx Ingress<br/>LoadBalancer IP] --> BC1[BankChurn<br/>StackingClassifier]
+        GCE_ING --> NL1[NLPInsight<br/>TF-IDF+LogReg]
+        GCE_ING --> CT1[ChicagoTaxi<br/>Batch Predictions]
+        BC1 -.->|Init Container| GCS
+        NL1 -.->|Init Container| GCS
+        CT1 -.->|Init Container| GCS
+        PROM1[Prometheus] --> GRAF1[Grafana]
+        DRIFT1[Drift CronJob] --> BC1
+        MLF1[MLflow]
     end
 
-    subgraph "Argo Rollouts"
-        CANARY[Canary Strategy] --> ANALYSIS[Prometheus Analysis]
-        ANALYSIS -->|Error Rate < 5%| PROMOTE[Auto-Promote]
-        ANALYSIS -->|Error Rate > 5%| ROLLBACK[Auto-Rollback]
+    subgraph "AWS — EKS Cluster (us-east-1)"
+        direction TB
+        AWS_ING[nginx Ingress<br/>NodePort] --> BC2[BankChurn<br/>StackingClassifier]
+        AWS_ING --> NL2[NLPInsight<br/>TF-IDF+LogReg]
+        AWS_ING --> CT2[ChicagoTaxi<br/>Batch Predictions]
+        BC2 -.->|Init Container| S3
+        NL2 -.->|Init Container| S3
+        CT2 -.->|Init Container| S3
+        PROM2[Prometheus] --> GRAF2[Grafana]
+        DRIFT2[Drift CronJob] --> BC2
+        MLF2[MLflow]
+    end
+
+    subgraph "IaC — Terraform + Kustomize"
+        TF[Terraform<br/>GCP + AWS modules] --> GCE_ING
+        TF --> AWS_ING
+        KUST[Kustomize Overlays<br/>base + gcp + aws] --> GCE_ING
+        KUST --> AWS_ING
     end
 ```
 
@@ -213,71 +216,74 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 
 <div align="center">
 
-![GKE Workloads Running](docs/media/screenshots/gcp-console/05-gke-workloads-running.png)
+![Multi-Cloud HERO: GKE vs EKS](docs/media/screenshots/aws-terminal/36-multicloud-side-by-side.png)
 
-*Services running on GKE: 3 ML APIs (HPA) + MLflow + Prometheus + Grafana*
+*Same 6 services running on GCP (GKE) and AWS (EKS) — multi-cloud deployed*
 
 </div>
 
 ### Multi-Cloud Architecture
 
-| Component | GCP (Live) | AWS (Ready) |
-|-----------|-----------|-------------|
-| **K8s Cluster** | GKE (`us-central1`) ✅ | EKS (`us-east-1`) 🟡 |
-| **Container Registry** | Artifact Registry ✅ | ECR 🟡 |
-| **Model Storage** | Cloud Storage (GCS) ✅ | S3 (versioned + Glacier lifecycle) 🟡 |
-| **Database** | Cloud SQL (Postgres) ✅ | RDS (Postgres) 🟡 |
-| **Load Balancer** | GCE Ingress (static IP) ✅ | ALB (DNS) 🟡 |
-| **IAM for Pods** | Workload Identity ✅ | IRSA 🟡 |
-| **Init Containers** | GCS download (`google-cloud-storage`) ✅ | S3 download (`boto3`) 🟡 |
-| **CI/CD** | `deploy-gcp.yml` ✅ | `deploy-aws.yml` 🟡 |
-| **IaC** | `infra/terraform/gcp/` ✅ | `infra/terraform/aws/` 🟡 |
-| **Monitoring** | Prometheus + Grafana + MLflow ✅ | Same stack (cloud-agnostic) 🟡 |
+| Component | GCP (Live ✅) | AWS (Live ✅) |
+|-----------|--------------|--------------|
+| **K8s Cluster** | GKE 4 nodes (`us-central1`) | EKS 3 nodes (`us-east-1`) |
+| **Container Registry** | Artifact Registry | ECR (3 private repos) |
+| **Model Storage** | GCS | S3 (versioned, encrypted) |
+| **Load Balancer** | nginx Ingress (static IP) | nginx Ingress (NodePort) |
+| **IAM for Pods** | Workload Identity | IRSA |
+| **Init Containers** | GCS download | S3 download (boto3) |
+| **CI/CD** | `deploy-gcp.yml` | `deploy-aws.yml` |
+| **IaC** | `infra/terraform/gcp/` | `infra/terraform/aws/` |
+| **Drift Detection** | CronJob (daily, completing) | CronJob (daily, completing) |
+| **Monitoring** | Prometheus + Grafana + MLflow | Prometheus + Grafana + MLflow |
 
-> **Cloud-Agnostic Design**: Monitoring stack (Prometheus, Grafana, MLflow), K8s deployment patterns (HPA, anti-affinity, health probes), and CI/CD structure are identical across clouds. Only the init container SDK and ingress annotations change.
+> **Cloud-Agnostic Design**: Monitoring stack (Prometheus, Grafana, MLflow), K8s deployment patterns (HPA, anti-affinity, health probes), and CI/CD structure are identical across clouds. Only the init container SDK and ingress annotations change. See [ADR-013](docs/decisions/013-multicloud-parity-policy.md).
 
-> **💰 Cost-Aware**: Full GCP stack runs on 4× e2-medium nodes (avg 17% CPU, 61% memory). See [detailed cost analysis](docs/ARCHITECTURE_PORTFOLIO.md#-production-infrastructure--cost-analysis).
+> **💰 Cost-Aware**: GCP ~$51/month (4× e2-medium). AWS ~$45/month (3× t3.small). See [cost analysis](docs/ARCHITECTURE_PORTFOLIO.md).
 
 <div align="center">
 
-[![🎬 Video Demo](https://img.shields.io/badge/🎬_Full_Demo-YouTube_(4_min)-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+[![🎬 Video Demo](https://img.shields.io/badge/🎬_Full_Demo-YouTube_(3:30_min)-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
 </div>
 
 <details>
 <summary><strong>📊 GCP Evidence (click to expand)</strong></summary>
 
-#### Terraform IaC — Infrastructure synchronized
-![Terraform Plan](docs/media/screenshots/terraform/53-terraform-plan-no-changes.png)
+#### GKE Workloads — 6 services running
+![GKE Workloads](docs/media/screenshots/gcp-console/05-gke-workloads-running.png)
 
-#### Monitoring — Grafana Dashboard
+#### Monitoring — Grafana ML Dashboard
 ![Grafana](docs/media/screenshots/monitoring/34-grafana-dashboard.png)
 
-#### CI/CD — GitHub Actions Pipeline Completed
+#### CI/CD — GitHub Actions Pipeline (10 jobs green)
 ![CI/CD](docs/media/screenshots/cicd/46-workflow-completado.png)
 
-#### ML Prediction in Production
+#### ML Prediction with SHAP Explainability
 ![Prediction](docs/media/screenshots/apis/26-bankchurn-prediccion-real.png)
 
 </details>
 
 <details>
-<summary><strong>🟡 AWS Infrastructure (click to expand)</strong></summary>
+<summary><strong>☁️ AWS Evidence (click to expand)</strong></summary>
 
-#### Terraform AWS — EKS + VPC + S3 + RDS + ECR
-- Full Terraform config: [`infra/terraform/aws/`](infra/terraform/aws/)
-- EKS cluster with managed node groups (t3.large)
-- S3 buckets with versioning, encryption, and Glacier lifecycle
-- RDS PostgreSQL for MLflow backend
-- ECR repositories with lifecycle policies
+#### EKS Cluster — Active (us-east-1)
+![EKS Cluster](docs/media/screenshots/aws-console/29-eks-cluster-overview.png)
 
-#### K8s Overlay — AWS-Specific Manifests
-- ALB Ingress: [`k8s/overlays/aws/ingress-aws.yaml`](k8s/overlays/aws/ingress-aws.yaml)
-- S3 Download Script: [`k8s/overlays/aws/download-script-aws.yaml`](k8s/overlays/aws/download-script-aws.yaml)
-- IRSA Service Account: [`k8s/overlays/aws/serviceaccount-aws.yaml`](k8s/overlays/aws/serviceaccount-aws.yaml)
+#### EKS Workloads — 6 pods Running
+![EKS Pods](docs/media/screenshots/aws-console/30-eks-workloads-running.png)
 
-#### Deploy Workflow
-- [`deploy-aws.yml`](.github/workflows/deploy-aws.yml): GitHub Actions → ECR → EKS
+#### ECR — 3 Private Repositories
+![ECR](docs/media/screenshots/aws-console/31-ecr-repositories.png)
+
+#### S3 — Model Storage (encrypted, versioned)
+![S3](docs/media/screenshots/aws-console/32-s3-buckets-models.png)
+
+#### Health Checks via kubectl exec
+![Health](docs/media/screenshots/aws-terminal/34-health-checks-nodeport.png)
+
+#### SHAP Prediction on EKS
+![SHAP EKS](docs/media/screenshots/aws-terminal/35-bankchurn-prediction-nodeport.png)
 
 </details>
 
@@ -323,7 +329,7 @@ Serial entrepreneur turned ML engineer. A decade of launching ventures—managin
 
 <div align="center">
 
-**Portfolio Version**: 3.5.2 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) · 🟡 AWS Ready
+**Portfolio Version**: 3.5.2 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) + AWS (EKS)
 
 *Building ML systems that work at 2am* 🌙
 

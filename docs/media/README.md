@@ -24,15 +24,16 @@ media/
 
 | # | File | Description |
 |---|------|-------------|
+| 36 | `aws-terminal/36-multicloud-side-by-side.png` | **HERO**: GKE vs EKS side-by-side |
 | 05 | `gcp-console/05-gke-workloads-running.png` | 6 workloads running on GKE |
-| 04 | `gcp-console/04-gke-cluster-detalle.png` | Cluster config: 4 nodes, autoscaling 1-5 |
-| 17 | `terminal/17-kubectl-pods-running.png` | 6 pods Running, 0 restarts (GKE) |
-| 26 | `apis/26-bankchurn-prediccion-real.png` | Real ML prediction with SHAP explainability |
+| 29 | `aws-console/29-eks-cluster-overview.png` | EKS cluster Active (AWS equivalent) |
+| 35 | `aws-terminal/35-bankchurn-prediction-nodeport.png` | SHAP prediction on EKS |
+| 38 | `aws-terminal/38-drift-detection-output.png` | Drift detection CronJob output |
+| 48 | `cicd/48-deploy-aws-workflow-success.png` | AWS deploy workflow SUCCESS |
+| 26 | `apis/26-bankchurn-prediccion-real.png` | ML prediction with SHAP explainability |
 | 34 | `monitoring/34-grafana-dashboard.png` | Grafana ML dashboard with load test metrics |
 | 39 | `monitoring/39-mlflow-experiments.png` | MLflow: 3 experiments, 14 runs |
 | 46 | `cicd/46-workflow-completado.png` | CI/CD pipeline: 10 jobs green |
-| 29 | `aws-console/29-eks-cluster-overview.png` | EKS cluster Active (AWS equivalent) |
-| 36 | `aws-terminal/36-multicloud-side-by-side.png` | Multi-Cloud HERO: GKE vs EKS side-by-side |
 
 ## Usage
 

@@ -15,6 +15,7 @@
 | **Monitoring** | Prometheus + Grafana | Prometheus + Grafana |
 | **ML Tracking** | MLflow | MLflow |
 | **HPA** | CPU-based (3 services) | CPU-based (3 services) |
+| **Drift Detection** | CronJob (daily, completing) | CronJob (daily, completing) |
 | **Network Policies** | Applied | Applied |
 | **PDB** | Applied | Applied |
 
@@ -107,8 +108,17 @@
 1. **Same Ingress Controller**: nginx-ingress on both clouds — identical path routing rules
 2. **Same Monitoring Stack**: Prometheus + Grafana deployed from base manifests
 3. **Same HPA Behavior**: CPU-based autoscaling triggered correctly on both clouds
-4. **Init Container Pattern**: Same architecture, different storage SDK (boto3 vs google-cloud-storage)
-5. **IRSA ↔ Workload Identity**: Cloud-native pod identity, same ServiceAccount pattern
+4. **Same Drift Detection**: Daily CronJob checking health + prediction stability on both clouds
+5. **Init Container Pattern**: Same architecture, different storage SDK (boto3 vs google-cloud-storage)
+6. **IRSA ↔ Workload Identity**: Cloud-native pod identity, same ServiceAccount pattern
+
+> See [ADR-013: Multi-Cloud Parity Policy](decisions/013-multicloud-parity-policy.md) for the full parity-by-layer policy.
+
+## Visual Evidence
+
+| Multi-Cloud HERO | EKS Pods | SHAP on EKS |
+|-----------------|----------|-------------|
+| ![Side-by-Side](media/screenshots/aws-terminal/36-multicloud-side-by-side.png) | ![EKS](media/screenshots/aws-console/30-eks-workloads-running.png) | ![SHAP](media/screenshots/aws-terminal/35-bankchurn-prediction-nodeport.png) |
 
 ## Infrastructure Details
 
@@ -116,7 +126,7 @@
 - **Project**: `ml-portfolio-duque-om-202602`
 - **Region**: `us-central1`
 - **Cluster**: `ml-portfolio-gke-production`
-- **Nodes**: 3 × e2-medium (2 vCPU, 4GB RAM)
+- **Nodes**: 4 × e2-medium (2 vCPU, 4GB RAM) — autoscaler, min=1/max=5
 - **Ingress IP**: `136.111.152.72`
 
 ### AWS

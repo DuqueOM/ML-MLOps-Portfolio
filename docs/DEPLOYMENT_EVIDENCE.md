@@ -302,22 +302,41 @@ No rules reference non-existent metrics (kube-state-metrics, cAdvisor, model_dri
 | Non-root containers | All ML services run as non-root (UID 1000) |
 | ServiceAccount | `ml-workload` with minimal RBAC |
 
-## Screenshots & GIFs
+## Visual Evidence
 
-> Visual evidence is organized in `docs/media/`:
+### Multi-Cloud (HERO)
 
-### Recommended Evidence (High Impact)
+| GKE vs EKS | SHAP on EKS |
+|------------|-------------|
+| ![Side-by-Side](media/screenshots/aws-terminal/36-multicloud-side-by-side.png) | ![SHAP](media/screenshots/aws-terminal/35-bankchurn-prediction-nodeport.png) |
 
-1. **GIF: Full prediction flow** — curl → API → JSON response for each service
-2. **GIF: Auto-scaling under load** — HPA scaling 1→3 pods, then back down
-3. **Screenshot: Grafana dashboard** — Real-time ML metrics during load test
-4. **Screenshot: GitHub Actions** — Full green CI/CD pipeline
-5. **Screenshot: `kubectl get all`** — All pods, services, HPAs running
-6. **GIF: MLflow experiment comparison** — Comparing model runs side-by-side
-7. **Screenshot: Codecov** — 294+ tests, 90–98% coverage
-8. **Screenshot: Multi-cloud** — Side-by-side GKE vs EKS terminal
-9. **GIF: Fairness audit CLI** — Disparate impact across 3 projects
-10. **Screenshot: Drift detection report** — Evidently HTML with KS/PSI per feature
+### GCP Production
+
+| GKE Workloads | Grafana Dashboard | MLflow Experiments |
+|---------------|-------------------|-------------------|
+| ![GKE](media/screenshots/gcp-console/05-gke-workloads-running.png) | ![Grafana](media/screenshots/monitoring/34-grafana-dashboard.png) | ![MLflow](media/screenshots/monitoring/39-mlflow-experiments.png) |
+
+### AWS Production
+
+| EKS Cluster | EKS Pods | ECR Repos | S3 Buckets |
+|-------------|----------|-----------|------------|
+| ![EKS](media/screenshots/aws-console/29-eks-cluster-overview.png) | ![Pods](media/screenshots/aws-console/30-eks-workloads-running.png) | ![ECR](media/screenshots/aws-console/31-ecr-repositories.png) | ![S3](media/screenshots/aws-console/32-s3-buckets-models.png) |
+
+### CI/CD & Security
+
+| Pipeline Green | Codecov | GitHub Secrets |
+|---------------|---------|---------------|
+| ![CI/CD](media/screenshots/cicd/46-workflow-completado.png) | ![Codecov](media/screenshots/cicd/68-codecov-dashboard.png) | ![Secrets](media/screenshots/cicd/54-github-secrets.png) |
+
+### GIFs & Video
+
+| Demo | File | Description |
+|------|------|-------------|
+| ![Demo](media/gifs/01-demo-prediccion.gif) | `01-demo-prediccion.gif` | ML predictions: BankChurn (SHAP) + NLPInsight + ChicagoTaxi |
+| ![HPA](media/gifs/02-hpa-autoscaling.gif) | `02-hpa-autoscaling.gif` | HPA auto-scaling under load (1→3 replicas) |
+| ![Fairness](media/gifs/03-fairness-audit.gif) | `03-fairness-audit.gif` | Fairness audit CLI (disparate impact ratios) |
+
+> **Video**: [Portfolio Demo (3:30 min)](https://youtu.be/qmw9VlgUcn8) — full multi-cloud walkthrough
 
 ---
 ## Deployment Commands Reference
