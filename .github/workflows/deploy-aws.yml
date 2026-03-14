@@ -6,6 +6,7 @@ on:
     paths:
       - 'BankChurn-Predictor/**'
       - 'NLPInsight-Analyzer/**'
+      - 'ChicagoTaxi-Demand-Pipeline/**'
       - 'k8s/overlays/aws/**'
       - '.github/workflows/deploy-aws.yml'
   workflow_dispatch:

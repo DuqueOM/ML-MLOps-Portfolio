@@ -5,8 +5,8 @@ on:
     branches: [main]
     paths:
       - 'BankChurn-Predictor/**'
-      
       - 'NLPInsight-Analyzer/**'
+      - 'ChicagoTaxi-Demand-Pipeline/**'
       - 'k8s/**'
       - '.github/workflows/deploy-gcp.yml'
   workflow_dispatch:
