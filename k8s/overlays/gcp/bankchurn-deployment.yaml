@@ -31,7 +31,7 @@ spec:
       serviceAccountName: ml-workload
       containers:
       - name: bankchurn-api
-        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/bankchurn:v3.5.0
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/bankchurn-predictor:latest
         imagePullPolicy: Always
         command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
         ports:
