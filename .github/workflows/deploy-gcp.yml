@@ -252,13 +252,16 @@ jobs:
     steps:
       - name: Deployment summary
         run: |
-          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## GCP GKE Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: ${GITHUB_SHA::8}" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch**: ${GITHUB_REF_NAME}" >> $GITHUB_STEP_SUMMARY
           echo "- **Trigger**: ${GITHUB_EVENT_NAME}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Cloud**: GCP (GKE)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Region**: ${{ env.GCP_REGION }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Status**: ${{ needs.deploy.result }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Endpoints" >> $GITHUB_STEP_SUMMARY
-          echo "- BankChurn: https://bankchurn.ml.duqueom.com/docs" >> $GITHUB_STEP_SUMMARY
-          echo "- NLPInsight: https://nlpinsight.ml.duqueom.com/docs" >> $GITHUB_STEP_SUMMARY
+          echo "### Services" >> $GITHUB_STEP_SUMMARY
+          echo "- BankChurn: via GKE Ingress (http://136.111.152.72/bankchurn/docs)" >> $GITHUB_STEP_SUMMARY
+          echo "- NLPInsight: via GKE Ingress (http://136.111.152.72/nlpinsight/docs)" >> $GITHUB_STEP_SUMMARY
+          echo "- ChicagoTaxi: via GKE Ingress (http://136.111.152.72/chicagotaxi/docs)" >> $GITHUB_STEP_SUMMARY
