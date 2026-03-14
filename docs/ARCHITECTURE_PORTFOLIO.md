@@ -94,21 +94,21 @@ graph TB
 
 | GKE vs EKS (HERO) | EKS Cluster Active | EKS Workloads Running |
 |-------------------|-------------------|----------------------|
-| ![Multi-Cloud](../media/screenshots/aws-terminal/36-multicloud-side-by-side.png) | ![EKS](../media/screenshots/aws-console/29-eks-cluster-overview.png) | ![EKS Pods](../media/screenshots/aws-console/30-eks-workloads-running.png) |
+| ![Multi-Cloud](media/screenshots/aws-terminal/36-multicloud-side-by-side.png) | ![EKS](media/screenshots/aws-console/29-eks-cluster-overview.png) | ![EKS Pods](media/screenshots/aws-console/30-eks-workloads-running.png) |
 
 ### GCP Production
 
 | GKE Workloads | Grafana Monitoring | MLflow Experiments |
 |---------------|-------------------|-------------------|
-| ![GKE](../media/screenshots/gcp-console/05-gke-workloads-running.png) | ![Grafana](../media/screenshots/monitoring/34-grafana-dashboard.png) | ![MLflow](../media/screenshots/monitoring/39-mlflow-experiments.png) |
+| ![GKE](media/screenshots/gcp-console/05-gke-workloads-running.png) | ![Grafana](media/screenshots/monitoring/34-grafana-dashboard.png) | ![MLflow](media/screenshots/monitoring/39-mlflow-experiments.png) |
 
 ### Live Demos
 
 | Demo | File | Description |
 |------|------|-------------|
-| ![Demo](../media/gifs/01-demo-prediccion.gif) | `01-demo-prediccion.gif` | ML predictions: BankChurn (SHAP) + NLPInsight + ChicagoTaxi |
-| ![HPA](../media/gifs/02-hpa-autoscaling.gif) | `02-hpa-autoscaling.gif` | HPA auto-scaling under load (1→3 replicas) |
-| ![Fairness](../media/gifs/03-fairness-audit.gif) | `03-fairness-audit.gif` | Fairness audit CLI (disparate impact ratios) |
+| ![Demo](media/gifs/01-demo-prediccion.gif) | `01-demo-prediccion.gif` | ML predictions: BankChurn (SHAP) + NLPInsight + ChicagoTaxi |
+| ![HPA](media/gifs/02-hpa-autoscaling.gif) | `02-hpa-autoscaling.gif` | HPA auto-scaling under load (1→3 replicas) |
+| ![Fairness](media/gifs/03-fairness-audit.gif) | `03-fairness-audit.gif` | Fairness audit CLI (disparate impact ratios) |
 
 > **Video**: [Portfolio Demo (3:30 min)](https://youtu.be/qmw9VlgUcn8) — full multi-cloud walkthrough
 

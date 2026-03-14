@@ -2,7 +2,7 @@
 
 Classify financial text sentiment — and understand why domain-specific pre-training matters more than model size.
 
-![NLPInsight API](../media/screenshots/apis/29-fastapi-swagger-nlpinsight.png)
+![NLPInsight API](../media/screenshots/apis/27-fastapi-swagger-nlpinsight.png)
 
 ## The Problem
 
@@ -65,7 +65,7 @@ flowchart TD
 
 ## Live Prediction
 
-![NLPInsight Sentiment Prediction](../media/screenshots/apis/29-fastapi-swagger-nlpinsight.png)
+![NLPInsight Sentiment Prediction](../media/screenshots/apis/27-fastapi-swagger-nlpinsight.png)
 
 ## Try It
 

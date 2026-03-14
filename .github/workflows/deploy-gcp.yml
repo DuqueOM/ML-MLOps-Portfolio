@@ -149,7 +149,7 @@ jobs:
           TAG="sha-${GITHUB_SHA::8}"
 
           # Update all deployment manifests with new image + tag
-          for FILE in k8s/bankchurn-deployment.yaml k8s/nlpinsight-deployment.yaml; do
+          for FILE in k8s/overlays/gcp/bankchurn-deployment.yaml k8s/overlays/gcp/nlpinsight-deployment.yaml; do
             if [ -f "$FILE" ]; then
               # Replace image references to use Artifact Registry
               sed -i "s|image: duqueom/.*|image: ${{ env.AR_REPO }}/$(basename ${FILE%-deployment.yaml}):${TAG}|g" "$FILE" || true
@@ -159,25 +159,25 @@ jobs:
       - name: Apply Kubernetes manifests
         run: |
           # Ensure namespace exists
-          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/base/namespace.yaml
 
           # Apply storage
-          kubectl apply -f k8s/storage.yaml
+          kubectl apply -f k8s/base/storage.yaml
 
           # Apply ConfigMaps (must be before deployments — init containers depend on them)
-          kubectl apply -f k8s/download-script-configmap.yaml
-          kubectl apply -f k8s/model-configmaps.yaml
-          kubectl apply -f k8s/dataset-configmaps.yaml
+          kubectl apply -f k8s/overlays/gcp/download-script-gcp.yaml
+          kubectl apply -f k8s/overlays/gcp/model-configmaps-gcp.yaml
+          kubectl apply -f k8s/overlays/gcp/dataset-configmaps-gcp.yaml
           # Deploy ML services
-          kubectl apply -f k8s/bankchurn-deployment.yaml
-          kubectl apply -f k8s/nlpinsight-deployment.yaml
+          kubectl apply -f k8s/overlays/gcp/bankchurn-deployment.yaml
+          kubectl apply -f k8s/overlays/gcp/nlpinsight-deployment.yaml
 
           # Deploy monitoring
-          kubectl apply -f k8s/prometheus-deployment.yaml
-          kubectl apply -f k8s/grafana-deployment.yaml
+          kubectl apply -f k8s/base/prometheus-deployment.yaml
+          kubectl apply -f k8s/base/grafana-deployment.yaml
 
           # Apply ingress
-          kubectl apply -f k8s/ingress.yaml
+          kubectl apply -f k8s/overlays/gcp/ingress-gcp.yaml
 
       - name: Wait for rollouts
         run: |

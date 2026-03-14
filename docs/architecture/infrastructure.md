@@ -129,7 +129,7 @@ Automated validation suite in `tests/infra/`:
 bash tests/infra/run_all_tests.sh
 ```
 
-![Infrastructure Test Results](../media/screenshots/terminal/22b-infra-test-results.png)
+![Infrastructure Test Results](../media/screenshots/terminal/22b-infra-test-terraform.png)
 
 ## Security
 

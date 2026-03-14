@@ -7,3 +7,6 @@ CarVision-Market-Intelligence/notebooks/legacy/EDA_original_backup.ipynb:aws-acc
 # Any notebook output cells (data artifacts, not secrets)
 **/notebooks/**/*.ipynb:*:*
 
+# CHANGELOG.md — latency numbers (110ms/98ms) flagged as generic-api-key (false positive)
+7307e15ecdaf074f95c1d093eada2c61a019a7ad:CHANGELOG.md:generic-api-key:14
+

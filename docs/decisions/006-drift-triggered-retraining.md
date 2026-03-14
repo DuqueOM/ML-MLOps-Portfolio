@@ -137,6 +137,6 @@ The interfaces between components (Evidently → webhook, MLflow registry → de
 ## References
 
 - [ADR-001: CPU-Only HPA](001-cpu-only-hpa.md)
-- [K8s CronJob manifest](../../k8s/base/drift-retraining-cronjob.yaml)
-- [Prometheus alert rules](../../infra/prometheus-rules.yaml)
-- [Evidently drift configuration](../../BankChurn-Predictor/configs/config.yaml)
+- [K8s CronJob manifest](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/k8s/base/drift-retraining-cronjob.yaml)
+- [Prometheus alert rules](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/infra/prometheus-rules.yaml)
+- [Evidently drift configuration](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/BankChurn-Predictor/configs/config.yaml)
