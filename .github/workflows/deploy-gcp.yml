@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     if: always() && !cancelled() && !contains(needs.*.result, 'failure')
     environment:
-      name: ${{ github.event.inputs.environment || 'production' }}
+      name: ${{ github.event.inputs.environment || 'production' }}-gcp
       url: https://ml.duqueom.com
     permissions:
       contents: read
@@ -144,17 +144,39 @@ jobs:
           location: ${{ env.GCP_REGION }}
           project_id: ${{ env.GCP_PROJECT_ID }}
 
+      - name: Download image tag artifacts (if available)
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: image-tag-*
+          merge-multiple: true
+          path: /tmp/image-tags
+
       - name: Update image tags in manifests
         run: |
-          TAG="sha-${GITHUB_SHA::8}"
-
-          # Update all deployment manifests with new image + tag
-          for FILE in k8s/overlays/gcp/bankchurn-deployment.yaml k8s/overlays/gcp/nlpinsight-deployment.yaml; do
-            if [ -f "$FILE" ]; then
-              # Replace image references to use Artifact Registry
-              sed -i "s|image: duqueom/.*|image: ${{ env.AR_REPO }}/$(basename ${FILE%-deployment.yaml}):${TAG}|g" "$FILE" || true
-            fi
-          done
+          # Only update image tags if a new image was built in this workflow run.
+          # If build-push was skipped (k8s/docs-only change), tag.txt won't exist
+          # and we keep whatever image tag is already deployed — avoids stamping a
+          # non-existent SHA onto the deployment manifest.
+          if [ -f /tmp/image-tags/tag.txt ]; then
+            TAG=$(cat /tmp/image-tags/tag.txt)
+            echo "New image built: $TAG — updating deployment manifests"
+            for FILE in k8s/overlays/gcp/bankchurn-deployment.yaml k8s/overlays/gcp/nlpinsight-deployment.yaml; do
+              if [ -f "$FILE" ]; then
+                sed -i "s|image: duqueom/.*|image: ${{ env.AR_REPO }}/$(basename ${FILE%-deployment.yaml}):${TAG}|g" "$FILE" || true
+              fi
+            done
+          else
+            echo "No new image built (build-push skipped) — keeping current deployed image tags"
+            # Resolve latest AR tag for each service
+            for SVC in bankchurn nlpinsight; do
+              LATEST=$(gcloud artifacts docker tags list \
+                ${{ env.AR_REPO }}/${SVC}-$([ "$SVC" = bankchurn ] && echo predictor || echo analyzer) \
+                --format='value(tag)' --sort-by='~createTime' --limit=1 2>/dev/null || echo 'latest')
+              echo "Pinned $SVC → $LATEST"
+            done
+            echo "Manifests unchanged — kubectl apply will be a no-op for image fields"
+          fi
 
       - name: Apply Kubernetes manifests
         run: |
