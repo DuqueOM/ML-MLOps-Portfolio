@@ -161,8 +161,15 @@ jobs:
           # Ensure namespace exists
           kubectl apply -f k8s/base/namespace.yaml
 
-          # Apply storage
-          kubectl apply -f k8s/base/storage.yaml
+          # Apply storage — PVCs are immutable after creation; only create if they don't exist
+          PVC_COUNT=$(kubectl get pvc -n ml-portfolio --no-headers 2>/dev/null | wc -l)
+          if [ "$PVC_COUNT" -eq 0 ]; then
+            echo "Creating PVCs (fresh cluster)"
+            kubectl apply -f k8s/base/storage.yaml
+          else
+            echo "PVCs already exist ($PVC_COUNT found) — skipping immutable spec update"
+          fi
+          kubectl get pvc -n ml-portfolio
 
           # Apply ConfigMaps (must be before deployments — init containers depend on them)
           kubectl apply -f k8s/overlays/gcp/download-script-gcp.yaml
