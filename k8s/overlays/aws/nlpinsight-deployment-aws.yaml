@@ -16,8 +16,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
+      maxSurge: 0
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: nlpinsight-analyzer
@@ -36,7 +36,7 @@ spec:
       containers:
       - name: nlpinsight-api
         image: 531948420830.dkr.ecr.us-east-1.amazonaws.com/ml-portfolio/nlpinsight:latest
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
         ports:
         - containerPort: 8000

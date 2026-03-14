@@ -148,28 +148,61 @@ jobs:
             --region ${{ env.AWS_REGION }} \
             --name ${{ env.EKS_CLUSTER }}
 
+      - name: Download image tag artifacts (if available)
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: image-tag-aws-*
+          merge-multiple: true
+          path: /tmp/image-tags
+
       - name: Update image tags in AWS manifests
         run: |
-          TAG="sha-${GITHUB_SHA::8}"
-
-          # Replace ACCOUNT_ID placeholder and update tags in AWS deployment manifests
+          # Replace ACCOUNT_ID placeholder in all manifests first
           for FILE in k8s/overlays/aws/*-deployment-aws.yaml; do
-            if [ -f "$FILE" ]; then
-              sed -i "s|ACCOUNT_ID|${{ env.AWS_ACCOUNT_ID }}|g" "$FILE"
-              sed -i "s|:latest|:${TAG}|g" "$FILE"
-            fi
+            [ -f "$FILE" ] && sed -i "s|ACCOUNT_ID|${{ env.AWS_ACCOUNT_ID }}|g" "$FILE"
           done
-
-          # Also update the service account ARN
           sed -i "s|ACCOUNT_ID|${{ env.AWS_ACCOUNT_ID }}|g" k8s/overlays/aws/serviceaccount-aws.yaml
+
+          # Only update image tags if a new image was built in this workflow run.
+          # If build-push was skipped (k8s/docs-only change), tag.txt won't exist
+          # and we keep whatever image tag is already deployed — avoids stamping a
+          # non-existent SHA onto the deployment manifest.
+          if [ -f /tmp/image-tags/tag.txt ]; then
+            TAG=$(cat /tmp/image-tags/tag.txt)
+            echo "New image built: $TAG — updating deployment manifests"
+            for FILE in k8s/overlays/aws/*-deployment-aws.yaml; do
+              [ -f "$FILE" ] && sed -i "s|:latest|:${TAG}|g" "$FILE"
+            done
+          else
+            echo "No new image built (build-push skipped) — keeping current deployed image tags"
+            # Resolve :latest to the actual latest ECR tag to avoid tag mutation issues
+            LATEST_BC=$(aws ecr describe-images --repository-name ml-portfolio/bankchurn \
+              --region ${{ env.AWS_REGION }} \
+              --query 'sort_by(imageDetails,&imagePushedAt)[-1].imageTags[0]' \
+              --output text 2>/dev/null || echo 'latest')
+            LATEST_NLP=$(aws ecr describe-images --repository-name ml-portfolio/nlpinsight \
+              --region ${{ env.AWS_REGION }} \
+              --query 'sort_by(imageDetails,&imagePushedAt)[-1].imageTags[0]' \
+              --output text 2>/dev/null || echo 'latest')
+            sed -i "s|:latest|:${LATEST_BC}|g" k8s/overlays/aws/bankchurn-deployment-aws.yaml
+            sed -i "s|:latest|:${LATEST_NLP}|g" k8s/overlays/aws/nlpinsight-deployment-aws.yaml
+            echo "Pinned bankchurn → $LATEST_BC, nlpinsight → $LATEST_NLP"
+          fi
 
       - name: Apply Kubernetes manifests (AWS overlay)
         run: |
           # Ensure namespace exists
           kubectl apply -f k8s/base/namespace.yaml
 
-          # Apply shared resources
-          kubectl apply -f k8s/base/storage.yaml
+          # Apply shared resources — PVCs are immutable after creation; only create if they don't exist
+          PVC_COUNT=$(kubectl get pvc -n ml-portfolio --no-headers 2>/dev/null | wc -l)
+          if [ "$PVC_COUNT" -eq 0 ]; then
+            echo "Creating PVCs (fresh cluster)"
+            kubectl apply -f k8s/base/storage.yaml
+          else
+            echo "PVCs already exist ($PVC_COUNT found) — skipping immutable spec update"
+          fi
 
           # Apply AWS-specific overlay (ConfigMaps must be before deployments — init containers depend on them)
           kubectl apply -f k8s/overlays/aws/serviceaccount-aws.yaml
