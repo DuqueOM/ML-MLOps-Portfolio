@@ -82,7 +82,13 @@ flowchart TB
 | **Classic ELB** | nginx-ingress LoadBalancer (path routing) |
 | **Cost** | ~$124/month |
 
-![GKE Workloads](../media/screenshots/gcp-console/05-gke-workloads-running.png)
+| GKE Workloads | EKS Workloads | Container Registries |
+|:---:|:---:|:---:|
+| ![GKE](../media/screenshots/gcp-console/05-gke-workloads-running.png) | ![EKS](../media/screenshots/aws-console/30-eks-workloads-running.png) | ![ECR](../media/screenshots/aws-console/31-ecr-repositories.png) |
+
+| Artifact Registry (GCP) | S3 Buckets (AWS) | GCS Models (GCP) |
+|:---:|:---:|:---:|
+| ![AR](../media/screenshots/gcp-console/09-artifact-registry-imagenes.png) | ![S3](../media/screenshots/aws-console/32-s3-buckets-models.png) | ![GCS](../media/screenshots/gcp-console/11-gcs-bucket-modelos.png) |
 
 ## Kubernetes
 
@@ -129,7 +135,9 @@ Automated validation suite in `tests/infra/`:
 bash tests/infra/run_all_tests.sh
 ```
 
-![Infrastructure Test Results](../media/screenshots/terminal/22b-infra-test-terraform.png)
+| Terraform Multi-Cloud | K8s Overlays | Infra Tests |
+|:---:|:---:|:---:|
+| ![Terraform](../media/screenshots/terraform/01-terraform-multicloud-structure.png) | ![Overlays](../media/screenshots/terraform/03-k8s-overlays-multicloud.png) | ![Tests](../media/screenshots/terminal/22b-infra-test-terraform.png) |
 
 ## Security
 

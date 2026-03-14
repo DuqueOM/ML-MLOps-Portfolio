@@ -33,10 +33,10 @@ pip install -e ".[dev]"
 pytest tests/ -v
 ```
 
-### Market Intelligence
+### ChicagoTaxi Demand Pipeline
 
 ```bash
-cd 
+cd ChicagoTaxi-Demand-Pipeline
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
@@ -90,4 +90,4 @@ docker compose -f docker-compose.demo.yml up -d --build
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: March 2026 — v3.5.3

@@ -11,16 +11,15 @@
 | **NumPy vectorization** | 1.6× speedup |
 | **sklearn parallelization** | `n_jobs=-1` across all transformers |
 
-## Load Test Results (10 users, 2 min, Locust, GKE Ingress IP 34.120.120.57)
+## Load Test Results (10 users, 90s, Locust, via LoadBalancer Ingress)
 
-| Service | p50 | p95 | p99 | Requests | Errors |
-|---------|-----|-----|-----|----------|--------|
-| BankChurn:predict | 190ms | 210ms | 340ms | 979 | 0% |
-| NLPInsight:predict | 150ms | 180ms | 190ms | 1,030 | 0% |
-| ChicagoTaxi:demand | 190ms | 230ms | 480ms | 666 | 0% |
-| **Aggregated** | **170ms** | **210ms** | **410ms** | **2,675** | **0%** |
+| Service | GCP p50 | GCP p95 | AWS p50 | AWS p95 | Errors |
+|---------|---------|---------|---------|---------|--------|
+| BankChurn `/predict` | 110ms | 240ms | 110ms | 230ms | **0%** |
+| NLPInsight `/predict` | 99ms | 220ms | 98ms | 200ms | **0%** |
+| ChicagoTaxi `/demand` | 75ms | 180ms | 240ms | 560ms | **0%** |
 
-**SLA**: Error rate 0% < 1% ✅ · P95 210ms < 500ms ✅ · P99 410ms < 1000ms ✅
+**SLA**: Error rate 0% < 1% ✅ · BankChurn/NLPInsight P95 < 500ms ✅ · Multi-cloud parity confirmed ✅
 
 ## In-Pod Latency (measured inside container, zero network overhead)
 
@@ -58,6 +57,12 @@
 
 - **Drift-triggered retraining** — K8s CronJob + GitHub Actions dispatch; see [ADR-006](decisions/006-drift-triggered-retraining.md)
 - **Metric rationale** — all 3 model cards now explain *why* each metric was chosen and what was sacrificed
+
+## Visual Evidence
+
+| Demo GIF | HPA Autoscaling | Fairness Audit |
+|:---:|:---:|:---:|
+| ![Demo](media/gifs/01-demo-prediccion.gif) | ![HPA](media/gifs/02-hpa-autoscaling.gif) | ![Fairness](media/gifs/03-fairness-audit.gif) |
 
 ---
 

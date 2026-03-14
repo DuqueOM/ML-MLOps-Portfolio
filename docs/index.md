@@ -1,29 +1,163 @@
-# ML-MLOps Portfolio Documentation
+# ML/MLOps Portfolio — Production-Ready
 
-**ML/MLOps portfolio with 3 deployed projects** — GKE + EKS, GitHub Actions CI/CD, Prometheus + Grafana + MLflow.
+<div style="text-align: center; margin-bottom: 1em;">
+<strong>3 ML Models &bull; Multi-Cloud (GKE + EKS) &bull; CI/CD &bull; Prometheus + Grafana + MLflow</strong>
+</div>
 
 [![CI](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
-[![Docs](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/docs.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/docs.yml)
 [![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue?logo=python&logoColor=white)](https://python.org)
 [![Kubernetes](https://img.shields.io/badge/K8s-GKE%20%2B%20EKS-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io)
 [![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC?logo=terraform&logoColor=white)](https://terraform.io)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/LICENSE)
 
-[![GitHub](https://img.shields.io/badge/📁_Code-Repository-181717?style=for-the-badge&logo=github)](https://github.com/DuqueOM/ML-MLOps-Portfolio)
-[![YouTube](https://img.shields.io/badge/📺_Video-Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
-
-![Portfolio Demo](media/gifs/01-demo-prediccion.gif)
+[![GitHub](https://img.shields.io/badge/Source_Code-Repository-181717?style=for-the-badge&logo=github)](https://github.com/DuqueOM/ML-MLOps-Portfolio)
+[![YouTube](https://img.shields.io/badge/Video_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
 ---
 
-## Projects (v3.5.0, Python 3.11.14)
+## Multi-Cloud: GKE vs EKS — Live
 
-| Project | Algorithm | Primary Metric | Tests | Coverage |
-|---------|-----------|----------------|:-----:|:--------:|
-| **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC 0.87 | 199 | 90% |
-| **[NLPInsight](projects/nlpinsight.md)** | TF-IDF + LogReg (prod) / FinBERT (GPU) | Acc 80.6% | 74 | 98% |
-| **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL + RandomForest (6.3M rows) | R² 0.96 | 22 | 91% |
+![Multi-Cloud HERO: GKE vs EKS Side-by-Side](media/screenshots/aws-terminal/36-multicloud-side-by-side.png)
+
+*Same 6 services running on GCP (GKE, us-central1) and AWS (EKS, us-east-1) — multi-cloud deployed and verified.*
+
+---
+
+## ML Projects
+
+| Project | Algorithm | Metric | Coverage | Latency (p50) |
+|---------|-----------|--------|:--------:|:---------:|
+| **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC **0.87** | 90% | 103ms |
+| **[NLPInsight](projects/nlpinsight.md)** | TF-IDF + LogReg (prod) / FinBERT (GPU) | Acc **80.6%** | 98% | 5ms |
+| **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL (6.3M rows) + RandomForest | R² **0.96** | 91% | 75ms |
+
+> **295+ tests** across all projects, **0 failures**, **85% CI threshold enforced**.
+
+![Demo GIF](media/gifs/01-demo-prediccion.gif)
+
+*End-to-end: API predictions with SHAP explainability, sentiment analysis, and demand forecasting.*
+
+---
+
+## Production Infrastructure
+
+| Component | GCP (GKE) | AWS (EKS) |
+|-----------|-----------|-----------|
+| **Cluster** | 4× e2-medium (`us-central1`) | 3× t3.small (`us-east-1`) |
+| **Pods** | 6 Running, 0 restarts | 6 Running, 0 restarts |
+| **Ingress** | nginx + static IP (`136.111.152.72`) | nginx + Classic ELB |
+| **Registry** | Artifact Registry | ECR (3 repos) |
+| **Storage** | GCS (versioned) | S3 (encrypted, versioned) |
+| **IAM** | Workload Identity | IRSA |
+| **Drift Detection** | CronJob (daily 06:00 UTC) | CronJob (daily 06:00 UTC) |
+| **Load Test** | 0% errors, p95 190ms | 0% errors, p95 450ms |
+
+| GKE Workloads (6 pods) | EKS Cluster Active |
+|:---:|:---:|
+| ![GKE](media/screenshots/gcp-console/05-gke-workloads-running.png) | ![EKS](media/screenshots/aws-console/29-eks-cluster-overview.png) |
+
+---
+
+## Observability Stack
+
+| Grafana ML Dashboard | Prometheus Targets (UP) | MLflow Experiments |
+|:---:|:---:|:---:|
+| ![Grafana](media/screenshots/monitoring/34-grafana-dashboard.png) | ![Prometheus](media/screenshots/monitoring/37-prometheus-targets-up.png) | ![MLflow](media/screenshots/monitoring/39-mlflow-experiments.png) |
+
+- **Prometheus**: 16 targets UP, 16 alert rules, 15s scrape interval
+- **Grafana**: 2 dashboards, 25 panels (latency, throughput, predictions, errors, resources)
+- **MLflow**: 9 experiments tracked across 3 projects
+
+---
+
+## CI/CD Pipeline
+
+| GitHub Actions (10 jobs) | Deploy Workflows (GCP + AWS) | Codecov Dashboard |
+|:---:|:---:|:---:|
+| ![Pipeline](media/screenshots/cicd/46-workflow-completado.png) | ![Deploy](media/screenshots/cicd/48-deploy-aws-workflow-success.png) | ![Codecov](media/screenshots/cicd/68-codecov-dashboard.png) |
+
+- **CI**: tests (matrix) → security (Gitleaks, Bandit) → Docker build (Trivy) → integration tests
+- **CD**: `deploy-gcp.yml` + `deploy-aws.yml` — automated multi-cloud deployment
+- **Coverage**: 90–98% enforced at 85% threshold via Codecov
+
+---
+
+## Infrastructure as Code
+
+| Terraform Multi-Cloud | K8s Overlays (GCP vs AWS) | Infra Tests |
+|:---:|:---:|:---:|
+| ![Terraform](media/screenshots/terraform/01-terraform-multicloud-structure.png) | ![Overlays](media/screenshots/terraform/03-k8s-overlays-multicloud.png) | ![Tests](media/screenshots/terminal/22b-infra-test-terraform.png) |
+
+- **Terraform**: GCP + AWS modules, remote state, `terraform plan` = no drift
+- **Kustomize**: Shared base manifests + cloud-specific overlays
+- **Testing**: `tfsec` + `checkov` + `conftest` (OPA) + `kube-linter` — 9/9 GCP, 8/8 AWS
+
+---
+
+## API Evidence
+
+| BankChurn (SHAP) | NLPInsight (Sentiment) | ChicagoTaxi (Demand) |
+|:---:|:---:|:---:|
+| ![BankChurn](media/screenshots/apis/26-bankchurn-prediccion-real.png) | ![NLPInsight](media/screenshots/apis/28-nlpinsight-prediccion.png) | ![ChicagoTaxi](media/screenshots/apis/30-chicagotaxi-prediccion.png) |
+
+All services expose FastAPI with Swagger UI, Prometheus `/metrics`, and structured health checks.
+
+---
+
+## Security & Automation
+
+| Feature | Status |
+|---------|--------|
+| **Pod Security Standards** | `enforce=baseline`, `warn=restricted` |
+| **Network Policies** | default-deny + 3 allow rules |
+| **Pod Disruption Budgets** | `minAvailable=1` (3 ML services) |
+| **Drift Detection** | Daily CronJob on both clouds |
+| **Retraining Trigger** | Automated CronJob → GitHub Actions dispatch |
+| **Scanning** | Gitleaks + Bandit + Trivy + pip-audit (blocking on HIGH) |
+| **Non-root** | All containers run as UID 1000 |
+
+---
+
+## HPA Auto-Scaling
+
+![HPA Auto-Scaling](media/gifs/02-hpa-autoscaling.gif)
+
+*CPU-based HPA: 1→3 replicas under load, automatic scale-down after traffic subsides.*
+
+| Service | CPU Target | Pods | Memory |
+|---------|-----------|------|--------|
+| BankChurn | 70% | 1–3 | ~396Mi |
+| NLPInsight | 75% | 1–3 | ~283Mi |
+| ChicagoTaxi | 70% | 1–3 | ~288Mi |
+
+---
+
+## Responsible AI
+
+![Fairness Audit](media/gifs/03-fairness-audit.gif)
+
+- **Fairness Audits**: Disparate impact ratio + equal opportunity (BankChurn by Gender/Geography)
+- **Drift Detection**: KS + PSI + Evidently per feature, automated alerting
+- **Data Validation**: Pandera schemas for all projects (training + inference)
+- **Adversarial Testing**: 43 robustness tests (SQL injection, XSS, boundary, Unicode)
+
+---
+
+## Technology Stack
+
+| Layer | Technologies |
+|-------|-------------|
+| **ML/DS** | scikit-learn 1.8.0, XGBoost, LightGBM, PySpark, Dask, SHAP, Optuna |
+| **API** | FastAPI, Pydantic, uvicorn (2 workers) |
+| **MLOps** | MLflow, DVC, Evidently AI, OpenTelemetry |
+| **Cloud** | GCP (GKE, GCS, AR, Cloud SQL), AWS (EKS, S3, ECR) |
+| **IaC** | Terraform (GCP + AWS), Kustomize overlays |
+| **Monitoring** | Prometheus, Grafana (25 panels), 16 alert rules |
+| **CI/CD** | GitHub Actions (CI + deploy-gcp + deploy-aws), Codecov |
+| **Security** | Gitleaks, Bandit, Trivy, pip-audit, Network Policies, PDBs |
+| **Testing** | pytest (295+ tests, 90–98%), Locust load testing |
+
+---
 
 ## Quick Start
 
@@ -38,48 +172,15 @@ docker compose -f docker-compose.demo.yml up -d --build
 |---------|-----|
 | BankChurn API | [localhost:8001/docs](http://localhost:8001/docs) |
 | NLPInsight API | [localhost:8003/docs](http://localhost:8003/docs) |
+| ChicagoTaxi API | [localhost:8004/docs](http://localhost:8004/docs) |
 | MLflow UI | [localhost:5000](http://localhost:5000) |
-
-## Technology Stack
-
-| Layer | Technologies |
-|-------|-------------|
-| **ML** | scikit-learn 1.8.0, LightGBM 4.6+, HuggingFace Transformers, SHAP 0.50.0 |
-| **API** | FastAPI, Pydantic |
-| **Tracking** | MLflow 3.10, DVC |
-| **Monitoring** | Prometheus, Grafana, Evidently AI, OpenTelemetry |
-| **Responsible AI** | Fairness audits (×3), drift detection (KS+PSI+Evidently), Pandera validation |
-| **Containers** | Docker (multi-stage), Kubernetes (GKE/EKS) |
-| **IaC** | Terraform (GCP + AWS modules) |
-| **CI/CD** | GitHub Actions, Trivy, Bandit, Gitleaks |
-| **Testing** | pytest (90–98%, 294+ tests), Locust, Codecov |
-
-## Production Infrastructure
-
-| Metric | GCP (GKE) | AWS (EKS) |
-|--------|-----------|-----------|
-| **Pods** | 6 (3 APIs with HPA + MLflow + Prometheus + Grafana) | 6 |
-| **Nodes** | 4 × e2-medium | 2 × t3.large |
-| **Cost** | ~$51/month | ~$170/month |
-| **Uptime** | 99.9%+ | 99.9%+ |
-
-## Documentation
-
-| Document | Description |
-|----------|-------------|
-| [Quick Start](getting-started/quickstart.md) | Get running in 5 minutes |
-| [Architecture](ARCHITECTURE_PORTFOLIO.md) | System design and cost analysis |
-| [Model Catalog](models/catalog.md) | Production model registry |
-| [API Reference](api/rest-apis.md) | REST API documentation |
-| [Operations](operations/deployment.md) | Deployment and monitoring |
-| [Troubleshooting](operations/troubleshooting.md) | Common issues |
-
-## AI Transparency
-
-Developed using AI-assisted tools (Cursor/Cascade) for code generation acceleration. All architectural decisions, MLOps design, and infrastructure choices made by the author.
 
 ---
 
-**Built by [Duque Ortega Mutis](https://github.com/DuqueOM)** | [Source Code](https://github.com/DuqueOM/ML-MLOps-Portfolio) | [Video Demo](https://youtu.be/qmw9VlgUcn8)
+<div style="text-align: center;">
 
-*Last Updated: March 2026 — v3.5.3*
+**Built by [Duque Ortega Mutis](https://github.com/DuqueOM)** | [LinkedIn](https://linkedin.com/in/duqueom) | [Video Demo](https://youtu.be/qmw9VlgUcn8)
+
+*Portfolio v3.5.3 — March 2026 — Deployed on GCP (GKE) + AWS (EKS)*
+
+</div>

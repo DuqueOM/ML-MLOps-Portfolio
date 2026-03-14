@@ -2,6 +2,8 @@
 
 Process 6.3 million taxi trips into hourly demand predictions — the data engineering complement to the portfolio's online inference services.
 
+![ChicagoTaxi API](../media/screenshots/apis/29-fastapi-swagger-chicagotaxi.png)
+
 ## The Problem
 
 Chicago has 77 community areas, each with different taxi demand patterns by hour, day, and season. Predicting hourly demand per area enables driver allocation optimization. The dataset is 2.8 GB (too large for pandas), requiring distributed processing.
@@ -76,6 +78,12 @@ This is a regression problem on aggregated hourly counts. R² 0.9649 means 96.5%
 | Community area | 1 ≤ area ≤ 77 | ~4% |
 | Fare range | $0 ≤ fare ≤ $10,000 | <1% |
 | Comma stripping | `"1,326"` → `1326` | All numeric fields |
+
+## Live Prediction
+
+| Swagger UI | Demand Prediction |
+|:---:|:---:|
+| ![Swagger](../media/screenshots/apis/29-fastapi-swagger-chicagotaxi.png) | ![Prediction](../media/screenshots/apis/30-chicagotaxi-prediccion.png) |
 
 ## Try It
 

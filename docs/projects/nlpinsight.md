@@ -65,7 +65,9 @@ flowchart TD
 
 ## Live Prediction
 
-![NLPInsight Sentiment Prediction](../media/screenshots/apis/27-fastapi-swagger-nlpinsight.png)
+| Swagger UI | Sentiment Prediction |
+|:---:|:---:|
+| ![Swagger](../media/screenshots/apis/27-fastapi-swagger-nlpinsight.png) | ![Prediction](../media/screenshots/apis/28-nlpinsight-prediccion.png) |
 
 ## Try It
 

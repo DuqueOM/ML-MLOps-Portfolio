@@ -42,6 +42,10 @@ All APIs expose `/metrics`. Key metrics per service:
 
 ![MLflow Experiments](../media/screenshots/monitoring/39-mlflow-experiments.png)
 
+| ML Dashboard Panels | Load Test Results | P95 Latency |
+|:---:|:---:|:---:|
+| ![ML Panels](../media/screenshots/monitoring/34b-grafana-dashboard-ml-panels.png) | ![Load Test](../media/screenshots/monitoring/38c-load-test-results.png) | ![P95](../media/screenshots/monitoring/75-prometheus-latency-p95.png) |
+
 ## SLOs
 
 | Service | Availability | P95 Latency (in-pod) | P95 Latency (via ingress) | Error Rate |

@@ -1,6 +1,12 @@
 # CI/CD Pipeline
 
-GitHub Actions workflows for testing, building, and deploying the ML-MLOps Portfolio.
+GitHub Actions workflows for testing, building, and deploying across GCP and AWS.
+
+## Pipeline Evidence
+
+| CI Pipeline (10 jobs) | Job Details | Codecov Dashboard |
+|:---:|:---:|:---:|
+| ![Pipeline](../media/screenshots/cicd/46-workflow-completado.png) | ![Jobs](../media/screenshots/cicd/47-workflow-jobs.png) | ![Codecov](../media/screenshots/cicd/68-codecov-dashboard.png) |
 
 ## Workflows
 
@@ -12,6 +18,14 @@ GitHub Actions workflows for testing, building, and deploying the ML-MLOps Portf
 | **Docs** | `docs.yml` | Push to docs/ | Build and deploy GitHub Pages |
 | **CML Training** | `cml-training-comparison.yml` | Manual | Model comparison reports |
 
+## Deploy Workflows
+
+| Deploy GCP (GKE) | Deploy AWS (EKS) |
+|:---:|:---:|
+| ![GCP Deploy](../media/screenshots/cicd/49-deploy-gcp-workflow-success.png) | ![AWS Deploy](../media/screenshots/cicd/48-deploy-aws-workflow-success.png) |
+
+Both deploy workflows: build Docker images → push to registry (AR / ECR) → `kubectl apply` manifests → verify rollout → health checks → notify.
+
 ## Main Pipeline (`ci-mlops.yml`)
 
 **10 jobs**: tests → security → docker → integration-test → integration-report → validate-docs
@@ -20,11 +34,11 @@ GitHub Actions workflows for testing, building, and deploying the ML-MLOps Portf
 
 ```yaml
 matrix:
-  project: [BankChurn-Predictor, NLPInsight-Analyzer]
+  project: [BankChurn-Predictor, NLPInsight-Analyzer, ChicagoTaxi-Demand-Pipeline]
   python-version: ['3.11', '3.12']
 ```
 
-6 parallel test jobs (3 projects × 2 Python versions). ChicagoTaxi included in matrix.
+6 parallel test jobs (3 projects × 2 Python versions).
 
 ### Jobs
 
@@ -45,8 +59,21 @@ matrix:
 | Metric | Target | Current |
 |--------|--------|---------|
 | Build Time | <10 min | ~8 min |
-| Test Coverage | >85% | 90–98% (294+ tests) |
+| Test Coverage | >85% | 90–98% (295+ tests) |
 | Security | 0 critical | Pass |
+
+## Security Scanning
+
+| Tool | Stage | Policy |
+|------|-------|--------|
+| **Gitleaks** | CI | Block on any detected secret |
+| **Bandit** | CI | Block on HIGH severity |
+| **Trivy** | Docker build | Block on CRITICAL CVEs |
+| **pip-audit** | CI | Block on HIGH severity |
+
+![GitHub Secrets](../media/screenshots/cicd/54-github-secrets.png)
+
+*GitHub Secrets configured for multi-cloud deployment (GCP + AWS credentials, registry tokens).*
 
 ## Local CI
 

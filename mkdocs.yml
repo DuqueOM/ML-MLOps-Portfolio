@@ -65,41 +65,38 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting Started:
-    - Quick Start: getting-started/quickstart.md
-    - Installation: getting-started/installation.md
-    - Development Setup: getting-started/development.md
   - Projects:
     - Overview: projects/overview.md
     - BankChurn Predictor: projects/bankchurn.md
     - NLPInsight Analyzer: projects/nlpinsight.md
-    - ChicagoTaxi Demand Pipeline: projects/chicagotaxi.md
+    - ChicagoTaxi Pipeline: projects/chicagotaxi.md
   - Architecture:
-    - System Overview: architecture/overview.md
-    - Portfolio Architecture: ARCHITECTURE_PORTFOLIO.md
-    - Data Flow: architecture/data-flow.md
-    - CI/CD Pipeline: architecture/cicd.md
+    - System Design: ARCHITECTURE_PORTFOLIO.md
     - Infrastructure: architecture/infrastructure.md
-    - Architectural Decisions: architecture/decisions.md
-    - ADR-006 Drift Retraining: decisions/006-drift-triggered-retraining.md
-    - ADR-007 Feature Store: decisions/007-feature-store-decision.md
-  - API Reference:
-    - REST APIs: api/rest-apis.md
-    - CLI Tools: api/cli.md
-  - Operations:
+    - CI/CD Pipeline: architecture/cicd.md
+    - Data Flow: architecture/data-flow.md
+    - Decisions (ADRs): architecture/decisions.md
+  - Deployment:
+    - Multi-Cloud Evidence: DEPLOYMENT_EVIDENCE.md
+    - GCP vs AWS Comparison: MULTI_CLOUD_COMPARISON.md
     - Deployment Guide: operations/deployment.md
-    - Deployment Evidence: DEPLOYMENT_EVIDENCE.md
+  - Operations:
     - Monitoring: operations/monitoring.md
     - Troubleshooting: operations/troubleshooting.md
   - Models:
     - Model Catalog: models/catalog.md
     - Reproducibility: models/reproducibility.md
+  - API Reference:
+    - REST APIs: api/rest-apis.md
+  - Getting Started:
+    - Quick Start: getting-started/quickstart.md
+    - Installation: getting-started/installation.md
+    - Development Setup: getting-started/development.md
   - Reference:
     - Features & Changelog: FEATURES.md
     - Release Process: RELEASE.md
     - Security Policy: SECURITY.md
-  - Contributing:
-    - Guidelines: contributing/guidelines.md
+    - Contributing: contributing/guidelines.md
 
 extra:
   social:

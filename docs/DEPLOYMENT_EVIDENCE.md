@@ -8,39 +8,39 @@
 ## Architecture
 
 ```
-┌────────────────────────────────────────────────────────────────────┐
-│  GCP (us-central1)                  │  AWS (us-east-1)             │
-│                                     │                              │
-│  GKE Cluster (3 nodes)              │  EKS Cluster (3 nodes)       │
-│  v1.34.3-gke.1318000                │  v1.31 (t3.small)            │
-│                                     │                              │
-│  ┌─── ML Services (HPA) ────────┐   │  ┌─── ML Services (HPA) ──┐  │
-│  │ ┌──────────┐ ┌──────────┐    │   │  │ ┌────────┐ ┌────────┐  │  │
-│  │ │BankChurn │ │NLPInsight│    │   │  │ │BankCh. │ │NLPIns. │  │  │
-│  │ │ API:8000 │ │ API:8000 │    │   │  │ │  :8000 │ │  :8000 │  │  │
-│  │ └──────────┘ └──────────┘    │   │  │ └────────┘ └────────┘  │  │
-│  │ ┌──────────┐                 │   │  │ ┌────────┐             │  │
-│  │ │Chicago   │                 │   │  │ │Chicago │             │  │
-│  │ │Taxi:8000 │                 │   │  │ │T.:8000 │             │  │
-│  │ └──────────┘                 │   │  │ └────────┘             │  │
-│  └──────────────────────────────┘   │  └────────────────────────┘  │
-│                                     │                              │
-│  ┌─── Observability Stack ──────┐   │  ┌─── Observability ──────┐  │
-│  │ ┌──────────┐ ┌──────────┐    │   │  │ ┌────────┐ ┌────────┐  │  │
-│  │ │Prometheus│ │ Grafana  │    │   │  │ │Prometh.│ │Grafana │  │  │
-│  │ │  :9090   │ │  :3000   │    │   │  │ │  :9090 │ │  :3000 │  │  │
-│  │ └──────────┘ └──────────┘    │   │  │ └────────┘ └────────┘  │  │
-│  │ ┌──────────┐                 │   │  │ ┌────────┐             │  │
-│  │ │  MLflow  │                 │   │  │ │ MLflow │             │  │
-│  │ │  :5000   │                 │   │  │ │  :5000 │             │  │
-│  │ └──────────┘                 │   │  │ └────────┘             │  │
-│  └──────────────────────────────┘   │  └────────────────────────┘  │
-│                                     │                              │
-│  nginx-ingress (136.111.152.72)     │  nginx-ingress (Classic ELB)  │
-│  Artifact Registry + GCS            │  ECR + S3                     │
-│  Workload Identity                  │  IRSA                         │
-│  Terraform IaC                      │  Terraform IaC + Kustomize    │
-└────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│  GCP (us-central1)                 │  AWS (us-east-1)                   │
+│                                    │                                    │
+│  GKE Cluster (3 nodes)             │  EKS Cluster (3 nodes)             │
+│  v1.34.3-gke.1318000               │  v1.31 (t3.small)                  │
+│                                    │                                    │
+│  ┌─── ML Services (HPA) ───────┐   │  ┌─── ML Services (HPA) ───────┐   │
+│  │ ┌──────────┐ ┌──────────┐   │   │  │ ┌──────────┐ ┌──────────┐   │   │
+│  │ │BankChurn │ │NLPInsight│   │   │  │ │BankChurn │ │NLPInsight│   │   │
+│  │ │ API:8000 │ │ API:8000 │   │   │  │ │ API:8000 │ │ API:8000 │   │   │
+│  │ └──────────┘ └──────────┘   │   │  │ └──────────┘ └──────────┘   │   │
+│  │ ┌───────────┐               │   │  │ ┌───────────┐               │   │
+│  │ │ChicagoTaxi│               │   │  │ │ChicagoTaxi│               │   │
+│  │ │ API:8000  │               │   │  │ │ API:8000  │               │   │
+│  │ └───────────┘               │   │  │ └───────────┘               │   │
+│  └─────────────────────────────┘   │  └─────────────────────────────┘   │
+│                                    │                                    │
+│  ┌─── Observability Stack ─────┐   │  ┌─── Observability Stack ─────┐   │
+│  │ ┌──────────┐ ┌──────────┐   │   │  │ ┌──────────┐ ┌──────────┐   │   │
+│  │ │Prometheus│ │ Grafana  │   │   │  │ │Prometheus│ │ Grafana  │   │   │
+│  │ │  :9090   │ │  :3000   │   │   │  │ │  :9090   │ │  :3000   │   │   │
+│  │ └──────────┘ └──────────┘   │   │  │ └──────────┘ └──────────┘   │   │
+│  │ ┌──────────┐                │   │  │ ┌──────────┐                │   │
+│  │ │  MLflow  │                │   │  │ │  MLflow  │                │   │
+│  │ │  :5000   │                │   │  │ │  :5000   │                │   │
+│  │ └──────────┘                │   │  │ └──────────┘                │   │
+│  └─────────────────────────────┘   │  └─────────────────────────────┘   │ 
+│                                    │                                    │
+│  nginx-ingress (136.111.152.72)    │  nginx-ingress (Classic ELB)       │
+│  Artifact Registry + GCS           │  ECR + S3                          │
+│  Workload Identity                 │  IRSA                              │
+│  Terraform IaC                     │  Terraform IaC + Kustomize         │
+└─────────────────────────────────────────────────────────────────────────┘
 
 Active pods per cloud: 3 ML APIs + Prometheus + Grafana + MLflow (6 Running) + drift-detection CronJob history (Completed, 0 resources).
 GCP: 8 pods visible (6 Running + 2 Completed CronJob runs). AWS: 7 pods visible (6 Running + 1 Completed CronJob run).
@@ -253,7 +253,7 @@ BankChurn uses a **StackingClassifier** ensemble: 4 base learners (RandomForest,
 | Kubernetes | v1.34.3-gke.1318000 |
 | Nodes | 3 (`e2-medium`, 2 vCPU / 4 GB each) |
 | Namespace | `ml-portfolio` |
-| Ingress IP | `34.120.120.57` |
+| Ingress IP | `136.111.152.72` |
 | Registry | `us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images` |
 | GCS Bucket | `ml-portfolio-duque-om-202602-ml-models-production` |
 
@@ -386,9 +386,53 @@ No rules reference non-existent metrics (kube-state-metrics, cAdvisor, model_dri
 
 ### CI/CD & Security
 
-| Pipeline Green | Codecov | GitHub Secrets |
-|---------------|---------|---------------|
-| ![CI/CD](media/screenshots/cicd/46-workflow-completado.png) | ![Codecov](media/screenshots/cicd/68-codecov-dashboard.png) | ![Secrets](media/screenshots/cicd/54-github-secrets.png) |
+| Pipeline Green | Deploy GCP | Deploy AWS |
+|---------------|-----------|------------|
+| ![CI/CD](media/screenshots/cicd/46-workflow-completado.png) | ![GCP](media/screenshots/cicd/49-deploy-gcp-workflow-success.png) | ![AWS](media/screenshots/cicd/48-deploy-aws-workflow-success.png) |
+
+| Codecov Dashboard | GitHub Secrets |
+|:---:|:---:|
+| ![Codecov](media/screenshots/cicd/68-codecov-dashboard.png) | ![Secrets](media/screenshots/cicd/54-github-secrets.png) |
+
+### Terminal Evidence
+
+| kubectl Pods (GKE) | kubectl Pods (EKS) | Resource Usage |
+|:---:|:---:|:---:|
+| ![GKE Pods](media/screenshots/terminal/17-kubectl-pods-running.png) | ![EKS Pods](media/screenshots/aws-terminal/33-kubectl-pods-eks.png) | ![Top](media/screenshots/terminal/19-kubectl-top-pods.png) |
+
+| Health Checks (GKE) | Health Checks (EKS) | Services & Ingress |
+|:---:|:---:|:---:|
+| ![Health GKE](media/screenshots/terminal/23-health-checks-apis.png) | ![Health EKS](media/screenshots/aws-terminal/34-health-checks-elb.png) | ![Ingress](media/screenshots/terminal/22a-ingress-controller-routing.png) |
+
+### Infrastructure as Code
+
+| Terraform Structure | K8s Overlays | Terraform Tests |
+|:---:|:---:|:---:|
+| ![Terraform](media/screenshots/terraform/01-terraform-multicloud-structure.png) | ![Overlays](media/screenshots/terraform/03-k8s-overlays-multicloud.png) | ![Tests](media/screenshots/terminal/22b-infra-test-terraform.png) |
+
+### API Evidence
+
+| BankChurn Swagger | NLPInsight Swagger | ChicagoTaxi Swagger |
+|:---:|:---:|:---:|
+| ![BankChurn](media/screenshots/apis/25-fastapi-swagger-bankchurn.png) | ![NLPInsight](media/screenshots/apis/27-fastapi-swagger-nlpinsight.png) | ![ChicagoTaxi](media/screenshots/apis/29-fastapi-swagger-chicagotaxi.png) |
+
+| BankChurn Prediction | NLPInsight Prediction | ChicagoTaxi Prediction |
+|:---:|:---:|:---:|
+| ![BankChurn](media/screenshots/apis/26-bankchurn-prediccion-real.png) | ![NLPInsight](media/screenshots/apis/28-nlpinsight-prediccion.png) | ![ChicagoTaxi](media/screenshots/apis/30-chicagotaxi-prediccion.png) |
+
+| SHAP Response | Prometheus Metrics |
+|:---:|:---:|
+| ![SHAP](media/screenshots/apis/82-shap-prediction-response.png) | ![Metrics](media/screenshots/apis/32-metrics-endpoint.png) |
+
+### Monitoring
+
+| Grafana ML Panels | Load Test Results | P95 Latency |
+|:---:|:---:|:---:|
+| ![ML Panels](media/screenshots/monitoring/34b-grafana-dashboard-ml-panels.png) | ![Load Test](media/screenshots/monitoring/38c-load-test-results.png) | ![P95](media/screenshots/monitoring/75-prometheus-latency-p95.png) |
+
+| MLflow Comparison |
+|:---:|
+| ![MLflow](media/screenshots/monitoring/55-mlflow-xgboost-comparison.png) |
 
 ### GIFs & Video
 

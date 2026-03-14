@@ -9,52 +9,54 @@ Three ML systems built end-to-end: trained, containerized, deployed on Kubernete
 ## System Architecture
 
 ```mermaid
-flowchart LR
-    subgraph Ingress ["K8s Ingress — 34.120.120.57"]
-        direction TB
-        BC["/bankchurn → BankChurn API\nStackingClassifier · AUC 0.87"]
-        NLP["/nlpinsight → NLPInsight API\nTF-IDF+LogReg · Acc 80.6%"]
-        CT["/chicagotaxi → ChicagoTaxi API\nRandomForest · R² 0.96"]
+graph LR
+    subgraph "Kubernetes Cluster (GKE / EKS)"
+        ING[nginx Ingress] --> BC[BankChurn :8001]
+        ING --> NLP[NLPInsight :8003]
+        ING --> CT[ChicagoTaxi :8004]
+        BC --> PROM[Prometheus]
+        NLP --> PROM
+        CT --> PROM
+        PROM --> GRAF[Grafana]
     end
-
-    subgraph Observe ["Observability"]
-        PROM[Prometheus\n16 targets · 16 alert rules]
-        GRAF[Grafana\n2 dashboards · 25 panels]
-        MLF[MLflow\n9 experiments]
-    end
-
-    BC & NLP & CT --> PROM
-    PROM --> GRAF
-
-    subgraph CI ["CI/CD"]
-        GHA[GitHub Actions\n10 jobs · 294+ tests]
-    end
-
-    GHA --> |deploy| Ingress
 ```
 
-## Comparison (v3.5.0)
+## Comparison
 
 | Aspect | BankChurn | NLPInsight | ChicagoTaxi |
 |--------|-----------|------------|-------------|
-| **Domain** | Banking (Retention) | Finance (Sentiment) | Transportation (Demand) |
-| **Type** | Binary Classification | Multi-class Classification | Batch Pipeline |
-| **Algorithm** | StackingClassifier (RF+GB+XGB+LGB→LR) | TF-IDF + LogReg (prod) / FinBERT (GPU) | PySpark ETL + RandomForest |
-| **Primary Metric** | AUC 0.87 | Acc 80.6% | R² 0.96 |
-| **Why This Metric** | 20% churn rate makes accuracy deceptive; AUC measures rank-ordering | 3-class on noisy tweets; F1-macro (0.748) guards minority negative class | Hourly demand counts; R² captures temporal periodicity |
-| **Tests** | 199 | 74 | 22 |
-| **Coverage** | 90% | 98% | 91% |
-| **In-Pod Latency** | 103ms p50 | 5ms p50 | 75ms p50 |
-| **Docker Image** | 342 MB | 267 MB | 154 MB |
+| **Domain** | Banking — customer churn | Finance — sentiment | Urban mobility — demand |
+| **Algorithm** | StackingClassifier (RF+GB+XGB+LGB→LR) | TF-IDF + LogReg / FinBERT | PySpark ETL + RandomForest |
+| **Primary Metric** | AUC 0.87 | Accuracy 80.6% | R² 0.9649 |
+| **Why This Metric** | Imbalanced (20% churn): AUC ranks correctly | 3-class finance text: Accuracy + F1 for per-class balance | Continuous demand: R² captures variance explained |
+| **Latency (p50)** | 103ms / 196ms (SHAP) | 5ms | 75ms |
+| **Docker Image** | 490 MB | 2.1 GB | 382 MB |
+| **Tests / Coverage** | 199 / 90% | 74 / 98% | 22 / 91% |
+| **Key Feature** | SHAP explainability | Dual-backend auto-detection | 6.3M row PySpark pipeline |
 
-Each project page explains the business problem, metric rationale, and cost of being wrong.
+## Live Evidence — Multi-Cloud
 
-## Live Evidence
-
-| GKE Workloads Running | Grafana ML Dashboard |
+| GKE Workloads (GCP) | EKS Workloads (AWS) |
 |:---:|:---:|
-| ![GKE](../media/screenshots/gcp-console/05-gke-workloads-running.png) | ![Grafana](../media/screenshots/monitoring/34-grafana-dashboard.png) |
-| *6 pods: 3 ML APIs + Prometheus + Grafana + MLflow* | *Request rate, P95 latency, error rate, predictions/hr* |
+| ![GKE](../media/screenshots/gcp-console/05-gke-workloads-running.png) | ![EKS](../media/screenshots/aws-console/30-eks-workloads-running.png) |
+
+| kubectl Pods (GCP) | kubectl Pods (AWS) | Resource Usage |
+|:---:|:---:|:---:|
+| ![GCP Pods](../media/screenshots/terminal/17-kubectl-pods-running.png) | ![AWS Pods](../media/screenshots/aws-terminal/33-kubectl-pods-eks.png) | ![Top](../media/screenshots/terminal/19-kubectl-top-pods.png) |
+
+## API Predictions — Live
+
+| BankChurn SHAP | NLPInsight Sentiment | ChicagoTaxi Demand |
+|:---:|:---:|:---:|
+| ![BankChurn](../media/screenshots/apis/26-bankchurn-prediccion-real.png) | ![NLPInsight](../media/screenshots/apis/28-nlpinsight-prediccion.png) | ![ChicagoTaxi](../media/screenshots/apis/30-chicagotaxi-prediccion.png) |
+
+## Architecture Decisions
+
+Each project makes deliberate trade-offs documented in [ADRs](../architecture/decisions.md):
+
+- **BankChurn**: StackingClassifier over simpler models for +5 AUC points; KernelExplainer for SHAP (4.5s latency accepted for explainability)
+- **NLPInsight**: TF-IDF for production (5ms), FinBERT available for GPU environments
+- **ChicagoTaxi**: Leak-free lag features with temporal split validation; Dask for batch serving
 
 ## Links
 

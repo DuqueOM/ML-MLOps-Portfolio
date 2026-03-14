@@ -60,4 +60,4 @@ See [Troubleshooting Guide](../operations/troubleshooting.md) for common issues.
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: March 2026 — v3.5.3

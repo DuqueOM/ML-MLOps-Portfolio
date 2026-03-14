@@ -47,7 +47,7 @@
 | ChicagoTaxi `/demand` | 75ms | 75ms | 180ms | 286ms | 240ms | 560ms | **+220%** |
 | **Aggregated** | **99ms** | **100ms** | **190ms** | **176ms** | **110ms** | **450ms** | **+10%** |
 
-> **Key finding**: ML inference (BankChurn, NLPInsight) p50 is **identical** on both clouds — model compute dominates, not network. ChicagoTaxi delta is S3 vs GCS batch lookup latency.
+> **Key finding**: ML inference (BankChurn, NLPInsight) p50 is **identical** on both clouds — model compute dominates, not network. ChicagoTaxi +220% delta is an expected I/O trade-off: the `/demand` endpoint performs batch area lookups at request time, and S3 first-byte latency (us-east-1) is higher than GCS (us-central1, same region as GKE). This confirms compute-bound services achieve true cloud parity while I/O-bound services reflect storage-layer differences.
 
 ### Stress Test — AWS (25 users, 60s — peak load)
 
@@ -110,8 +110,16 @@
 ## Visual Evidence
 
 | Multi-Cloud HERO | EKS Pods | SHAP on EKS |
-|-----------------|----------|-------------|
+|:---:|:---:|:---:|
 | ![Side-by-Side](media/screenshots/aws-terminal/36-multicloud-side-by-side.png) | ![EKS](media/screenshots/aws-console/30-eks-workloads-running.png) | ![SHAP](media/screenshots/aws-terminal/35-bankchurn-prediction-elb.png) |
+
+| GKE Workloads | EKS Cluster | kubectl Pods (EKS) |
+|:---:|:---:|:---:|
+| ![GKE](media/screenshots/gcp-console/05-gke-workloads-running.png) | ![EKS Cluster](media/screenshots/aws-console/29-eks-cluster-overview.png) | ![EKS Pods](media/screenshots/aws-terminal/33-kubectl-pods-eks.png) |
+
+| ECR Repositories | S3 Buckets | Artifact Registry |
+|:---:|:---:|:---:|
+| ![ECR](media/screenshots/aws-console/31-ecr-repositories.png) | ![S3](media/screenshots/aws-console/32-s3-buckets-models.png) | ![AR](media/screenshots/gcp-console/09-artifact-registry-imagenes.png) |
 
 ## Infrastructure Details
 

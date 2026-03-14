@@ -1,6 +1,10 @@
 # REST API Reference
 
-All services expose FastAPI with automatic Swagger UI at `/docs`.
+All services expose FastAPI with automatic Swagger UI at `/docs`, Prometheus metrics at `/metrics`, and health checks at `/health`.
+
+| BankChurn Swagger | NLPInsight Swagger | ChicagoTaxi Swagger |
+|:---:|:---:|:---:|
+| ![BankChurn](../media/screenshots/apis/25-fastapi-swagger-bankchurn.png) | ![NLPInsight](../media/screenshots/apis/27-fastapi-swagger-nlpinsight.png) | ![ChicagoTaxi](../media/screenshots/apis/29-fastapi-swagger-chicagotaxi.png) |
 
 ## Endpoints
 
@@ -63,12 +67,23 @@ curl "http://localhost:8004/demand?area=8&hour=14&limit=5"
 {"predictions":[{"pickup_community_area":8,"hour":14,"predicted_demand":42.3}],"total":1}
 ```
 
+## Live Predictions
+
+| BankChurn (with SHAP) | NLPInsight (Sentiment) | ChicagoTaxi (Demand) |
+|:---:|:---:|:---:|
+| ![BankChurn](../media/screenshots/apis/26-bankchurn-prediccion-real.png) | ![NLPInsight](../media/screenshots/apis/28-nlpinsight-prediccion.png) | ![ChicagoTaxi](../media/screenshots/apis/30-chicagotaxi-prediccion.png) |
+
+| SHAP Explanation | Prometheus Metrics |
+|:---:|:---:|
+| ![SHAP](../media/screenshots/apis/82-shap-prediction-response.png) | ![Metrics](../media/screenshots/apis/32-metrics-endpoint.png) |
+
 ## Common Patterns
 
 - **Health Check**: All services return `{"status":"healthy"}` at `/health`
-- **Metrics**: Prometheus format at `/metrics`
+- **Metrics**: Prometheus format at `/metrics` — custom counters per service
 - **Validation**: Pydantic schemas with automatic 422 error responses
 - **CORS**: Enabled for all origins
+- **Structured Logging**: JSON format in K8s, human-readable locally
 
 ---
 
