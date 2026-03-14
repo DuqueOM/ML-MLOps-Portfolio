@@ -16,7 +16,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](docker-compose.demo.yml)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-3.5.2-brightgreen.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-3.5.3-brightgreen.svg)](CHANGELOG.md)
 
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow)](https://mlflow.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
@@ -161,7 +161,7 @@ graph TB
 
     subgraph "AWS — EKS Cluster (us-east-1)"
         direction TB
-        AWS_ING[nginx Ingress<br/>NodePort] --> BC2[BankChurn<br/>StackingClassifier]
+        AWS_ING[nginx Ingress<br/>Classic ELB] --> BC2[BankChurn<br/>StackingClassifier]
         AWS_ING --> NL2[NLPInsight<br/>TF-IDF+LogReg]
         AWS_ING --> CT2[ChicagoTaxi<br/>Batch Predictions]
         BC2 -.->|Init Container| S3
@@ -229,7 +229,7 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 | **K8s Cluster** | GKE 4 nodes (`us-central1`) | EKS 3 nodes (`us-east-1`) |
 | **Container Registry** | Artifact Registry | ECR (3 private repos) |
 | **Model Storage** | GCS | S3 (versioned, encrypted) |
-| **Load Balancer** | nginx Ingress (static IP) | nginx Ingress (NodePort) |
+| **Load Balancer** | nginx Ingress (static IP) | nginx Ingress (Classic ELB) |
 | **IAM for Pods** | Workload Identity | IRSA |
 | **Init Containers** | GCS download | S3 download (boto3) |
 | **CI/CD** | `deploy-gcp.yml` | `deploy-aws.yml` |
@@ -279,11 +279,11 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 #### S3 — Model Storage (encrypted, versioned)
 ![S3](docs/media/screenshots/aws-console/32-s3-buckets-models.png)
 
-#### Health Checks via kubectl exec
-![Health](docs/media/screenshots/aws-terminal/34-health-checks-nodeport.png)
+#### Health Checks via Classic ELB
+![Health](docs/media/screenshots/aws-terminal/34-health-checks-elb.png)
 
 #### SHAP Prediction on EKS
-![SHAP EKS](docs/media/screenshots/aws-terminal/35-bankchurn-prediction-nodeport.png)
+![SHAP EKS](docs/media/screenshots/aws-terminal/35-bankchurn-prediction-elb.png)
 
 </details>
 

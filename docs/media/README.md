@@ -27,7 +27,7 @@ media/
 | 36 | `aws-terminal/36-multicloud-side-by-side.png` | **HERO**: GKE vs EKS side-by-side |
 | 05 | `gcp-console/05-gke-workloads-running.png` | 6 workloads running on GKE |
 | 29 | `aws-console/29-eks-cluster-overview.png` | EKS cluster Active (AWS equivalent) |
-| 35 | `aws-terminal/35-bankchurn-prediction-nodeport.png` | SHAP prediction on EKS |
+| 35 | `aws-terminal/35-bankchurn-prediction-elb.png` | SHAP prediction on EKS |
 | 38 | `aws-terminal/38-drift-detection-output.png` | Drift detection CronJob output |
 | 48 | `cicd/48-deploy-aws-workflow-success.png` | AWS deploy workflow SUCCESS |
 | 26 | `apis/26-bankchurn-prediccion-real.png` | ML prediction with SHAP explainability |
@@ -45,4 +45,4 @@ media/
 
 ---
 
-*Last Updated: March 2026 — v3.5.0*
+*Last Updated: March 2026 — v3.5.3*

@@ -7,6 +7,8 @@ GitHub Actions workflows for testing, building, and deploying the ML-MLOps Portf
 | Workflow | File | Trigger | Purpose |
 |----------|------|---------|---------|
 | **Main CI** | `ci-mlops.yml` | Push/PR to main | Tests, security, Docker, integration |
+| **Deploy GCP** | `deploy-gcp.yml` | Push to main / manual | Build → push to Artifact Registry → deploy to GKE |
+| **Deploy AWS** | `deploy-aws.yml` | Push to main / manual | Build → push to ECR → deploy to EKS |
 | **Docs** | `docs.yml` | Push to docs/ | Build and deploy GitHub Pages |
 | **CML Training** | `cml-training-comparison.yml` | Manual | Model comparison reports |
 
@@ -55,4 +57,4 @@ pytest tests/ -v --cov        # Tests + coverage
 
 ---
 
-*Last Updated: March 2026 — v3.5.0*
+*Last Updated: March 2026 — v3.5.3*

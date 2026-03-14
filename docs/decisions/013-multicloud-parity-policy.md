@@ -16,7 +16,7 @@ We accept **intentional asymmetries** between cloud environments while maintaini
 | SHAP explainability | ✅ Working | ✅ Working | Parity |
 | Prometheus + Grafana | ✅ Running | ✅ Running | Parity |
 | MLflow tracking | ✅ Running | ✅ Running | Parity |
-| Drift detection CronJob | ✅ Completing | ⚠️ Deployed (jobs failing) | Known gap |
+| Drift detection CronJob | ✅ Completing | ✅ Completing | Parity (2026-03-13) |
 | CI/CD (GitHub Actions) | ✅ deploy-gcp.yml | ✅ deploy-aws.yml | Parity |
 | IaC (Terraform) | ✅ infra/terraform/gcp | ✅ infra/terraform/aws | Parity |
 
@@ -26,10 +26,10 @@ We accept **intentional asymmetries** between cloud environments while maintaini
 |-----------|-----|-----|-----------|
 | Node count | 4 | 3 | Different instance sizes (e2-medium vs t3.small); autoscaler decides independently per cloud |
 | Instance memory | 4 GB/node | 2 GB/node | Cost-tier selection; AWS compensates with 3 nodes |
-| Ingress | GCE Ingress (L7 LB) | nginx-ingress (NodePort) | AWS account restriction on ELB creation; documented workaround |
+| Ingress | GCE Ingress (L7 LB) | nginx-ingress (Classic ELB) | Both use real LoadBalancer; cloud-specific LB type |
 | Container registry | Artifact Registry | ECR (private) | Cloud-native equivalents |
 | Object storage | GCS | S3 | Cloud-native equivalents |
-| Drift detection | Jobs complete | Jobs fail (resource/network) | Bug to fix; CronJob manifest is deployed |
+| Drift detection | Jobs complete | Jobs complete | Parity achieved (2026-03-13) |
 
 ### Node Count Philosophy
 

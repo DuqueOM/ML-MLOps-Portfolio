@@ -14,7 +14,7 @@ docker compose -f docker-compose.demo.yml ps          # Verify
 | NLPInsight API | 8003 | `curl localhost:8003/health` |
 | MLflow | 5000 | `curl localhost:5000/health` |
 
-## Production (GKE)
+## Production (GKE — GCP)
 
 ```bash
 # 1. Infrastructure
@@ -32,6 +32,27 @@ docker push ...
 # 4. Deploy
 kubectl apply -f k8s/ -n ml-portfolio
 kubectl get pods -n ml-portfolio
+```
+
+## Production (EKS — AWS)
+
+```bash
+# 1. Infrastructure
+eksctl create cluster --name ml-portfolio-eks --region us-east-1 --nodes 3 --node-type t3.small
+
+# 2. Configure kubectl
+aws eks update-kubeconfig --region us-east-1 --name ml-portfolio-eks
+
+# 3. Install nginx-ingress
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.3/deploy/static/provider/cloud/deploy.yaml
+
+# 4. Deploy
+kubectl apply -k k8s/overlays/aws/
+kubectl get pods -n ml-portfolio
+
+# 5. Get ELB DNS
+kubectl get svc -n ingress-nginx ingress-nginx-controller
+curl http://<ELB_DNS>/bankchurn/health
 ```
 
 ## Port Forwarding (GKE)
@@ -54,12 +75,15 @@ kubectl get hpa -n ml-portfolio                                 # HPA status
 
 ## Production Checklist
 
-- [x] Health checks passing (GKE)
+- [x] Health checks passing (GKE + EKS)
 - [x] Resource limits calibrated per service
-- [x] Monitoring dashboards (Grafana auto-provisioned)
-- [x] Load testing (Locust — 0% errors, p95 210ms, 2,675 reqs/2min via Ingress IP)
+- [x] Monitoring dashboards (Grafana auto-provisioned, both clouds)
+- [x] Load testing GCP (Locust — 0% errors, p95 190ms via Ingress IP)
+- [x] Load testing AWS (Locust — 0% errors, p95 450ms via Classic ELB)
+- [x] Stress testing AWS (25 users, 0% errors, 20.99 RPS)
+- [x] Drift detection (daily CronJobs on both clouds)
 - [x] Security scanning (Trivy, Bandit, Gitleaks)
 
 ---
 
-*Last Updated: March 2026 — v3.5.0*
+*Last Updated: March 2026 — v3.5.3*

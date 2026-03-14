@@ -52,4 +52,4 @@ Images pushed to GCP Artifact Registry:
 
 ---
 
-*Last Updated: March 2026 — v3.5.0*
+*Last Updated: March 2026 — v3.5.3*

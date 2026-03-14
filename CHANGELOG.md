@@ -6,6 +6,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [3.5.3] — 2026-03-13
+
+### Added
+- **AWS Classic ELB LoadBalancer** — Migrated AWS EKS ingress from NodePort (workaround) to real Classic ELB LoadBalancer. nginx-ingress-controller Service patched from `type: NodePort` to `type: LoadBalancer`. DNS: `a6ed6b93...us-east-1.elb.amazonaws.com`. Full parity with GCP's GCE LB Ingress.
+- **`k8s/overlays/aws/ingress-nginx-lb-patch.yaml`** — Service patch manifest for nginx-ingress NodePort→LoadBalancer conversion on AWS.
+- **Multi-cloud load test comparison** — Locust load tests (10 users, 90s) and stress tests (25 users, 60s) run against both clouds via real LoadBalancer IPs. Key finding: BankChurn/NLPInsight p50 latency identical (110ms/98ms) on both clouds — model compute dominates, not network.
+- **Drift detection verification** — Manual job run confirms both CronJobs (`drift-detection`, `drift-retraining-trigger`) active on AWS EKS with successful health + prediction checks across all 3 services.
+
+### Changed
+- **Documentation overhaul** — Updated 15+ docs to reflect AWS LoadBalancer migration: `DEPLOYMENT_EVIDENCE.md`, `MULTI_CLOUD_COMPARISON.md`, `ARCHITECTURE_PORTFOLIO.md`, `AWS_PRODUCTION_GUIDE.md`, `architecture/infrastructure.md`, `architecture/overview.md`, `architecture/cicd.md`, `operations/deployment.md`, `operations/monitoring.md`, `infra/terraform/README.md`.
+- **All NodePort references removed** — `<NODE_IP>:31963` replaced with `<ELB_DNS>/...` across all docs and verification checklists.
+- **AWS status upgraded** — From "EKS-Ready" to "Live Production" in all architecture docs.
+
+---
+
 ## [3.5.2] — 2026-03-11
 
 ### Fixed

@@ -31,7 +31,7 @@
 | **Registry** | Artifact Registry | ECR |
 | **Storage** | GCS (models + datasets) | S3 |
 | **Database** | Cloud SQL (MLflow) | RDS |
-| **Ingress** | GCE Load Balancer | ALB |
+| **Ingress** | nginx + GCE LB (static IP) | nginx + Classic ELB |
 | **IaC** | Terraform | Terraform |
 
 ## Tech Stack
@@ -47,4 +47,4 @@
 
 ---
 
-*Last Updated: March 2026 — v3.5.0*
+*Last Updated: March 2026 — v3.5.3*

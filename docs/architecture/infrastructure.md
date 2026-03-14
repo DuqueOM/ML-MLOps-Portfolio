@@ -21,7 +21,7 @@ flowchart TB
     end
 
     subgraph AWS ["AWS — us-east-1"]
-        ECR --> EKS[EKS Cluster\n2-5× t3.medium]
+        ECR --> EKS[EKS Cluster\n3× t3.small]
         S3[(S3\nArtifacts + Datasets)]
         RDS[(RDS PostgreSQL\nMLflow Backend)]
         EKS --> S3
@@ -43,19 +43,19 @@ flowchart TB
 
 ## Side-by-Side: GCP vs AWS
 
-| Component | GCP (Live Production) | AWS (EKS-Ready) |
+| Component | GCP (Live Production) | AWS (Live Production) |
 |-----------|----------------------|------------------|
-| **Cluster** | GKE `ml-portfolio-gke-production` (us-central1) | EKS `ml-mlops-cluster` (us-east-1) |
-| **Nodes** | 4× e2-medium (2 vCPU / 4 GB) | 2-5× t3.medium (2 vCPU / 4 GB) |
+| **Cluster** | GKE `ml-portfolio-gke-production` (us-central1) | EKS `ml-portfolio-eks` (us-east-1) |
+| **Nodes** | 4× e2-medium (2 vCPU / 4 GB) | 3× t3.small (2 vCPU / 2 GB) |
 | **Container Registry** | Artifact Registry | ECR |
 | **Object Storage** | Cloud Storage (versioned, lifecycle) | S3 (versioned) |
-| **Database** | Cloud SQL PostgreSQL | RDS PostgreSQL |
-| **Networking** | VPC + Private Subnets + VPC Peering | VPC + NAT Gateway |
-| **Ingress** | GCE Load Balancer (IP: `34.120.120.57`) | ALB |
-| **IaC** | Terraform (GCP modules) | Terraform (AWS modules) |
+| **Database** | Cloud SQL PostgreSQL | SQLite (in-pod) |
+| **Networking** | VPC + Private Subnets + VPC Peering | VPC (eksctl-managed) |
+| **Ingress** | nginx + GCE LB (IP: `136.111.152.72`) | nginx + Classic ELB |
+| **IaC** | Terraform (GCP modules) | Terraform + eksctl + Kustomize |
 | **K8s Manifests** | Shared base + GCP overlays | Shared base + AWS Kustomize overlays |
-| **Cost** | **~$51/month** | ~$170-260/month |
-| **Status** | ✅ Running (6 pods) | ✅ Terraform ready |
+| **Cost** | **~$51/month** | ~$124/month |
+| **Status** | ✅ Running (6 pods) | ✅ Running (6 pods) |
 
 > **Cloud-agnostic design**: The same K8s base manifests deploy to both clouds. Only image registry URLs and storage class annotations differ (via Kustomize overlays).
 
@@ -72,15 +72,15 @@ flowchart TB
 | **VPC** | Custom network with private subnets, VPC peering for Cloud SQL |
 | **Cost** | ~$51/month (covered by Free Tier credits) |
 
-### AWS (EKS-ready)
+### AWS (Live Production)
 
 | Resource | Configuration |
 |----------|---------------|
-| **EKS Cluster** | `ml-mlops-cluster`, us-east-1, 2-5 nodes (t3.medium) |
-| **ECR** | 3 Docker images |
-| **S3** | Artifacts + datasets (versioned) |
-| **RDS** | PostgreSQL for MLflow |
-| **Estimated Cost** | ~$170-260/month |
+| **EKS Cluster** | `ml-portfolio-eks`, us-east-1, 3 nodes (t3.small) |
+| **ECR** | 3 Docker images (bankchurn, nlpinsight, chicagotaxi) |
+| **S3** | Models + datasets (versioned, lifecycle policies) |
+| **Classic ELB** | nginx-ingress LoadBalancer (path routing) |
+| **Cost** | ~$124/month |
 
 ![GKE Workloads](../media/screenshots/gcp-console/05-gke-workloads-running.png)
 
@@ -169,4 +169,4 @@ The Terraform configuration includes **security hardening** that goes beyond wha
 
 ---
 
-*Last Updated: March 2026 — v3.5.0*
+*Last Updated: March 2026 — v3.5.3 (both clouds live with LoadBalancer Ingress)*

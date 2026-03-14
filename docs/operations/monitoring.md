@@ -1,6 +1,6 @@
 # Monitoring Guide
 
-Prometheus + Grafana + MLflow + Evidently monitoring stack deployed on GKE.
+Prometheus + Grafana + MLflow + Evidently monitoring stack deployed on GKE + EKS (both clouds).
 
 ![Grafana Dashboard](../media/screenshots/monitoring/34-grafana-dashboard.png)
 
@@ -78,4 +78,4 @@ locust -f tests/load/locustfile.py --headless     # Load tests
 
 ---
 
-*Last Updated: March 2026 — v3.5.2*
+*Last Updated: March 2026 — v3.5.3*

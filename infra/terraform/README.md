@@ -144,27 +144,27 @@ kubectl get nodes
 
 ## 📊 Cost Estimation
 
-### AWS (Production)
+### AWS (Actual Production — 2026-03-13)
 
 | Resource | Type | Monthly Cost |
 |----------|------|-------------|
-| EKS Cluster | Control plane | $72 |
-| EC2 Instances | 3x t3.large | ~$190 |
-| RDS PostgreSQL | db.t3.micro | ~$15 |
-| S3 Storage | 100GB | ~$3 |
-| Data Transfer | 100GB | ~$9 |
-| **Total** | | **~$289/month** |
+| EKS Cluster | Control plane | $73 |
+| EC2 Instances | 3× t3.small | ~$45 |
+| S3 Storage | ~165MB | ~$0.05 |
+| ECR | ~5GB images | ~$0.50 |
+| Classic ELB | nginx-ingress | ~$5 |
+| **Total** | | **~$124/month** |
 
-### GCP (Production)
+### GCP (Actual Production — 2026-03-13)
 
 | Resource | Type | Monthly Cost |
 |----------|------|-------------|
-| GKE Cluster | Control plane | Free (one per billing account) |
-| Compute Engine | 3x e2-standard-4 | ~$270 |
-| Cloud SQL | db-f1-micro | ~$7 |
-| Cloud Storage | 100GB | ~$2 |
-| Data Transfer | 100GB | ~$12 |
-| **Total** | | **~$291/month** |
+| GKE Cluster | Management fee | $13.35 |
+| Compute Engine | 4× e2-medium | ~$20.50 |
+| Cloud SQL | db-f1-micro (MLflow) | ~$1.70 |
+| Container Scanning | Artifact Registry | ~$9.10 |
+| Networking | GCE LB + egress | ~$6.15 |
+| **Total** | | **~$51/month** |
 
 ### Development Environment
 

@@ -24,7 +24,7 @@ graph TB
     end
 
     subgraph "AWS — EKS (us-east-1, 3 nodes)"
-        AWS[nginx Ingress NodePort] --> BC2[BankChurn] & NL2[NLPInsight] & CT2[ChicagoTaxi]
+        AWS[nginx Ingress Classic ELB] --> BC2[BankChurn] & NL2[NLPInsight] & CT2[ChicagoTaxi]
         P2[Prometheus] --> G2[Grafana]
         D2[Drift CronJob] --> BC2
         M2[MLflow]
@@ -123,4 +123,4 @@ graph TB
 
 ---
 
-*Last Updated: March 2026 — Portfolio v3.5.2 (GKE + EKS deployed)*
+*Last Updated: March 2026 — Portfolio v3.5.3 (GKE + EKS deployed, Classic ELB)*

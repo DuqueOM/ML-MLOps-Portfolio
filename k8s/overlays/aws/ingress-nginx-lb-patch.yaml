@@ -1,0 +1,17 @@
+# AWS EKS — nginx-ingress-controller Service patch: NodePort → LoadBalancer
+# Applied after: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.3/deploy/static/provider/cloud/deploy.yaml
+#
+# This patch converts the default NodePort service to a Classic ELB (LoadBalancer).
+# NLB annotations removed: the AWS LB Controller panics on nil DNS before NLB is provisioned.
+# Classic ELB works on all AWS account types including new accounts.
+#
+# Production status (2026-03-13):
+#   External: a6ed6b93fdbf14be2853d91bd2086d6b-1565798194.us-east-1.elb.amazonaws.com
+#   Access:   http://<ELB_DNS>/bankchurn/predict  (identical to GCP pattern)
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+spec:
+  type: LoadBalancer
