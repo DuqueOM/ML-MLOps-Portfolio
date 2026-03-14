@@ -42,7 +42,8 @@
 │  Terraform IaC                      │  Terraform IaC + Kustomize    │
 └────────────────────────────────────────────────────────────────────┘
 
-6 pods per cloud: 3 ML APIs + Prometheus + Grafana + MLflow.
+Active pods per cloud: 3 ML APIs + Prometheus + Grafana + MLflow (6 Running) + drift-detection CronJob history (Completed, 0 resources).
+GCP: 8 pods visible (6 Running + 2 Completed CronJob runs). AWS: 7 pods visible (6 Running + 1 Completed CronJob run).
 Both clouds: nginx Ingress path routing (/bankchurn, /nlpinsight, /chicagotaxi, /grafana, /mlflow).
 GCP: static IP via GCE LB. AWS: Classic ELB DNS (2026-03-13: restriction lifted).
 ```
@@ -51,7 +52,7 @@ GCP: static IP via GCE LB. AWS: Classic ELB DNS (2026-03-13: restriction lifted)
 
 | Capability | GCP | AWS | Evidence |
 |------------|-----|-----|----------|
-| Container orchestration (K8s) | GKE v1.34.3 | EKS v1.31 | 3 nodes per cloud, 6 pods running |
+| Container orchestration (K8s) | GKE v1.34.3 | EKS v1.31 | 3 nodes per cloud, 6 Running + drift-detection CronJob history (Completed) |
 | Auto-scaling (HPA) | CPU-based | CPU-based | Verified: 1→3 pods under load, scale-down after |
 | Model serving (FastAPI) | 3 services | 3 services | `/health` + `/predict` — 27/27 smoke tests passed |
 | Batch prediction | All 3 APIs | All 3 APIs | `/predict_batch` endpoints verified |
@@ -277,6 +278,9 @@ BankChurn uses a **StackingClassifier** ensemble: 4 base learners (RandomForest,
 | prometheus | Running 1/1 | 15m | 158Mi |
 | grafana | Running 1/1 | 2m | 68Mi |
 | mlflow-server | Running 1/1 | 1m | 395Mi |
+| drift-detection-* | Completed 0/1 | 0m | 0Mi |
+
+> **Note on pod count**: `kubectl get pods` shows **7 pods** on AWS (6 Running + 1 Completed CronJob pod) and **8 pods** on GCP (6 Running + 2 Completed CronJob pods). The `Completed` pods are drift-detection CronJob execution history — they consume zero CPU/RAM and are automatically garbage-collected when `successfulJobsHistoryLimit` (default: 3) is exceeded. The active service stack is identical on both clouds: **6 Running pods**.
 
 #### Cluster
 
@@ -404,7 +408,7 @@ No rules reference non-existent metrics (kube-state-metrics, cAdvisor, model_dri
 gcloud container clusters get-credentials ml-portfolio-gke-production --region us-central1
 kubectl get pods -n ml-portfolio
 kubectl get hpa -n ml-portfolio
-curl -s http://34.120.120.57/bankchurn/health | python3 -m json.tool
+curl -s http://136.111.152.72/bankchurn/health | python3 -m json.tool
 
 # === AWS (EKS) ===
 export AWS_PROFILE=ml-portfolio
