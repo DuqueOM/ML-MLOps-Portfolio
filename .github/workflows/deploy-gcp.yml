@@ -20,6 +20,7 @@ on:
           - all
           - bankchurn
           - nlpinsight
+          - chicagotaxi
       environment:
         description: 'Target environment'
         required: true
@@ -45,6 +46,7 @@ jobs:
     outputs:
       bankchurn: ${{ steps.filter.outputs.bankchurn }}
       nlpinsight: ${{ steps.filter.outputs.nlpinsight }}
+      chicagotaxi: ${{ steps.filter.outputs.chicagotaxi }}
       k8s: ${{ steps.filter.outputs.k8s }}
     steps:
       - uses: actions/checkout@v4
@@ -56,6 +58,8 @@ jobs:
               - 'BankChurn-Predictor/**'
             nlpinsight:
               - 'NLPInsight-Analyzer/**'
+            chicagotaxi:
+              - 'ChicagoTaxi-Demand-Pipeline/**'
             k8s:
               - 'k8s/**'
 
@@ -76,9 +80,14 @@ jobs:
             context: NLPInsight-Analyzer
             image: nlpinsight-analyzer
             manifest: k8s/nlpinsight-deployment.yaml
+          - service: chicagotaxi
+            context: ChicagoTaxi-Demand-Pipeline
+            image: chicagotaxi
+            manifest: k8s/chicagotaxi-deployment.yaml
     if: >
       needs.detect-changes.outputs.bankchurn == 'true' ||
       needs.detect-changes.outputs.nlpinsight == 'true' ||
+      needs.detect-changes.outputs.chicagotaxi == 'true' ||
       github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
@@ -161,7 +170,7 @@ jobs:
           if [ -f /tmp/image-tags/tag.txt ]; then
             TAG=$(cat /tmp/image-tags/tag.txt)
             echo "New image built: $TAG — updating deployment manifests"
-            for FILE in k8s/overlays/gcp/bankchurn-deployment.yaml k8s/overlays/gcp/nlpinsight-deployment.yaml; do
+            for FILE in k8s/overlays/gcp/bankchurn-deployment.yaml k8s/overlays/gcp/nlpinsight-deployment.yaml k8s/overlays/gcp/chicagotaxi-deployment.yaml; do
               if [ -f "$FILE" ]; then
                 sed -i "s|image: duqueom/.*|image: ${{ env.AR_REPO }}/$(basename ${FILE%-deployment.yaml}):${TAG}|g" "$FILE" || true
               fi
@@ -169,9 +178,9 @@ jobs:
           else
             echo "No new image built (build-push skipped) — keeping current deployed image tags"
             # Resolve latest AR tag for each service
-            for SVC in bankchurn nlpinsight; do
+            for SVC in bankchurn nlpinsight chicagotaxi; do
               LATEST=$(gcloud artifacts docker tags list \
-                ${{ env.AR_REPO }}/${SVC}-$([ "$SVC" = bankchurn ] && echo predictor || echo analyzer) \
+                ${{ env.AR_REPO }}/${SVC}-$([ "$SVC" = bankchurn ] && echo predictor || ([ "$SVC" = nlpinsight ] && echo analyzer || echo pipeline)) \
                 --format='value(tag)' --sort-by='~createTime' --limit=1 2>/dev/null || echo 'latest')
               echo "Pinned $SVC → $LATEST"
             done
@@ -200,6 +209,7 @@ jobs:
           # Deploy ML services
           kubectl apply -f k8s/overlays/gcp/bankchurn-deployment.yaml
           kubectl apply -f k8s/overlays/gcp/nlpinsight-deployment.yaml
+          kubectl apply -f k8s/overlays/gcp/chicagotaxi-deployment.yaml
 
           # Deploy monitoring
           kubectl apply -f k8s/base/prometheus-deployment.yaml
@@ -213,6 +223,7 @@ jobs:
           echo "Waiting for deployments to be ready..."
           kubectl rollout status deployment/bankchurn-predictor -n ${{ env.NAMESPACE }} --timeout=300s || true
           kubectl rollout status deployment/nlpinsight-analyzer -n ${{ env.NAMESPACE }} --timeout=300s || true
+          kubectl rollout status deployment/chicagotaxi-pipeline -n ${{ env.NAMESPACE }} --timeout=300s || true
 
       - name: Verify deployment
         run: |
