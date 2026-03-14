@@ -231,6 +231,13 @@ jobs:
           kubectl apply -f k8s/base/prometheus-deployment.yaml
           kubectl apply -f k8s/base/grafana-deployment.yaml
 
+          # Deploy MLOps automation CronJobs
+          kubectl apply -f k8s/base/drift-detection-cronjob.yaml
+          kubectl apply -f k8s/base/drift-retraining-cronjob.yaml
+
+          # Deploy ML services (chicagotaxi — AWS version)
+          kubectl apply -f k8s/overlays/aws/chicagotaxi-deployment-aws.yaml
+
           # Apply AWS nginx ingress
           kubectl apply -f k8s/overlays/aws/ingress-aws.yaml
 
