@@ -161,6 +161,9 @@ docs/guia_mlops/pdf/_test_links.pdf
 docs/guia_mlops/pdf/_*.css
 requirements.txt
 
+# Personal guides (not for public repo)
+docs/VIDEO_SCRIPT*.md
+
 # Terraform secrets and state files
 infra/terraform/gcp/terraform.tfvars
 infra/terraform/aws/terraform.tfvars

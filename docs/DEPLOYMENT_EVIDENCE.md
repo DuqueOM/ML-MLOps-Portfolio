@@ -8,39 +8,39 @@
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│  GCP (us-central1)                 │  AWS (us-east-1)                   │
-│                                    │                                    │
-│  GKE Cluster (3 nodes)             │  EKS Cluster (3 nodes)             │
-│  v1.34.3-gke.1318000               │  v1.31 (t3.small)                  │
-│                                    │                                    │
-│  ┌─── ML Services (HPA) ───────┐   │  ┌─── ML Services (HPA) ───────┐   │
-│  │ ┌──────────┐ ┌──────────┐   │   │  │ ┌──────────┐ ┌──────────┐   │   │
-│  │ │BankChurn │ │NLPInsight│   │   │  │ │BankChurn │ │NLPInsight│   │   │
-│  │ │ API:8000 │ │ API:8000 │   │   │  │ │ API:8000 │ │ API:8000 │   │   │
-│  │ └──────────┘ └──────────┘   │   │  │ └──────────┘ └──────────┘   │   │
-│  │ ┌───────────┐               │   │  │ ┌───────────┐               │   │
-│  │ │ChicagoTaxi│               │   │  │ │ChicagoTaxi│               │   │
-│  │ │ API:8000  │               │   │  │ │ API:8000  │               │   │
-│  │ └───────────┘               │   │  │ └───────────┘               │   │
-│  └─────────────────────────────┘   │  └─────────────────────────────┘   │
-│                                    │                                    │
-│  ┌─── Observability Stack ─────┐   │  ┌─── Observability Stack ─────┐   │
-│  │ ┌──────────┐ ┌──────────┐   │   │  │ ┌──────────┐ ┌──────────┐   │   │
-│  │ │Prometheus│ │ Grafana  │   │   │  │ │Prometheus│ │ Grafana  │   │   │
-│  │ │  :9090   │ │  :3000   │   │   │  │ │  :9090   │ │  :3000   │   │   │
-│  │ └──────────┘ └──────────┘   │   │  │ └──────────┘ └──────────┘   │   │
-│  │ ┌──────────┐                │   │  │ ┌──────────┐                │   │
-│  │ │  MLflow  │                │   │  │ │  MLflow  │                │   │
-│  │ │  :5000   │                │   │  │ │  :5000   │                │   │
-│  │ └──────────┘                │   │  │ └──────────┘                │   │
-│  └─────────────────────────────┘   │  └─────────────────────────────┘   │ 
-│                                    │                                    │
-│  nginx-ingress (136.111.152.72)    │  nginx-ingress (Classic ELB)       │
-│  Artifact Registry + GCS           │  ECR + S3                          │
-│  Workload Identity                 │  IRSA                              │
-│  Terraform IaC                     │  Terraform IaC + Kustomize         │
-└─────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────┐
+│  GCP (us-central1)                │  AWS (us-east-1)                  │
+│                                   │                                   │
+│  GKE Cluster (3 nodes)            │  EKS Cluster (3 nodes)            │
+│  v1.34.3-gke.1318000              │  v1.31 (t3.small)                 │
+│                                   │                                   │
+│  ┌─── ML Services (HPA) ───────┐  │  ┌─── ML Services (HPA) ───────┐  │
+│  │ ┌──────────┐ ┌──────────┐   │  │  │ ┌──────────┐ ┌──────────┐   │  │
+│  │ │BankChurn │ │NLPInsight│   │  │  │ │BankChurn │ │NLPInsight│   │  │
+│  │ │ API:8000 │ │ API:8000 │   │  │  │ │ API:8000 │ │ API:8000 │   │  │
+│  │ └──────────┘ └──────────┘   │  │  │ └──────────┘ └──────────┘   │  │
+│  │ ┌───────────┐               │  │  │ ┌───────────┐               │  │
+│  │ │ChicagoTaxi│               │  │  │ │ChicagoTaxi│               │  │
+│  │ │ API:8000  │               │  │  │ │ API:8000  │               │  │
+│  │ └───────────┘               │  │  │ └───────────┘               │  │
+│  └─────────────────────────────┘  │  └─────────────────────────────┘  │
+│                                   │                                   │
+│  ┌─── Observability Stack ─────┐  │  ┌─── Observability Stack ─────┐  │
+│  │ ┌──────────┐ ┌──────────┐   │  │  │ ┌──────────┐ ┌──────────┐   │  │
+│  │ │Prometheus│ │ Grafana  │   │  │  │ │Prometheus│ │ Grafana  │   │  │
+│  │ │  :9090   │ │  :3000   │   │  │  │ │  :9090   │ │  :3000   │   │  │
+│  │ └──────────┘ └──────────┘   │  │  │ └──────────┘ └──────────┘   │  │
+│  │ ┌──────────┐                │  │  │ ┌──────────┐                │  │
+│  │ │  MLflow  │                │  │  │ │  MLflow  │                │  │
+│  │ │  :5000   │                │  │  │ │  :5000   │                │  │
+│  │ └──────────┘                │  │  │ └──────────┘                │  │
+│  └─────────────────────────────┘  │  └─────────────────────────────┘  │ 
+│                                   │                                   │
+│  nginx-ingress (136.111.152.72)   │  nginx-ingress (Classic ELB)      │
+│  Artifact Registry + GCS          │  ECR + S3                         │
+│  Workload Identity                │  IRSA                             │
+│  Terraform IaC                    │  Terraform IaC + Kustomize        │
+└───────────────────────────────────────────────────────────────────────┘
 
 Active pods per cloud: 3 ML APIs + Prometheus + Grafana + MLflow (6 Running) + drift-detection CronJob history (Completed, 0 resources).
 GCP: 8 pods visible (6 Running + 2 Completed CronJob runs). AWS: 7 pods visible (6 Running + 1 Completed CronJob run).

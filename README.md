@@ -59,12 +59,14 @@
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
-| **GCP Deployment** | ✅ Live | GKE 4 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), 0.07% error rate (load tested) |
-| **AWS Deployment** | ✅ Live | EKS 3 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), CI/CD via GitHub Actions |
+| **GCP Deployment** | ✅ Verified | GKE 4 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), 0.07% error rate (load tested) |
+| **AWS Deployment** | ✅ Verified | EKS 3 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), CI/CD via GitHub Actions |
 | **CI/CD** | ✅ Unified | GitHub Actions → GKE + EKS (separate deploy workflows) |
 | **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) — parallel provider configs |
 | **Monitoring** | ✅ Full Stack | Prometheus + Grafana + MLflow — cloud-agnostic on K8s |
 | **Security** | ✅ Automated | Gitleaks, Bandit, Trivy, pip-audit — blocking in CI (HIGH severity) |
+
+> **☁️ Deployment Status**: Both GCP and AWS clusters were **deployed to production, load-tested, and fully verified** — all screenshots, metrics, and evidence in this repository are from real running infrastructure. Clusters are **provisioned on-demand via Terraform** and decommissioned after validation to avoid unnecessary cloud costs (~$300/month combined). This is a deliberate FinOps practice: infrastructure is reproducible and can be re-deployed in <15 minutes with `terraform apply`.
 
 ---
 
@@ -123,7 +125,7 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 | **Monitoring** | Prometheus (4 targets), Grafana (26-panel enterprise dashboard), Locust load testing, Evidently drift |
 | **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy), Artifact Registry, ECR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
-| **Testing** | pytest (90–98% coverage, 390+ tests), Codecov, pre-commit hooks |
+| **Testing** | pytest (90–98% coverage, 395+ tests), Codecov, pre-commit hooks |
 
 > **v3.5.2 Highlights**: StackingClassifier (BankChurn), FinBERT (NLPInsight), PySpark + lag features (ChicagoTaxi), data leakage fix, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests, drift-triggered retraining ([ADR-006](docs/decisions/006-drift-triggered-retraining.md)), simplification ADR ([ADR-009](docs/decisions/009-simplification-when-not-to-build.md)). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
