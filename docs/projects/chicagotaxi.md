@@ -62,7 +62,7 @@ This is a regression problem on aggregated hourly counts. R² 0.9649 means 96.5%
 
 | Metric | Value |
 |--------|-------|
-| Test Coverage | 91% (22 tests) |
+| Test Coverage | 91% (122 tests) |
 | CI Threshold | 85% |
 | Docker Image | 154 MB (`chicagotaxi:v3.5.0`, python:3.11-slim-bookworm) |
 | Model Size | ~2 MB (RandomForest, joblib) |

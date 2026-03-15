@@ -154,7 +154,7 @@ See [data_card.md](data_card.md) for full schema, cleaning rules, and quality de
 | P50 / P95 Latency | 75ms / 460ms `/demand` (in-pod, GKE) |
 | ETL Throughput | 4,741 rows/sec (PySpark local[*]) |
 | Batch Prediction | 19,061 rows/sec (Dask, 4 partitions) |
-| Test Coverage | 91% (22 tests) |
+| Test Coverage | 91% (122 tests) |
 
 ## Tech Stack
 

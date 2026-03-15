@@ -127,7 +127,7 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Testing** | pytest (90–98% coverage, 395+ tests), Codecov, pre-commit hooks |
 
-> **v3.5.2 Highlights**: StackingClassifier (BankChurn), FinBERT (NLPInsight), PySpark + lag features (ChicagoTaxi), data leakage fix, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests, drift-triggered retraining ([ADR-006](docs/decisions/006-drift-triggered-retraining.md)), simplification ADR ([ADR-009](docs/decisions/009-simplification-when-not-to-build.md)). Full details in [docs/FEATURES.md](docs/FEATURES.md).
+> **v3.5.3 Highlights**: StackingClassifier (BankChurn), FinBERT (NLPInsight), PySpark + lag features (ChicagoTaxi), data leakage fix, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests, drift-triggered retraining ([ADR-006](docs/decisions/006-drift-triggered-retraining.md)), simplification ADR ([ADR-009](docs/decisions/009-simplification-when-not-to-build.md)). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 
 ## 🏗️ Architecture
 
@@ -135,7 +135,7 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 graph TB
     subgraph "CI/CD Pipeline — GitHub Actions"
         GH[GitHub Actions] --> LINT[Lint + Security<br/>Bandit · Gitleaks · Trivy]
-        GH --> TEST[pytest · 295+ tests<br/>90-98% coverage]
+        GH --> TEST[pytest · 395+ tests<br/>90-98% coverage]
         GH --> BUILD[Docker Build]
         BUILD --> AR[GCP Artifact Registry]
         BUILD --> ECR[AWS ECR]
@@ -331,7 +331,7 @@ Serial entrepreneur turned ML engineer. A decade of launching ventures—managin
 
 <div align="center">
 
-**Portfolio Version**: 3.5.2 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) + AWS (EKS)
+**Portfolio Version**: 3.5.3 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) + AWS (EKS)
 
 *Building ML systems that work at 2am* 🌙
 

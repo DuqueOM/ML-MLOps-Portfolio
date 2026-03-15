@@ -4,11 +4,11 @@
 
 [Semantic Versioning](https://semver.org/) — `MAJOR.MINOR.PATCH`
 
-**Current**: v3.5.0 (March 2026) — Python 3.11.14, sklearn 1.8.0, LightGBM 4.6+, FinBERT, PySpark 4.1
+**Current**: v3.5.3 (March 2026) — Python 3.11.14, sklearn 1.8.0, LightGBM 4.6+, FinBERT, PySpark 4.1
 
 ## Release Checklist
 
-- [ ] All tests passing, coverage >= 85% (actual: 90–98%, 294+ tests)
+- [ ] All tests passing, coverage >= 85% (actual: 90–98%, 395+ tests)
 - [ ] Security scans clean (Gitleaks, Bandit, Trivy)
 - [ ] Model metrics meet thresholds (AUC > 0.80, R² > 0.75, Acc > 0.85)
 - [ ] Docker images built and pushed to Artifact Registry

@@ -45,13 +45,13 @@ graph TB
 | **Scalability** | Kubernetes HPA, CPU-based autoscaling |
 | **Multi-Cloud** | GKE + EKS with Kustomize overlays ([ADR-013](decisions/013-multicloud-parity-policy.md)) |
 
-## Projects (v3.5.0, Python 3.11.14 + sklearn 1.8.0)
+## Projects (v3.5.3, Python 3.11.14 + sklearn 1.8.0)
 
 | Project | Algorithm | Primary Metric | In-Pod Latency | Tests | Coverage |
 |---------|-----------|----------------|---------------|:-----:|:--------:|
 | **BankChurn** | StackingClassifier (RF+GB+XGB+LGB→LR) | AUC 0.87 | 103ms p50 | 199 | 90% |
 | **NLPInsight** | TF-IDF + LogReg (prod) / FinBERT (GPU) | Acc 80.6% | 5ms p50 | 74 | 98% |
-| **ChicagoTaxi** | PySpark ETL + RandomForest (lag features) | R² 0.96 | 75ms p50 | 22 | 91% |
+| **ChicagoTaxi** | PySpark ETL + RandomForest (lag features) | R² 0.96 | 75ms p50 | 122 | 91% |
 
 ## Infrastructure
 

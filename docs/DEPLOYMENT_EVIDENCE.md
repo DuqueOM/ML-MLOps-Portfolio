@@ -1,52 +1,57 @@
 # Multi-Cloud Deployment Evidence
 
 > Production deployment of 3 ML services on **Google Cloud Platform (GKE)** and **Amazon Web Services (EKS)**.
-> All data below is from **live verification** on 2026-03-13 (v3.5.2) — both clouds via nginx Ingress LoadBalancer.
+> All data below is from **live verification** on 2026-03-13 (v3.5.3) — both clouds via nginx Ingress LoadBalancer.
 
 ---
 
 ## Architecture
 
-```
-┌───────────────────────────────────────────────────────────────────────┐
-│  GCP (us-central1)                │  AWS (us-east-1)                  │
-│                                   │                                   │
-│  GKE Cluster (3 nodes)            │  EKS Cluster (3 nodes)            │
-│  v1.34.3-gke.1318000              │  v1.31 (t3.small)                 │
-│                                   │                                   │
-│  ┌─── ML Services (HPA) ───────┐  │  ┌─── ML Services (HPA) ───────┐  │
-│  │ ┌──────────┐ ┌──────────┐   │  │  │ ┌──────────┐ ┌──────────┐   │  │
-│  │ │BankChurn │ │NLPInsight│   │  │  │ │BankChurn │ │NLPInsight│   │  │
-│  │ │ API:8000 │ │ API:8000 │   │  │  │ │ API:8000 │ │ API:8000 │   │  │
-│  │ └──────────┘ └──────────┘   │  │  │ └──────────┘ └──────────┘   │  │
-│  │ ┌───────────┐               │  │  │ ┌───────────┐               │  │
-│  │ │ChicagoTaxi│               │  │  │ │ChicagoTaxi│               │  │
-│  │ │ API:8000  │               │  │  │ │ API:8000  │               │  │
-│  │ └───────────┘               │  │  │ └───────────┘               │  │
-│  └─────────────────────────────┘  │  └─────────────────────────────┘  │
-│                                   │                                   │
-│  ┌─── Observability Stack ─────┐  │  ┌─── Observability Stack ─────┐  │
-│  │ ┌──────────┐ ┌──────────┐   │  │  │ ┌──────────┐ ┌──────────┐   │  │
-│  │ │Prometheus│ │ Grafana  │   │  │  │ │Prometheus│ │ Grafana  │   │  │
-│  │ │  :9090   │ │  :3000   │   │  │  │ │  :9090   │ │  :3000   │   │  │
-│  │ └──────────┘ └──────────┘   │  │  │ └──────────┘ └──────────┘   │  │
-│  │ ┌──────────┐                │  │  │ ┌──────────┐                │  │
-│  │ │  MLflow  │                │  │  │ │  MLflow  │                │  │
-│  │ │  :5000   │                │  │  │ │  :5000   │                │  │
-│  │ └──────────┘                │  │  │ └──────────┘                │  │
-│  └─────────────────────────────┘  │  └─────────────────────────────┘  │ 
-│                                   │                                   │
-│  nginx-ingress (136.111.152.72)   │  nginx-ingress (Classic ELB)      │
-│  Artifact Registry + GCS          │  ECR + S3                         │
-│  Workload Identity                │  IRSA                             │
-│  Terraform IaC                    │  Terraform IaC + Kustomize        │
-└───────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph GCP["GCP — us-central1"]
+        direction TB
+        GKE["GKE Cluster · 3 nodes · v1.34.3"]
+        subgraph GCP_ML["ML Services — HPA"]
+            BC1["BankChurn :8000"]
+            NL1["NLPInsight :8000"]
+            CT1["ChicagoTaxi :8000"]
+        end
+        subgraph GCP_OBS["Observability"]
+            PR1["Prometheus :9090"]
+            GR1["Grafana :3000"]
+            ML1["MLflow :5000"]
+        end
+        GKE --> GCP_ML
+        GKE --> GCP_OBS
+        ING1["nginx Ingress · 136.111.152.72"] --> GKE
+        GCP_INFRA["Artifact Registry · GCS · Workload Identity · Terraform"]
+    end
 
-Active pods per cloud: 3 ML APIs + Prometheus + Grafana + MLflow (6 Running) + drift-detection CronJob history (Completed, 0 resources).
-GCP: 8 pods visible (6 Running + 2 Completed CronJob runs). AWS: 7 pods visible (6 Running + 1 Completed CronJob run).
-Both clouds: nginx Ingress path routing (/bankchurn, /nlpinsight, /chicagotaxi, /grafana, /mlflow).
-GCP: static IP via GCE LB. AWS: Classic ELB DNS (2026-03-13: restriction lifted).
+    subgraph AWS["AWS — us-east-1"]
+        direction TB
+        EKS["EKS Cluster · 3 nodes · v1.31"]
+        subgraph AWS_ML["ML Services — HPA"]
+            BC2["BankChurn :8000"]
+            NL2["NLPInsight :8000"]
+            CT2["ChicagoTaxi :8000"]
+        end
+        subgraph AWS_OBS["Observability"]
+            PR2["Prometheus :9090"]
+            GR2["Grafana :3000"]
+            ML2["MLflow :5000"]
+        end
+        EKS --> AWS_ML
+        EKS --> AWS_OBS
+        ING2["nginx Ingress · Classic ELB"] --> EKS
+        AWS_INFRA["ECR · S3 · IRSA · Terraform + Kustomize"]
+    end
 ```
+
+- **Active pods per cloud**: 3 ML APIs + Prometheus + Grafana + MLflow (6 Running) + drift-detection CronJob history (Completed, 0 resources)
+- **GCP**: 8 pods visible (6 Running + 2 Completed CronJob runs) · **AWS**: 7 pods visible (6 Running + 1 Completed CronJob run)
+- **Both clouds**: nginx Ingress path routing (`/bankchurn`, `/nlpinsight`, `/chicagotaxi`, `/grafana`, `/mlflow`)
+- **GCP**: static IP via GCE LB · **AWS**: Classic ELB DNS (2026-03-13)
 
 ## Verified Capabilities
 
@@ -71,21 +76,21 @@ GCP: static IP via GCE LB. AWS: Classic ELB DNS (2026-03-13: restriction lifted)
 | Pod Security Standards | baseline enforce, restricted warn | baseline enforce | Namespace labels applied |
 | Network Policies | default-deny + 3 allow rules | default-deny + 3 allow rules | Applied to cluster |
 | Pod Disruption Budgets | minAvailable=1 (3 services) | minAvailable=1 | Applied to cluster |
-| Test coverage | 90-98% (294+ tests) | 90-98% | Codecov integration, 85% CI threshold |
+| Test coverage | 90-98% (395+ tests) | 90-98% | Codecov integration, 85% CI threshold |
 | Adversarial testing | 43 robustness tests | 43 tests | SQL injection, XSS, boundary, Unicode |
 | Infra testing (Terraform) | tfsec + checkov | tfsec + checkov | GCP 51/71, AWS 84/116 |
 | Infra testing (K8s) | kube-linter + conftest | kube-linter + conftest | 9/9 passed, 0 OPA violations |
 
-## Test Results (v3.5.2 — Verified 2026-03-13)
+## Test Results (v3.5.3 — Verified 2026-03-13)
 
-### Unit Test Coverage (294+ total tests, 0 failures)
+### Unit Test Coverage (395+ total tests, 0 failures)
 
 | Project | Tests | Coverage | CI Threshold |
 |---------|-------|----------|--------------|
-| BankChurn | ~198 | **90%** | 85% |
+| BankChurn | 199 | **90%** | 85% |
 | NLPInsight | 74 | **98%** | 85% |
-| ChicagoTaxi | 22 | **91%** | 85% |
-| **Total** | **294+** | **90–98%** | 85% |
+| ChicagoTaxi | 122 | **91%** | 85% |
+| **Total** | **395+** | **90–98%** | 85% |
 
 ### Smoke & Integration Tests (Live GKE + EKS, 2026-03-13)
 

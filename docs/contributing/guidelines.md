@@ -77,7 +77,7 @@ make lint
 - **Integration Tests**: Required for API endpoints.
   - Use `tests/integration/test_demo.py` for cross-project validation.
   - Ensure all services pass health checks and prediction tests.
-- **Coverage**: Must remain above 85% (actual: 90–98%, 294+ tests, [Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)).
+- **Coverage**: Must remain above 85% (actual: 90–98%, 395+ tests, [Codecov verified](https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)).
 
 **Run integration tests**:
 ```bash

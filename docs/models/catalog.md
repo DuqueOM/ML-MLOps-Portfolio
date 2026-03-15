@@ -38,7 +38,7 @@
 |--------|-------|
 | R² | **0.9649** |
 | RMSE | 7.87 trips |
-| Coverage | 91% (22 tests) |
+| Coverage | 91% (122 tests) |
 
 **Pipeline**: `PySpark ETL → Lag Features → RandomForest (temporal split)`
 **Features**: 6.3M trips processed, leak-free lag features, Dask batch prediction (19K rows/sec)

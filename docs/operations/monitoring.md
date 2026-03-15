@@ -33,7 +33,7 @@ All APIs expose `/metrics`. Key metrics per service:
 
 ![Prometheus Targets](../media/screenshots/monitoring/37-prometheus-targets-up.png)
 
-## MLflow Experiments (v3.0.0)
+## MLflow Experiments (v3.5.3)
 
 | Experiment | Best Run | Key Metric |
 |------------|----------|------------|
@@ -41,6 +41,12 @@ All APIs expose `/metrics`. Key metrics per service:
 | **NLPInsight** | TF-IDF + LogReg (prod) / FinBERT (GPU) | Acc 80.6% |
 
 ![MLflow Experiments](../media/screenshots/monitoring/39-mlflow-experiments.png)
+
+### MLflow Run Comparison — BankChurn Model Selection
+
+Parallel coordinates plot comparing 5 model runs (StackingClassifier, RandomForest, LogisticRegression, GradientBoosting) across hyperparameters and metrics. This visualization drove the selection of StackingClassifier as the production model (highest `roc_auc` at 0.86).
+
+![MLflow Model Comparison](../media/screenshots/monitoring/55-mlflow-xgboost-comparison.png)
 
 | ML Dashboard Panels | Load Test Results | P95 Latency |
 |:---:|:---:|:---:|
