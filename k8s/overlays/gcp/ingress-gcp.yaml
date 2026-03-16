@@ -39,7 +39,10 @@ spec:
 ---
 # Ingress 2: Monitoring tools — NO rewrite-target; both tools are configured to serve from sub-paths.
 # Grafana: GF_SERVER_SERVE_FROM_SUB_PATH=true + GF_SERVER_ROOT_URL handles /grafana prefix.
-# MLflow: --static-prefix /mlflow flag handles /mlflow prefix (added in v3.5.2).
+# MLflow: --static-prefix /mlflow handles UI/static/ajax-api paths.
+#   configuration-snippet rewrites /mlflow/api/* → /api/* so the Python SDK
+#   (MLFLOW_TRACKING_URI=http://136.111.152.72/mlflow) works without port-forward.
+#   UI, static assets, and ajax-api paths are NOT rewritten — they pass through intact.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -50,6 +53,8 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
     nginx.ingress.kubernetes.io/proxy-body-size: "8m"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^/mlflow/api/(.*)$ /api/$1 break;
 spec:
   ingressClassName: nginx
   rules:

@@ -4,30 +4,28 @@ Creates 3 experiments (BankChurn, NLPInsight, ChicagoTaxi) with multiple runs ea
 simulating a real hyperparameter search / model selection workflow.
 
 Usage:
-    # Option A — Via GKE Ingress (no port-forward needed)
-    MLFLOW_TRACKING_URI=http://136.111.152.72/mlflow \
-    /home/duque_om/miniconda3/envs/ml-py311/bin/python3 scripts/populate_mlflow_experiments.py
+    # Standard (GKE Ingress — no port-forward needed)
+    python3 scripts/populate_mlflow_experiments.py
 
-    # Option B — Via port-forward (fallback)
-    kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio
-    /home/duque_om/miniconda3/envs/ml-py311/bin/python3 scripts/populate_mlflow_experiments.py
+    # Override URI (e.g. local docker-compose or different environment)
+    MLFLOW_TRACKING_URI=http://localhost:5000 \
+    python3 scripts/populate_mlflow_experiments.py
 
-    # Option C — Local docker-compose
-    docker compose -f docker-compose.mlflow.yml up -d
-    /home/duque_om/miniconda3/envs/ml-py311/bin/python3 scripts/populate_mlflow_experiments.py
+Enterprise access pattern:
+    - UI:        http://136.111.152.72/mlflow  (browser)
+    - SDK/CLI:   http://136.111.152.72/mlflow  (MLFLOW_TRACKING_URI — default)
+    - In-cluster: http://mlflow-service.ml-portfolio.svc.cluster.local:5000
 
-NOTE: MLflow is deployed with --static-prefix /mlflow, so:
-    - UI:  http://136.111.152.72/mlflow  (browser)
-    - API: http://136.111.152.72/mlflow  (MLFLOW_TRACKING_URI)
-    - Port-forward bypasses static-prefix: use http://localhost:5000 (no /mlflow suffix)
+Nginx routing: /mlflow/api/* is rewritten to /api/* via configuration-snippet
+on ml-portfolio-monitoring-ingress so the Python SDK works without port-forward.
 """
 
 import os
 
 import mlflow
 
-# Resolve tracking URI: env var takes priority (Ingress), fallback to port-forward default
-MLFLOW_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://localhost:5000")
+# Resolve tracking URI: env var overrides default; default is the GKE Ingress URL
+MLFLOW_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://136.111.152.72/mlflow")
 mlflow.set_tracking_uri(MLFLOW_URI)
 
 print(f"Connected to MLflow at {MLFLOW_URI}")
