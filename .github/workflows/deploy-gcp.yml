@@ -210,6 +210,12 @@ jobs:
           kubectl apply -f k8s/base/drift-detection-cronjob.yaml
           kubectl apply -f k8s/base/drift-retraining-cronjob.yaml
 
+          # Enable nginx snippet annotations (required for ml-portfolio-monitoring-ingress
+          # configuration-snippet that rewrites /mlflow/api/* → /api/* for SDK access).
+          # Idempotent — safe to run on every deploy. ConfigMap is read dynamically; no restart.
+          kubectl patch configmap ingress-nginx-controller -n ingress-nginx \
+            --type=merge -p '{"data":{"allow-snippet-annotations":"true"}}' || true
+
           # Apply ingress
           kubectl apply -f k8s/overlays/gcp/ingress-gcp.yaml
 

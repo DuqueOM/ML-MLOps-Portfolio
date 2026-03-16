@@ -238,6 +238,14 @@ jobs:
           # Deploy ML services (chicagotaxi — AWS version)
           kubectl apply -f k8s/overlays/aws/chicagotaxi-deployment-aws.yaml
 
+          # Enable nginx snippet annotations (required for ml-portfolio-monitoring-ingress
+          # configuration-snippet that rewrites /mlflow/api/* → /api/* for SDK access).
+          # Idempotent — safe to run on every deploy. ConfigMap is read dynamically by the
+          # controller; no restart needed. Note: this is a ConfigMap key, NOT a CLI flag
+          # (--allow-snippet-annotations flag does not exist and causes CrashLoopBackOff).
+          kubectl patch configmap ingress-nginx-controller -n ingress-nginx \
+            --type=merge -p '{"data":{"allow-snippet-annotations":"true"}}' || true
+
           # Apply AWS nginx ingress
           kubectl apply -f k8s/overlays/aws/ingress-aws.yaml
 
