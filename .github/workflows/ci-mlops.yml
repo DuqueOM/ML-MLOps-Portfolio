@@ -96,7 +96,7 @@ jobs:
         run: |
           # Coverage thresholds: BankChurn 85%, NLPInsight 85%, ChicagoTaxi 85%
           if [ "${{ matrix.project }}" = "BankChurn-Predictor" ]; then
-            COV_TARGET="src"
+            COV_TARGET="src/bankchurn"
             THRESHOLD=85
           elif [ "${{ matrix.project }}" = "ChicagoTaxi-Demand-Pipeline" ]; then
             COV_TARGET="src/chicagotaxi"

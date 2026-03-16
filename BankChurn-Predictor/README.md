@@ -73,8 +73,8 @@ python main.py --seed 42 train --config configs/config.yaml --input data/raw/Chu
 # Serve
 uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000
 
-# Tests (90% coverage, 199 tests)
-pytest tests/ -v --cov=src --cov=main
+# Tests (90.03% coverage, 198 tests)
+pytest tests/ -v --cov=src/bankchurn
 ```
 
 ## API Endpoints

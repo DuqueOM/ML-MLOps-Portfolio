@@ -110,7 +110,7 @@ addopts = [
     "-v",
     "--strict-markers",
     "--tb=short",
-    "--cov=src",
+    "--cov=src/bankchurn",
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-fail-under=79",
@@ -149,7 +149,7 @@ module = ["pandas.*", "numpy.*", "sklearn.*", "optuna.*", "mlflow.*"]
 ignore_missing_imports = true
 
 [tool.coverage.run]
-source = ["."]
+source = ["src/bankchurn"]
 omit = [
     "tests/*",
     "test_*.py",

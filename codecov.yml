@@ -1,0 +1,91 @@
+# codecov.yml — Enterprise Codecov configuration
+# https://docs.codecov.com/docs/codecov-yaml
+#
+# Flags map 1:1 to projects. Each project reports independently.
+# Paths are normalized: all 3 projects → src/<package>/
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+
+  status:
+    project:
+      default:
+        target: auto        # Compare against base commit
+        threshold: 1%       # Allow 1% regression before failing
+        if_not_found: success
+        if_ci_failed: error
+
+    patch:
+      default:
+        target: 80%         # New code in PRs must be 80%+ covered
+        threshold: 5%
+        if_not_found: success
+        if_ci_failed: error
+
+    # Per-project status checks with individual thresholds
+    bankchurn:
+      target: 90%
+      flags:
+        - BankChurn-Predictor
+      paths:
+        - "BankChurn-Predictor/src/bankchurn/"
+
+    chicagotaxi:
+      target: 95%
+      flags:
+        - ChicagoTaxi-Demand-Pipeline
+      paths:
+        - "ChicagoTaxi-Demand-Pipeline/src/chicagotaxi/"
+
+    nlpinsight:
+      target: 99%
+      flags:
+        - NLPInsight-Analyzer
+      paths:
+        - "NLPInsight-Analyzer/src/nlpinsight/"
+
+# Flag definitions — each flag isolates one project's coverage
+flag_management:
+  default_rules:
+    carryforward: true      # Keep coverage if project not changed in PR
+
+flags:
+  BankChurn-Predictor:
+    paths:
+      - BankChurn-Predictor/src/bankchurn/
+    carryforward: true
+
+  ChicagoTaxi-Demand-Pipeline:
+    paths:
+      - ChicagoTaxi-Demand-Pipeline/src/chicagotaxi/
+    carryforward: true
+
+  NLPInsight-Analyzer:
+    paths:
+      - NLPInsight-Analyzer/src/nlpinsight/
+    carryforward: true
+
+# Ignore files that should not affect coverage metrics
+ignore:
+  - "**/__pycache__/**"
+  - "**/tests/**"
+  - "**/test_*.py"
+  - "**/conftest.py"
+  - "**/*.egg-info/**"
+  - "**/data/validate_data.py"   # Standalone validation scripts
+  - "**/app/gradio_demo.py"      # Demo apps, not production code
+  - "scripts/**"
+  - "infra/**"
+  - "helm/**"
+  - "k8s/**"
+
+# PR comment configuration
+comment:
+  layout: "reach,diff,flags,files"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+  show_carryforward_flags: true
