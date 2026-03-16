@@ -48,10 +48,20 @@ Abre una ventana limpia de tu navegador (sin extensiones que distraigan) y prepa
 ```
 *(Nota: Asegúrate de marcar `explain: true` en la UI).*
 
-**Para NLPInsight Swagger UI (/analyze):**
+**Para NLPInsight Swagger UI (/predict):**
 ```json
 {
   "text": "The company reported massive unexpected losses, causing the stock to plummet and the CEO to resign immediately."
+}
+```
+
+**Para ChicagoTaxi Swagger UI (/demand):**
+```json
+{
+  "pickup_community_area": 8,
+  "hour": 17,
+  "day_of_week": 4,
+  "month": 3
 }
 ```
 
@@ -119,14 +129,19 @@ locust -f tests/load/locustfile.py --headless -u 50 -r 10 --run-time 1m --host h
    - Click grande en **"Execute"**.
    - Haz scroll lento al "Server response". Resalta con el cursor: `"churn_probability": 0.73` y los valores dentro del array `"feature_contributions"` (especialmente `NumOfProducts: +0.28`).
 2. **Ve a la pestaña de NLPInsight Swagger**:
-   - Expande `POST /analyze`. Click en "Try it out".
+   - Expande `POST /predict`. Click en "Try it out".
    - Pega el texto negativo del block de notas.
    - Click en **"Execute"**.
    - Resalta el resultado `"sentiment": "negative", "confidence": 0.99`.
+3. **Ve a la pestaña de ChicagoTaxi Swagger**:
+   - Expande `POST /demand`. Click en "Try it out".
+   - Pega el JSON de prueba del block de notas.
+   - Click en **"Execute"**.
+   - Resalta `"predicted_demand": 45.2` (u otro valor que arroje).
 
-**Subtítulo en video**: `"Production APIs: FastAPI endpoints with live SHAP explainability"`
+**Subtítulo en video**: `"Production APIs: 3 Models · Live Explainability · Sub-150ms Latency"`
 
-**Voz de fondo**: *"The APIs are built with FastAPI. BankChurn returns predictions with live SHAP explainability in under 150 milliseconds. NLPInsight provides financial sentiment classification via a fine-tuned FinBERT transformer."*
+**Voz de fondo**: *"The APIs are built with FastAPI. BankChurn returns predictions with live SHAP explainability in under 150 milliseconds. NLPInsight provides financial sentiment classification via a fine-tuned FinBERT transformer, and ChicagoTaxi forecasts ride demand based on 6.3 million historical trips processed with PySpark."*
 
 ---
 
