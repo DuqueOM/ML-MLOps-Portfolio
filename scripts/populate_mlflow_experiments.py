@@ -4,16 +4,30 @@ Creates 3 experiments (BankChurn, NLPInsight, ChicagoTaxi) with multiple runs ea
 simulating a real hyperparameter search / model selection workflow.
 
 Usage:
-    # 1. Start port-forward (MLflow API not accessible via Ingress without path rewrite)
-    kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio
-
-    # 2. In another terminal, run this script with the ml-py311 conda env:
+    # Option A — Via GKE Ingress (no port-forward needed)
+    MLFLOW_TRACKING_URI=http://136.111.152.72/mlflow \
     /home/duque_om/miniconda3/envs/ml-py311/bin/python3 scripts/populate_mlflow_experiments.py
+
+    # Option B — Via port-forward (fallback)
+    kubectl port-forward svc/mlflow-service 5000:5000 -n ml-portfolio
+    /home/duque_om/miniconda3/envs/ml-py311/bin/python3 scripts/populate_mlflow_experiments.py
+
+    # Option C — Local docker-compose
+    docker compose -f docker-compose.mlflow.yml up -d
+    /home/duque_om/miniconda3/envs/ml-py311/bin/python3 scripts/populate_mlflow_experiments.py
+
+NOTE: MLflow is deployed with --static-prefix /mlflow, so:
+    - UI:  http://136.111.152.72/mlflow  (browser)
+    - API: http://136.111.152.72/mlflow  (MLFLOW_TRACKING_URI)
+    - Port-forward bypasses static-prefix: use http://localhost:5000 (no /mlflow suffix)
 """
+
+import os
 
 import mlflow
 
-MLFLOW_URI = "http://localhost:5000"
+# Resolve tracking URI: env var takes priority (Ingress), fallback to port-forward default
+MLFLOW_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://localhost:5000")
 mlflow.set_tracking_uri(MLFLOW_URI)
 
 print(f"Connected to MLflow at {MLFLOW_URI}")

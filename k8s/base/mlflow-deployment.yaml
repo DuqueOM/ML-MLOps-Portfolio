@@ -44,7 +44,20 @@ spec:
             cpu: "500m"
       volumes:
       - name: mlflow-storage
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: mlflow-sqlite-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlflow-sqlite-pvc
+  namespace: ml-portfolio
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
