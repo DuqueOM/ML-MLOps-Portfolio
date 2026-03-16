@@ -6,7 +6,16 @@
 # - ALB does NOT support rewrite-target: apps would receive /bankchurn/predict -> 404
 # - nginx rewrite-target: /$2 strips the path prefix before forwarding
 # - Identical behavior on GCP/AWS -> cloud-agnostic architecture
-# - Single nginx LoadBalancer IP, 5 services via path routing
+#
+# Two-ingress pattern (identical to GCP):
+# - Ingress 1: ML API services (rewrite-target strips prefix -> FastAPI receives /)
+# - Ingress 2: Monitoring (no rewrite + configuration-snippet for MLflow SDK API)
+#
+# IMPORTANT: Before applying, enable snippet annotations on the nginx controller ConfigMap:
+#   kubectl patch configmap ingress-nginx-controller -n ingress-nginx \
+#     --type=merge -p='{"data":{"allow-snippet-annotations":"true"}}'
+
+# Ingress 1: ML API services — rewrite-target strips prefix so FastAPI receives requests at /
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -44,15 +53,39 @@ spec:
             name: chicagotaxi-service
             port:
               number: 80
-      - path: /grafana(/|$)(.*)
-        pathType: ImplementationSpecific
+---
+# Ingress 2: Monitoring tools — NO rewrite-target; both tools serve from sub-paths.
+# Grafana: GF_SERVER_SERVE_FROM_SUB_PATH=true + GF_SERVER_ROOT_URL handles /grafana prefix.
+# MLflow: --static-prefix /mlflow handles UI/static/ajax-api paths.
+#   configuration-snippet rewrites /mlflow/api/* → /api/* so the Python SDK
+#   (MLFLOW_TRACKING_URI=http://<EKS_LB_IP>/mlflow) works without port-forward.
+#   UI, static assets, and ajax-api paths are NOT rewritten — they pass through intact.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ml-portfolio-monitoring-ingress
+  namespace: ml-portfolio
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-body-size: "8m"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^/mlflow/api/(.*)$ /api/$1 break;
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /grafana
+        pathType: Prefix
         backend:
           service:
             name: grafana-service
             port:
               number: 3000
-      - path: /mlflow(/|$)(.*)
-        pathType: ImplementationSpecific
+      - path: /mlflow
+        pathType: Prefix
         backend:
           service:
             name: mlflow-service
