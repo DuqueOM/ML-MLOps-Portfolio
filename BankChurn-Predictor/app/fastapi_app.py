@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
-from fastapi import BackgroundTasks, FastAPI, HTTPException
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel, Field, field_validator
@@ -359,7 +359,10 @@ async def get_metrics():
 
 
 @app.post("/predict", response_model=PredictionResponse)
-async def predict_churn(customer: CustomerData, explain: bool = False):
+async def predict_churn(
+    customer: CustomerData,
+    explain: bool = Query(default=False, description="Return SHAP feature contributions (~4-5s extra latency)"),
+):
     if predictor is None:
         if PROMETHEUS_AVAILABLE:
             REQUEST_COUNT.labels(method="POST", endpoint="/predict", status="503").inc()
@@ -405,7 +408,14 @@ async def predict_churn(customer: CustomerData, explain: bool = False):
 
 
 @app.post("/predict_batch", response_model=BatchPredictionResponse)
-async def predict_batch(batch_data: BatchCustomerData, background_tasks: BackgroundTasks, explain: bool = False):
+async def predict_batch(
+    batch_data: BatchCustomerData,
+    background_tasks: BackgroundTasks,
+    explain: bool = Query(
+        default=False, description="Return SHAP feature contributions per customer (~4-5s extra latency)"
+    ),
+):
+
     if predictor is None:
         raise HTTPException(status_code=503, detail="Model not available")
 
