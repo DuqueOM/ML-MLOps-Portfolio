@@ -59,8 +59,8 @@
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
-| **GCP Deployment** | ✅ Verified | GKE 5 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), 0.07% error rate (load tested) |
-| **AWS Deployment** | ✅ Verified | EKS 3 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), CI/CD via GitHub Actions |
+| **GCP Deployment** | ✅ Verified | GKE 1-5 nodes (auto-scaling), 6 pods (3 ML + MLflow + Prometheus + Grafana), 0.07% error rate |
+| **AWS Deployment** | ✅ Verified | EKS 1-5 nodes (auto-scaling), 6 pods (3 ML + MLflow + Prometheus + Grafana), CI/CD via GitHub Actions |
 | **CI/CD** | ✅ Unified | GitHub Actions → GKE + EKS (separate deploy workflows) |
 | **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) — parallel provider configs |
 | **Monitoring** | ✅ Full Stack | Prometheus + Grafana + MLflow — cloud-agnostic on K8s |
@@ -228,7 +228,7 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 
 | Component | GCP (Live ✅) | AWS (Live ✅) |
 |-----------|--------------|--------------|
-| **K8s Cluster** | GKE 5 nodes (`us-central1`) | EKS 3 nodes (`us-east-1`) |
+| **K8s Cluster** | GKE 1-5 nodes auto-scaling (`us-central1`) | EKS 1-5 nodes auto-scaling (`us-east-1`) |
 | **Container Registry** | Artifact Registry | ECR (3 private repos) |
 | **Model Storage** | GCS | S3 (versioned, encrypted) |
 | **Load Balancer** | nginx Ingress (static IP) | nginx Ingress (Classic ELB) |

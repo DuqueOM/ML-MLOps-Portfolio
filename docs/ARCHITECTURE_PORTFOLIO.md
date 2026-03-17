@@ -16,14 +16,14 @@ graph TB
         BUILD --> ECR[AWS ECR]
     end
 
-    subgraph "GCP — GKE (us-central1, 5 nodes)"
+    subgraph "GCP — GKE (us-central1, 1-5 nodes auto-scaling)"
         GCE[nginx Ingress LB] --> BC1[BankChurn] & NL1[NLPInsight] & CT1[ChicagoTaxi]
         P1[Prometheus] --> G1[Grafana]
         D1[Drift CronJob] --> BC1
         M1[MLflow]
     end
 
-    subgraph "AWS — EKS (us-east-1, 3 nodes)"
+    subgraph "AWS — EKS (us-east-1, 1-5 nodes auto-scaling)"
         AWS[nginx Ingress Classic ELB] --> BC2[BankChurn] & NL2[NLPInsight] & CT2[ChicagoTaxi]
         P2[Prometheus] --> G2[Grafana]
         D2[Drift CronJob] --> BC2
