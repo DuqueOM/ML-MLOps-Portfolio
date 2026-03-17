@@ -174,3 +174,4 @@ infra/terraform/aws/tfplan
 infra/terraform-outputs.json
 *.tfstate
 *.tfstate.backup
+docs/VIDEO_SCRIPT_v2.md
