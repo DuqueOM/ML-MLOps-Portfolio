@@ -16,7 +16,7 @@ graph TB
         BUILD --> ECR[AWS ECR]
     end
 
-    subgraph "GCP — GKE (us-central1, 4 nodes)"
+    subgraph "GCP — GKE (us-central1, 5 nodes)"
         GCE[nginx Ingress LB] --> BC1[BankChurn] & NL1[NLPInsight] & CT1[ChicagoTaxi]
         P1[Prometheus] --> G1[Grafana]
         D1[Drift CronJob] --> BC1

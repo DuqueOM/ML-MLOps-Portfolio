@@ -11,23 +11,40 @@
 Para que el video fluya sin pausas, **todo debe estar abierto y listo antes de presionar grabar**. Sigue este checklist al pie de la letra.
 
 ### 1. Variables de entorno globales (Copiar a la terminal)
-*Asegúrate de que la IP del Ingress de GKE sea la correcta antes de empezar:*
+*Define ambas nubes antes de empezar:*
 ```bash
-export GKE_INGRESS_IP="136.111.152.72"
+# GCP — nginx-ingress LoadBalancer
+export GKE_URL="http://136.111.152.72"
+
+# AWS — NodePort directo (NLB pendiente de cuota de servicio)
+# Una vez aprobada la cuota, reemplaza con: export EKS_URL="http://<nlb-hostname>"
+export EKS_URL="http://100.48.81.16:31963"
 ```
 
 ### 2. Pestañas del navegador pre-abiertas (Abre todas en orden, en una ventana nueva)
 Abre una ventana limpia de tu navegador (sin extensiones que distraigan) y prepara estas pestañas:
 
-1. **GitHub Repo**: `https://github.com/DuqueOM/ML-MLOps-Portfolio` (Haz scroll hasta que se vean los badges y el diagrama de arquitectura Mermaid).
-2. **BankChurn UI**: `http://136.111.152.72/bankchurn/docs`
-3. **NLPInsight UI**: `http://136.111.152.72/nlpinsight/docs`
-4. **ChicagoTaxi UI**: `http://136.111.152.72/chicagotaxi/docs`
-5. **Grafana Dashboards**: `http://136.111.152.72/grafana/dashboards` (Abre el dashboard "ML Portfolio Metrics").
-6. **Prometheus Targets**: Haz port-forward en terminal oculta (`kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio &`) y abre `http://localhost:9090/targets`.
-7. **MLflow UI**: `http://136.111.152.72/mlflow`
-8. **GitHub Actions**: `https://github.com/DuqueOM/ML-MLOps-Portfolio/actions` (Abre el último run exitoso de `CI / MLOps Pipeline`).
-9. **Codecov**: `https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio` (Abre la vista de "Sunburst" o "Tree").
+**GCP (GKE — nginx-ingress IP pública: `136.111.152.72`)**
+1. **GitHub Repo**: `https://github.com/DuqueOM/ML-MLOps-Portfolio`
+2. **BankChurn UI (GCP)**: `http://136.111.152.72/bankchurn/docs`
+3. **NLPInsight UI (GCP)**: `http://136.111.152.72/nlpinsight/docs`
+4. **ChicagoTaxi UI (GCP)**: `http://136.111.152.72/chicagotaxi/docs`
+5. **Grafana (GCP)**: `http://136.111.152.72/grafana/dashboards`
+6. **MLflow (GCP)**: `http://136.111.152.72/mlflow`
+7. **Prometheus (GCP — port-forward)**: Ejecuta en terminal oculta: `kubectl config use-context ml-portfolio-gke-production && kubectl port-forward svc/prometheus-service 9090:9090 -n ml-portfolio &` → abre `http://localhost:9090/targets`
+
+**AWS (EKS — NodePort IP pública: `100.48.81.16:31963`)**
+8. **BankChurn UI (AWS)**: `http://100.48.81.16:31963/bankchurn/docs`
+9. **NLPInsight UI (AWS)**: `http://100.48.81.16:31963/nlpinsight/docs`
+10. **ChicagoTaxi UI (AWS)**: `http://100.48.81.16:31963/chicagotaxi/docs`
+11. **Grafana (AWS)**: `http://100.48.81.16:31963/grafana/dashboards`
+12. **MLflow (AWS)**: `http://100.48.81.16:31963/mlflow`
+
+> 📝 **Nota AWS**: Actualmente se accede vía NodePort mientras se aprueba la cuota de NLB en AWS Service Quotas. Una vez aprobada (`Network Load Balancers per Region`), el NLB se provisiona automáticamente y reemplaza esta IP por un hostname `*.elb.amazonaws.com`.
+
+**CI/CD y calidad**
+13. **GitHub Actions**: `https://github.com/DuqueOM/ML-MLOps-Portfolio/actions`
+14. **Codecov**: `https://app.codecov.io/gh/DuqueOM/ML-MLOps-Portfolio`
 
 ### 3. Preparación de payloads (Tenlos listos en un block de notas)
 
@@ -65,39 +82,41 @@ Abre una ventana limpia de tu navegador (sin extensiones que distraigan) y prepa
 }
 ```
 
-### 4. Configuración de Terminales (Split Screen)
-El impacto visual depende de mostrar ambas nubes a la vez.
+### 4. Configuración de Terminales (Split Screen con tmux)
+El impacto visual del video depende de mostrar que tienes control absoluto sobre ambas nubes **al mismo tiempo**.
 
-**Opción A: Usando `tmux` (Recomendado)**
-1. Abre tu terminal maximizada (fuente tamaño 16px o 18px, fondo negro).
+**Paso 1: Preparar la pantalla dividida (Antes de grabar)**
+1. Abre tu terminal maximizada.
 2. Ejecuta `tmux`.
-3. Presiona `Ctrl+b` y luego `%` (divide la pantalla verticalmente).
-4. **Panel Izquierdo (GKE)**:
+3. Presiona `Ctrl+b` y luego `%` (divide la pantalla verticalmente en dos paneles).
+4. **Panel Izquierdo (GCP)**: Conéctate al clúster de GKE y limpia la pantalla:
    ```bash
-   kubectl config use-context ml-portfolio-gke-production
+   kubectl config use-context gke-production
    clear
    ```
-5. **Panel Derecho (EKS)**:
+5. **Panel Derecho (AWS)**: Presiona `Ctrl+b` y flecha derecha para saltar a este panel. Conéctate al clúster de EKS y limpia:
    ```bash
-   # Presiona Ctrl+b y luego flecha derecha para cambiar de panel
-   kubectl config use-context ml-portfolio-eks
+   kubectl config use-context eks-production
    clear
    ```
+6. Ahora tienes la terminal dividida, apuntando a GCP a la izquierda y a AWS a la derecha, con nombres de contexto perfectamente simétricos.
 
-**Comandos rápidos listos para copiar/pegar en terminal:**
-*(Guárdalos en un block de notas aparte, NO escribas en vivo durante el video).*
+**Paso 2: Comandos rápidos listos para copiar/pegar**
+*(Guárdalos en un block de notas aparte. Durante la grabación, solo harás copiar/pegar para que se vea rápido y fluido).*
+
 ```bash
-# Revisar pods (pegar en ambos paneles)
+# ----- PARA EL MINUTO 0:00 (El Hook) -----
+# Copia este primero en el panel GKE, luego en el panel EKS. 
+# La idea es que ambos lados muestren EXACTAMENTE los mismos pods corriendo.
 kubectl get pods -n ml-portfolio -o wide
 
-# Recursos (pegar en el panel de GKE)
-kubectl top pods -n ml-portfolio
-
-# Ingress (pegar en el panel de EKS)
-kubectl get ingress -n ml-portfolio
-
-# Comando Locust (pegar en una terminal aparte, en la parte inferior de la pantalla cuando se muestre Grafana)
+# ----- PARA EL MINUTO 1:10 (Load Testing) -----
+# Este va en CUALQUIER panel, cuando minimices la terminal a la mitad de la pantalla
 locust -f tests/load/locustfile.py --headless -u 50 -r 10 --run-time 1m --host http://136.111.152.72
+
+# ----- PARA EL MINUTO 2:15 (Multi-Cloud Parity) -----
+# Si quieres mostrar que los Ingress existen en ambos clouds
+kubectl get ingress,svc -n ml-portfolio
 ```
 
 ---
@@ -108,9 +127,10 @@ locust -f tests/load/locustfile.py --headless -u 50 -r 10 --run-time 1m --host h
 *¿Qué impresiona más? Ver infraestructura real corriendo en ambos clouds simultáneamente.*
 
 **Qué mostrar en pantalla**: La terminal con el "Split Screen" (tmux) activo.
-1. Haz click en el panel izquierdo (GKE) y pega: `kubectl get pods -n ml-portfolio -o wide`
-2. Haz click en el panel derecho (EKS) y pega: `kubectl get pods -n ml-portfolio -o wide`
-3. Pausa 2 segundos para que se vea que son exactamente los mismos 6 servicios (`bankchurn`, `nlpinsight`, `chicagotaxi`, `grafana`, `mlflow`, `prometheus`) corriendo en ambas nubes.
+1. La terminal ya debe mostrar tu prompt en el lado izquierdo con `gke-production` y en el derecho con `eks-production`.
+2. Haz click en el panel izquierdo (GCP) y pega: `kubectl get pods -n ml-portfolio -o wide`
+3. Haz click en el panel derecho (AWS) y pega: `kubectl get pods -n ml-portfolio -o wide`
+4. Pausa 2 segundos. **Este es el efecto "Wow"**: El reclutador ve que tienes exactamente la misma infraestructura (6 microservicios) viva y en estado `Running` en dos nubes competidoras simultáneamente. Esto prueba que tu IaC y GitOps son reales.
 
 **Subtítulo en video**: `"3 ML Services · Deployed simultaneously on GCP (GKE) & AWS (EKS)"`
 
@@ -121,19 +141,19 @@ locust -f tests/load/locustfile.py --headless -u 50 -r 10 --run-time 1m --host h
 ### 🎬 0:10–0:40 | ML Predictions — El Valor de Negocio (Swagger UI > curl)
 *Mostramos la UI interactiva (Swagger) para demostrar que entregamos un producto consumible por Frontend/Backend devs.*
 
-**Qué mostrar en pantalla**: Navegador web, cambiando rápido entre pestañas.
-1. **Ve a la pestaña de BankChurn Swagger**:
+**Qué mostrar en pantalla**: Navegador web, cambiando rápido entre pestañas. **Usa las URLs de GCP para las predicciones** (IP pública estable).
+1. **Ve a la pestaña de BankChurn Swagger** (`http://136.111.152.72/bankchurn/docs`):
    - Expande `POST /predict`. Click en "Try it out".
-   - Cambia `explain` de `false` a `true` (en el dropdown/checkbox).
+   - Cambia `explain` de `false` a `true` (en el dropdown/checkbox de query params).
    - Pega el JSON del block de notas en el `Request body`.
    - Click grande en **"Execute"**.
-   - Haz scroll lento al "Server response". Resalta con el cursor: `"churn_probability": 0.73` y los valores dentro del array `"feature_contributions"` (especialmente `NumOfProducts: +0.28`).
-2. **Ve a la pestaña de NLPInsight Swagger**:
+   - Haz scroll lento al "Server response". Resalta con el cursor: `"churn_probability": 0.73` y los valores dentro del objeto `"feature_contributions"` (especialmente `NumOfProducts: +0.28`).
+2. **Ve a la pestaña de NLPInsight Swagger** (`http://136.111.152.72/nlpinsight/docs`):
    - Expande `POST /predict`. Click en "Try it out".
    - Pega el texto negativo del block de notas.
    - Click en **"Execute"**.
    - Resalta el resultado `"sentiment": "negative", "confidence": 0.99`.
-3. **Ve a la pestaña de ChicagoTaxi Swagger**:
+3. **Ve a la pestaña de ChicagoTaxi Swagger** (`http://136.111.152.72/chicagotaxi/docs`):
    - Expande `POST /demand`. Click en "Try it out".
    - Pega el JSON de prueba del block de notas.
    - Click en **"Execute"**.
@@ -148,7 +168,7 @@ locust -f tests/load/locustfile.py --headless -u 50 -r 10 --run-time 1m --host h
 ### 🎬 0:40–1:10 | Experiment Tracking — El Estándar Enterprise (UI)
 *MLflow en UI demuestra trazabilidad real, lo cual es crítico para reclutadores MLOps.*
 
-**Qué mostrar en pantalla**: Pestaña de MLflow (`http://136.111.152.72/mlflow`).
+**Qué mostrar en pantalla**: Pestaña de MLflow GCP (`http://136.111.152.72/mlflow`).
 1. Selecciona el experimento `BankChurn` en la barra lateral izquierda.
 2. En la tabla principal, selecciona con los checkboxes 3 o 4 runs (ej. `LR-baseline`, `RF-v1`, `StackingClassifier`).
 3. Haz click en el botón azul **"Compare"**.
@@ -165,7 +185,7 @@ locust -f tests/load/locustfile.py --headless -u 50 -r 10 --run-time 1m --host h
 
 **Qué mostrar en pantalla**: Ajusta las ventanas para que el Navegador ocupe la mitad superior de la pantalla y la Terminal la mitad inferior.
 1. **Navegador (Arriba)**: Grafana Dashboard (`ML Portfolio Metrics`). Asegúrate de que se vean los paneles de "Request Rate" y "P95 Latency".
-2. **Terminal (Abajo)**: Pega y ejecuta el comando de Locust:
+2. **Terminal (Abajo)**: Pega y ejecuta el comando de Locust apuntando a GCP:
    `locust -f tests/load/locustfile.py --headless -u 50 -r 10 --run-time 1m --host http://136.111.152.72`
 3. **Acción**: Tras dar 'Enter' a Locust, deja el cursor quieto. Mira cómo las líneas en Grafana (arriba) empiezan a subir dramáticamente indicando el tráfico real entrante. La latencia debe mantenerse plana y baja.
 4. **Cambio rápido (opcional)**: Ve a la pestaña de Prometheus y muestra que los 4 Targets dicen `UP` (en verde).
@@ -188,17 +208,32 @@ locust -f tests/load/locustfile.py --headless -u 50 -r 10 --run-time 1m --host h
 
 ---
 
-### 🎬 2:15–2:30 | DevSecOps & IaC (Terminal + IDE)
+### 🎬 2:15–2:30 | Multi-Cloud Parity (Split Screen — Navegador)
+*El momento que demuestra que ambas nubes son production-grade.*
+
+**Qué mostrar en pantalla**: Divide el navegador o usa dos ventanas lado a lado.
+1. **Izquierda — GCP**: `http://136.111.152.72/bankchurn/docs` (nginx-ingress, IP pública)
+2. **Derecha — AWS**: `http://100.48.81.16:31963/bankchurn/docs` (nginx-ingress vía NodePort)
+3. En el panel derecho (AWS), ejecuta la misma predicción de BankChurn. El resultado debe ser **idéntico** al de GCP — mismo modelo, misma lógica, misma respuesta JSON.
+4. Zoom out para que el viewer vea los dos Swagger UI al mismo tiempo.
+
+**Subtítulo en video**: `"Multi-Cloud Parity: Same API · Same Model · GKE + EKS"`
+
+**Voz de fondo**: *"Both clouds serve the exact same model, the same API contract, deployed from the same Kustomize base. The only difference is the overlay file — 12 lines of YAML. This is real multi-cloud, not a marketing slide."*
+
+---
+
+### 🎬 2:30–2:45 | DevSecOps & IaC (Terminal + IDE)
 
 **Qué mostrar en pantalla**: Tu editor de código (VSCode o Cursor/Windsurf).
 1. Abre el árbol de archivos a la izquierda.
 2. Navega a `infra/terraform/` y expande las carpetas `aws` y `gcp` (demostrando que existe código Terraform para ambos).
-3. Navega a `k8s/overlays/` y abre dos archivos lado a lado en el editor: `gcp/ingress-gcp.yaml` y `aws/ingress-aws.yaml`. Haz un leve scroll para mostrar cómo la base se parchea por cada nube.
-4. *(Opcional)*: En la terminal integrada del IDE, ejecuta `kubectl get networkpolicies -n ml-portfolio` para mostrar las reglas de denegación por defecto.
+3. Navega a `k8s/overlays/` y abre dos archivos lado a lado en el editor: `overlays/gcp/ingress-gcp.yaml` y `overlays/aws/ingress-aws.yaml`. Haz un leve scroll para mostrar cómo la base se parchea por cada nube.
+4. En la terminal integrada del IDE, ejecuta `kubectl get networkpolicies -n ml-portfolio` para mostrar las reglas de denegación por defecto.
 
 **Subtítulo en video**: `"DevSecOps: Terraform IaC · Kustomize Overlays · Network Policies"`
 
-**Voz de fondo**: *"Infrastructure follows a GitOps approach. Kustomize manages base manifests and cloud-specific overlays. Network policies enforce zero-trust security between pods. Terraform provisions the clusters."*
+**Voz de fondo**: *"Infrastructure follows a GitOps approach. Kustomize manages base manifests and cloud-specific overlays. Network policies enforce zero-trust security between pods. Terraform provisions the clusters."`
 
 ---
 

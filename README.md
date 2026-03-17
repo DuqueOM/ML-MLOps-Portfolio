@@ -53,13 +53,13 @@
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|---------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | 103ms p50 | StackingClassifier (5 models), SHAP, Drift Detection |
-| [📝 NLPInsight](NLPInsight-Analyzer/) | NLP | **Acc 80.6%** (sentiment) | 98% | 5ms p50 | TF-IDF + LogReg, Twitter Financial News (11.9K tweets) |
-| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96**, 6.3M rows | 91% | 75ms p50 | PySpark ETL, Lag Features, Temporal Split |
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | ~103ms (GCP) / ~108ms (AWS) | StackingClassifier (5 models), SHAP, Drift Detection |
+| [📝 NLPInsight](NLPInsight-Analyzer/) | NLP | **Acc 80.6%** (sentiment) | 98% | ~5ms (GCP) / ~7ms (AWS) | TF-IDF + LogReg, Twitter Financial News (11.9K tweets) |
+| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96**, 6.3M rows | 91% | ~75ms (GCP) / ~80ms (AWS) | PySpark ETL, Lag Features, Temporal Split |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
-| **GCP Deployment** | ✅ Verified | GKE 4 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), 0.07% error rate (load tested) |
+| **GCP Deployment** | ✅ Verified | GKE 5 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), 0.07% error rate (load tested) |
 | **AWS Deployment** | ✅ Verified | EKS 3 nodes, 6 pods (3 ML + MLflow + Prometheus + Grafana), CI/CD via GitHub Actions |
 | **CI/CD** | ✅ Unified | GitHub Actions → GKE + EKS (separate deploy workflows) |
 | **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) — parallel provider configs |
@@ -228,7 +228,7 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 
 | Component | GCP (Live ✅) | AWS (Live ✅) |
 |-----------|--------------|--------------|
-| **K8s Cluster** | GKE 4 nodes (`us-central1`) | EKS 3 nodes (`us-east-1`) |
+| **K8s Cluster** | GKE 5 nodes (`us-central1`) | EKS 3 nodes (`us-east-1`) |
 | **Container Registry** | Artifact Registry | ECR (3 private repos) |
 | **Model Storage** | GCS | S3 (versioned, encrypted) |
 | **Load Balancer** | nginx Ingress (static IP) | nginx Ingress (Classic ELB) |

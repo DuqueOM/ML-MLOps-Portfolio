@@ -65,7 +65,7 @@ flowchart TB
 
 | Resource | Configuration |
 |----------|---------------|
-| **GKE Cluster** | `ml-portfolio-gke-production`, us-central1, 4 nodes (e2-medium) |
+| **GKE Cluster** | `ml-portfolio-gke-production`, us-central1, 5 nodes (e2-medium) |
 | **Artifact Registry** | 3 Docker images (bankchurn, nlpinsight, chicagotaxi) |
 | **Cloud Storage** | Models bucket + Datasets bucket (versioned, lifecycle policies) |
 | **Cloud SQL** | PostgreSQL for MLflow backend |
