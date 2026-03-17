@@ -405,7 +405,7 @@ async def predict_churn(customer: CustomerData, explain: bool = False):
 
 
 @app.post("/predict_batch", response_model=BatchPredictionResponse)
-async def predict_batch(batch_data: BatchCustomerData, background_tasks: BackgroundTasks):
+async def predict_batch(batch_data: BatchCustomerData, background_tasks: BackgroundTasks, explain: bool = False):
     if predictor is None:
         raise HTTPException(status_code=503, detail="Model not available")
 
@@ -419,18 +419,23 @@ async def predict_batch(batch_data: BatchCustomerData, background_tasks: Backgro
         results = predictor.predict(df, include_proba=True)
 
         # Vectorized operations instead of iterrows for better performance
-        predictions = [
-            PredictionResponse(
-                churn_probability=float(results.iloc[i]["probability"]),
-                churn_prediction=int(results.iloc[i]["prediction"]),
-                risk_level=determine_risk_level(float(results.iloc[i]["probability"])),
-                confidence=calculate_confidence(float(results.iloc[i]["probability"])),
-                feature_contributions={k: 0.0 for k in customers_list[i]},
-                model_version=model_metadata.get("version", "1.0.0"),
-                prediction_timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        predictions = []
+        for i in range(len(results)):
+            contributions = (
+                calculate_feature_contributions(customers_list[i]) if explain else {k: 0.0 for k in customers_list[i]}
             )
-            for i in range(len(results))
-        ]
+
+            predictions.append(
+                PredictionResponse(
+                    churn_probability=float(results.iloc[i]["probability"]),
+                    churn_prediction=int(results.iloc[i]["prediction"]),
+                    risk_level=determine_risk_level(float(results.iloc[i]["probability"])),
+                    confidence=calculate_confidence(float(results.iloc[i]["probability"])),
+                    feature_contributions=contributions,
+                    model_version=model_metadata.get("version", "1.0.0"),
+                    prediction_timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                )
+            )
 
         processing_time = time.time() - start_batch
 
