@@ -46,7 +46,7 @@ Abre una ventana limpia de tu navegador (sin extensiones que distraigan) y prepa
   "EstimatedSalary": 101348.88
 }
 ```
-*(Nota: Asegúrate de marcar `explain: true` en la UI).*
+> ⚠️ **IMPORTANTE PARA SHAP**: El JSON de arriba es solo el cuerpo de los datos. Para activar SHAP, en la misma interfaz de Swagger debes **cambiar el campo `explain` de `false` a `true`** (es un parámetro de query, no va dentro del JSON).
 
 **Para NLPInsight Swagger UI (/predict):**
 ```json
