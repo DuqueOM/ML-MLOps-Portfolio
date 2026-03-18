@@ -33,7 +33,7 @@ spec:
       - name: bankchurn-api
         image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/bankchurn-predictor:latest
         imagePullPolicy: Always
-        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000"]
+        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
         ports:
         - containerPort: 8000
           name: http
@@ -60,25 +60,31 @@ spec:
         resources:
           requests:
             memory: "512Mi"
-            cpu: "400m"
+            cpu: "500m"
           limits:
             memory: "1Gi"
-            cpu: "1500m"
-        livenessProbe:
+            cpu: "2000m"
+        startupProbe:
           httpGet:
             path: /health
             port: 8000
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
+          failureThreshold: 18
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          periodSeconds: 15
+          timeoutSeconds: 10
           failureThreshold: 3
         readinessProbe:
           httpGet:
             path: /health
             port: 8000
-          initialDelaySeconds: 10
           periodSeconds: 5
-          timeoutSeconds: 3
+          timeoutSeconds: 5
           failureThreshold: 3
         volumeMounts:
         - name: models

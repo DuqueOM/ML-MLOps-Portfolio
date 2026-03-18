@@ -52,11 +52,24 @@ Scale-out strategy: Kubernetes pod replication (horizontal), not OS process repl
 
 ### New Configuration (GCP and AWS)
 
-| Service | Workers | CPU Limit | HPA Threshold | scaleUp Stabilization |
-|---------|---------|-----------|---------------|-----------------------|
-| BankChurn | 1 | **1500m** | **50%** | **30s** |
-| NLPInsight | 1 | 1000m | **60%** | **30s** |
-| ChicagoTaxi | 1 | **750m** | **60%** | **30s** + added `behavior` |
+| Service | Workers | CPU Limit | HPA Threshold | scaleUp Stabilization | Reason |
+|---------|---------|-----------|---------------|-----------------------|--------|
+| BankChurn | **2** | **2000m** | **50%** | **30s** | CPU-bound sync inference — see exception below |
+| NLPInsight | 1 | 1000m | **60%** | **30s** | I/O-bound FinBERT — single worker sufficient |
+| ChicagoTaxi | 1 | **750m** | **60%** | **30s** + added `behavior` | Lightweight LightGBM — single worker sufficient |
+
+### BankChurn Exception: CPU-Bound Synchronous Inference
+
+Load testing revealed that BankChurn **requires 2 workers** due to its synchronous inference model:
+
+- `StackingClassifier.predict()` is **blocking** — holds the uvicorn event loop for ~100ms per request
+- With 1 worker, concurrent requests queue behind each other → queue grows → nginx timeouts → 503 errors
+- Under 50 users: **35% failure rate** with 1 worker vs **0% failures** with 2 workers
+- Root cause: uvicorn's async event loop cannot schedule other requests while `predict()` is running on the GIL
+
+**Fix**: 2 workers (`--workers 2`) with `cpu: 2000m` (1 CPU per worker, no contention). Each worker has its own event loop and handles 1 concurrent request independently.
+
+**Long-term fix (ADR-015)**: Run inference in `asyncio.run_in_executor(thread_pool)` to unblock the event loop. This would allow single-worker with full concurrency. Deferred due to scope — requires changes to `app/fastapi_app.py` predict endpoint.
 
 ### Files Changed
 
