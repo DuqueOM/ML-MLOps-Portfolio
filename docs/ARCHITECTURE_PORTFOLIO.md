@@ -86,7 +86,7 @@ graph TB
 | **Containers** | Docker, Kubernetes (GKE/EKS) |
 | **IaC** | Terraform (GCP + AWS modules) |
 | **CI/CD** | GitHub Actions, Trivy, Bandit, Gitleaks |
-| **Testing** | pytest (90–98% coverage, 295+ tests), Locust (load testing, 2,675 requests, 0% errors) |
+| **Testing** | pytest (90–98% coverage, 395+ tests), Locust (load testing, 2,675 requests, 0% errors) |
 
 ## Visual Evidence
 
@@ -123,4 +123,4 @@ graph TB
 
 ---
 
-*Last Updated: March 2026 — Portfolio v3.5.3 (GKE + EKS deployed, Classic ELB)*
+*Last Updated: March 2026 — Portfolio v3.5.3 (GKE + EKS deployed, NLB)*

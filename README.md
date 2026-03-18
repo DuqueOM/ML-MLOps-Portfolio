@@ -33,7 +33,7 @@
 
 ## ⚡ 30-Second Pitch
 
-> After **a decade of launching and operating ventures** across tech services, digital marketing, restaurants, and events, I discovered that the principles that make great operational systems—reliability, monitoring, reproducibility—are the same ones that make great ML systems.
+> After **over a decade of launching and operating ventures** across tech services, digital marketing, restaurants, and events, I discovered that the principles that make great operational systems—reliability, monitoring, reproducibility—are the same ones that make great ML systems.
 >
 > This portfolio demonstrates that transition: **3 ML models deployed on GKE, served via FastAPI, monitored via Prometheus + Grafana, tested at 90–98% coverage, and shipped through a multi-stage CI/CD pipeline.** Every technical decision is documented with the reasoning behind it — not just what was built, but why.
 >
@@ -163,7 +163,7 @@ graph TB
 
     subgraph "AWS — EKS Cluster (us-east-1)"
         direction TB
-        AWS_ING[nginx Ingress<br/>Classic ELB] --> BC2[BankChurn<br/>StackingClassifier]
+        AWS_ING[nginx Ingress<br/>NLB] --> BC2[BankChurn<br/>StackingClassifier]
         AWS_ING --> NL2[NLPInsight<br/>TF-IDF+LogReg]
         AWS_ING --> CT2[ChicagoTaxi<br/>Batch Predictions]
         BC2 -.->|Init Container| S3
@@ -231,7 +231,7 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 | **K8s Cluster** | GKE 1-5 nodes auto-scaling (`us-central1`) | EKS 1-5 nodes auto-scaling (`us-east-1`) |
 | **Container Registry** | Artifact Registry | ECR (3 private repos) |
 | **Model Storage** | GCS | S3 (versioned, encrypted) |
-| **Load Balancer** | nginx Ingress (static IP) | nginx Ingress (Classic ELB) |
+| **Load Balancer** | nginx Ingress (static IP) | nginx Ingress (NLB) |
 | **IAM for Pods** | Workload Identity | IRSA |
 | **Init Containers** | GCS download | S3 download (boto3) |
 | **CI/CD** | `deploy-gcp.yml` | `deploy-aws.yml` |
@@ -320,7 +320,7 @@ The author maintains and operates all systems independently, including CI/CD pip
 **Duque Ortega Mutis (DuqueOM)**
 *Machine Learning & MLOps Engineer*
 
-Serial entrepreneur turned ML engineer. A decade of launching ventures—managing teams, budgets, sales targets, and multi-vendor operations—now applied to production ML systems.
+Serial entrepreneur turned ML engineer. Over a decade of launching ventures—managing teams, budgets, sales targets, and multi-vendor operations—now applied to production ML systems.
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://linkedin.com/in/duqueom)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow-black?style=flat&logo=github)](https://github.com/DuqueOM)

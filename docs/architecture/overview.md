@@ -31,7 +31,7 @@
 | **Registry** | Artifact Registry | ECR |
 | **Storage** | GCS (models + datasets) | S3 |
 | **Database** | Cloud SQL (MLflow) | RDS |
-| **Ingress** | nginx + GCE LB (static IP) | nginx + Classic ELB |
+| **Ingress** | nginx + GCE LB (static IP) | nginx + NLB (AWS Load Balancer Controller) |
 | **IaC** | Terraform | Terraform |
 
 ## Tech Stack

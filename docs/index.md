@@ -25,13 +25,13 @@
 
 ## ML Projects
 
-| Project | Algorithm | Metric | Coverage | Latency (p50) |
+| Project | Algorithm | Metric | Coverage | Latency p50 (GCP / AWS) |
 |---------|-----------|--------|:--------:|:---------:|
-| **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC **0.87** | 90% | 103ms |
-| **[NLPInsight](projects/nlpinsight.md)** | TF-IDF + LogReg (prod) / FinBERT (GPU) | Acc **80.6%** | 98% | 5ms |
-| **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL (6.3M rows) + RandomForest | R² **0.96** | 91% | 75ms |
+| **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC **0.87** | 90% | 103ms / 108ms |
+| **[NLPInsight](projects/nlpinsight.md)** | TF-IDF + LogReg (prod) / FinBERT (GPU) | Acc **80.6%** | 98% | 5ms / 7ms |
+| **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL (6.3M rows) + RandomForest | R² **0.96** | 91% | 75ms / 80ms |
 
-> **295+ tests** across all projects, **0 failures**, **85% CI threshold enforced**.
+> **395+ tests** across all projects, **0 failures**, **85% CI threshold enforced**.
 
 ![Demo GIF](media/gifs/01-demo-prediccion.gif)
 
@@ -43,9 +43,9 @@
 
 | Component | GCP (GKE) | AWS (EKS) |
 |-----------|-----------|-----------|
-| **Cluster** | 4× e2-medium (`us-central1`) | 3× t3.small (`us-east-1`) |
+| **Cluster** | GKE 1 node baseline, auto-scales to 5 (e2-medium, `us-central1`) | EKS 1 node baseline, auto-scales to 5 (t3.small, `us-east-1`) |
 | **Pods** | 6 Running, 0 restarts | 6 Running, 0 restarts |
-| **Ingress** | nginx + static IP (`136.111.152.72`) | nginx + Classic ELB |
+| **Ingress** | nginx + static IP (`136.111.152.72`) | nginx + NLB (AWS Load Balancer Controller) |
 | **Registry** | Artifact Registry | ECR (3 repos) |
 | **Storage** | GCS (versioned) | S3 (encrypted, versioned) |
 | **IAM** | Workload Identity | IRSA |
@@ -65,7 +65,7 @@
 | ![Grafana](media/screenshots/monitoring/34-grafana-dashboard.png) | ![Prometheus](media/screenshots/monitoring/37-prometheus-targets-up.png) | ![MLflow](media/screenshots/monitoring/39-mlflow-experiments.png) |
 
 - **Prometheus**: 16 targets UP, 16 alert rules, 15s scrape interval
-- **Grafana**: 2 dashboards, 25 panels (latency, throughput, predictions, errors, resources)
+- **Grafana**: 2 dashboards, 26 panels (latency, throughput, predictions, errors, resources)
 - **MLflow**: 9 experiments tracked across 3 projects
 
 ---

@@ -1,17 +1,17 @@
 # Multi-Cloud Deployment Comparison: GCP (GKE) vs AWS (EKS)
 
 > Production metrics captured March 13, 2026. Both clouds running identical Kubernetes manifests via Kustomize overlays.
-> Both clouds use nginx Ingress with real LoadBalancer (GCP: static IP, AWS: Classic ELB).
+> Both clouds use nginx Ingress with real LoadBalancer (GCP: static IP, AWS: NLB).
 
 ## Architecture Overview
 
 | Component | GCP | AWS |
 |-----------|-----|-----|
-| **Kubernetes** | GKE (e2-medium × 4) | EKS (t3.small × 3) |
+| **Kubernetes** | GKE 1 node baseline, auto-scales to 5 (e2-medium) | EKS 1 node baseline, auto-scales to 5 (t3.small) |
 | **Container Registry** | Artifact Registry | ECR |
 | **Object Storage** | GCS | S3 |
 | **IAM → Pods** | Workload Identity | IRSA |
-| **Load Balancer** | nginx-ingress + GCE LB (static IP) | nginx-ingress + Classic ELB |
+| **Load Balancer** | nginx-ingress + GCE LB (static IP) | nginx-ingress + NLB (AWS Load Balancer Controller) |
 | **Ingress Controller** | nginx-ingress | nginx-ingress (portable) |
 | **Monitoring** | Prometheus + Grafana | Prometheus + Grafana |
 | **ML Tracking** | MLflow | MLflow |
@@ -20,7 +20,7 @@
 | **Network Policies** | Applied | Applied |
 | **PDB** | Applied | Applied |
 
-> Both clouds: real LoadBalancer with nginx Ingress path routing. AWS Classic ELB provisioned 2026-03-13 (restriction lifted).
+> Both clouds: real LoadBalancer with nginx Ingress path routing. AWS NLB provisioned 2026-03-18 (IAM permission fix applied).
 
 ## Workload Summary
 
@@ -37,7 +37,7 @@
 
 ### Load Test via LoadBalancer (Locust, 10 users, 90s)
 
-> Both tests run against real LoadBalancer IPs — GCP: `136.111.152.72`, AWS: Classic ELB DNS.
+> Both tests run against real LoadBalancer IPs — GCP: `136.111.152.72`, AWS: NLB DNS (`k8s-ingressn-ingressn-6775b5d876-17e8cdb571a0f652.elb.us-east-1.amazonaws.com`).
 > Same locustfile, same parameters. Results are directly comparable.
 
 | Service | GCP avg | GCP p50 | GCP p95 | AWS avg | AWS p50 | AWS p95 | Delta p50 |

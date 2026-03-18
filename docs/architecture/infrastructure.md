@@ -13,7 +13,7 @@ flowchart TB
     end
 
     subgraph GCP ["GCP — us-central1"]
-        AR --> GKE[GKE Cluster\n4× e2-medium]
+        AR --> GKE[GKE Cluster\n1-5 nodes auto-scaling\ne2-medium]
         GCS[(Cloud Storage\nModels + Datasets)]
         CSQL[(Cloud SQL\nMLflow Backend)]
         GKE --> |init containers| GCS
@@ -21,7 +21,7 @@ flowchart TB
     end
 
     subgraph AWS ["AWS — us-east-1"]
-        ECR --> EKS[EKS Cluster\n3× t3.small]
+        ECR --> EKS[EKS Cluster\n1-5 nodes auto-scaling\nt3.small]
         S3[(S3\nArtifacts + Datasets)]
         RDS[(RDS PostgreSQL\nMLflow Backend)]
         EKS --> S3
@@ -46,12 +46,12 @@ flowchart TB
 | Component | GCP (Live Production) | AWS (Live Production) |
 |-----------|----------------------|------------------|
 | **Cluster** | GKE `ml-portfolio-gke-production` (us-central1) | EKS `ml-portfolio-eks` (us-east-1) |
-| **Nodes** | 4× e2-medium (2 vCPU / 4 GB) | 3× t3.small (2 vCPU / 2 GB) |
+| **Nodes** | 1 baseline, auto-scales to 5 (e2-medium, 2 vCPU / 4 GB) | 1 baseline, auto-scales to 5 (t3.small, 2 vCPU / 2 GB) |
 | **Container Registry** | Artifact Registry | ECR |
 | **Object Storage** | Cloud Storage (versioned, lifecycle) | S3 (versioned) |
 | **Database** | Cloud SQL PostgreSQL | SQLite (in-pod) |
 | **Networking** | VPC + Private Subnets + VPC Peering | VPC (eksctl-managed) |
-| **Ingress** | nginx + GCE LB (IP: `136.111.152.72`) | nginx + Classic ELB |
+| **Ingress** | nginx + GCE LB (IP: `136.111.152.72`) | nginx + NLB (AWS Load Balancer Controller) |
 | **IaC** | Terraform (GCP modules) | Terraform + eksctl + Kustomize |
 | **K8s Manifests** | Shared base + GCP overlays | Shared base + AWS Kustomize overlays |
 | **Cost** | **~$51/month** | ~$124/month |
@@ -76,10 +76,10 @@ flowchart TB
 
 | Resource | Configuration |
 |----------|---------------|
-| **EKS Cluster** | `ml-portfolio-eks`, us-east-1, 3 nodes (t3.small) |
+| **EKS Cluster** | `ml-portfolio-eks`, us-east-1, 1 node baseline, auto-scales to 5 (t3.small) |
 | **ECR** | 3 Docker images (bankchurn, nlpinsight, chicagotaxi) |
 | **S3** | Models + datasets (versioned, lifecycle policies) |
-| **Classic ELB** | nginx-ingress LoadBalancer (path routing) |
+| **NLB** | nginx-ingress LoadBalancer via AWS Load Balancer Controller (path routing) |
 | **Cost** | ~$124/month |
 
 | GKE Workloads | EKS Workloads | Container Registries |

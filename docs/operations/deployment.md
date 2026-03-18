@@ -79,7 +79,7 @@ kubectl get hpa -n ml-portfolio                                 # HPA status
 - [x] Resource limits calibrated per service
 - [x] Monitoring dashboards (Grafana auto-provisioned, both clouds)
 - [x] Load testing GCP (Locust — 0% errors, p95 190ms via Ingress IP)
-- [x] Load testing AWS (Locust — 0% errors, p95 450ms via Classic ELB)
+- [x] Load testing AWS (Locust — 0% errors, p95 450ms via NLB)
 - [x] Stress testing AWS (25 users, 0% errors, 20.99 RPS)
 - [x] Drift detection (daily CronJobs on both clouds)
 - [x] Security scanning (Trivy, Bandit, Gitleaks)
