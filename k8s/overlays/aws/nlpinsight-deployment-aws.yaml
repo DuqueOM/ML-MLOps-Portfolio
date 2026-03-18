@@ -37,7 +37,7 @@ spec:
       - name: nlpinsight-api
         image: 531948420830.dkr.ecr.us-east-1.amazonaws.com/ml-portfolio/nlpinsight:latest
         imagePullPolicy: IfNotPresent
-        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000"]
         ports:
         - containerPort: 8000
           name: http
@@ -171,7 +171,7 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 75
+        averageUtilization: 60
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300
@@ -180,7 +180,7 @@ spec:
         value: 50
         periodSeconds: 60
     scaleUp:
-      stabilizationWindowSeconds: 60
+      stabilizationWindowSeconds: 30
       policies:
       - type: Percent
         value: 100
