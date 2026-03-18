@@ -53,9 +53,9 @@
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|---------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | ~103ms (GCP) / ~108ms (AWS) | StackingClassifier (5 models), SHAP, Drift Detection |
-| [📝 NLPInsight](NLPInsight-Analyzer/) | NLP | **Acc 80.6%** (sentiment) | 98% | ~5ms (GCP) / ~7ms (AWS) | TF-IDF + LogReg, Twitter Financial News (11.9K tweets) |
-| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96**, 6.3M rows | 91% | ~75ms (GCP) / ~80ms (AWS) | PySpark ETL, Lag Features, Temporal Split |
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | ~2200ms (GCP) / ~2300ms (AWS) | StackingClassifier (5 models), SHAP, Drift Detection |
+| [📝 NLPInsight](NLPInsight-Analyzer/) | NLP | **Acc 80.6%** (sentiment) | 98% | ~140ms (GCP) / ~150ms (AWS) | FinBERT Transformer, Twitter Financial News (11.9K tweets) |
+| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96**, 6.3M rows | 91% | ~170ms (GCP) / ~180ms (AWS) | PySpark ETL, LightGBM, Temporal Split |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
