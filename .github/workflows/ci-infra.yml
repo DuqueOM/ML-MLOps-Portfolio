@@ -165,12 +165,14 @@ jobs:
           done
 
   # ─────────────────────────────────────────────────────────────────────────
-  # Job 3: Smoke Tests (only on workflow_dispatch with running services)
+  # Job 3: Smoke Tests (post-deploy validation on main push or manual trigger)
   # ─────────────────────────────────────────────────────────────────────────
   smoke-tests:
     name: API Smoke Tests
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
     needs: [terraform, kubernetes]
 
     steps:
@@ -185,9 +187,34 @@ jobs:
       - name: Install dependencies
         run: pip install pytest requests
 
-      - name: Run smoke tests
+      - name: Run smoke tests against GCP (GKE)
         run: |
-          pytest tests/infra/smoke/test_smoke_services.py -v --tb=short || true
+          echo "=== Testing GCP Production (GKE) ==="
+          pytest tests/infra/smoke/test_smoke_services.py -v --tb=short \
+            --junit-xml=smoke-results-gcp.xml || true
         env:
-          SMOKE_BASE_URL: http://localhost
-          SMOKE_TIMEOUT: "10"
+          BANKCHURN_URL: http://136.111.152.72/bankchurn
+          NLPINSIGHT_URL: http://136.111.152.72/nlpinsight
+          CHICAGOTAXI_URL: http://136.111.152.72/chicagotaxi
+          SMOKE_TIMEOUT: "15"
+
+      - name: Run smoke tests against AWS (EKS)
+        run: |
+          echo "=== Testing AWS Production (EKS) ==="
+          pytest tests/infra/smoke/test_smoke_services.py -v --tb=short \
+            --junit-xml=smoke-results-aws.xml || true
+        env:
+          BANKCHURN_URL: http://k8s-ingressn-ingressn-6775b5d876-17e8cdb571a0f652.elb.us-east-1.amazonaws.com/bankchurn
+          NLPINSIGHT_URL: http://k8s-ingressn-ingressn-6775b5d876-17e8cdb571a0f652.elb.us-east-1.amazonaws.com/nlpinsight
+          CHICAGOTAXI_URL: http://k8s-ingressn-ingressn-6775b5d876-17e8cdb571a0f652.elb.us-east-1.amazonaws.com/chicagotaxi
+          SMOKE_TIMEOUT: "15"
+
+      - name: Upload smoke test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-test-results
+          path: |
+            smoke-results-gcp.xml
+            smoke-results-aws.xml
+          retention-days: 30

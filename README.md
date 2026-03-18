@@ -123,9 +123,9 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 | **API** | FastAPI, Pydantic |
 | **Cloud & IaC** | GCP (GKE, GCS, AR, Cloud SQL), AWS (EKS, S3, ECR, RDS), Terraform, K8s |
 | **Monitoring** | Prometheus (4 targets), Grafana (26-panel enterprise dashboard), Locust load testing, Evidently drift |
-| **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy), Artifact Registry, ECR, Codecov |
+| **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy + post-deploy smoke tests), Artifact Registry, ECR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
-| **Testing** | pytest (90–98% coverage, 395+ tests), Codecov, pre-commit hooks |
+| **Testing** | pytest (90–98% coverage, 395+ tests), automated smoke tests (GCP + AWS), Codecov, pre-commit hooks |
 
 > **v3.5.3 Highlights**: StackingClassifier (BankChurn), FinBERT (NLPInsight), PySpark + lag features (ChicagoTaxi), data leakage fix, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests, drift-triggered retraining ([ADR-006](docs/decisions/006-drift-triggered-retraining.md)), simplification ADR ([ADR-009](docs/decisions/009-simplification-when-not-to-build.md)). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 

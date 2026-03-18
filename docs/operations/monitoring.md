@@ -73,10 +73,34 @@ CPU-only scaling (memory is fixed for ML models loaded at startup):
 | NLPInsight | 70% | 1–3 | ~283Mi |
 | ChicagoTaxi | 70% | 1–3 | ~431Mi |
 
-## Testing
+## Smoke Tests (Post-Deploy Validation)
+
+Automated smoke tests run on every push to `main` to validate production services:
 
 ```bash
-pytest tests/integration/test_smoke_k8s.py -v    # Smoke tests
+# Manual execution (local)
+BANKCHURN_URL=http://136.111.152.72/bankchurn \
+NLPINSIGHT_URL=http://136.111.152.72/nlpinsight \
+CHICAGOTAXI_URL=http://136.111.152.72/chicagotaxi \
+pytest tests/infra/smoke/test_smoke_services.py -v
+
+# CI/CD (automatic)
+# Runs on every push to main via .github/workflows/ci-infra.yml
+# Tests both GCP (136.111.152.72) and AWS (NLB DNS) endpoints
+```
+
+**Test Coverage:**
+- ✅ Health endpoints (`/health`)
+- ✅ Prediction endpoints (`/predict`, `/demand`)
+- ✅ Prometheus metrics (`/metrics`)
+- ✅ OpenAPI docs (`/docs`, `/openapi.json`)
+- ✅ Response time validation (<2s)
+- ✅ Error handling (4xx for invalid input)
+
+## Load Testing
+
+```bash
+pytest tests/integration/test_smoke_k8s.py -v    # Smoke tests (deprecated, use above)
 locust -f tests/load/locustfile.py --headless     # Load tests
 ```
 
