@@ -38,7 +38,7 @@ data "aws_lb" "nlb" {
 
   tags = {
     "kubernetes.io/cluster/${var.project_name}-eks-${var.environment}" = "owned"
-    "kubernetes.io/service-name"                                        = "ingress-nginx/ingress-nginx-controller"
+    "kubernetes.io/service-name"                                       = "ingress-nginx/ingress-nginx-controller"
   }
 }
 
