@@ -66,6 +66,20 @@
 
 > **Production readiness**: 0% failure rate on both clouds under 100 concurrent users (after async inference fix — [ADR-015](decisions/015-async-inference-threadpool.md)). Pre-fix BankChurn had 81% failure rate under the same load. See [full load test results](load-test-results.md).
 
+### Why BankChurn is Faster on AWS
+
+**Root cause**: BankChurn's `StackingClassifier` is CPU-bound (~100ms pure CPU per prediction). AWS `t3.medium` has better single-thread performance than GCP `e2-medium`:
+
+| Factor | GCP `e2-medium` | AWS `t3.medium` | Impact |
+|--------|-----------------|-----------------|--------|
+| CPU | AMD EPYC Rome 2.2 GHz, **shared** | Intel Xeon Platinum 2.5-3.1 GHz, burstable | Critical |
+| vCPU allocation | 2 shared (multi-tenant) | 2 burstable (better credits) | High |
+| Cost | $24/mo | $30/mo | Minimal |
+
+**Why NLPInsight/ChicagoTaxi don't improve**: They're I/O-bound or use lightweight models (~5ms CPU) — not CPU-saturated.
+
+**Trade-off decision**: Accepted the performance difference ([ADR-016](decisions/016-gcp-aws-performance-parity.md)). Upgrading GCP to `c2-standard-4` (4 vCPU @ 3.8 GHz) would cost $145/mo (6x increase) for marginal portfolio value. Both clouds meet SLAs (<500ms idle, 0% errors under load).
+
 ## Resource Usage (AWS EKS, post stress test)
 
 | Pod | CPU | Memory |
