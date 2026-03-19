@@ -27,9 +27,9 @@
 
 | Project | Algorithm | Metric | Coverage | Latency p50 (GCP / AWS) |
 |---------|-----------|--------|:--------:|:---------:|
-| **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC **0.87** | 90% | 2200ms / 2300ms |
-| **[NLPInsight](projects/nlpinsight.md)** | FinBERT Transformer (CPU) | Acc **80.6%** | 98% | 140ms / 150ms |
-| **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL (6.3M rows) + LightGBM | R² **0.96** | 91% | 170ms / 180ms |
+| **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC **0.87** | 90% | 200ms / 110ms |
+| **[NLPInsight](projects/nlpinsight.md)** | FinBERT Transformer (CPU) | Acc **80.6%** | 98% | 78ms / 100ms |
+| **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL (6.3M rows) + LightGBM | R² **0.96** | 91% | 100ms / 120ms |
 
 > **395+ tests** across all projects, **0 failures**, **85% CI threshold enforced**.
 

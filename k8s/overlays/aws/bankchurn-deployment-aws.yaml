@@ -16,7 +16,7 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 0
+      maxSurge: 1
       maxUnavailable: 1
   selector:
     matchLabels:
@@ -37,7 +37,7 @@ spec:
       - name: bankchurn-api
         image: 531948420830.dkr.ecr.us-east-1.amazonaws.com/ml-portfolio/bankchurn:latest
         imagePullPolicy: IfNotPresent
-        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+        command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000"]
         ports:
         - containerPort: 8000
           name: http
@@ -67,7 +67,7 @@ spec:
             cpu: "500m"
           limits:
             memory: "768Mi"
-            cpu: "2000m"
+            cpu: "1000m"
         startupProbe:
           httpGet:
             path: /health

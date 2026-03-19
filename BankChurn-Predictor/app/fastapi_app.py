@@ -8,10 +8,13 @@ Features:
 - Health checks for Kubernetes readiness/liveness
 """
 
+import asyncio
 import contextlib
 import logging
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -71,6 +74,10 @@ predictor: Optional[ChurnPredictor] = None
 model_explainer: Optional[ModelExplainer] = None
 model_metadata: Dict[str, Any] = {}
 start_time = time.time()
+
+# Thread pool for CPU-bound inference — unblocks uvicorn event loop (ADR-015)
+# sklearn/XGBoost/LightGBM release GIL during C extensions → real parallelism
+_inference_executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="ml-infer")
 
 
 FEATURE_COLUMNS = [
@@ -358,6 +365,36 @@ async def get_metrics():
     )
 
 
+def _sync_predict(customer_dict: dict, explain: bool) -> PredictionResponse:
+    """CPU-bound prediction logic — runs in thread pool (ADR-015)."""
+    start_pred = time.time()
+    df = pd.DataFrame([customer_dict])
+    results = predictor.predict(df, include_proba=True)
+
+    prob = float(results.iloc[0]["probability"])
+    pred = int(results.iloc[0]["prediction"])
+    risk_level = determine_risk_level(prob)
+
+    pred_time = time.time() - start_pred
+
+    if PROMETHEUS_AVAILABLE:
+        REQUEST_COUNT.labels(method="POST", endpoint="/predict", status="200").inc()
+        REQUEST_LATENCY.labels(endpoint="/predict").observe(pred_time)
+        PREDICTION_COUNT.labels(risk_level=risk_level).inc()
+
+    contributions = calculate_feature_contributions(customer_dict) if explain else {k: 0.0 for k in customer_dict}
+
+    return PredictionResponse(
+        churn_probability=prob,
+        churn_prediction=pred,
+        risk_level=risk_level,
+        confidence=calculate_confidence(prob),
+        feature_contributions=contributions,
+        model_version=model_metadata.get("version", "1.0.0"),
+        prediction_timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    )
+
+
 @app.post("/predict", response_model=PredictionResponse)
 async def predict_churn(
     customer: CustomerData,
@@ -368,43 +405,42 @@ async def predict_churn(
             REQUEST_COUNT.labels(method="POST", endpoint="/predict", status="503").inc()
         raise HTTPException(status_code=503, detail="Model not available")
 
-    start_pred = time.time()
     try:
         customer_dict = customer.model_dump()
-        df = pd.DataFrame([customer_dict])
-
-        # Use robust prediction from src
-        results = predictor.predict(df, include_proba=True)
-
-        prob = float(results.iloc[0]["probability"])
-        pred = int(results.iloc[0]["prediction"])
-        risk_level = determine_risk_level(prob)
-
-        pred_time = time.time() - start_pred
-
-        # Track Prometheus metrics
-        if PROMETHEUS_AVAILABLE:
-            REQUEST_COUNT.labels(method="POST", endpoint="/predict", status="200").inc()
-            REQUEST_LATENCY.labels(endpoint="/predict").observe(pred_time)
-            PREDICTION_COUNT.labels(risk_level=risk_level).inc()
-
-        # SHAP is expensive (~700ms); only compute when explicitly requested
-        contributions = calculate_feature_contributions(customer_dict) if explain else {k: 0.0 for k in customer_dict}
-
-        return PredictionResponse(
-            churn_probability=prob,
-            churn_prediction=pred,
-            risk_level=risk_level,
-            confidence=calculate_confidence(prob),
-            feature_contributions=contributions,
-            model_version=model_metadata.get("version", "1.0.0"),
-            prediction_timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        )
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(_inference_executor, partial(_sync_predict, customer_dict, explain))
     except Exception as e:
         logger.error(f"Prediction error: {e}")
         if PROMETHEUS_AVAILABLE:
             REQUEST_COUNT.labels(method="POST", endpoint="/predict", status="500").inc()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def _sync_predict_batch(customers_list: list, explain: bool) -> tuple:
+    """CPU-bound batch prediction logic — runs in thread pool (ADR-015)."""
+    start_batch = time.time()
+    df = pd.DataFrame(customers_list)
+    results = predictor.predict(df, include_proba=True)
+
+    predictions = []
+    for i in range(len(results)):
+        contributions = (
+            calculate_feature_contributions(customers_list[i]) if explain else {k: 0.0 for k in customers_list[i]}
+        )
+        predictions.append(
+            PredictionResponse(
+                churn_probability=float(results.iloc[i]["probability"]),
+                churn_prediction=int(results.iloc[i]["prediction"]),
+                risk_level=determine_risk_level(float(results.iloc[i]["probability"])),
+                confidence=calculate_confidence(float(results.iloc[i]["probability"])),
+                feature_contributions=contributions,
+                model_version=model_metadata.get("version", "1.0.0"),
+                prediction_timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            )
+        )
+
+    processing_time = time.time() - start_batch
+    return predictions, processing_time
 
 
 @app.post("/predict_batch", response_model=BatchPredictionResponse)
@@ -419,35 +455,14 @@ async def predict_batch(
     if predictor is None:
         raise HTTPException(status_code=503, detail="Model not available")
 
-    start_batch = time.time()
-    batch_id = f"batch_{int(start_batch)}"
+    batch_id = f"batch_{int(time.time())}"
 
     try:
         customers_list = [c.model_dump() for c in batch_data.customers]
-        df = pd.DataFrame(customers_list)
-
-        results = predictor.predict(df, include_proba=True)
-
-        # Vectorized operations instead of iterrows for better performance
-        predictions = []
-        for i in range(len(results)):
-            contributions = (
-                calculate_feature_contributions(customers_list[i]) if explain else {k: 0.0 for k in customers_list[i]}
-            )
-
-            predictions.append(
-                PredictionResponse(
-                    churn_probability=float(results.iloc[i]["probability"]),
-                    churn_prediction=int(results.iloc[i]["prediction"]),
-                    risk_level=determine_risk_level(float(results.iloc[i]["probability"])),
-                    confidence=calculate_confidence(float(results.iloc[i]["probability"])),
-                    feature_contributions=contributions,
-                    model_version=model_metadata.get("version", "1.0.0"),
-                    prediction_timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                )
-            )
-
-        processing_time = time.time() - start_batch
+        loop = asyncio.get_running_loop()
+        predictions, processing_time = await loop.run_in_executor(
+            _inference_executor, partial(_sync_predict_batch, customers_list, explain)
+        )
 
         return BatchPredictionResponse(
             predictions=predictions,

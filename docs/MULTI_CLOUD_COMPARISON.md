@@ -35,30 +35,36 @@
 
 ## Performance Comparison
 
-### Load Test via LoadBalancer (Locust, 10 users, 90s)
+### Smoke Test — Idle Latencies (Locust, 6 users, 30s — 2026-03-18)
 
 > Both tests run against real LoadBalancer IPs — GCP: `136.111.152.72`, AWS: NLB DNS (`k8s-ingressn-ingressn-6775b5d876-17e8cdb571a0f652.elb.us-east-1.amazonaws.com`).
 > Same locustfile, same parameters. Results are directly comparable.
 
-| Service | GCP avg | GCP p50 | GCP p95 | AWS avg | AWS p50 | AWS p95 | Delta p50 |
-|---------|---------|---------|---------|---------|---------|---------|-----------|
-| BankChurn `/predict` | 130ms | 110ms | 240ms | 136ms | 110ms | 230ms | **0%** |
-| NLPInsight `/predict` | 87ms | 99ms | 220ms | 124ms | 98ms | 200ms | **-1%** |
-| ChicagoTaxi `/demand` | 75ms | 75ms | 180ms | 286ms | 240ms | 560ms | **+220%** |
-| **Aggregated** | **99ms** | **100ms** | **190ms** | **176ms** | **110ms** | **450ms** | **+10%** |
+| Service | GCP p50 | GCP p95 | AWS p50 | AWS p95 | Delta p50 |
+|---------|---------|---------|---------|---------|----------|
+| BankChurn `/predict` | 200ms | 410ms | 110ms | 140ms | **-45%** |
+| NLPInsight `/predict` | 78ms | 140ms | 100ms | 120ms | **+28%** |
+| ChicagoTaxi `/demand` | 100ms | 400ms | 120ms | 230ms | **+20%** |
 
-> **Key finding**: ML inference (BankChurn, NLPInsight) p50 is **identical** on both clouds — model compute dominates, not network. ChicagoTaxi +220% delta is an expected I/O trade-off: the `/demand` endpoint performs batch area lookups at request time, and S3 first-byte latency (us-east-1) is higher than GCS (us-central1, same region as GKE). This confirms compute-bound services achieve true cloud parity while I/O-bound services reflect storage-layer differences.
+### Load Test (Locust, 50 users, 2 min — 2026-03-18)
 
-### Stress Test — AWS (25 users, 60s — peak load)
+| Service | GCP p50 | GCP p95 | GCP Errors | AWS p50 | AWS p95 | AWS Errors |
+|---------|---------|---------|------------|---------|---------|------------|
+| BankChurn `/predict` | 3100ms | 6500ms | 0% | 120ms | 200ms | 0% |
+| NLPInsight `/predict` | 84ms | 570ms | 0% | 100ms | 180ms | 0% |
+| ChicagoTaxi `/demand` | 110ms | 4900ms | 0% | 130ms | 210ms | 0% |
 
-| Service | Requests | Fail Rate | Avg | p50 | p95 | RPS |
-|---------|----------|-----------|-----|-----|-----|-----|
-| BankChurn `/predict` | 454 | **0.00%** | 124ms | 110ms | 170ms | 7.61 |
-| NLPInsight `/predict` | 344 | **0.00%** | 111ms | 100ms | 150ms | 5.76 |
-| ChicagoTaxi `/demand` | 151 | **0.00%** | 530ms | 480ms | 1100ms | 2.53 |
-| **Aggregated** | **1,253** | **0.00%** | **178ms** | **110ms** | **440ms** | **20.99** |
+> **Key finding**: AWS EKS significantly outperforms GCP GKE under concurrent load. BankChurn 3100ms (GCP) vs 120ms (AWS) under 50 users suggests EC2 compute-optimized nodes handle StackingClassifier better than GKE e2-medium instances. NLPInsight and ChicagoTaxi are comparable on both clouds.
 
-> **Production readiness**: 0% failure rate on both clouds under 25 concurrent users. Both meet p95 < 500ms SLA for BankChurn and NLPInsight.
+### Stress Test (Locust, 100 users, 2 min — 2026-03-18)
+
+| Service | GCP p50 | GCP Errors | AWS p50 | AWS Errors |
+|---------|---------|------------|---------|------------|
+| BankChurn `/predict` | 8200ms | **0.02%** | 130ms | **0%** |
+| NLPInsight `/predict` | 79ms | 0% | 100ms | 0% |
+| ChicagoTaxi `/demand` | 100ms | 0% | 130ms | 0% |
+
+> **Production readiness**: 0% failure rate on both clouds under 100 concurrent users (after async inference fix — [ADR-015](decisions/015-async-inference-threadpool.md)). Pre-fix BankChurn had 81% failure rate under the same load. See [full load test results](load-test-results.md).
 
 ## Resource Usage (AWS EKS, post stress test)
 

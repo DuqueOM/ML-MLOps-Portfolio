@@ -53,13 +53,13 @@
 
 | Project | Type | Best Metric | Coverage | API Latency | Key Features |
 |---------|------|-------------|----------|-------------|---------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | ~2200ms (GCP) / ~2300ms (AWS) | StackingClassifier (5 models), SHAP, Drift Detection |
-| [📝 NLPInsight](NLPInsight-Analyzer/) | NLP | **Acc 80.6%** (sentiment) | 98% | ~140ms (GCP) / ~150ms (AWS) | FinBERT Transformer, Twitter Financial News (11.9K tweets) |
-| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96**, 6.3M rows | 91% | ~170ms (GCP) / ~180ms (AWS) | PySpark ETL, LightGBM, Temporal Split |
+| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87**, F1 0.62 | 90% | ~200ms (GCP) / ~110ms (AWS) | StackingClassifier (5 models), SHAP, Drift Detection |
+| [📝 NLPInsight](NLPInsight-Analyzer/) | NLP | **Acc 80.6%** (sentiment) | 98% | ~78ms (GCP) / ~100ms (AWS) | FinBERT Transformer, Twitter Financial News (11.9K tweets) |
+| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96**, 6.3M rows | 91% | ~100ms (GCP) / ~120ms (AWS) | PySpark ETL, LightGBM, Temporal Split |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------- |
-| **GCP Deployment** | ✅ Verified | GKE 1-5 nodes (auto-scaling), 6 pods (3 ML + MLflow + Prometheus + Grafana), 0.07% error rate |
+| **GCP Deployment** | ✅ Verified | GKE 1-5 nodes (auto-scaling), 6 pods (3 ML + MLflow + Prometheus + Grafana), 0% error rate under 100 concurrent users |
 | **AWS Deployment** | ✅ Verified | EKS 1-5 nodes (auto-scaling), 6 pods (3 ML + MLflow + Prometheus + Grafana), CI/CD via GitHub Actions |
 | **CI/CD** | ✅ Unified | GitHub Actions → GKE + EKS (separate deploy workflows) |
 | **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) — parallel provider configs |

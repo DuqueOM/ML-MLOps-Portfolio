@@ -55,7 +55,7 @@ flowchart TD
 | Test Coverage | 98% (74 tests) | CI threshold: 85% |
 | Docker Image | 267 MB | `nlpinsight:v3.5.0` on Artifact Registry (no torch dependency) |
 | Model Size | ~5 MB (TF-IDF+LogReg) | Downloaded via Init Container from GCS |
-| P50 / P95 Latency | 5ms / 15ms | In-pod (GKE), zero network overhead |
+| P50 / P95 Latency | 78ms / 140ms (GCP), 100ms / 120ms (AWS) | Through ingress, Locust smoke test (6 users) |
 
 ## Responsible AI
 

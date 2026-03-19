@@ -1,7 +1,7 @@
 # ADR-014: Single-Worker Pod Pattern for ML Inference Under Kubernetes
 
-- **Status**: Accepted
-- **Date**: 2026-03-18
+- **Status**: Superseded by ADR-015 (BankChurn exception removed)
+- **Date**: 2026-03-18 (updated 2026-03-18)
 - **Deciders**: MLOps Engineering
 - **Discovered via**: Locust load test — GCP production (`INGRESS_HOST=http://136.111.152.72`, 50 users, 1 min)
 
@@ -54,22 +54,20 @@ Scale-out strategy: Kubernetes pod replication (horizontal), not OS process repl
 
 | Service | Workers | CPU Limit | HPA Threshold | scaleUp Stabilization | Reason |
 |---------|---------|-----------|---------------|-----------------------|--------|
-| BankChurn | **2** | **2000m** | **50%** | **30s** | CPU-bound sync inference — see exception below |
+| BankChurn | **1** | **1000m** | **50%** | **30s** | Async inference via `run_in_executor` (ADR-015) |
 | NLPInsight | 1 | 1000m | **60%** | **30s** | I/O-bound FinBERT — single worker sufficient |
 | ChicagoTaxi | 1 | **750m** | **60%** | **30s** + added `behavior` | Lightweight LightGBM — single worker sufficient |
 
-### BankChurn Exception: CPU-Bound Synchronous Inference
+### BankChurn: Async Inference (ADR-015 Implemented)
 
-Load testing revealed that BankChurn **requires 2 workers** due to its synchronous inference model:
+Initial load testing revealed BankChurn required 2 workers due to synchronous inference blocking the event loop. **ADR-015 resolved this** by implementing `asyncio.run_in_executor(ThreadPoolExecutor)` for all prediction endpoints.
 
-- `StackingClassifier.predict()` is **blocking** — holds the uvicorn event loop for ~100ms per request
-- With 1 worker, concurrent requests queue behind each other → queue grows → nginx timeouts → 503 errors
-- Under 50 users: **35% failure rate** with 1 worker vs **0% failures** with 2 workers
-- Root cause: uvicorn's async event loop cannot schedule other requests while `predict()` is running on the GIL
+- `StackingClassifier.predict()` now runs in a 4-thread pool, freeing the uvicorn event loop
+- sklearn/XGBoost/LightGBM release the GIL during C extensions → real parallelism
+- Single worker handles 100 concurrent users with **0% errors** (was 81% pre-fix)
+- CPU reduced from 2000m to 1000m (single process, no contention)
 
-**Fix**: 2 workers (`--workers 2`) with `cpu: 2000m` (1 CPU per worker, no contention). Each worker has its own event loop and handles 1 concurrent request independently.
-
-**Long-term fix (ADR-015)**: Run inference in `asyncio.run_in_executor(thread_pool)` to unblock the event loop. This would allow single-worker with full concurrency. Deferred due to scope — requires changes to `app/fastapi_app.py` predict endpoint.
+See **ADR-015** for full details on the async inference pattern.
 
 ### Files Changed
 
@@ -115,7 +113,7 @@ Gunicorn pre-fork workers solve the `--workers` CPU problem (each worker gets sc
 
 ### CPU Limit Rationale
 
-- **BankChurn 1500m**: StackingClassifier inference benchmarks at ~80ms CPU time. At 12 req/s (HPA 50% of 1500m ÷ ~80ms), a single pod handles peak before triggering scale-out.
+- **BankChurn 1000m**: StackingClassifier inference via thread pool. Single process, no multi-worker contention.
 - **ChicagoTaxi 750m**: LightGBM regression + pandas lookup; 500m was insufficient even for 1 worker.
 - **NLPInsight 1000m**: FinBERT inference is GPU-bound in theory; on CPU-only nodes, 1000m is sufficient for the observed load profile.
 
@@ -128,7 +126,7 @@ Lower thresholds trigger scale-out earlier, preventing latency spikes at the cos
 ## Consequences
 
 ### Positive
-- BankChurn p50 expected to drop from 1700ms → ~200ms under the same 50-user load
+- BankChurn p50 dropped from 1700ms → **200ms idle / 120ms (AWS) under 50-user load**
 - ChicagoTaxi no longer CPU-starved; HPA now has a `behavior` block for controlled scale-out
 - HPA CPU signals are accurate: 1 process = clean utilization metric
 - Safer startup: no `fork` after loading StackingClassifier or FinBERT
@@ -146,7 +144,7 @@ INGRESS_HOST=http://136.111.152.72 locust -f tests/load/locustfile.py \
   --headless -u 50 -r 10 --run-time 1m --html=reports/load_test_gcp_post_fix.html
 ```
 
-Expected improvement: BankChurn p50 < 400ms, p95 < 1000ms under 50 users.
+**Verified** (2026-03-18): BankChurn p50 200ms idle, 0% errors under 100 users on both GCP and AWS.
 
 ---
 
@@ -162,4 +160,4 @@ Would solve the thrashing. **Rejected**: 2× cost per pod, defeats K8s HPA-based
 FastAPI is already async; uvicorn's single-process event loop handles concurrent I/O requests. CPU-bound inference (`predict()`) still blocks the event loop — addressed by HPA scaling, not more workers.
 
 ### 4. Background thread pools for inference
-Run model inference in `asyncio.run_in_executor()` with a `ThreadPoolExecutor`. **Deferred**: would unblock the event loop and improve concurrency within a single pod. Worth revisiting in ADR-015 if latency targets are still missed after HPA scaling.
+Run model inference in `asyncio.run_in_executor()` with a `ThreadPoolExecutor`. **Implemented in ADR-015**: unblocks the event loop and enables full concurrency within a single pod. Removed the need for the BankChurn 2-worker exception.

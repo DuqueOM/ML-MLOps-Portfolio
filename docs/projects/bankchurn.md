@@ -49,8 +49,8 @@ flowchart LR
 | Test Coverage | 90% (199 tests) | CI threshold: 85% |
 | Docker Image | 342 MB | `bankchurn:v3.5.0` on Artifact Registry (python:3.11-slim-bookworm) |
 | Model Size | 4.1 MB | Joblib compress=3; includes preprocessor + 4 base learners + meta-learner |
-| P50 / P95 Latency | 103ms / 111ms | In-pod (GKE), zero network overhead |
-| SHAP | Lazy, CPU-only | `?explain=true` adds ~93ms (196ms total); skipped by default |
+| P50 / P95 Latency | 200ms / 410ms (GCP), 110ms / 140ms (AWS) | Through ingress, Locust smoke test (6 users) |
+| SHAP | Lazy, CPU-only | `?explain=true` adds ~4.5s (KernelExplainer); skipped by default |
 
 ## Responsible AI
 

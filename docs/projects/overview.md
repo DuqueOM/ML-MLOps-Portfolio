@@ -29,7 +29,7 @@ graph LR
 | **Algorithm** | StackingClassifier (RF+GB+XGB+LGB→LR) | TF-IDF + LogReg / FinBERT | PySpark ETL + RandomForest |
 | **Primary Metric** | AUC 0.87 | Accuracy 80.6% | R² 0.9649 |
 | **Why This Metric** | Imbalanced (20% churn): AUC ranks correctly | 3-class finance text: Accuracy + F1 for per-class balance | Continuous demand: R² captures variance explained |
-| **Latency (p50)** | 103ms / 196ms (SHAP) | 5ms | 75ms |
+| **Latency (p50)** | 200ms (GCP) / 110ms (AWS) | 78ms (GCP) / 100ms (AWS) | 100ms (GCP) / 120ms (AWS) |
 | **Docker Image** | 490 MB | 2.1 GB | 382 MB |
 | **Tests / Coverage** | 199 / 90% | 74 / 98% | 22 / 91% |
 | **Key Feature** | SHAP explainability | Dual-backend auto-detection | 6.3M row PySpark pipeline |
