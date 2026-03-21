@@ -151,6 +151,18 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Create ECR repository if not exists
+        run: |
+          aws ecr describe-repositories \
+            --repository-names ${{ matrix.ecr_image }} \
+            --region ${{ env.AWS_REGION }} 2>/dev/null || \
+          aws ecr create-repository \
+            --repository-name ${{ matrix.ecr_image }} \
+            --region ${{ env.AWS_REGION }} \
+            --image-scanning-configuration scanOnPush=true \
+            --encryption-configuration encryptionType=AES256
+          echo "✓ ECR repository ${{ matrix.ecr_image }} ready"
+
       - name: Pull from GHCR and push to ECR
         run: |
           SOURCE="ghcr.io/${{ steps.lowercase.outputs.owner }}/${{ matrix.ghcr_image }}:${{ needs.gate.outputs.tag }}"
