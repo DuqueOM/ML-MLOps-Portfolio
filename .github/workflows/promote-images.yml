@@ -25,7 +25,6 @@ on:
         type: string
 
 env:
-  GHCR_REGISTRY: ghcr.io/${{ github.repository_owner }}
   GCP_REGION: ${{ secrets.GCP_REGION || 'us-central1' }}
   GCP_AR_REPO: ${{ secrets.GCP_REGION || 'us-central1' }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ml-portfolio-images
   AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
@@ -74,6 +73,10 @@ jobs:
             ar_image: nlpinsight-analyzer
       fail-fast: false
     steps:
+      - name: Set lowercase repository owner
+        id: lowercase
+        run: echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Log in to GHCR (source)
         uses: docker/login-action@v3
         with:
@@ -91,7 +94,7 @@ jobs:
 
       - name: Pull from GHCR and push to Artifact Registry
         run: |
-          SOURCE="${{ env.GHCR_REGISTRY }}/${{ matrix.ghcr_image }}:${{ needs.gate.outputs.tag }}"
+          SOURCE="ghcr.io/${{ steps.lowercase.outputs.owner }}/${{ matrix.ghcr_image }}:${{ needs.gate.outputs.tag }}"
           TARGET="${{ env.GCP_AR_REPO }}/${{ matrix.ar_image }}"
           SHA_TAG="sha-${GITHUB_SHA::8}"
 
@@ -127,6 +130,10 @@ jobs:
             ecr_image: ml-portfolio/nlpinsight-analyzer
       fail-fast: false
     steps:
+      - name: Set lowercase repository owner
+        id: lowercase
+        run: echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Log in to GHCR (source)
         uses: docker/login-action@v3
         with:
@@ -146,7 +153,7 @@ jobs:
 
       - name: Pull from GHCR and push to ECR
         run: |
-          SOURCE="${{ env.GHCR_REGISTRY }}/${{ matrix.ghcr_image }}:${{ needs.gate.outputs.tag }}"
+          SOURCE="ghcr.io/${{ steps.lowercase.outputs.owner }}/${{ matrix.ghcr_image }}:${{ needs.gate.outputs.tag }}"
           TARGET="${{ env.AWS_ECR_REGISTRY }}/${{ matrix.ecr_image }}"
           SHA_TAG="sha-${GITHUB_SHA::8}"
 
