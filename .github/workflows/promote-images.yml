@@ -92,6 +92,17 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
 
+      - name: Create Artifact Registry repository if not exists
+        run: |
+          gcloud artifacts repositories describe ml-portfolio-images \
+            --location=${{ env.GCP_REGION }} 2>/dev/null || \
+          gcloud artifacts repositories create ml-portfolio-images \
+            --repository-format=docker \
+            --location=${{ env.GCP_REGION }} \
+            --description="ML Portfolio Docker images" \
+            --quiet
+          echo "✓ Artifact Registry repository ready"
+
       - name: Pull from GHCR and push to Artifact Registry
         run: |
           SOURCE="ghcr.io/${{ steps.lowercase.outputs.owner }}/${{ matrix.ghcr_image }}:${{ needs.gate.outputs.tag }}"
