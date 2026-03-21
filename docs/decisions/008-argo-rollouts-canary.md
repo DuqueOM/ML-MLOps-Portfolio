@@ -1,8 +1,11 @@
 # ADR-008: Canary Deployments with Argo Rollouts
 
-## Status
+- **Status**: Accepted — Manifests validated, deployment script ready, pending production execution
+- **Date**: 2026-03-08
+- **Authors**: Duque Ortega Mutis
+- **Related**: [ADR-006](006-drift-triggered-retraining.md) (retraining triggers canary promotion)
 
-**Accepted** — Manifests validated, deployment script ready, pending production execution.
+> **TL;DR**: Adopted Argo Rollouts for canary deployments with Prometheus-based analysis templates. New model versions receive 20% → 50% → 100% traffic over 10 minutes, with automatic rollback if error rate or latency exceeds thresholds. Replaces Kubernetes' all-or-nothing RollingUpdate for ML services where a bad model can silently degrade predictions.
 
 ## Context
 
@@ -113,7 +116,7 @@ Automatic rollback occurs when:
 ## Files
 
 - `k8s/argo-rollouts/bankchurn-rollout.yaml` — BankChurn canary Rollout
-- `k8s/argo-rollouts/-rollout.yaml` — canary Rollout
+- `k8s/argo-rollouts/chicagotaxi-rollout.yaml` — ChicagoTaxi canary Rollout
 - `k8s/argo-rollouts/nlpinsight-rollout.yaml` — NLPInsight canary Rollout
 - `k8s/argo-rollouts/analysis-templates.yaml` — Prometheus analysis templates
 - `scripts/deploy-canary.sh` — Operational deployment script

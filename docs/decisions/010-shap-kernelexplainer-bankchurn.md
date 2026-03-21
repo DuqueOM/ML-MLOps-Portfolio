@@ -1,8 +1,11 @@
 # ADR-010: SHAP KernelExplainer for BankChurn StackingClassifier
 
-**Status**: Accepted  
-**Date**: 2026-03-10  
-**Decision Makers**: DuqueOM
+- **Status**: Accepted
+- **Date**: 2026-03-10
+- **Authors**: Duque Ortega Mutis
+- **Related**: [ADR-003](003-stacking-classifier-bankchurn.md) (model choice), [ADR-015](015-async-inference-threadpool.md) (async inference)
+
+> **TL;DR**: `TreeExplainer` does not support `StackingClassifier`. Implemented `KernelExplainer` as a model-agnostic fallback that computes SHAP values in the original 10-feature space (interpretable by business stakeholders). The ~4.5s latency is acceptable because explanations are opt-in (`?explain=true`) and only triggered for high-risk predictions.
 
 ---
 
@@ -90,7 +93,7 @@ Downgrade from StackingClassifier (AUC 0.87) to a single LightGBM/XGBoost (AUC 0
 | **Interpretability space** | Transformed features (38 cols) | **Raw features (10 cols)** ✅ |
 
 **The 4.5s latency for `?explain=true` is an accepted trade-off** because:
-- It is an **opt-in endpoint** — standard `/predict` requests run at 103ms p50 / 111ms p95
+- It is an **opt-in endpoint** — standard `/predict` requests run at 200ms p50 (GCP) / 110ms p50 (AWS)
 - In production, SHAP explanations would be triggered **only for high-risk predictions** (`risk_level=HIGH`), typically representing ~20% of requests
 - At portfolio scale (demo load test: 6.58 RPS), this does not create backpressure
 

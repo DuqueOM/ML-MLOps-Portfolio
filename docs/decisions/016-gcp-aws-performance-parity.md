@@ -2,8 +2,10 @@
 
 - **Status**: Accepted
 - **Date**: 2026-03-18
-- **Deciders**: MLOps Engineering
-- **Related**: ADR-015 (Async Inference)
+- **Authors**: Duque Ortega Mutis
+- **Related**: [ADR-015](015-async-inference-threadpool.md) (async inference), [ADR-013](013-multicloud-parity-policy.md) (parity policy)
+
+> **TL;DR**: BankChurn shows 2-3× higher latency on GCP under load due to `e2-medium` shared CPU vs AWS `t3.medium` burstable credits. Accepted the difference as a documented cost vs performance trade-off ($24/mo vs $145/mo for parity). Both clouds meet the <500ms idle SLA with 0% errors under 100 concurrent users.
 
 ---
 

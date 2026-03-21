@@ -1,8 +1,11 @@
 # ADR-009: Simplification — Knowing When Not to Build
 
-**Status**: Accepted  
-**Date**: 2026-03-05  
-**Decision Makers**: DuqueOM
+- **Status**: Accepted
+- **Date**: 2026-03-05
+- **Authors**: Duque Ortega Mutis
+- **Related**: [ADR-003](003-stacking-classifier-bankchurn.md), [ADR-004](004-opentelemetry-graceful-fallback.md), [ADR-008](008-argo-rollouts-canary.md)
+
+> **TL;DR**: Audited every infrastructure component for over-engineering. Removed CarVision (weak model, MAPE 32.9%), fixed data leakage in ChicagoTaxi, and explicitly justified each remaining component (Helm, Argo Rollouts, OTel, Terraform). Every piece of infrastructure earns its place or gets cut.
 
 ## Context
 
@@ -34,7 +37,7 @@ The implementation uses a graceful fallback pattern: when OTel packages are not 
 
 Multi-cloud Terraform demonstrates IaC skills. The configurations are minimal (<300 lines total) and serve as working templates. Cost: zero (no resources provisioned without explicit `terraform apply`).
 
-### 6. Project → Remove from portfolio
+### 6. CarVision Project → Remove from portfolio
 
 **Evaluated**: MAPE 32.9% is not defensible for a pricing model. The Streamlit dashboard is the only unique component, but it doesn't compensate for weak model performance.  
 **Action**: Moved to `Applied-ML-Projects` repository. Portfolio reduced to 3 focused projects (BankChurn, NLPInsight, ChicagoTaxi) covering classification, NLP, and time-series domains.

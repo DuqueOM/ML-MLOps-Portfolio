@@ -1,8 +1,10 @@
-# ADR-007: Feature Store — Why Not Now, and What the Design Would Look Like
+# ADR-007: Feature Store — Deferred with Design Document
 
-**Status**: Accepted — Intentionally deferred  
-**Date**: March 2026  
-**Authors**: Duque Ortega Mutis
+- **Status**: Accepted — Intentionally deferred
+- **Date**: 2026-03-05
+- **Authors**: Duque Ortega Mutis
+
+> **TL;DR**: Evaluated Feast, Tecton, and Hopsworks for feature management. Deferred adoption because the portfolio's 3 services have no feature-sharing needs — each uses independent, domain-specific features. Documented the design for when feature reuse across 5+ models justifies the operational overhead.
 
 ---
 

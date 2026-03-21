@@ -1,8 +1,11 @@
 # ADR-013: Multi-Cloud Parity Policy (GKE vs EKS)
 
-**Status:** Accepted
-**Date:** 2026-03-13
-**Context:** ML-MLOps Portfolio runs identical ML workloads on GCP (GKE) and AWS (EKS).
+- **Status**: Accepted
+- **Date**: 2026-03-13
+- **Authors**: Duque Ortega Mutis
+- **Related**: [ADR-016](016-gcp-aws-performance-parity.md) (performance trade-off)
+
+> **TL;DR**: Maintain functional parity (all ML services, monitoring, CI/CD, IaC) across GCP and AWS while accepting intentional infrastructure asymmetries (instance types, node counts, ingress controllers). Node counts are autoscaler-managed, not hard-coded — the right answer differs per cloud.
 
 ## Decision
 
@@ -24,8 +27,8 @@ We accept **intentional asymmetries** between cloud environments while maintaini
 
 | Dimension | GCP | AWS | Rationale |
 |-----------|-----|-----|-----------|
-| Node count | 4 | 3 | Different instance sizes (e2-medium vs t3.small); autoscaler decides independently per cloud |
-| Instance memory | 4 GB/node | 2 GB/node | Cost-tier selection; AWS compensates with 3 nodes |
+| Node count | 4 | 3 | Different instance sizes (e2-medium vs t3.medium); autoscaler decides independently per cloud |
+| Instance memory | 4 GB/node | 4 GB/node | Both use 4GB instances; node count differs based on bin-packing |
 | Ingress | GCE Ingress (L7 LB) | nginx-ingress (Classic ELB) | Both use real LoadBalancer; cloud-specific LB type |
 | Container registry | Artifact Registry | ECR (private) | Cloud-native equivalents |
 | Object storage | GCS | S3 | Cloud-native equivalents |
@@ -34,7 +37,7 @@ We accept **intentional asymmetries** between cloud environments while maintaini
 ### Node Count Philosophy
 
 The autoscaler operates **independently per cloud** based on:
-- Available memory per node (GKE 4GB vs EKS 2GB)
+- Available memory per node (GKE e2-medium 4GB vs EKS t3.medium 4GB)
 - Pod resource requests and bin-packing efficiency
 - Cloud-specific overhead (kube-system, CNI, etc.)
 

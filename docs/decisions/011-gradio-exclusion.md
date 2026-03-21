@@ -1,8 +1,11 @@
 # ADR-011: Gradio Demo — Not Deployed to Production
 
-**Date**: 2026-03-10  
-**Status**: Accepted  
-**Context**: BankChurn project includes `app/gradio_demo.py` — an interactive UI for churn prediction.
+- **Status**: Accepted
+- **Date**: 2026-03-10
+- **Authors**: Duque Ortega Mutis
+- **Related**: [ADR-009](009-simplification-when-not-to-build.md) (simplification philosophy)
+
+> **TL;DR**: Kept Gradio as a local development tool only. Deploying it to K8s would create architectural inconsistency (1 of 3 services with a UI), duplicate Swagger UI functionality, and consume cluster resources for a component that doesn't serve the portfolio's MLOps thesis.
 
 ## Decision
 

@@ -1,14 +1,17 @@
 # ADR-006: Drift-Triggered Retraining Architecture
 
-**Status**: Accepted — Stub implemented, full orchestration deferred  
-**Date**: March 2026  
-**Authors**: Duque Ortega Mutis
+- **Status**: Accepted — Stub implemented, full orchestration deferred
+- **Date**: 2026-03-05
+- **Authors**: Duque Ortega Mutis
+- **Related**: [ADR-008](008-argo-rollouts-canary.md) (canary promotion after retraining)
+
+> **TL;DR**: Drift detection (Evidently AI) triggers retraining via a K8s CronJob → GitHub Actions webhook pipeline, avoiding the operational cost of Airflow/Prefect while maintaining full audit trails. Retrained models must pass quality gates before promotion.
 
 ---
 
 ## Context
 
-The portfolio deploys three ML models (BankChurn, NLPInsight) on GKE with Evidently AI running weekly drift checks (PSI + KS statistics). When drift is detected, the current response is **manual**: a Prometheus alert fires, an on-call engineer investigates, and retraining is triggered by hand.
+The portfolio deploys three ML models (BankChurn, NLPInsight, ChicagoTaxi) on GKE and EKS with Evidently AI running weekly drift checks (PSI + KS statistics). When drift is detected, the current response is **manual**: a Prometheus alert fires, an on-call engineer investigates, and retraining is triggered by hand.
 
 The question "how do you trigger retraining when you detect drift?" is one of the most common MLOps interview questions. This ADR documents the architectural decision for automated retraining, the trade-offs evaluated, and the lightweight implementation currently in place.
 
@@ -66,7 +69,7 @@ Evidently's monitoring server can POST to a webhook when a drift report exceeds 
 ## Decision
 
 Implement a **K8s CronJob** that:
-1. Queries Prometheus for drift metrics (`bankchurn_psi_score`, `_psi_score`, `nlpinsight_distribution_shift`)
+1. Queries Prometheus for drift metrics (`bankchurn_psi_score`, `chicagotaxi_psi_score`, `nlpinsight_distribution_shift`)
 2. Compares against thresholds (PSI > 0.2 = significant drift; PSI > 0.25 = critical)
 3. If threshold exceeded, calls the GitHub API to trigger `workflow_dispatch` on the training pipeline
 4. Logs the decision (triggered/skipped) to stdout for Prometheus scraping

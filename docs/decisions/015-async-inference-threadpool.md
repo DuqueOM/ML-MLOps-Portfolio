@@ -2,9 +2,11 @@
 
 - **Status**: Accepted
 - **Date**: 2026-03-18
-- **Deciders**: MLOps Engineering
-- **Supersedes**: ADR-014 BankChurn exception (2 workers no longer needed)
-- **Discovered via**: Locust stress test — 81% failure rate under 100 concurrent users with synchronous inference
+- **Authors**: Duque Ortega Mutis
+- **Related**: [ADR-014](014-single-worker-pod-ml-inference.md) (single-worker pattern), [ADR-016](016-gcp-aws-performance-parity.md) (GCP vs AWS latency)
+- **Discovered via**: Locust stress test — 81% failure rate under 100 concurrent users
+
+> **TL;DR**: Offloaded CPU-bound `StackingClassifier.predict()` to a `ThreadPoolExecutor(max_workers=4)` via `asyncio.run_in_executor()`. sklearn/XGBoost/LightGBM release the GIL during C extensions, enabling real threading parallelism. Result: 81% error rate → 0%, CPU cost halved (2000m → 1000m), all services now follow the single-worker pod pattern.
 
 ---
 

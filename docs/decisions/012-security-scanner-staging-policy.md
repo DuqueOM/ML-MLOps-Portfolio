@@ -1,8 +1,10 @@
 # ADR-012: Security Scanner Findings — Staging vs Production Policy
 
-**Date**: 2026-03-13
-**Status**: Accepted
-**Context**: tfsec and checkov findings in GCP and AWS Terraform configurations
+- **Status**: Accepted
+- **Date**: 2026-03-13
+- **Authors**: Duque Ortega Mutis
+
+> **TL;DR**: Adopted a tiered remediation policy for tfsec/checkov findings — acknowledge all findings with inline justification in staging, enforce full remediation (CMKs, VPC Flow Logs, access logging) in production. Every finding has a documented rationale, not a blind suppression. This demonstrates security awareness without over-engineering for demo data.
 
 ## Problem
 

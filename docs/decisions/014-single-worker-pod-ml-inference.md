@@ -1,9 +1,12 @@
 # ADR-014: Single-Worker Pod Pattern for ML Inference Under Kubernetes
 
-- **Status**: Superseded by ADR-015 (BankChurn exception removed)
-- **Date**: 2026-03-18 (updated 2026-03-18)
-- **Deciders**: MLOps Engineering
-- **Discovered via**: Locust load test — GCP production (`INGRESS_HOST=http://136.111.152.72`, 50 users, 1 min)
+- **Status**: Accepted (updated by ADR-015 — BankChurn exception removed)
+- **Date**: 2026-03-18
+- **Authors**: Duque Ortega Mutis
+- **Related**: [ADR-015](015-async-inference-threadpool.md) (async fix), [ADR-001](001-cpu-only-hpa.md) (HPA thresholds)
+- **Discovered via**: Locust load test — GCP production (50 users, 1 min)
+
+> **TL;DR**: `uvicorn --workers N` is an anti-pattern under Kubernetes. Multiple workers share a single CPU budget, causing thrashing instead of parallelism. Switched all services to 1 worker per pod + HPA horizontal scaling. BankChurn p50 dropped from 1700ms to 200ms. ADR-015 later eliminated the last multi-worker exception via async inference.
 
 ---
 
@@ -114,7 +117,7 @@ Gunicorn pre-fork workers solve the `--workers` CPU problem (each worker gets sc
 ### CPU Limit Rationale
 
 - **BankChurn 1000m**: StackingClassifier inference via thread pool. Single process, no multi-worker contention.
-- **ChicagoTaxi 750m**: LightGBM regression + pandas lookup; 500m was insufficient even for 1 worker.
+- **ChicagoTaxi 750m**: RandomForest regression + pandas lookup; 500m was insufficient even for 1 worker.
 - **NLPInsight 1000m**: FinBERT inference is GPU-bound in theory; on CPU-only nodes, 1000m is sufficient for the observed load profile.
 
 ### HPA Threshold Rationale
