@@ -41,7 +41,7 @@ make docker-demo
 
 Watch the complete portfolio demonstration:
 
-[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
 
 **Topics Covered**: Architecture, API usage, Dashboard features, MLflow experiments, deployment
 

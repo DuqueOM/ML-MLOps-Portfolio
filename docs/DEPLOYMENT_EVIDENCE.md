@@ -447,7 +447,7 @@ No rules reference non-existent metrics (kube-state-metrics, cAdvisor, model_dri
 | ![HPA](media/gifs/02-hpa-autoscaling.gif) | `02-hpa-autoscaling.gif` | HPA auto-scaling under load (1→3 replicas) |
 | ![Fairness](media/gifs/03-fairness-audit.gif) | `03-fairness-audit.gif` | Fairness audit CLI (disparate impact ratios) |
 
-> **Video**: [Portfolio Demo (3:30 min)](https://youtu.be/qmw9VlgUcn8) — full multi-cloud walkthrough
+> **Video**: [Portfolio Demo (3:30 min)](https://youtu.be/7dFFqq2ROPw) — full multi-cloud walkthrough
 
 ---
 ## Deployment Commands Reference

@@ -2,7 +2,7 @@
 
 Three ML systems built end-to-end: trained, containerized, deployed on Kubernetes, and monitored in production.
 
-[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
 
 ![Portfolio Demo](../media/gifs/01-demo-prediccion.gif)
 

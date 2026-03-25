@@ -2,7 +2,7 @@
 
 **3 ML projects deployed end-to-end** — trained, containerized, served on GKE + EKS, monitored via Prometheus + Grafana.
 
-[![YouTube Demo](https://img.shields.io/badge/📺_Video-Watch_Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+[![YouTube Demo](https://img.shields.io/badge/📺_Video-Watch_Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
 
 ---
 
@@ -110,7 +110,7 @@ graph TB
 | ![HPA](media/gifs/02-hpa-autoscaling.gif) | `02-hpa-autoscaling.gif` | HPA auto-scaling under load (1→3 replicas) |
 | ![Fairness](media/gifs/03-fairness-audit.gif) | `03-fairness-audit.gif` | Fairness audit CLI (disparate impact ratios) |
 
-> **Video**: [Portfolio Demo (3:30 min)](https://youtu.be/qmw9VlgUcn8) — full multi-cloud walkthrough
+> **Video**: [Portfolio Demo (3:30 min)](https://youtu.be/7dFFqq2ROPw) — full multi-cloud walkthrough
 
 ## Related Docs
 

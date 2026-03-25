@@ -11,7 +11,7 @@
 [![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC?logo=terraform&logoColor=white)](https://terraform.io)
 
 [![GitHub](https://img.shields.io/badge/Source_Code-Repository-181717?style=for-the-badge&logo=github)](https://github.com/DuqueOM/ML-MLOps-Portfolio)
-[![YouTube](https://img.shields.io/badge/Video_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+[![YouTube](https://img.shields.io/badge/Video_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
 
 ---
 
@@ -179,7 +179,7 @@ docker compose -f docker-compose.demo.yml up -d --build
 
 <div style="text-align: center;">
 
-**Built by [Duque Ortega Mutis](https://github.com/DuqueOM)** | [LinkedIn](https://linkedin.com/in/duqueom) | [Video Demo](https://youtu.be/qmw9VlgUcn8)
+**Built by [Duque Ortega Mutis](https://github.com/DuqueOM)** | [LinkedIn](https://linkedin.com/in/duqueom) | [Video Demo](https://youtu.be/7dFFqq2ROPw)
 
 *Portfolio v3.5.3 — March 2026 — Deployed on GCP (GKE) + AWS (EKS)*
 

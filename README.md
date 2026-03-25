@@ -7,7 +7,7 @@
 *3 ML Projects • GKE + EKS • GitHub Actions CI/CD • Prometheus + Grafana + MLflow*
 
 [![Portfolio Site](https://img.shields.io/badge/🌐_Portfolio-Live_Site-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
-[![YouTube Demo](https://img.shields.io/badge/📺_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+[![YouTube Demo](https://img.shields.io/badge/📺_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
 
 ---
 
@@ -82,7 +82,7 @@ Production-grade churn prediction with **StackingClassifier** ensemble (RF + Gra
 
 > **Why these metrics**: AUC-ROC is the primary metric — the dataset has 20.4% churn rate (4:1 imbalance), making accuracy meaningless (a "never churn" model scores 79.6%). AUC measures rank-ordering quality across all thresholds. **Production threshold: 0.35** (not default 0.50) — a missed churner costs ~$1,500–$3,000 LTV vs. ~$50 for an unnecessary retention offer (30:1 cost ratio). At threshold 0.35, Recall rises to 0.78, catching 78% of churners; at 0.50, Recall drops to 0.54. The precision trade-off is intentional and quantified.
 
-[📂 Project](BankChurn-Predictor/) · [📄 Model Card](BankChurn-Predictor/models/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
+[📂 Project](BankChurn-Predictor/) · [📄 Model Card](BankChurn-Predictor/models/model_card.md) · [📺 Video](https://youtu.be/7dFFqq2ROPw)
 
 ---
 
@@ -96,7 +96,7 @@ Financial sentiment analysis on **Twitter Financial News** — 11,931 real finan
 
 > **Why these metrics**: 80.6% accuracy on real financial tweets (vs 97% on the easier Financial PhraseBank) is an honest, defensible metric. F1-macro (0.748) is the guard rail — the negative class (15.1% of data, highest business value) achieves 0.65 F1, showing room for FinBERT improvement when GPU is available. The dataset upgrade from curated sentences to noisy tweets better demonstrates real-world NLP capability.
 
-[📂 Project](NLPInsight-Analyzer/) · [📄 Model Card](NLPInsight-Analyzer/model_card.md) · [📺 Video](https://youtu.be/qmw9VlgUcn8)
+[📂 Project](NLPInsight-Analyzer/) · [📄 Model Card](NLPInsight-Analyzer/model_card.md) · [📺 Video](https://youtu.be/7dFFqq2ROPw)
 
 ---
 
@@ -245,7 +245,7 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 
 <div align="center">
 
-[![🎬 Video Demo](https://img.shields.io/badge/🎬_Full_Demo-YouTube_(3:30_min)-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
+[![🎬 Video Demo](https://img.shields.io/badge/🎬_Full_Demo-YouTube_(3:30_min)-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
 
 </div>
 
