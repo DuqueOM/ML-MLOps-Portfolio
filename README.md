@@ -126,6 +126,7 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 | **CI/CD** | GitHub Actions (CI + GCP deploy + AWS deploy + post-deploy smoke tests), Artifact Registry, ECR, Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit |
 | **Testing** | pytest (90–98% coverage, 395+ tests), automated smoke tests (GCP + AWS), Codecov, pre-commit hooks |
+| **Managed ML** | AWS SageMaker + GCP Vertex AI (BankChurn) — multi-paradigm: custom FastAPI + managed serving ([ADR-017](docs/decisions/017-custom-vs-managed-ml-platforms.md), [Guide](docs/MANAGED_ML_GUIDE.md)) |
 
 > **v3.5.3 Highlights**: StackingClassifier (BankChurn), FinBERT (NLPInsight), PySpark + lag features (ChicagoTaxi), data leakage fix, Pandera validation, fairness audits, OpenTelemetry tracing, adversarial tests, drift-triggered retraining ([ADR-006](docs/decisions/006-drift-triggered-retraining.md)), simplification ADR ([ADR-009](docs/decisions/009-simplification-when-not-to-build.md)). Full details in [docs/FEATURES.md](docs/FEATURES.md).
 

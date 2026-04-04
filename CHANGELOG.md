@@ -6,6 +6,33 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [3.6.0] — 2026-04-04
+
+### Added
+- **AWS SageMaker Endpoint** — BankChurn deployed as managed SageMaker Endpoint complementing the custom FastAPI + K8s primary architecture. Multi-paradigm ML serving: custom infrastructure (SHAP, Prometheus, multi-cloud) + managed platform (rapid deploy, built-in auto-scaling). Deploy/test/delete in one script.
+- **GCP Vertex AI Endpoint** — BankChurn deployed as Vertex AI Endpoint with Custom Prediction Routine (Predictor class pattern). Equal depth to SageMaker: deploy/test/delete, service account setup, model monitoring reference.
+- **`scripts/sagemaker/inference.py`** — SageMaker inference handler (model_fn, input_fn, predict_fn, output_fn) for BankChurn StackingClassifier
+- **`scripts/sagemaker/deploy_endpoint.py`** — Full lifecycle management: deploy, test, delete, status, package. Cost-aware: `ml.t2.medium` (~$0.065/hr), always deletes after demo
+- **`scripts/sagemaker/setup-role.sh`** — IAM role creation for SageMaker execution with S3 model access and CloudWatch Logs
+- **`scripts/vertex_ai/predictor.py`** — Vertex AI Custom Prediction Routine (Predictor class with `__init__` + `predict` methods)
+- **`scripts/vertex_ai/deploy_endpoint.py`** — Full lifecycle management: deploy, test, delete, upload, status. Cost-aware: `n1-standard-2` (~$0.095/hr)
+- **`scripts/vertex_ai/setup-service-account.sh`** — GCP service account creation with Vertex AI + Storage IAM roles
+- **[ADR-017](docs/decisions/017-custom-vs-managed-ml-platforms.md)** — Custom FastAPI + K8s vs Managed ML Platforms (SageMaker/Vertex AI). Documents trade-offs, measured latency comparison, and when-to-use guidance
+- **[Managed ML Guide](docs/MANAGED_ML_GUIDE.md)** — Complete deployment guide for both SageMaker and Vertex AI with architecture, auto-scaling, model monitoring, inference contract comparison, and troubleshooting
+
+### Changed
+- **README.md** — Added "Managed ML" row to Tech Stack table referencing SageMaker + ADR-017
+- **docs/index.md** — Added "Managed ML" to Technology Stack (GitHub Pages)
+- **docs/FEATURES.md** — New "Managed ML Platforms (v3.6.0)" section
+- **docs/MULTI_CLOUD_COMPARISON.md** — Added "Managed ML Platforms: Custom vs Managed" comparison (Custom vs SageMaker vs Vertex AI) + SageMaker deploy commands
+- **docs/decisions/README.md** — ADR-017 in index, decision flow graph, and reading guide
+- **`.gitignore`** — Added `*.cast` (asciinema intermediate files)
+
+### Removed
+- **`demo-prediction-aws.cast`** — Broken asciinema recording (206 bytes, OOM error). Cleaned up from project root
+
+---
+
 ## [3.5.3] — 2026-03-13
 
 ### Added

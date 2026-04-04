@@ -48,6 +48,14 @@
 - **Data Validation** — Pandera schemas for all projects (raw + inference)
 - **OpenTelemetry** — Distributed tracing in all 3 FastAPI apps (graceful no-op fallback)
 
+## Managed ML Platforms (v3.6.0)
+
+- **Multi-paradigm ML serving** — Custom FastAPI on K8s (primary) + managed endpoints (complement)
+- **AWS SageMaker** — `scripts/sagemaker/deploy_endpoint.py` (deploy/test/delete), `scripts/sagemaker/inference.py` (4-function handler)
+- **GCP Vertex AI** — `scripts/vertex_ai/deploy_endpoint.py` (deploy/test/delete), `scripts/vertex_ai/predictor.py` (Predictor class)
+- **Architecture Decision** — [ADR-017](decisions/017-custom-vs-managed-ml-platforms.md) documents full comparison and rationale
+- **Guide** — [Managed ML Guide](MANAGED_ML_GUIDE.md) with deep-dive on both platforms: auto-scaling, model monitoring, inference contracts
+
 ## Planned
 
 - Feature Store integration — deferred; see [ADR-007](decisions/007-feature-store-decision.md) for rationale and design
@@ -66,4 +74,4 @@
 
 ---
 
-*Last Updated: March 2026 — v3.5.3*
+*Last Updated: April 2026 — v3.6.0*

@@ -156,6 +156,7 @@ All services expose FastAPI with Swagger UI, Prometheus `/metrics`, and structur
 | **CI/CD** | GitHub Actions (CI + deploy-gcp + deploy-aws), Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit, Network Policies, PDBs |
 | **Testing** | pytest (295+ tests, 90–98%), Locust load testing |
+| **Managed ML** | AWS SageMaker + GCP Vertex AI (BankChurn) — [Guide](MANAGED_ML_GUIDE.md) |
 
 ---
 

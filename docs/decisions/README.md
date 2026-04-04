@@ -28,6 +28,7 @@ ADRs capture the **reasoning behind decisions**, not just the outcome. Six month
 | [014](014-single-worker-pod-ml-inference.md) | Single-Worker Pod Pattern for ML Inference | Infrastructure | Accepted |
 | [015](015-async-inference-threadpool.md) | Async Inference via ThreadPoolExecutor | Performance | Accepted |
 | [016](016-gcp-aws-performance-parity.md) | GCP vs AWS Performance — Cost vs Latency Trade-off | Infrastructure | Accepted |
+| [017](017-custom-vs-managed-ml-platforms.md) | Custom FastAPI + K8s vs Managed ML Platforms (SageMaker/Vertex AI) | Architecture | Accepted |
 
 ---
 
@@ -54,6 +55,11 @@ ADR-002 (emptyDir model storage)
 
 ADR-012 (Security scanner policy)
   └── ADR-013 (Multi-cloud parity — security posture matches per cloud)
+
+ADR-017 (Custom vs Managed ML Platforms)
+  ├── ADR-003 (StackingClassifier — SHAP middleware justifies custom serving)
+  ├── ADR-013 (Multi-cloud parity — SageMaker is AWS-only, custom is portable)
+  └── ADR-009 (Simplification — SageMaker complement, not replacement)
 ```
 
 ---
@@ -78,3 +84,4 @@ Every ADR follows a consistent structure:
 - **ML Engineers**: Start with ADR-003 (model choice), ADR-010 (explainability), ADR-006 (drift retraining).
 - **Platform/DevOps Engineers**: Start with ADR-001 (HPA), ADR-014 (single-worker), ADR-002 (model storage), ADR-008 (canary).
 - **Security Engineers**: ADR-012 (scanner policy), ADR-005 (dependency pinning).
+- **Hiring Managers (enterprise focus)**: ADR-017 (custom vs managed platforms) — demonstrates ability to articulate build-vs-buy trade-offs.

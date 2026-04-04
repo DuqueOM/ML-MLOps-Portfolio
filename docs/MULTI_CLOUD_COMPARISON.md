@@ -161,13 +161,38 @@
 - **S3 Models**: `ml-portfolio-ml-models-production`
 - **S3 Datasets**: `ml-portfolio-datasets-production`
 
+## Managed ML Platforms: Custom vs Managed
+
+In addition to custom FastAPI on K8s, the portfolio deploys BankChurn on both SageMaker (AWS) and Vertex AI (GCP) managed endpoints to demonstrate multi-paradigm serving.
+
+| Dimension | Custom FastAPI (K8s) | AWS SageMaker | GCP Vertex AI |
+|-----------|---------------------|---------------|---------------|
+| **Deployed in portfolio** | ✅ GKE + EKS | ✅ BankChurn endpoint | ✅ BankChurn endpoint |
+| **Deploy time** | ~15 min (CI/CD) | ~5 min | ~5 min |
+| **Latency p50** | ~103ms | ~150-200ms | ~150-200ms (est.) |
+| **SHAP support** | ✅ `?explain=true` | ❌ | ❌ |
+| **Custom metrics** | ✅ Prometheus | ❌ CloudWatch only | ❌ Cloud Monitoring only |
+| **Multi-cloud** | ✅ Kustomize overlays | ❌ AWS-only | ❌ GCP-only |
+| **Auto-scaling** | HPA (CPU target) | Built-in (invocations) | Built-in (CPU/GPU) |
+| **Vendor lock-in** | Low | High | High |
+
+> **Decision**: Custom FastAPI is primary (SHAP, Prometheus, multi-cloud). SageMaker + Vertex AI are complementary (demonstrates managed platform skills on both clouds). See [ADR-017](decisions/017-custom-vs-managed-ml-platforms.md) and [Managed ML Guide](MANAGED_ML_GUIDE.md).
+
 ## Deployment Commands
 
 ```bash
-# GCP
+# GCP — Kubernetes
 kubectl config use-context gke_ml-portfolio-duque-om-202602_us-central1_ml-portfolio-gke-production
 kubectl apply -k k8s/overlays/gcp/
 
-# AWS
+# AWS — Kubernetes
 AWS_PROFILE=ml-portfolio kubectl apply -k k8s/overlays/aws/
+
+# AWS — SageMaker Endpoint (on-demand, delete after demo)
+python scripts/sagemaker/deploy_endpoint.py          # Deploy + test
+python scripts/sagemaker/deploy_endpoint.py delete    # Stop charges
+
+# GCP — Vertex AI Endpoint (on-demand, delete after demo)
+python scripts/vertex_ai/deploy_endpoint.py           # Deploy + test
+python scripts/vertex_ai/deploy_endpoint.py delete     # Stop charges
 ```

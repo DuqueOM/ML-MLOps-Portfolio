@@ -64,11 +64,6 @@ ipython_config.py
 
 # ML artifacts and models
 **/artifacts/
-!CarVision-Market-Intelligence/artifacts/
-CarVision-Market-Intelligence/artifacts/*
-!CarVision-Market-Intelligence/artifacts/metrics_val.json
-!CarVision-Market-Intelligence/artifacts/model_comparison.json
-!CarVision-Market-Intelligence/artifacts/feature_columns.json
 **/mlruns/
 **/mlartifacts/
 
@@ -175,3 +170,6 @@ infra/terraform-outputs.json
 *.tfstate
 *.tfstate.backup
 docs/VIDEO_SCRIPT_v2.md
+
+# Asciinema recordings (intermediate files, GIFs are the final output)
+*.cast
