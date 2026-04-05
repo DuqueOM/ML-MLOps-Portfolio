@@ -31,13 +31,19 @@
 
 ---
 
-## ⚡ 30-Second Pitch
+## ⚡ Why This Portfolio Is Different
 
-> After **over a decade of launching and operating ventures** across tech services, digital marketing, restaurants, and events, I discovered that the principles that make great operational systems—reliability, monitoring, reproducibility—are the same ones that make great ML systems.
->
-> This portfolio demonstrates that transition: **3 ML models deployed on GKE, served via FastAPI, monitored via Prometheus + Grafana, tested at 90–98% coverage, and shipped through a multi-stage CI/CD pipeline.** Every technical decision is documented with the reasoning behind it — not just what was built, but why.
->
-> Every project here answers the question: ***"If this broke at 2am, could I diagnose and fix it?"***
+Most ML portfolios show models that score well. This one shows what happens **after** you deploy — the incidents, the wrong decisions corrected, the trade-offs documented.
+
+**17 Architectural Decision Records** covering every non-trivial choice: why memory-based HPA mathematically cannot scale down ML pods, why `uvicorn --workers N` is an anti-pattern under Kubernetes, why a Feature Store was deliberately deferred, how a SHAP production bug was diagnosed from all-zero values to root cause to fix.
+
+The CHANGELOG documents real incidents fixed in production, not planned features:
+- **v3.5.1**: SHAP returning all-zero contributions in production → diagnosed, fixed (ADR-010)
+- **v3.5.2**: Grafana panels broken by wrong metric names → corrected
+- **v3.5.3**: AWS EKS stuck on NodePort → migrated to real LoadBalancer
+- **ADR-014/015**: 81% error rate under load → diagnosed as uvicorn anti-pattern → 0%
+
+**This is not a tutorial project. It's an operational record.**
 
 <div align="center">
 
@@ -292,10 +298,33 @@ This portfolio demonstrates **cloud-agnostic MLOps** — the same ML system depl
 
 ---
 
-## 📚 Documentation
+## � Architectural Decision Records (17 documented)
+
+These are not explanations of what was built — they are records of what was evaluated and rejected, and why.
+
+| ADR | Decision | The Harder Choice |
+|-----|----------|-------------------|
+| [001](docs/decisions/001-cpu-only-hpa.md) | CPU-only HPA | Proved memory HPA mathematically fails for ML |
+| [003](docs/decisions/003-stacking-classifier-bankchurn.md) | StackingClassifier | Documented that single LightGBM might be better in production |
+| [005](docs/decisions/005-compatible-release-pinning.md) | Compatible release pinning | numpy 2.x silently broke serialized models — worst category of bug |
+| [006](docs/decisions/006-drift-triggered-retraining.md) | Drift-triggered retraining | Chose CronJob over Airflow — documented why Airflow is overkill here |
+| [007](docs/decisions/007-feature-store-decision.md) | No Feature Store | Designed the full Feast architecture for when it IS needed |
+| [009](docs/decisions/009-simplification-when-not-to-build.md) | Simplification | Removed a whole project because MAPE 32.9% isn't defensible |
+| [010](docs/decisions/010-shap-kernelexplainer-bankchurn.md) | SHAP KernelExplainer | Diagnosed production bug, evaluated 4 alternatives |
+| [014](docs/decisions/014-single-worker-pod-ml-inference.md) | Single-worker pods | Found and documented uvicorn --workers anti-pattern under K8s |
+| [015](docs/decisions/015-async-inference-threadpool.md) | Async inference | GIL analysis → ThreadPoolExecutor → 81% errors → 0% |
+| [016](docs/decisions/016-gcp-aws-performance-parity.md) | GCP/AWS parity | Chose $24/mo over $145/mo, documented the SLA math |
+| [017](docs/decisions/017-custom-vs-managed-ml-platforms.md) | Custom vs Managed ML | Multi-paradigm: FastAPI + K8s primary, SageMaker/Vertex AI complement |
+
+[View all 17 ADRs →](docs/decisions/)
+
+---
+
+## � Documentation
 
 | Document | Description |
 |----------|-------------|
+| **[Engineering Highlights](ENGINEERING_HIGHLIGHTS.md)** | Incidents diagnosed, decisions made, trade-offs documented — quick reference for technical reviewers |
 | **[Quick Start](QUICK_START.md)** | 5-minute demo with API examples and health checks |
 | **[Architecture](docs/ARCHITECTURE_PORTFOLIO.md)** | System design, Mermaid diagrams, infrastructure, CI/CD workflow |
 | **[Operations Runbook](RUNBOOK.md)** | Day-to-day commands, Docker, K8s, Terraform deployment |
