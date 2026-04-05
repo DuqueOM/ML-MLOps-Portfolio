@@ -29,7 +29,6 @@ Most ML portfolios show models that score well. This one shows what happens **af
 ```
 Three production incidents diagnosed — root cause to fix, documented with data:
 
-
 | Incident | Root Cause | Fix | Outcome | ADR |
 |----------|------------|-----|---------|-----|
 | 81% error rate under load | `uvicorn --workers N` on K8s: workers share one CPU budget → thrashing, not parallelism | `asyncio.run_in_executor` + `ThreadPoolExecutor(4)` — sklearn C extensions release the GIL | Errors 81% → 0% · CPU 2000m → 1000m | [014](docs/decisions/014-single-worker-pod-ml-inference.md)/[015](docs/decisions/015-async-inference-threadpool.md) |
