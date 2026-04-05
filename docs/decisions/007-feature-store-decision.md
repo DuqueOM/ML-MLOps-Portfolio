@@ -65,7 +65,7 @@ A feature store becomes necessary when **any** of the following conditions are m
 If BankChurn were extended to use behavioral data (the missing feature set that would push AUC from 0.87 toward 0.92+), the architecture would be:
 
 ```
-                    ┌─────────────────────────────────────┐
+                    ┌──────────────────────────────────────┐
                     │         Feature Pipeline             │
                     │  (runs daily via K8s CronJob / DAG)  │
                     │                                      │
@@ -73,24 +73,24 @@ If BankChurn were extended to use behavioral data (the missing feature set that 
                     │  - 30d avg balance change            │
                     │  - Support ticket count (90d)        │
                     │  - Login frequency trend             │
-                    └──────────────┬──────────────────────┘
+                    └──────────────┬───────────────────────┘
                                    │
-                    ┌──────────────▼──────────────────────┐
+                    ┌──────────────▼───────────────────────┐
                     │         Feast Feature Store          │
                     │                                      │
                     │  Offline Store: BigQuery / GCS       │──→ Training jobs
                     │  Online Store:  Redis (GKE pod)      │──→ Inference requests
                     │  Registry:      GCS (feature defs)   │
-                    └──────────────┬──────────────────────┘
+                    └──────────────┬───────────────────────┘
                                    │
-                    ┌──────────────▼──────────────────────┐
+                    ┌──────────────▼───────────────────────┐
                     │     BankChurn FastAPI Inference      │
                     │                                      │
                     │  1. Receive request (customer_id)    │
                     │  2. feast.get_online_features()      │──→ Redis lookup (<5ms)
                     │  3. Merge with request payload       │
                     │  4. model.predict(features)          │
-                    └─────────────────────────────────────┘
+                    └──────────────────────────────────────┘
 ```
 
 **Key interface**: `feast.get_online_features(entity_rows=[{"customer_id": "C123"}])` returns a `pd.DataFrame` compatible with the existing `ColumnTransformer` pipeline. The `FeatureEngineer` class would be split: time-window features are pre-materialized; request-time features (derived ratios, bins) remain in the pipeline.

@@ -35,22 +35,22 @@ of all 3 ML services.
               ┌────────────┴────────────┐
               │                         │
     ┌─────────▼──────────┐   ┌─────────▼──────────┐
-    │   Stable Service   │   │   Canary Service    │
-    │   (80% traffic)    │   │   (20% traffic)     │
+    │   Stable Service   │   │   Canary Service   │
+    │   (80% traffic)    │   │   (20% traffic)    │
     └─────────┬──────────┘   └─────────┬──────────┘
               │                         │
     ┌─────────▼──────────┐   ┌─────────▼──────────┐
-    │  Stable ReplicaSet │   │  Canary ReplicaSet  │
-    │  (current version) │   │  (new version)      │
+    │  Stable ReplicaSet │   │  Canary ReplicaSet │
+    │  (current version) │   │  (new version)     │
     └────────────────────┘   └────────────────────┘
                                        │
-                              ┌────────▼────────┐
-                              │ AnalysisRun     │
-                              │ (Prometheus)    │
-                              │ - error rate    │
-                              │ - p95 latency   │
-                              │ - pred stability│
-                              └─────────────────┘
+                              ┌────────▼─────────┐
+                              │ AnalysisRun      │
+                              │ (Prometheus)     │
+                              │ - error rate     │
+                              │ - p95 latency    │
+                              │ - pred stability │
+                              └──────────────────┘
 ```
 
 ### Canary Steps
