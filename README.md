@@ -29,24 +29,13 @@ Most ML portfolios show models that score well. This one shows what happens **af
 ```
 Three production incidents diagnosed — root cause to fix, documented with data:
 
- 81% error rate under load  →  uvicorn --workers N is an anti-pattern under K8s
-                                Workers share a single CPU budget → thrashing, not parallelism
-                                Fix: asyncio.run_in_executor + ThreadPoolExecutor(4)
-                                     sklearn C extensions release the GIL → real parallelism
-                                Result: 81% errors → 0%  ·  CPU 2000m → 1000m  [ADR-015]
 
- SHAP returning all zeros   →  TreeExplainer incompatible with StackingClassifier
-                                Evaluated 4 alternatives (LinearExplainer, per-learner,
-                                remove SHAP, downgrade model) — all rejected with rationale
-                                Fix: KernelExplainer in original 10-feature space
-                                     (interpretable by business stakeholders, not 38 encoded cols)
-                                Result: Real SHAP values in production             [ADR-010]
+| Incident | Root Cause | Fix | Outcome | ADR |
+|----------|------------|-----|---------|-----|
+| 81% error rate under load | `uvicorn --workers N` on K8s: workers share one CPU budget → thrashing, not parallelism | `asyncio.run_in_executor` + `ThreadPoolExecutor(4)` — sklearn C extensions release the GIL | Errors 81% → 0% · CPU 2000m → 1000m | [014](docs/decisions/014-single-worker-pod-ml-inference.md)/[015](docs/decisions/015-async-inference-threadpool.md) |
+| SHAP returning all zeros | `TreeExplainer` incompatible with `StackingClassifier` — evaluated 4 alternatives before deciding | `KernelExplainer` in original 10-feature space (interpretable by business, not 38 encoded cols) | Real SHAP values in production | [010](docs/decisions/010-shap-kernelexplainer-bankchurn.md) |
+| HPA never scaled down | Memory-based HPA + fixed ML footprint: `ceil(replicas × usage/target)` always ≥ current replicas | CPU-only HPA — CPU correlates with traffic; memory is constant signal | 3→1 pods in 8 minutes | [001](docs/decisions/001-cpu-only-hpa.md) |
 
- HPA never scales down      →  Memory-based HPA + fixed ML footprint
-                                HPA formula: ceil(replicas × usage / target)
-                                ML RAM is constant → formula always returns ≥ current replicas
-                                Fix: CPU-only HPA — CPU correlates with traffic
-                                Result: 3→2→1 pods verified in 8 minutes           [ADR-001]
 ```
 
 **This is not a tutorial project. It's an operational record.**
