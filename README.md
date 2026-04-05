@@ -26,8 +26,7 @@
 
 Most ML portfolios show models that score well. This one shows what happens **after you deploy** — production incidents diagnosed from first principles, wrong decisions corrected and documented, trade-offs measured and justified.
 
-```
-Three production incidents diagnosed — root cause to fix, documented with data:
+### Three production incidents diagnosed — root cause to fix, documented with data:
 
 | Incident | Root Cause | Fix | Outcome | ADR |
 |----------|------------|-----|---------|-----|
@@ -35,7 +34,7 @@ Three production incidents diagnosed — root cause to fix, documented with data
 | SHAP returning all zeros | `TreeExplainer` incompatible with `StackingClassifier` — evaluated 4 alternatives before deciding | `KernelExplainer` in original 10-feature space (interpretable by business, not 38 encoded cols) | Real SHAP values in production | [010](docs/decisions/010-shap-kernelexplainer-bankchurn.md) |
 | HPA never scaled down | Memory-based HPA + fixed ML footprint: `ceil(replicas × usage/target)` always ≥ current replicas | CPU-only HPA — CPU correlates with traffic; memory is constant signal | 3→1 pods in 8 minutes | [001](docs/decisions/001-cpu-only-hpa.md) |
 
-```
+---
 
 **This is not a tutorial project. It's an operational record.**
 
