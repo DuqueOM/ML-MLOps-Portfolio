@@ -4,7 +4,7 @@
 
 **Last Updated**: April 2026 | **Portfolio Version**: 3.6.0
 
-> **Full ADR Library**: See [`docs/decisions/`](../decisions/) for detailed per-decision records with context, alternatives considered, consequences, and verification evidence.
+> **Full ADR Library**: See [`docs/decisions/`](../decisions/README.md) for detailed per-decision records with context, alternatives considered, consequences, and verification evidence.
 
 ---
 
@@ -100,4 +100,4 @@ Each ADR follows a consistent structure:
 
 ---
 
-*This page is part of the [ML-MLOps Portfolio](https://github.com/DuqueOM/ML-MLOps-Portfolio). See also: [Engineering Highlights](../../ENGINEERING_HIGHLIGHTS.md) for a quick reference of incidents and trade-offs.*
+*This page is part of the [ML-MLOps Portfolio](https://github.com/DuqueOM/ML-MLOps-Portfolio). See also: [Engineering Highlights](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/ENGINEERING_HIGHLIGHTS.md) for a quick reference of incidents and trade-offs.*

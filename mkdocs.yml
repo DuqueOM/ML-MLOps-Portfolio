@@ -72,10 +72,29 @@ nav:
     - ChicagoTaxi Pipeline: projects/chicagotaxi.md
   - Architecture:
     - System Design: ARCHITECTURE_PORTFOLIO.md
+    - Overview: architecture/overview.md
     - Infrastructure: architecture/infrastructure.md
     - CI/CD Pipeline: architecture/cicd.md
     - Data Flow: architecture/data-flow.md
     - Decisions (ADRs): architecture/decisions.md
+    - ADR Index: decisions/README.md
+    - ADR-001 CPU-Only HPA: decisions/001-cpu-only-hpa.md
+    - ADR-002 emptyDir Model Storage: decisions/002-emptydir-model-storage.md
+    - ADR-003 StackingClassifier: decisions/003-stacking-classifier-bankchurn.md
+    - ADR-004 OpenTelemetry Fallback: decisions/004-opentelemetry-graceful-fallback.md
+    - ADR-005 Compatible Release Pinning: decisions/005-compatible-release-pinning.md
+    - ADR-006 Drift-Triggered Retraining: decisions/006-drift-triggered-retraining.md
+    - ADR-007 Feature Store Decision: decisions/007-feature-store-decision.md
+    - ADR-008 Argo Rollouts Canary: decisions/008-argo-rollouts-canary.md
+    - ADR-009 Simplification: decisions/009-simplification-when-not-to-build.md
+    - ADR-010 SHAP KernelExplainer: decisions/010-shap-kernelexplainer-bankchurn.md
+    - ADR-011 Gradio Exclusion: decisions/011-gradio-exclusion.md
+    - ADR-012 Security Scanner Policy: decisions/012-security-scanner-staging-policy.md
+    - ADR-013 Multi-Cloud Parity: decisions/013-multicloud-parity-policy.md
+    - ADR-014 Single-Worker Pod: decisions/014-single-worker-pod-ml-inference.md
+    - ADR-015 Async Inference: decisions/015-async-inference-threadpool.md
+    - ADR-016 GCP/AWS Parity: decisions/016-gcp-aws-performance-parity.md
+    - ADR-017 Custom vs Managed ML: decisions/017-custom-vs-managed-ml-platforms.md
   - Deployment:
     - Multi-Cloud Evidence: DEPLOYMENT_EVIDENCE.md
     - GCP vs AWS Comparison: MULTI_CLOUD_COMPARISON.md
@@ -88,6 +107,7 @@ nav:
     - Reproducibility: models/reproducibility.md
   - API Reference:
     - REST APIs: api/rest-apis.md
+    - CLI Reference: api/cli.md
   - Getting Started:
     - Quick Start: getting-started/quickstart.md
     - Installation: getting-started/installation.md
@@ -96,6 +116,8 @@ nav:
     - Features & Changelog: FEATURES.md
     - Release Process: RELEASE.md
     - Security Policy: SECURITY.md
+    - Managed ML Guide: MANAGED_ML_GUIDE.md
+    - Load Test Results: load-test-results.md
     - Contributing: contributing/guidelines.md
 
 extra:
