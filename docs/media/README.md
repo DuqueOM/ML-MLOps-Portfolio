@@ -15,7 +15,7 @@ media/
 │   ├── monitoring/      # Grafana dashboards, Prometheus, MLflow experiments
 │   ├── cicd/            # GitHub Actions, Codecov, secrets
 │   └── terraform/       # Multi-cloud IaC structure, AWS validation, K8s overlays
-├── gifs/                # Terminal demos (predictions, HPA scaling, fairness)
+├── gifs/                # Animated demos extracted from portfolio video
 ├── thumbnails/          # Video thumbnail for YouTube
 └── video/               # Portfolio demo video
 ```
@@ -35,11 +35,23 @@ media/
 | 39 | `monitoring/39-mlflow-experiments.png` | MLflow: 3 experiments, 14 runs |
 | 46 | `cicd/46-workflow-completado.png` | CI/CD pipeline: 10 jobs green |
 
+## GIFs
+
+All GIFs extracted from [Portfolio Demo Video](https://youtu.be/7dFFqq2ROPw) with optimized palettes.
+
+| GIF | Size | Duration | Content | Source Segment |
+|-----|------|----------|---------|----------------|
+| `portfolio-demo.gif` | 2.3MB | 10s, 600px | Hero overview | 0:00–1:20 |
+| `ml-predictions.gif` | 761KB | 8s, 480px | SHAP + Sentiment + Demand | 0:11–0:46 |
+| `monitoring-observability.gif` | 1.4MB | 8s, 480px | Grafana + Prometheus + Locust | 1:02–1:20 |
+| `multicloud-parity.gif` | 587KB | 8s, 480px | GKE vs EKS side-by-side | 1:37–1:55 |
+
 ## Usage
 
 ```markdown
 ![GKE Workloads](media/screenshots/gcp-console/05-gke-workloads-running.png)
-![Prediction Demo](media/gifs/portfolio-demo.gif)
+![Portfolio Demo](media/gifs/portfolio-demo.gif)
+![ML Predictions](media/gifs/ml-predictions.gif)
 ![Multi-Cloud](media/screenshots/aws-terminal/36-multicloud-side-by-side.png)
 ```
 

@@ -46,6 +46,10 @@ graph LR
 
 ## API Predictions — Live
 
+![ML Predictions](../media/gifs/ml-predictions.gif)
+
+*SHAP explainability, sentiment analysis, and demand forecasting — all running on Kubernetes.*
+
 | BankChurn SHAP | NLPInsight Sentiment | ChicagoTaxi Demand |
 |:---:|:---:|:---:|
 | ![BankChurn](../media/screenshots/apis/26-bankchurn-prediccion-real.png) | ![NLPInsight](../media/screenshots/apis/28-nlpinsight-prediccion.png) | ![ChicagoTaxi](../media/screenshots/apis/30-chicagotaxi-prediccion.png) |

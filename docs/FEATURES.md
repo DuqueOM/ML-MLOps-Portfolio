@@ -68,9 +68,9 @@
 
 ## Visual Evidence
 
-| Demo GIF | HPA / Resource Usage | Monitoring |
+| ML Predictions | Monitoring & Observability | Multi-Cloud Parity |
 |:---:|:---:|:---:|
-| ![Demo](media/gifs/portfolio-demo.gif) | ![HPA](media/screenshots/terminal/19-kubectl-top-pods.png) | ![Monitoring](media/screenshots/monitoring/34-grafana-dashboard.png) |
+| ![Predictions](media/gifs/ml-predictions.gif) | ![Monitoring](media/gifs/monitoring-observability.gif) | ![Multi-Cloud](media/gifs/multicloud-parity.gif) |
 
 ---
 
