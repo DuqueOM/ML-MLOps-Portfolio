@@ -40,7 +40,7 @@ Multi-cloud Terraform demonstrates IaC skills. The configurations are minimal (<
 ### 6. CarVision Project → Remove from portfolio
 
 **Evaluated**: MAPE 32.9% is not defensible for a pricing model. The Streamlit dashboard is the only unique component, but it doesn't compensate for weak model performance.  
-**Action**: Moved to `Applied-ML-Projects` repository. Portfolio reduced to 3 focused projects (BankChurn, NLPInsight, ChicagoTaxi) covering classification, NLP, and time-series domains.
+**Action**: Moved to [`Applied-ML-Projects`](https://github.com/DuqueOM/Applied-ML-Projects) repository. Portfolio reduced to 3 focused projects (BankChurn, NLPInsight, ChicagoTaxi) covering classification, NLP, and time-series domains.
 
 ### 7. Data Leakage Fix (ChicagoTaxi)
 

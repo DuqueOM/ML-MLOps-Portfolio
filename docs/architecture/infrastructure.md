@@ -98,13 +98,13 @@ flowchart TB
 | `k8s/overlays/gcp/` | GCP overlay: GKE deployments, GCS configmaps, Workload Identity SA, ingress |
 | `k8s/overlays/aws/` | AWS overlay: EKS deployments, S3 configmaps, IRSA SA, ingress |
 
-### Resource Calibration (2 uvicorn workers)
+### Resource Calibration (1 uvicorn worker per pod — [ADR-014](../decisions/014-single-worker-pod-ml-inference.md))
 
 | Service | Memory (real/limit) | CPU Target | HPA |
 |---------|-------------------|-----------|-----|
-| BankChurn | ~344Mi / 1Gi | 70% | 1–3 pods |
-| NLPInsight | ~283Mi / 1Gi | 70% | 1–3 pods |
-| ChicagoTaxi | ~431Mi / 512Mi | 70% | 1–3 pods |
+| BankChurn | ~344Mi / 1Gi | 50% | 1–5 pods |
+| NLPInsight | ~283Mi / 1Gi | 60% | 1–3 pods |
+| ChicagoTaxi | ~431Mi / 512Mi | 60% | 1–3 pods |
 
 > CPU-only HPA: ML models have fixed memory footprint. Memory-based scaling would never scale down.
 

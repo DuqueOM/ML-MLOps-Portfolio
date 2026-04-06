@@ -69,9 +69,9 @@ CPU-only scaling (memory is fixed for ML models loaded at startup):
 
 | Service | CPU Target | Min/Max Pods | Memory (real) |
 |---------|-----------|--------------|---------------|
-| BankChurn | 70% | 1–3 | ~344Mi |
-| NLPInsight | 70% | 1–3 | ~283Mi |
-| ChicagoTaxi | 70% | 1–3 | ~431Mi |
+| BankChurn | 50% | 1–5 | ~344Mi |
+| NLPInsight | 60% | 1–3 | ~283Mi |
+| ChicagoTaxi | 60% | 1–3 | ~431Mi |
 
 ## Smoke Tests (Post-Deploy Validation)
 

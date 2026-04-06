@@ -28,7 +28,7 @@
 | Project | Algorithm | Metric | Coverage | Latency p50 (GCP / AWS) |
 |---------|-----------|--------|:--------:|:---------:|
 | **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC **0.87** | 90% | 200ms / 110ms |
-| **[NLPInsight](projects/nlpinsight.md)** | FinBERT Transformer (CPU) | Acc **80.6%** | 98% | 78ms / 100ms |
+| **[NLPInsight](projects/nlpinsight.md)** | TF-IDF + LogReg (dual-backend) | Acc **80.6%** | 98% | 78ms / 100ms |
 | **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL (6.3M rows) + LightGBM | R² **0.96** | 91% | 100ms / 120ms |
 
 > **395+ tests** across all projects, **0 failures**, **85% CI threshold enforced**.
@@ -126,9 +126,9 @@ All services expose FastAPI with Swagger UI, Prometheus `/metrics`, and structur
 
 | Service | CPU Target | Pods | Memory |
 |---------|-----------|------|--------|
-| BankChurn | 70% | 1–3 | ~396Mi |
-| NLPInsight | 75% | 1–3 | ~283Mi |
-| ChicagoTaxi | 70% | 1–3 | ~288Mi |
+| BankChurn | 50% | 1–5 | ~396Mi |
+| NLPInsight | 60% | 1–3 | ~283Mi |
+| ChicagoTaxi | 60% | 1–3 | ~288Mi |
 
 ---
 
@@ -148,14 +148,14 @@ All services expose FastAPI with Swagger UI, Prometheus `/metrics`, and structur
 | Layer | Technologies |
 |-------|-------------|
 | **ML/DS** | scikit-learn 1.8.0, XGBoost, LightGBM, PySpark, Dask, SHAP, Optuna |
-| **API** | FastAPI, Pydantic, uvicorn (2 workers) |
+| **API** | FastAPI, Pydantic, uvicorn (1 worker per pod — [ADR-014](architecture/decisions.md)) |
 | **MLOps** | MLflow, DVC, Evidently AI, OpenTelemetry |
 | **Cloud** | GCP (GKE, GCS, AR, Cloud SQL), AWS (EKS, S3, ECR) |
 | **IaC** | Terraform (GCP + AWS), Kustomize overlays |
 | **Monitoring** | Prometheus, Grafana (25 panels), 16 alert rules |
 | **CI/CD** | GitHub Actions (CI + deploy-gcp + deploy-aws), Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit, Network Policies, PDBs |
-| **Testing** | pytest (295+ tests, 90–98%), Locust load testing |
+| **Testing** | pytest (395+ tests, 90–98%), Locust load testing |
 | **Managed ML** | AWS SageMaker + GCP Vertex AI (BankChurn) — [Guide](MANAGED_ML_GUIDE.md) |
 
 ---
@@ -182,6 +182,6 @@ docker compose -f docker-compose.demo.yml up -d --build
 
 **Built by [Duque Ortega Mutis](https://github.com/DuqueOM)** | [LinkedIn](https://linkedin.com/in/duqueom) | [Video Demo](https://youtu.be/7dFFqq2ROPw)
 
-*Portfolio v3.5.3 — March 2026 — Deployed on GCP (GKE) + AWS (EKS)*
+*Portfolio v3.6.0 — April 2026 — Deployed on GCP (GKE) + AWS (EKS)*
 
 </div>

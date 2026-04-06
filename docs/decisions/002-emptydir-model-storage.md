@@ -15,7 +15,7 @@ Each ML service requires its trained model artifact at startup. The artifacts ar
 | Service | Artifact | Size | Format |
 |---------|----------|------|--------|
 | BankChurn | StackingClassifier pipeline | 4.1 MB | `model.joblib` |
-| NLPInsight | TF-IDF vectorizer + LogReg | ~5 MB | `model.joblib` |
+| NLPInsight | TF-IDF + LogReg (production) / FinBERT (GPU backend) | ~5 MB / ~440 MB | `model.joblib` / `model.tar.gz` |
 | ChicagoTaxi | RandomForest + predictions | ~2 MB | `model.joblib` |
 
 The key design question: **where should the model live relative to the container lifecycle?**
