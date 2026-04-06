@@ -123,4 +123,4 @@ graph TB
 
 ---
 
-*Last Updated: March 2026 — Portfolio v3.5.3 (GKE + EKS deployed, NLB)*
+*Last Updated: March 2026 — Portfolio v3.6.0 (GKE + EKS deployed, NLB)*
