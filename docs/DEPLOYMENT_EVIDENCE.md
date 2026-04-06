@@ -354,7 +354,7 @@ No rules reference non-existent metrics (kube-state-metrics, cAdvisor, model_dri
 - **GCP Nodes**: 3× e2-medium (2 vCPU / 4 GB) — avg 16% CPU, 58% memory utilization
 - **AWS Nodes**: 3× t3.small (2 vCPU / 2 GB) — tighter memory budget, all pods running successfully
 - **Cost-effective**: Smallest viable instance types per cloud; upgrading only needed if P95 latency SLAs are missed under sustained load
-- **HPA**: All 3 services scale on CPU target (50-60% per [ADR-001](docs/decisions/001-cpu-only-hpa.md)/[ADR-014](docs/decisions/014-single-worker-pod-ml-inference.md)), verified functional on both clouds
+- **HPA**: All 3 services scale on CPU target (50-60% per [ADR-001](decisions/001-cpu-only-hpa.md)/[ADR-014](decisions/014-single-worker-pod-ml-inference.md)), verified functional on both clouds
 
 ## Security
 
