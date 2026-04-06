@@ -17,7 +17,7 @@
 
 ## Multi-Cloud: GKE vs EKS — Live
 
-![Multi-Cloud HERO: GKE vs EKS Side-by-Side](media/screenshots/aws-terminal/36-multicloud-side-by-side.png)
+<img src="media/gifs/portfolio-demo.gif" alt="Portfolio Demo" width="600">
 
 *Same 6 services running on GCP (GKE, us-central1) and AWS (EKS, us-east-1) — multi-cloud deployed and verified.*
 
@@ -33,7 +33,7 @@
 
 > **395+ tests** across all projects, **0 failures**, **85% CI threshold enforced**.
 
-![Demo GIF](media/gifs/portfolio-demo.gif)
+![Multi-Cloud HERO: GKE vs EKS Side-by-Side](media/screenshots/aws-terminal/36-multicloud-side-by-side.png)
 
 *End-to-end: API predictions with SHAP explainability, sentiment analysis, and demand forecasting.*
 
@@ -120,7 +120,7 @@ All services expose FastAPI with Swagger UI, Prometheus `/metrics`, and structur
 
 ## HPA Auto-Scaling
 
-![HPA Auto-Scaling](media/gifs/monitoring-observability.gif)
+<img src="media/gifs/monitoring-observability.gif" alt="Monitoring & Observability" width="480">
 
 *CPU-based HPA: 1→3 replicas under load, automatic scale-down after traffic subsides.*
 

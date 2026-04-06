@@ -4,7 +4,7 @@ Three ML systems built end-to-end: trained, containerized, deployed on Kubernete
 
 [![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
 
-![Portfolio Demo](../media/gifs/portfolio-demo.gif)
+<img src="../media/gifs/portfolio-demo.gif" alt="Portfolio Demo" width="600">
 
 ## System Architecture
 
@@ -46,7 +46,7 @@ graph LR
 
 ## API Predictions — Live
 
-![ML Predictions](../media/gifs/ml-predictions.gif)
+<img src="../media/gifs/ml-predictions.gif" alt="ML Predictions" width="480">
 
 *SHAP explainability, sentiment analysis, and demand forecasting — all running on Kubernetes.*
 

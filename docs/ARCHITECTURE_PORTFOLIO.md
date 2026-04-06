@@ -106,9 +106,9 @@ graph TB
 
 | Demo | Description |
 |------|-------------|
-| ![Predictions](media/gifs/ml-predictions.gif) | Live ML predictions: BankChurn (SHAP) + NLPInsight + ChicagoTaxi |
-| ![Monitoring](media/gifs/monitoring-observability.gif) | Grafana dashboards, Prometheus metrics, load testing |
-| ![Multi-Cloud](media/gifs/multicloud-parity.gif) | GKE vs EKS side-by-side: functional parity verification |
+| <img src="media/gifs/ml-predictions.gif" alt="ML Predictions" width="400"> | Live ML predictions: BankChurn (SHAP) + NLPInsight + ChicagoTaxi |
+| <img src="media/gifs/monitoring-observability.gif" alt="Monitoring" width="400"> | Grafana dashboards, Prometheus metrics, load testing |
+| <img src="media/gifs/multicloud-parity.gif" alt="Multi-Cloud" width="400"> | GKE vs EKS side-by-side: functional parity verification |
 
 > **Video**: [Portfolio Demo (3:30 min)](https://youtu.be/7dFFqq2ROPw) — full multi-cloud walkthrough
 

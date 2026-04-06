@@ -70,7 +70,7 @@
 
 | ML Predictions | Monitoring & Observability | Multi-Cloud Parity |
 |:---:|:---:|:---:|
-| ![Predictions](media/gifs/ml-predictions.gif) | ![Monitoring](media/gifs/monitoring-observability.gif) | ![Multi-Cloud](media/gifs/multicloud-parity.gif) |
+| <img src="media/gifs/ml-predictions.gif" alt="Predictions" width="240"> | <img src="media/gifs/monitoring-observability.gif" alt="Monitoring" width="240"> | <img src="media/gifs/multicloud-parity.gif" alt="Multi-Cloud" width="240"> |
 
 ---
 

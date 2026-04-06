@@ -41,10 +41,12 @@ All GIFs extracted from [Portfolio Demo Video](https://youtu.be/7dFFqq2ROPw) wit
 
 | GIF | Size | Duration | Content | Source Segment |
 |-----|------|----------|---------|----------------|
-| `portfolio-demo.gif` | 2.3MB | 10s, 600px | Hero overview | 0:00–1:20 |
-| `ml-predictions.gif` | 761KB | 8s, 480px | SHAP + Sentiment + Demand | 0:11–0:46 |
-| `monitoring-observability.gif` | 1.4MB | 8s, 480px | Grafana + Prometheus + Locust | 1:02–1:20 |
-| `multicloud-parity.gif` | 587KB | 8s, 480px | GKE vs EKS side-by-side | 1:37–1:55 |
+| `portfolio-demo.gif` | 3.5MB | 10s, 800×450 | Hero overview | 0:00–1:20 |
+| `ml-predictions.gif` | 1.9MB | 8s, 800×450 | SHAP + Sentiment + Demand | 0:11–0:46 |
+| `monitoring-observability.gif` | 3.2MB | 8s, 800×450 | Grafana + Prometheus + Locust | 1:02–1:20 |
+| `multicloud-parity.gif` | 1.5MB | 8s, 800×450 | GKE vs EKS side-by-side | 1:37–1:55 |
+
+> All GIFs rendered at 800×450 native resolution for crisp quality. Display size controlled via `<img width="...">` in docs.
 
 ## Usage
 

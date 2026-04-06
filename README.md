@@ -42,7 +42,7 @@ The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0 — SHAP pr
 
 <div align="center">
 
-![Portfolio Demo](docs/media/gifs/portfolio-demo.gif)
+<img src="docs/media/gifs/portfolio-demo.gif" alt="Portfolio Demo" width="600">
 
 *End-to-end: API predictions with SHAP explainability, multi-cloud deployment, monitoring*
 
