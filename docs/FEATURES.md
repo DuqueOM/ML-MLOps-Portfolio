@@ -68,9 +68,9 @@
 
 ## Visual Evidence
 
-| Demo GIF | HPA Autoscaling | Fairness Audit |
+| Demo GIF | HPA / Resource Usage | Monitoring |
 |:---:|:---:|:---:|
-| ![Demo](media/gifs/01-demo-prediccion.gif) | ![HPA](media/gifs/02-hpa-autoscaling.gif) | ![Fairness](media/gifs/03-fairness-audit.gif) |
+| ![Demo](media/gifs/portfolio-demo.gif) | ![HPA](media/screenshots/terminal/19-kubectl-top-pods.png) | ![Monitoring](media/screenshots/monitoring/34-grafana-dashboard.png) |
 
 ---
 

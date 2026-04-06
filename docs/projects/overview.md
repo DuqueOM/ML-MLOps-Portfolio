@@ -4,7 +4,7 @@ Three ML systems built end-to-end: trained, containerized, deployed on Kubernete
 
 [![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
 
-![Portfolio Demo](../media/gifs/01-demo-prediccion.gif)
+![Portfolio Demo](../media/gifs/portfolio-demo.gif)
 
 ## System Architecture
 

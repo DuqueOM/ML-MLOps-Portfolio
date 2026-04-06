@@ -39,7 +39,7 @@ media/
 
 ```markdown
 ![GKE Workloads](media/screenshots/gcp-console/05-gke-workloads-running.png)
-![Prediction Demo](media/gifs/01-demo-prediccion.gif)
+![Prediction Demo](media/gifs/portfolio-demo.gif)
 ![Multi-Cloud](media/screenshots/aws-terminal/36-multicloud-side-by-side.png)
 ```
 

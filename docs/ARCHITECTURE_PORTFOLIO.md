@@ -104,11 +104,11 @@ graph TB
 
 ### Live Demos
 
-| Demo | File | Description |
-|------|------|-------------|
-| ![Demo](media/gifs/01-demo-prediccion.gif) | `01-demo-prediccion.gif` | ML predictions: BankChurn (SHAP) + NLPInsight + ChicagoTaxi |
-| ![HPA](media/gifs/02-hpa-autoscaling.gif) | `02-hpa-autoscaling.gif` | HPA auto-scaling under load (1→3 replicas) |
-| ![Fairness](media/gifs/03-fairness-audit.gif) | `03-fairness-audit.gif` | Fairness audit CLI (disparate impact ratios) |
+| Demo | Description |
+|------|-------------|
+| ![Demo](media/gifs/portfolio-demo.gif) | ML predictions: BankChurn (SHAP) + NLPInsight + ChicagoTaxi |
+| ![HPA](media/screenshots/terminal/19-kubectl-top-pods.png) | HPA auto-scaling: CPU-based scaling, verified 1→3→1 replicas |
+| ![Monitoring](media/screenshots/monitoring/34-grafana-dashboard.png) | Grafana ML dashboard with production metrics |
 
 > **Video**: [Portfolio Demo (3:30 min)](https://youtu.be/7dFFqq2ROPw) — full multi-cloud walkthrough
 

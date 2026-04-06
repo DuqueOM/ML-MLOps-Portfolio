@@ -16,7 +16,7 @@ All three ML services (BankChurn, NLPInsight, ChicagoTaxi) load models into RAM 
 | Service | Measured Idle Memory | Under Load Memory | Delta |
 |---------|---------------------|-------------------|-------|
 | BankChurn (StackingClassifier + SHAP) | 332 Mi | ~335 Mi | < 1% |
-| NLPInsight (TF-IDF + LogReg) | 311 Mi | ~314 Mi | < 1% |
+| NLPInsight (TF-IDF + LogReg) | 140 Mi | ~143 Mi | < 2% |
 | ChicagoTaxi (RandomForest + cache) | 149 Mi | ~152 Mi | < 2% |
 
 ### Why Memory-Based HPA Fails for ML Inference

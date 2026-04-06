@@ -33,7 +33,7 @@
 
 > **395+ tests** across all projects, **0 failures**, **85% CI threshold enforced**.
 
-![Demo GIF](media/gifs/01-demo-prediccion.gif)
+![Demo GIF](media/gifs/portfolio-demo.gif)
 
 *End-to-end: API predictions with SHAP explainability, sentiment analysis, and demand forecasting.*
 
@@ -134,7 +134,7 @@ All services expose FastAPI with Swagger UI, Prometheus `/metrics`, and structur
 
 ## Responsible AI
 
-![Fairness Audit](media/gifs/03-fairness-audit.gif)
+![Fairness Audit](media/screenshots/monitoring/34-grafana-dashboard.png)
 
 - **Fairness Audits**: Disparate impact ratio + equal opportunity (BankChurn by Gender/Geography)
 - **Drift Detection**: KS + PSI + Evidently per feature, automated alerting

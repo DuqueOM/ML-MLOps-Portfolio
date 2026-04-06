@@ -31,7 +31,7 @@ Root cause: all 3 services used `uvicorn --workers 2` with CPU limits insufficie
 2. Competes for the **same CPU budget** enforced by `resources.limits.cpu`
 3. Does not give Kubernetes per-worker CPU visibility → HPA cannot respond accurately
 
-For CPU-bound ML inference — BankChurn uses `StackingClassifier` (5 base estimators + LR meta-learner) — multiple workers under a shared CPU limit cause **CPU thrashing**, not parallelism. Under 50 concurrent users at ~15 req/s, BankChurn needed ~1.05 CPU for inference alone. With 1 CPU limit split across 2 workers, requests queued and p50 jumped to 1700ms.
+For CPU-bound ML inference — BankChurn uses `StackingClassifier` (4 base learners + LR meta-learner) — multiple workers under a shared CPU limit cause **CPU thrashing**, not parallelism. Under 50 concurrent users at ~15 req/s, BankChurn needed ~1.05 CPU for inference alone. With 1 CPU limit split across 2 workers, requests queued and p50 jumped to 1700ms.
 
 **ChicagoTaxi** was the most critical: 2 workers sharing only **500m CPU** (effectively 250m each) — below minimum viable inference budget.
 
@@ -58,7 +58,7 @@ Scale-out strategy: Kubernetes pod replication (horizontal), not OS process repl
 | Service | Workers | CPU Limit | HPA Threshold | scaleUp Stabilization | Reason |
 |---------|---------|-----------|---------------|-----------------------|--------|
 | BankChurn | **1** | **1000m** | **50%** | **30s** | Async inference via `run_in_executor` (ADR-015) |
-| NLPInsight | 1 | 1000m | **60%** | **30s** | I/O-bound FinBERT — single worker sufficient |
+| NLPInsight | 1 | 1000m | **60%** | **30s** | TF-IDF+LogReg prod (5ms); FinBERT GPU path opt-in — single worker sufficient |
 | ChicagoTaxi | 1 | **750m** | **60%** | **30s** + added `behavior` | Lightweight LightGBM — single worker sufficient |
 
 ### BankChurn: Async Inference (ADR-015 Implemented)
@@ -118,7 +118,7 @@ Gunicorn pre-fork workers solve the `--workers` CPU problem (each worker gets sc
 
 - **BankChurn 1000m**: StackingClassifier inference via thread pool. Single process, no multi-worker contention.
 - **ChicagoTaxi 750m**: RandomForest regression + pandas lookup; 500m was insufficient even for 1 worker.
-- **NLPInsight 1000m**: FinBERT inference is GPU-bound in theory; on CPU-only nodes, 1000m is sufficient for the observed load profile.
+- **NLPInsight 1000m**: TF-IDF+LogReg production model is lightweight (~5ms inference). FinBERT is an optional GPU path, not the default deployment.
 
 ### HPA Threshold Rationale
 

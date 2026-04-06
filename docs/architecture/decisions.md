@@ -30,7 +30,7 @@ Most portfolios show tools used. This one shows **decisions made** — the trade
 
 | ADR | Decision | Choice | Key Rationale | Revisit When |
 |-----|----------|--------|---------------|--------------|
-| [003](../decisions/003-stacking-classifier-bankchurn.md) | BankChurn Model | **StackingClassifier (5 models)** | AUC 0.87 vs 0.85 single model. Documented that single LightGBM might be better in production (simpler, faster). Kept for engineering depth | Latency budget <50ms |
+| [003](../decisions/003-stacking-classifier-bankchurn.md) | BankChurn Model | **StackingClassifier (4 base + LR meta)** | AUC 0.87 vs 0.85 single model. Documented that single LightGBM might be better in production (simpler, faster). Kept for engineering depth | Latency budget <50ms |
 | [005](../decisions/005-compatible-release-pinning.md) | Dependency Pinning | **Compatible release (`~=`)** | numpy 2.x silently corrupted joblib-serialized models — worst category of bug (no error, wrong predictions). `~=` blocks major/minor, receives patches | Adopt lockfile-based approach |
 | [010](../decisions/010-shap-kernelexplainer-bankchurn.md) | SHAP Explainability | **KernelExplainer fallback** | TreeExplainer incompatible with StackingClassifier → all-zero SHAP in production. KernelExplainer computes in original 10-feature space for business interpretability. ~4.5s latency accepted (opt-in) | Pre-computed SHAP at training time |
 | [015](../decisions/015-async-inference-threadpool.md) | Async Inference | **ThreadPoolExecutor (4 threads)** | sklearn/XGBoost/LightGBM release GIL during C extensions → real threading parallelism. Resolved 81% error rate under load. CPU halved (2000m → 1000m) | GPU inference (different concurrency model) |

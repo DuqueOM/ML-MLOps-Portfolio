@@ -200,7 +200,7 @@ graph TB
 
 | Service | Endpoint | P50 | P95 | Notes |
 |---------|----------|-----|-----|-------|
-| BankChurn | `/predict` | **103ms** | **111ms** | StackingClassifier (5 models) |
+| BankChurn | `/predict` | **103ms** | **111ms** | StackingClassifier (4 base + LR meta) |
 | BankChurn | `/predict?explain=true` | **196ms** | — | +SHAP explainability |
 | NLPInsight | `/predict` | **5ms** | **15ms** | TF-IDF+LogReg, inference_time=2.3ms |
 | ChicagoTaxi | `/demand` | **75ms** | **460ms** | DataFrame filter on 355K rows |
@@ -441,11 +441,11 @@ No rules reference non-existent metrics (kube-state-metrics, cAdvisor, model_dri
 
 ### GIFs & Video
 
-| Demo | File | Description |
-|------|------|-------------|
-| ![Demo](media/gifs/01-demo-prediccion.gif) | `01-demo-prediccion.gif` | ML predictions: BankChurn (SHAP) + NLPInsight + ChicagoTaxi |
-| ![HPA](media/gifs/02-hpa-autoscaling.gif) | `02-hpa-autoscaling.gif` | HPA auto-scaling under load (1→3 replicas) |
-| ![Fairness](media/gifs/03-fairness-audit.gif) | `03-fairness-audit.gif` | Fairness audit CLI (disparate impact ratios) |
+| Demo | Description |
+|------|-------------|
+| ![Demo](media/gifs/portfolio-demo.gif) | ML predictions: BankChurn (SHAP) + NLPInsight + ChicagoTaxi |
+| ![HPA](media/screenshots/terminal/19-kubectl-top-pods.png) | HPA auto-scaling: CPU-based scaling, verified 1→3→1 replicas |
+| ![Monitoring](media/screenshots/monitoring/34-grafana-dashboard.png) | Grafana ML dashboard with production metrics |
 
 > **Video**: [Portfolio Demo (3:30 min)](https://youtu.be/7dFFqq2ROPw) — full multi-cloud walkthrough
 
