@@ -2,7 +2,6 @@
 
 <div style="text-align: center; margin-bottom: 1em;">
 <strong>3 ML Models &bull; Multi-Cloud (GKE + EKS) &bull; CI/CD &bull; Prometheus + Grafana + MLflow</strong>
-</div>
 
 [![CI](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
 [![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)
@@ -18,6 +17,8 @@
 ## Multi-Cloud: GKE vs EKS — Live
 
 <img src="media/gifs/portfolio-demo.gif" alt="Portfolio Demo" width="600">
+
+</div>
 
 *Same 6 services running on GCP (GKE, us-central1) and AWS (EKS, us-east-1) — multi-cloud deployed and verified.*
 
