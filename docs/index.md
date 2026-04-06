@@ -120,7 +120,7 @@ All services expose FastAPI with Swagger UI, Prometheus `/metrics`, and structur
 
 ## HPA Auto-Scaling
 
-![HPA Auto-Scaling](media/gifs/02-hpa-autoscaling.gif)
+![HPA Auto-Scaling](media/screenshots/terminal/19-kubectl-top-pods.png)
 
 *CPU-based HPA: 1→3 replicas under load, automatic scale-down after traffic subsides.*
 
