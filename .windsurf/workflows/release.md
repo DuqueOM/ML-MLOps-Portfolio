@@ -4,6 +4,7 @@ description: Full release process — version bump, changelog, Docker build, mul
 
 ## Release Workflow
 
+// turbo
 1. Check that all CI checks pass on `main`:
    ```bash
    gh run list --branch main --limit 5
@@ -14,6 +15,7 @@ description: Full release process — version bump, changelog, Docker build, mul
    make test
    ```
 
+// turbo
 3. Confirm there are no uncommitted changes:
    ```bash
    git status && git diff --stat

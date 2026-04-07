@@ -16,7 +16,8 @@ description: Guided incident response for ML service outages, performance degrad
    - **P3 (Minor)**: Degraded performance, p95 >500ms but functional
    - **P4 (Low)**: Cosmetic issues, non-blocking warnings
 
-3. **Collect diagnostic data**:
+// turbo
+3. **Gather diagnostic data**:
    ```bash
    kubectl logs -l app=<service> --tail=200 --since=30m
    kubectl describe pod -l app=<service>
@@ -36,6 +37,7 @@ description: Guided incident response for ML service outages, performance degrad
    - For P1/P2: apply hotfix, then proper fix in follow-up PR
    - For P3/P4: fix in normal development cycle
 
+// turbo
 6. **Verify fix**:
    ```bash
    kubectl rollout status deployment/<service>
@@ -48,4 +50,4 @@ description: Guided incident response for ML service outages, performance degrad
    - Add regression test to prevent recurrence
    - Update monitoring/alerts if gap detected
 
-8. **Communicate**: Summarize incident, impact, root cause, and preventive measures
+8. **Communicate**: Summarize incident, impact, and preventive measures

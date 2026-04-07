@@ -89,5 +89,65 @@ Full index: `docs/decisions/README.md`
 - **Python**: Type hints on all public functions, Pydantic for config, Google docstrings
 - **K8s YAML**: Kustomize overlays, labels include `app`, `version`, `environment`
 - **Terraform**: Variables with description + type, remote state with locking
+- **Docker**: Multi-stage builds, non-root USER, HEALTHCHECK, no COPY of secrets
 - **Tests**: `tests/unit/`, `tests/integration/`, `tests/e2e/` — minimum 80% coverage
 - **Docs**: MkDocs Material theme, deployed via GitHub Actions to GitHub Pages
+
+## Agentic Configuration (.windsurf/)
+
+This project uses a layered agentic architecture inspired by Anthropic's production patterns (AutoDream consolidation, fork-based subagents, 4-type memory taxonomy):
+
+```
+.windsurf/
+├── rules/                          # Behavioral constraints (7 rules)
+│   ├── 01-mlops-conventions.md     # always_on — core conventions
+│   ├── 02-kubernetes.md            # glob: k8s/**/*.yaml, helm/**/*.yaml
+│   ├── 03-terraform.md             # glob: **/*.tf
+│   ├── 04-python-ml.md             # glob: **/*.py
+│   ├── 05-github-actions.md        # glob: .github/workflows/*.yml
+│   ├── 06-documentation.md         # glob: docs/**/*.md
+│   └── 07-docker.md                # glob: **/Dockerfile*, **/docker-compose*.yml
+├── skills/                         # Multi-step procedures (6 skills)
+│   ├── debug-ml-inference/         # SKILL.md + adr-quick-reference.md
+│   ├── deploy-gke/                 # SKILL.md + checklist.md
+│   ├── deploy-aws/                 # SKILL.md + checklist.md
+│   ├── drift-detection/            # SKILL.md + psi-thresholds.md
+│   ├── model-retrain/              # SKILL.md + validation-criteria.md
+│   └── release-checklist/          # SKILL.md + version-template.md
+└── workflows/                      # Repeatable prompt templates (6 workflows)
+    ├── release.md                  # /release — full release process
+    ├── retrain.md                  # /retrain — model retraining
+    ├── load-test.md                # /load-test — Locust performance testing
+    ├── new-adr.md                  # /new-adr — new Architecture Decision Record
+    ├── incident.md                 # /incident — ML service incident response
+    └── drift-check.md              # /drift-check — PSI drift analysis
+```
+
+### Skills → Workflow Cross-References
+
+| Trigger | Skill Invoked | Workflow Chained |
+|---------|--------------|-----------------|
+| Inference bug | `debug-ml-inference` | `/incident` |
+| Drift alert (PSI ≥ 0.25) | `drift-detection` | `/retrain` |
+| Version release | `release-checklist` | `/release` |
+| Tag push (GKE) | `deploy-gke` | — |
+| Tag push (EKS) | `deploy-aws` | — |
+| Scheduled retrain | `model-retrain` | `/drift-check` post-deploy |
+
+### MCP Servers (Recommended)
+
+| MCP Server | Purpose | Integration Point |
+|------------|---------|-------------------|
+| `supabase-mcp-server` | Database access for feature stores | Training pipelines |
+| `pinecone-mcp-server` | Vector search for embeddings | NLPInsight service |
+| `@anthropic-ai/mcp-server-kubernetes` | K8s cluster management | Deploy skills |
+| `mcp-server-terraform` | Terraform plan/apply | IaC workflows |
+| `mcp-prometheus` | PromQL queries | Drift detection, monitoring |
+| `mcp-docker` | Container management | Build & test |
+
+### Cloud Integration
+
+| Provider | Auth | Registry | Storage | K8s | IaC |
+|----------|------|----------|---------|-----|-----|
+| **GCP** | Workload Identity | Artifact Registry | GCS | GKE (us-central1) | Terraform |
+| **AWS** | IRSA | ECR | S3 | EKS (us-east-1) | Terraform |

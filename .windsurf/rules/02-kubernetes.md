@@ -1,14 +1,15 @@
 ---
 trigger: glob
-globs: "k8s/**/*.yaml,k8s/**/*.yml"
+globs: "k8s/**/*.yaml,k8s/**/*.yml,helm/**/*.yaml,helm/**/*.yml"
 ---
 
-# Kubernetes Conventions
+# Kubernetes & Helm Conventions
 
 ## Structure
 - k8s/base/ contains shared manifests (Deployments, Services, ConfigMaps)
 - k8s/overlays/gcp/ for GKE-specific patches (Workload Identity annotations)
 - k8s/overlays/aws/ for EKS-specific patches (IRSA annotations)
+- helm/ml-portfolio/ for Helm chart (3 services + HPA + drift CronJob)
 - Always use Kustomize: `kubectl apply -k k8s/overlays/{gcp|aws}/`
 
 ## Labels (required on all resources)
