@@ -107,6 +107,42 @@ These are not explanations of what was built — they are records of what was **
 
 ---
 
+## Agentic Development Configuration
+
+This repository includes a production-grade agentic development setup that encodes
+the portfolio's 17 ADRs and 3 production incidents directly into the AI development
+environment — not as documentation to read, but as behavioral constraints the agent
+follows automatically.
+
+```
+AGENTS.md           — Project identity, critical DO NOT VIOLATE patterns, HPA targets
+.windsurf/
+├── rules/          — 7 context-aware rules (glob-triggered per file type)
+│   ├── 01-mlops-conventions.md     always_on: core ADR constraints
+│   ├── 02-kubernetes.md            k8s/**/*.yaml: HPA targets, single-worker
+│   ├── 03-terraform.md             **/*.tf: state management, tagging
+│   ├── 04-python-ml.md             **/*.py: async patterns, SHAP, pinning
+│   ├── 05-github-actions.md        .github/workflows/: CI standards
+│   ├── 06-documentation.md         docs/**/*.md: ADR format, content guidelines
+│   └── 07-docker.md                Dockerfile*: multi-stage, non-root, no model bake
+├── skills/         — 6 multi-step operational procedures with supplementary data
+│   ├── debug-ml-inference/         symptom → root cause → ADR cross-reference
+│   ├── deploy-gke/ deploy-aws/     pre/post-deploy checklists + rollback procedures
+│   ├── drift-detection/            per-service PSI thresholds + alert integration
+│   ├── model-retrain/              validation criteria + acceptance gates per service
+│   └── release-checklist/          full multi-cloud release + CHANGELOG template
+└── workflows/      — 6 structured prompt workflows (/incident, /retrain, /release,
+                      /load-test, /new-adr, /drift-check)
+```
+
+The agent knows: 50%/60%/60% CPU targets (not 70%), KernelExplainer for SHAP (not
+TreeExplainer), workers=1 (never N) under K8s. Operational knowledge encoded, not
+just referenced.
+
+→ [AGENTS.md](AGENTS.md) &nbsp;|&nbsp; [.windsurf/](.windsurf/)
+
+---
+
 ## 🌟 Production-Ready Projects
 
 ### 🏦 1. [BankChurn Predictor](BankChurn-Predictor/) — Customer Churn Prediction
@@ -160,42 +196,6 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 - **ADR-009 (data leakage)**: Found that `avg_fare` was computed from the same trips being predicted — future information leaked into training. Documented, fixed, R² re-measured with honest features only
 
 [📂 Project](ChicagoTaxi-Demand-Pipeline/) · [📄 Model Card](ChicagoTaxi-Demand-Pipeline/model_card.md)
-
----
-
-## Agentic Development Configuration
-
-This repository includes a production-grade agentic development setup that encodes
-the portfolio's 17 ADRs and 3 production incidents directly into the AI development
-environment — not as documentation to read, but as behavioral constraints the agent
-follows automatically.
-
-```
-AGENTS.md           — Project identity, critical DO NOT VIOLATE patterns, HPA targets
-.windsurf/
-├── rules/          — 7 context-aware rules (glob-triggered per file type)
-│   ├── 01-mlops-conventions.md     always_on: core ADR constraints
-│   ├── 02-kubernetes.md            k8s/**/*.yaml: HPA targets, single-worker
-│   ├── 03-terraform.md             **/*.tf: state management, tagging
-│   ├── 04-python-ml.md             **/*.py: async patterns, SHAP, pinning
-│   ├── 05-github-actions.md        .github/workflows/: CI standards
-│   ├── 06-documentation.md         docs/**/*.md: ADR format, content guidelines
-│   └── 07-docker.md                Dockerfile*: multi-stage, non-root, no model bake
-├── skills/         — 6 multi-step operational procedures with supplementary data
-│   ├── debug-ml-inference/         symptom → root cause → ADR cross-reference
-│   ├── deploy-gke/ deploy-aws/     pre/post-deploy checklists + rollback procedures
-│   ├── drift-detection/            per-service PSI thresholds + alert integration
-│   ├── model-retrain/              validation criteria + acceptance gates per service
-│   └── release-checklist/          full multi-cloud release + CHANGELOG template
-└── workflows/      — 6 structured prompt workflows (/incident, /retrain, /release,
-                      /load-test, /new-adr, /drift-check)
-```
-
-The agent knows: 50%/60%/60% CPU targets (not 70%), KernelExplainer for SHAP (not
-TreeExplainer), workers=1 (never N) under K8s. Operational knowledge encoded, not
-just referenced.
-
-→ [AGENTS.md](AGENTS.md) &nbsp;|&nbsp; [.windsurf/](.windsurf/)
 
 ---
 
