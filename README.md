@@ -1,390 +1,302 @@
-# ML/MLOps Portfolio — Production-Ready
+# 🚀 ML/MLOps Portfolio — Production-Ready + AI-Native
 
-<div align="center">
+**Professional Machine Learning & MLOps Portfolio featuring 3 Production-Ready Projects**
 
-**3 ML Services · GKE + EKS · 17 ADRs · Production Incidents Diagnosed**
+> 💡 **Unique Feature:** AI-assisted development ready — includes AGENTS.md configuration for Claude, Cursor, Windsurf, and other AI coding tools. This portfolio isn't just viewable by recruiters; it's **ready for AI-human collaboration** from day one.
 
-[![Portfolio Site](https://img.shields.io/badge/🌐_Portfolio-Live_Site-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
-[![YouTube Demo](https://img.shields.io/badge/📺_Demo-YouTube_3min-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
-[![Engineering Highlights](https://img.shields.io/badge/📋_Highlights-Quick_Reference-orange?style=for-the-badge)](ENGINEERING_HIGHLIGHTS.md)
+### 📚 View Full Documentation & Site
+
+[![Portfolio](https://img.shields.io/badge/%F0%9F%9A%80_Portfolio-Live_Demo-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
+[![AI-Ready](https://img.shields.io/badge/🤖_AI--Assisted-AGENTS.md-success?style=for-the-badge)](./AGENTS.md)
 
 ---
 
 [![CI Pipeline](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
 [![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)
-[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/)
-[![K8s](https://img.shields.io/badge/K8s-GKE_%2B_EKS-326CE5.svg?logo=kubernetes&logoColor=white)](k8s/)
-[![Terraform](https://img.shields.io/badge/Terraform-Multi--Cloud-7B42BC.svg?logo=terraform&logoColor=white)](infra/terraform/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-3.6.0-brightgreen.svg)](CHANGELOG.md)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](./BankChurn-Predictor/pyproject.toml)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](./docker-compose.demo.yml)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
-</div>
-
----
-
-## ⚡ Why This Portfolio Is Different
-
-Most ML portfolios show models that score well. This one shows what happens **after you deploy** — production incidents diagnosed from first principles, wrong decisions corrected and documented, trade-offs measured and justified.
-
-### Three production incidents diagnosed — root cause to fix, documented with data:
-
-| Incident | Root Cause | Fix | Outcome | ADR |
-|----------|------------|-----|---------|-----|
-| 81% error rate under load | `uvicorn --workers N` on K8s: workers share one CPU budget → thrashing, not parallelism | `asyncio.run_in_executor` + `ThreadPoolExecutor(4)` — sklearn C extensions release the GIL | Errors 81% → 0% · CPU 2000m → 1000m | [014](docs/decisions/014-single-worker-pod-ml-inference.md)/[015](docs/decisions/015-async-inference-threadpool.md) |
-| SHAP returning all zeros | `TreeExplainer` incompatible with `StackingClassifier` — evaluated 4 alternatives before deciding | `KernelExplainer` in original 10-feature space (interpretable by business, not 38 encoded cols) | Real SHAP values in production | [010](docs/decisions/010-shap-kernelexplainer-bankchurn.md) |
-| HPA never scaled down | Memory-based HPA + fixed ML footprint: `ceil(replicas × usage/target)` always ≥ current replicas | CPU-only HPA — CPU correlates with traffic; memory is constant signal | 3→1 pods in 8 minutes | [001](docs/decisions/001-cpu-only-hpa.md) |
+[![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2.svg?logo=mlflow&logoColor=white)](./BankChurn-Predictor/configs/config.yaml)
+[![DVC](https://img.shields.io/badge/DVC-Data%20Versioning-945DD6.svg)](./BankChurn-Predictor/dvc.yaml)
+[![FastAPI](https://img.shields.io/badge/FastAPI-API-009688.svg?logo=fastapi&logoColor=white)](./BankChurn-Predictor/app/fastapi_app.py)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B.svg?logo=streamlit&logoColor=white)](./CarVision-Market-Intelligence/app/streamlit_app.py)
 
 ---
 
-**This is not a tutorial project. It's an operational record.**
+[![Portfolio Demo](./docs/media/gifs/portfolio-demo.gif)](./docs/media/gifs/portfolio-demo.gif)
 
-The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0 — SHAP production bug, Grafana broken panels, AWS EKS LoadBalancer migration, async inference fix — each with root cause and resolution.
+### 📺 Watch the Full Demo
 
-<div align="center">
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/qmw9VlgUcn8)
 
-<img src="docs/media/gifs/portfolio-demo.gif" alt="Portfolio Demo" width="600">
-
-*End-to-end: API predictions with SHAP explainability, multi-cloud deployment, monitoring*
-
-</div>
+*End-to-end walkthrough: Architecture, MLflow experiments, API demos, and Streamlit dashboards*
 
 ---
 
-## 🗺️ Quick Navigation
+## 📑 Table of Contents
 
-| I want to understand... | Start here |
-|------------------------|-----------|
-| Why decisions were made (not just what) | [17 ADRs →](docs/decisions/) |
-| Incidents diagnosed in production | [ENGINEERING_HIGHLIGHTS.md →](ENGINEERING_HIGHLIGHTS.md) |
-| What was built and how it performs | [Key Metrics ↓](#-key-metrics) · [Projects ↓](#-production-ready-projects) |
-| How to run it locally in 5 minutes | [Quick Start ↓](#-quick-start) |
-| Multi-cloud deployment evidence | [GCP + AWS Evidence ↓](#️-multi-cloud-production-deployment) |
-| What broke and when | [CHANGELOG.md →](CHANGELOG.md) |
-
----
-
-## 📐 Architectural Decision Records — 17 Documented
-
-These are not explanations of what was built — they are records of what was **evaluated, rejected, and why**. Written for technical reviewers and hiring managers.
-
-| ADR | Decision | The Harder Choice |
-|-----|----------|-------------------|
-| [001](docs/decisions/001-cpu-only-hpa.md) | CPU-only HPA | Proved mathematically that memory HPA cannot scale down ML pods |
-| [003](docs/decisions/003-stacking-classifier-bankchurn.md) | StackingClassifier | Acknowledged single LightGBM achieves comparable AUC at lower cost |
-| [005](docs/decisions/005-compatible-release-pinning.md) | Compatible release pinning | numpy 2.x silently broke serialized models — silent failure, worst category |
-| [006](docs/decisions/006-drift-triggered-retraining.md) | CronJob over Airflow | Documented why Airflow is over-engineering for 3-model portfolio |
-| [007](docs/decisions/007-feature-store-decision.md) | No Feature Store | Designed full Feast architecture for when time-window features are needed |
-| [008](docs/decisions/008-argo-rollouts-canary.md) | Argo Rollouts canary | Progressive delivery with Prometheus analysis gates — not all-or-nothing rollout |
-| [009](docs/decisions/009-simplification-when-not-to-build.md) | Removed CarVision | MAPE 32.9% not defensible — knowing when not to build is harder |
-| [010](docs/decisions/010-shap-kernelexplainer-bankchurn.md) | SHAP KernelExplainer | Diagnosed production bug, evaluated 4 alternatives before deciding |
-| [014](docs/decisions/014-single-worker-pod-ml-inference.md) | Single-worker pods | Found uvicorn --workers anti-pattern under K8s from first principles |
-| [015](docs/decisions/015-async-inference-threadpool.md) | Async inference | GIL analysis → ThreadPoolExecutor → 81% errors → 0% |
-| [016](docs/decisions/016-gcp-aws-performance-parity.md) | GCP/AWS latency gap | $24/mo vs $145/mo — both meet SLA; chose FinOps over vanity metrics |
-| [017](docs/decisions/017-custom-vs-managed-ml-platforms.md) | Custom vs Managed ML | FastAPI+K8s primary, SageMaker/Vertex AI as documented complement |
-
-[View all 17 ADRs with full context, alternatives considered, and trade-offs →](docs/decisions/)
+* [💡 Why This Portfolio Exists](#-why-this-portfolio-exists)
+* [👨‍💻 About This Portfolio](#-about-this-portfolio)
+* [🤖 AI-Native Development](#-ai-native-development-new)
+* [🌟 TOP-3 Projects](#-top-3-production-ready-projects)
+* [🛠️ Tech Stack & MLOps](#%EF%B8%8F-tech-stack--mlops)
+* [📚 Documentation](#-documentation)
+* [🚀 Quick Start](#-quick-start)
+* [👤 Author](#-author)
 
 ---
 
-## 📊 Key Metrics
+## 💡 Why This Portfolio Exists
 
-| Project | Type | Best Metric | Coverage | Latency p50 | Key Engineering Decision |
-|---------|------|-------------|----------|-------------|--------------------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87** | 90% | 200ms GCP / 110ms AWS | Async inference via ThreadPoolExecutor · threshold 0.35 (30:1 cost ratio) |
-| [📝 NLPInsight](NLPInsight-Analyzer/) | NLP Sentiment | **Acc 80.6%** | 98% | 78ms GCP / 100ms AWS | Upgraded to harder dataset (97%→80.6%) for honest benchmark |
-| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96** | 91% | 100ms GCP / 120ms AWS | Data leakage found & fixed · lag features + temporal split |
+After 14 years managing high-pressure operations in hospitality and logistics, I discovered that the principles that make great operational systems—reliability, monitoring, reproducibility—are the same ones that make great ML systems.
 
-| Infrastructure | Status | Details |
-|----------------|--------|---------|
-| **GCP Deployment** | ✅ Verified | GKE 1-5 nodes, 6 pods, 0% error rate under 100 concurrent users |
-| **AWS Deployment** | ✅ Verified | EKS 1-5 nodes, 6 pods, CI/CD via GitHub Actions |
-| **CI/CD** | ✅ Unified | 10-job matrix, security scanning (Trivy/Bandit/Gitleaks), automated deploy to both clouds |
-| **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) · `terraform plan` = 0 drift |
-| **Monitoring** | ✅ Full Stack | Prometheus + Grafana (26 panels, 16 alert rules) + MLflow |
-| **Security** | ✅ Automated | Blocking on HIGH severity · non-root containers · Network Policies · IRSA/Workload Identity |
+This portfolio demonstrates that transition: not just ML models that achieve good metrics, but **production-ready systems** built with the discipline of someone who understands that downtime costs real money and poor monitoring creates real problems.
 
-> **☁️ Deployment Status**: Both clusters were deployed to production, load-tested, and fully verified — all screenshots, metrics, and evidence are from real running infrastructure. Clusters are provisioned on-demand via Terraform and decommissioned after validation (~$300/month combined when running). This is a deliberate **FinOps practice**: infrastructure is reproducible and re-deployable in <15 minutes with `terraform apply`.
+Every project here answers the question: "Would I trust this in production at 2am?"
 
 ---
 
-## 🌟 Production-Ready Projects
+## 🤖 AI-Native Development [NEW]
 
-### 🏦 1. [BankChurn Predictor](BankChurn-Predictor/) — Customer Churn Prediction
+### **What Makes This Portfolio Different**
 
-Production-grade churn prediction with **StackingClassifier** ensemble (RF + GradientBoosting + XGBoost + LightGBM → LogisticRegression meta-learner). `ChurnFeatureEngineer` with domain-specific ratios, bins, and risk scores. MLflow experiment tracking.
+This isn't just code—it's **AI-collaboration ready**. The repository includes comprehensive AI assistant configuration:
 
-| AUC-ROC | F1 | Precision | Recall | Coverage | In-Pod Latency (GKE) |
-|---------|-----|-----------|--------|----------|----------------------|
-| **0.87** | 0.62 | 0.73 | 0.54 | 90% | 103ms p50 / 111ms p95 |
-
-> **Why these metrics**: AUC-ROC is the primary metric — 20.4% churn rate (4:1 imbalance) makes accuracy meaningless (a "never churn" model scores 79.6%). **Production threshold: 0.35** (not default 0.50) — missed churner costs ~$1,500–$3,000 LTV vs. ~$50 retention offer (30:1 cost ratio). At 0.35 Recall = 0.78; at 0.50 Recall = 0.54. The precision trade-off is intentional and quantified with business context.
-
-**Key engineering decisions:**
-- **ADR-015**: `uvicorn --workers N` under Kubernetes causes CPU thrashing (shared budget). Fixed via `asyncio.run_in_executor` + `ThreadPoolExecutor(4)` exploiting GIL release in sklearn C extensions → 81% error rate → 0%, CPU 2000m → 1000m
-- **ADR-010**: SHAP returning all-zero values in production. `TreeExplainer` incompatible with `StackingClassifier`. Evaluated 4 alternatives → `KernelExplainer` in original 10-feature space for business interpretability
-- **ADR-003**: 7-model comparison (5-fold CV). StackingClassifier AUC 0.87 vs single LightGBM 0.86. Documented that simpler model wins in production with strict latency SLAs
-
-[📂 Project](BankChurn-Predictor/) · [📄 Model Card](BankChurn-Predictor/models/model_card.md) · [📺 Video](https://youtu.be/7dFFqq2ROPw)
-
----
-
-### 📝 2. [NLPInsight Analyzer](NLPInsight-Analyzer/) — Financial Sentiment Analysis
-
-Financial sentiment analysis on **Twitter Financial News** — 11,931 real financial tweets with stock tickers, informal language, and noisy text. TF-IDF + LogReg production model with dual-backend support (FinBERT for GPU environments).
-
-| Accuracy | F1 (weighted) | F1 (macro) | Labels | Dataset |
-|----------|---------------|------------|--------|---------|
-| **80.6%** | 0.810 | 0.748 | 3 | 11,931 tweets |
-
-> **Why these metrics**: 80.6% on real financial tweets (vs 97% on the easier Financial PhraseBank) is the honest choice. The dataset upgrade — from 4,845 curated sentences to 11,931 noisy real tweets — deliberately lowered the metric to produce a more defensible benchmark. F1-macro (0.748) guards against ignoring the minority class.
-
-**Key engineering decisions:**
-- **ADR-009**: Chose harder dataset over better-looking number — intellectual honesty over portfolio optics
-- Dual-backend design: TF-IDF+LogReg for CPU production (5ms p50 in-pod), FinBERT for GPU environments — same API contract, different serving backend
-
-[📂 Project](NLPInsight-Analyzer/) · [📄 Model Card](NLPInsight-Analyzer/model_card.md) · [📺 Video](https://youtu.be/7dFFqq2ROPw)
-
----
-
-### 🚕 3. [ChicagoTaxi Demand Pipeline](ChicagoTaxi-Demand-Pipeline/) — Batch Processing at Scale
-
-Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpark ETL into partitioned Parquet, with batch prediction using lag features and temporal split.
-
-| Raw Rows | Clean Rows | ETL Throughput | Model R² | RMSE | MAE | Compression |
-|----------|------------|----------------|----------|------|-----|-------------|
-| **6.36M** | 5.37M | 3,320 rows/sec | **0.96** | 7.87 | 2.85 | 97% (2.8GB→95MB) |
-
-> **Why this project**: Complements the online inference services with batch/data engineering skills. The R² 0.96 is **leak-free** — same-period aggregate features (`avg_fare`, `avg_speed`) were identified as leakage, removed, and replaced with lag features (1h, 24h, 168h, rolling 24h) and a temporal train/test split. R² improved from 0.905 → 0.965 with honest features. The initial high R² was a signal to investigate, not celebrate.
-
-**Key engineering decisions:**
-- **ADR-009 (data leakage)**: Found that `avg_fare` was computed from the same trips being predicted — future information leaked into training. Documented, fixed, R² re-measured with honest features only
-
-[📂 Project](ChicagoTaxi-Demand-Pipeline/) · [📄 Model Card](ChicagoTaxi-Demand-Pipeline/model_card.md)
-
----
-
-## 🛠️ Tech Stack
-
-| Category | Technologies |
-|----------|-------------|
-| **ML/DS** | Scikit-learn, XGBoost, LightGBM, HuggingFace (FinBERT), PySpark, Dask, Pandas, NumPy, SHAP, Optuna |
-| **MLOps** | MLflow (9 experiments), DVC, Docker, Kubernetes, Terraform, Argo Rollouts |
-| **API** | FastAPI, Pydantic, async inference (ThreadPoolExecutor + asyncio) |
-| **Cloud & IaC** | GCP (GKE, GCS, Artifact Registry, Cloud SQL, Workload Identity), AWS (EKS, S3, ECR, RDS, IRSA), Terraform, Kustomize |
-| **Monitoring** | Prometheus (16 alert rules), Grafana (26-panel dashboard), Locust load testing, Evidently drift detection |
-| **CI/CD** | GitHub Actions (CI + deploy-gcp + deploy-aws + smoke tests), Codecov, pre-commit hooks |
-| **Security** | Gitleaks, Bandit, Trivy, pip-audit, non-root containers, Network Policies, Pod Disruption Budgets |
-| **Testing** | pytest (395+ tests, 90–98% coverage), Pandera data validation, 43 adversarial tests, Codecov |
-| **Responsible AI** | Fairness audits (disparate impact + equal opportunity), SHAP explainability, drift detection (KS + PSI) |
-| **Managed ML** | AWS SageMaker Endpoints, GCP Vertex AI Custom Prediction Routines ([ADR-017](docs/decisions/017-custom-vs-managed-ml-platforms.md)) |
-
-> **v3.6.0 Highlights**: SageMaker + Vertex AI endpoints (multi-paradigm ML serving), async inference fix (ADR-015), single-worker pod pattern (ADR-014), GCP/AWS performance parity analysis (ADR-016). Full history in [CHANGELOG.md](CHANGELOG.md).
-
----
-
-## 🏗️ Architecture
-
-```mermaid
-graph TB
-    subgraph "CI/CD Pipeline — GitHub Actions"
-        GH[GitHub Actions] --> LINT[Lint + Security<br/>Bandit · Gitleaks · Trivy]
-        GH --> TEST[pytest · 395+ tests<br/>90-98% coverage]
-        GH --> BUILD[Docker Build]
-        BUILD --> AR[GCP Artifact Registry]
-        BUILD --> ECR[AWS ECR]
-    end
-
-    subgraph "Training Pipeline"
-        DATA[Raw Data] --> FE[Feature Engineering]
-        FE --> TRAIN[Model Training<br/>MLflow Tracking]
-        TRAIN --> GCS[GCS Models]
-        TRAIN --> S3[S3 Models]
-    end
-
-    subgraph "GCP — GKE Cluster (us-central1)"
-        direction TB
-        GCE_ING[nginx Ingress<br/>LoadBalancer IP] --> BC1[BankChurn<br/>StackingClassifier]
-        GCE_ING --> NL1[NLPInsight<br/>TF-IDF+LogReg]
-        GCE_ING --> CT1[ChicagoTaxi<br/>Batch Predictions]
-        BC1 -.->|Init Container| GCS
-        NL1 -.->|Init Container| GCS
-        CT1 -.->|Init Container| GCS
-        PROM1[Prometheus] --> GRAF1[Grafana]
-        DRIFT1[Drift CronJob] --> BC1
-        MLF1[MLflow]
-    end
-
-    subgraph "AWS — EKS Cluster (us-east-1)"
-        direction TB
-        AWS_ING[nginx Ingress<br/>NLB] --> BC2[BankChurn<br/>StackingClassifier]
-        AWS_ING --> NL2[NLPInsight<br/>TF-IDF+LogReg]
-        AWS_ING --> CT2[ChicagoTaxi<br/>Batch Predictions]
-        BC2 -.->|Init Container| S3
-        NL2 -.->|Init Container| S3
-        CT2 -.->|Init Container| S3
-        PROM2[Prometheus] --> GRAF2[Grafana]
-        DRIFT2[Drift CronJob] --> BC2
-        MLF2[MLflow]
-    end
-
-    subgraph "IaC — Terraform + Kustomize"
-        TF[Terraform<br/>GCP + AWS modules] --> GCE_ING
-        TF --> AWS_ING
-        KUST[Kustomize Overlays<br/>base + gcp + aws] --> GCE_ING
-        KUST --> AWS_ING
-    end
+```
+.windsurf/
+├── rules/                    # AI coding assistant instructions
+│   ├── architecture.md       # System design decisions
+│   ├── coding-standards.md   # Code generation rules
+│   └── mlops-patterns.md     # Best practices
+└── AGENTS.md                 # Universal AI assistant config
 ```
 
-For detailed architecture docs, see [docs/ARCHITECTURE_PORTFOLIO.md](docs/ARCHITECTURE_PORTFOLIO.md).
+**Compatible with:**
+- 🌊 Windsurf IDE
+- 🎯 Cursor
+- 🤖 Claude Code
+- 💻 GitHub Copilot
+- 🔮 And more...
+
+**Why this matters for recruiters:**
+> *Shows forward thinking: Not just "can code," but "designs systems for human-AI collaboration." This is Staff+ engineering mindset—thinking about knowledge scalability, not just code scalability.*
+
+**Try it yourself:**
+1. Clone this repo
+2. Open in Windsurf/Cursor/Claude Code
+3. Ask AI: "Explain the BankChurn architecture"
+4. Watch it give you context-aware, accurate responses
+
+[📖 Read full AI setup guide →](./AGENTS.md)
 
 ---
 
-## 🚀 Quick Start
+## 👨‍💻 About This Portfolio
 
-```bash
-# 1. Clone and enter
-git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git && cd ML-MLOps-Portfolio
+This repository focuses on **3 Main Projects (Top-3)** brought to professional software engineering standards, demonstrating Senior/Enterprise capabilities in:
 
-# 2. Generate demo models (first time only, ~2 min)
-bash scripts/setup_demo_models.sh
+* ✅ **Advanced Machine Learning**: Ensembles, Regression, Classification with imbalance handling
+* ✅ **MLOps & CI/CD**: Unified automated pipelines (`ci-mlops.yml`), rigorous testing, and security scanning
+* ✅ **Software Engineering**: Modular architecture, Pydantic validation, FastAPI-based APIs
+* ✅ **Deployment**: Complete Dockerization and interactive dashboards (Streamlit)
+* ✅ **AI-Native**: AGENTS.md configuration for AI-assisted development
 
-# 3. Start full stack (APIs + MLflow + Dashboard, ~3 min build)
-docker compose -f docker-compose.demo.yml up -d --build
+---
 
-# 4. Wait for services and verify health (~60s)
-sleep 60 && bash scripts/run_demo_tests.sh
+## 🌟 TOP-3: Production-Ready Projects
 
-# 5. Access services
-#    🏦 BankChurn API:    http://localhost:8001/docs
-#    📝 NLPInsight API:   http://localhost:8003/docs
-#    🚕 ChicagoTaxi API:  http://localhost:8004/docs
-#    📊 MLflow:           http://localhost:5000
+### 🏦 1. [BankChurn Predictor](./BankChurn-Predictor) — Customer Churn Prediction
+
+🎬 Click to expand demo
+
+[![BankChurn Demo](./docs/media/gifs/bankchurn-preview.gif)](./docs/media/gifs/bankchurn-preview.gif)
+
+**Production-grade customer churn prediction system for banking**
+
+| Metric | Value | Notes |
+| --- | --- | --- |
+| **F1-Score** | **0.64** | Tuned RandomForest |
+| **AUC-ROC** | **0.87** | 3 experiments tracked |
+| **Coverage** | 79% | Unit + Integration |
+| **Latency** | <50ms | FastAPI async |
+
+* **Architecture**: Modular Python package (`src/bankchurn`) with Pydantic config validation
+* **MLOps**: MLflow experiment tracking with baseline/tuned/overfit comparison runs
+* **Tech Stack**: FastAPI, Scikit-learn (Ensemble), Docker, DVC
+* **Model Card**: [View](./BankChurn-Predictor/models/model_card.md)
+
+[📂 View Project →](./BankChurn-Predictor) | [📺 Video Demo](https://youtu.be/qmw9VlgUcn8)
+
+---
+
+### 🚗 2. [CarVision Market Intelligence](./CarVision-Market-Intelligence) — Vehicle Price Prediction
+
+🎬 Click to expand demo (API + Streamlit)
+
+**API Demo:**
+[![CarVision API Demo](./docs/media/gifs/carvision-preview.gif)](./docs/media/gifs/carvision-preview.gif)
+
+**Streamlit Dashboard:**
+[![Streamlit Dashboard](./docs/media/gifs/streamlit-carvision.gif)](./docs/media/gifs/streamlit-carvision.gif)
+
+**Vehicle valuation platform with BI Dashboard and REST API**
+
+| Metric | Value | Notes |
+| --- | --- | --- |
+| **R²** | **0.77** | RandomForest tuned |
+| **RMSE** | **$4,396** | 3 experiments tracked |
+| **Coverage** | 97% | Comprehensive tests |
+
+* **User Experience**: Streamlit dashboard with 4 sections: Overview, Market Analysis, Model Metrics, Price Predictor
+* **Backend**: REST API (FastAPI) with centralized `FeatureEngineer` class for consistent inference
+* **Modeling**: Optimized RandomForest with `[features → pre → model]` pipeline, bootstrap CI, temporal backtest
+* **Model Card**: [View](./CarVision-Market-Intelligence/models/model_card.md)
+
+[📂 View Project →](./CarVision-Market-Intelligence) | [📺 Video Demo](https://youtu.be/qmw9VlgUcn8)
+
+---
+
+### 📱 3. [TelecomAI Customer Intelligence](./TelecomAI-Customer-Intelligence) — Plan Recommendation
+
+🎬 Click to expand demo
+
+[![TelecomAI Demo](./docs/media/gifs/telecom-preview.gif)](./docs/media/gifs/telecom-preview.gif)
+
+**Strategic customer intelligence for telecommunications**
+
+| Metric | Value | Notes |
+| --- | --- | --- |
+| **AUC-ROC** | **0.84** | GradientBoosting |
+| **F1-Score** | **0.63** | 3 experiments tracked |
+| **Coverage** | 97% | Full test suite |
+
+* **Modeling**: GradientBoosting and RandomForest classifiers with experiment comparison
+* **Pipeline**: Standardized preprocessing with MLflow tracking
+* **Automation**: End-to-end tests integrated in unified CI pipeline
+* **Model Card**: [View](./TelecomAI-Customer-Intelligence/models/model_card.md)
+
+[📂 View Project →](./TelecomAI-Customer-Intelligence) | [📺 Video Demo](https://youtu.be/qmw9VlgUcn8)
+
+---
+
+## 🛠️ Tech Stack & MLOps
+
+### Unified CI/CD Infrastructure (Staff-Level)
+
+The entire portfolio is validated by a single master workflow (`ci-mlops.yml`) that orchestrates:
+
+```
+┌───────────────────────────────────────────────────────────┐
+│  CI/CD Pipeline: .github/workflows/ci-mlops.yml           │
+├───────────────────────────────────────────────────────────┤
+│  1. Build & Env    → Python 3.11/3.12 matrix, pip cache   │
+│  2. Data Quality   → Validate data before tests           │
+│  3. Code Quality   → flake8, black, mypy, bandit          │
+│  4. Testing        → pytest with coverage reports         │
+│  5. Docker Build   → Multi-stage, push to GHCR            │
+│  6. Security       → Trivy container scanning             │
+└───────────────────────────────────────────────────────────┘
 ```
 
-For API examples, monitoring setup, and troubleshooting → [QUICK_START.md](QUICK_START.md) and [RUNBOOK.md](RUNBOOK.md).
+### Key Technologies
 
----
-
-## ☁️ Multi-Cloud Production Deployment
-
-Same ML system deployed cloud-agnostically on **both GCP and AWS**:
-
-<div align="center">
-
-![Multi-Cloud HERO: GKE vs EKS](docs/media/screenshots/aws-terminal/36-multicloud-side-by-side.png)
-
-*Same 6 services running on GCP (GKE, us-central1) and AWS (EKS, us-east-1) — simultaneously deployed and verified*
-
-</div>
-
-| Component | GCP ✅ | AWS ✅ |
-|-----------|--------|--------|
-| **K8s Cluster** | GKE 1-5 nodes (`us-central1`) | EKS 1-5 nodes (`us-east-1`) |
-| **Container Registry** | Artifact Registry | ECR (3 private repos) |
-| **Model Storage** | GCS (versioned) | S3 (encrypted, versioned) |
-| **Load Balancer** | nginx Ingress (static IP) | nginx Ingress (NLB) |
-| **IAM for Pods** | Workload Identity | IRSA |
-| **CI/CD** | `deploy-gcp.yml` | `deploy-aws.yml` |
-| **IaC** | `infra/terraform/gcp/` | `infra/terraform/aws/` |
-| **Drift Detection** | CronJob (daily 06:00 UTC) | CronJob (daily 06:00 UTC) |
-| **Monitoring** | Prometheus + Grafana + MLflow | Prometheus + Grafana + MLflow |
-
-> **Cloud-Agnostic Design**: Monitoring stack, K8s patterns (HPA, anti-affinity, health probes), and CI/CD structure are identical across clouds. Only the init container SDK and ingress annotations differ. See [ADR-013](docs/decisions/013-multicloud-parity-policy.md).
-
-> **💰 Cost-Aware**: GCP ~$51/month (4× e2-medium). AWS ~$45/month (3× t3.small). Performance difference documented in [ADR-016](docs/decisions/016-gcp-aws-performance-parity.md) — accepted as FinOps trade-off, not hidden.
-
-<div align="center">
-
-[![🎬 Full Demo — YouTube (3:30 min)](https://img.shields.io/badge/🎬_Full_Demo-YouTube_(3:30_min)-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
-
-</div>
-
-<details>
-<summary><strong>📊 GCP Evidence — click to expand</strong></summary>
-
-#### GKE Workloads — 6 services running
-![GKE Workloads](docs/media/screenshots/gcp-console/05-gke-workloads-running.png)
-
-#### Grafana ML Dashboard — 26 panels
-![Grafana](docs/media/screenshots/monitoring/34-grafana-dashboard.png)
-
-#### GitHub Actions Pipeline — 10 jobs green
-![CI/CD](docs/media/screenshots/cicd/46-workflow-completado.png)
-
-#### BankChurn prediction with SHAP explainability
-![Prediction](docs/media/screenshots/apis/26-bankchurn-prediccion-real.png)
-
-</details>
-
-<details>
-<summary><strong>☁️ AWS Evidence — click to expand</strong></summary>
-
-#### EKS Cluster — Active (us-east-1)
-![EKS Cluster](docs/media/screenshots/aws-console/29-eks-cluster-overview.png)
-
-#### EKS Workloads — 6 pods Running
-![EKS Pods](docs/media/screenshots/aws-console/30-eks-workloads-running.png)
-
-#### ECR — 3 Private Repositories
-![ECR](docs/media/screenshots/aws-console/31-ecr-repositories.png)
-
-#### S3 — Model Storage (encrypted, versioned)
-![S3](docs/media/screenshots/aws-console/32-s3-buckets-models.png)
-
-#### Health Checks via ELB
-![Health](docs/media/screenshots/aws-terminal/34-health-checks-elb.png)
-
-#### SHAP Prediction on EKS
-![SHAP EKS](docs/media/screenshots/aws-terminal/35-bankchurn-prediction-elb.png)
-
-</details>
+| Category | Advanced | Proficient | Familiar |
+| --- | --- | --- | --- |
+| **MLOps** | Docker, GitHub Actions, MLflow | Kubernetes, Terraform | DVC |
+| **Cloud** | AWS (EKS, S3, ECR) | Prometheus, Grafana | GCP basics |
+| **ML** | Scikit-learn, XGBoost | Pandas, NumPy | TensorFlow, PyTorch |
+| **AI Tools** | Windsurf, Claude Code | Cursor, Copilot | - |
 
 ---
 
 ## 📚 Documentation
 
 | Document | Description |
-|----------|-------------|
-| **[⭐ Engineering Highlights](ENGINEERING_HIGHLIGHTS.md)** | **Start here** — incidents diagnosed, decisions made, trade-offs documented. Quick reference for technical reviewers |
-| **[ADRs (17)](docs/decisions/)** | Every non-trivial architectural decision with context, alternatives evaluated, and trade-offs accepted |
-| **[Quick Start](QUICK_START.md)** | 5-minute demo with API examples and health checks |
-| **[Architecture](docs/ARCHITECTURE_PORTFOLIO.md)** | System design, Mermaid diagrams, infrastructure, CI/CD workflow |
-| **[CHANGELOG](CHANGELOG.md)** | Full incident history from v1.0.0 to v3.6.0 — what broke, when, and how it was fixed |
-| **[Operations Runbook](RUNBOOK.md)** | Day-to-day commands — Docker, K8s, Terraform deployment |
-| **[Multi-Cloud Comparison](docs/MULTI_CLOUD_COMPARISON.md)** | GCP vs AWS with real measured data |
-| **[Deployment Evidence](docs/DEPLOYMENT_EVIDENCE.md)** | Screenshots, load tests, production verification |
-| **[Managed ML Guide](docs/MANAGED_ML_GUIDE.md)** | SageMaker + Vertex AI deployment guide ([ADR-017](docs/decisions/017-custom-vs-managed-ml-platforms.md)) |
-| **[Security Policy](SECURITY.md)** | Vulnerability reporting and scanning details |
+| --- | --- |
+| **[Architecture](./docs/ARCHITECTURE_PORTFOLIO.md)** | System design with Mermaid diagrams, Docker multi-stage, CI/CD pipeline |
+| **[Operations Runbook](./docs/OPERATIONS_PORTFOLIO.md)** | Deployment guide (Docker/K8s), monitoring, troubleshooting |
+| **[AI Assistant Guide](./AGENTS.md)** | Configuration for AI-assisted development (Windsurf, Cursor, etc.) |
+| **[Runbook (Quick Reference)](./RUNBOOK.md)** | Copy-paste commands for common operations |
+| **[Release Process](./docs/RELEASE.md)** | Release workflow, GHCR publishing, rollback procedures |
 
 ---
 
-## 🔧 Development Process
+## 📈 Quality Metrics
 
-This portfolio was developed using **AI-assisted tools** (Cursor / Windsurf Cascade) for code generation and boilerplate acceleration. All architectural decisions, MLOps pipeline design, infrastructure choices, system integration, and incident resolution were made by the author.
+| Metric | Status | Target | Achievement |
+| --- | --- | --- | --- |
+| **CI Pipeline** | 🟢 **Passing** | 100% Green | ✅ 100% |
+| **Test Coverage** | 🟢 **79%–97%** | ≥79% BankChurn, ≥97% others | ✅ Met |
+| **Security** | 🛡️ **Scanned** | 0 Critical CVEs | ✅ 0 Critical |
+| **Docker Builds** | 🐳 **Multi-Stage** | <500MB images | ✅ Optimized |
+| **Python Support** | ✅ **3.11 & 3.12** | Matrix Testing | ✅ Both versions |
+| **AI-Ready** | 🤖 **AGENTS.md** | AI assistant compatible | ✅ Configured |
 
-AI tools were used as **accelerators, not replacements** for engineering judgment — the same way senior engineers use code completion and documentation generators to increase throughput while retaining full ownership of design decisions.
+---
 
-The author operates all systems independently: CI/CD pipeline debugging, Docker optimization, Terraform configuration, production monitoring, and load testing.
+## 🚀 Quick Start
+
+### ⚡ 5-Command Demo (Copy-Paste Ready)
+
+```bash
+# 1. Clone and enter
+git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git && cd ML-MLOps-Portfolio
+
+# 2. Generate demo models (first time only)
+bash scripts/setup_demo_models.sh
+
+# 3. Start full stack (APIs + MLflow + Dashboard)
+docker-compose -f docker-compose.demo.yml up -d --build
+
+# 4. Wait for services and verify
+sleep 60 && bash scripts/run_demo_tests.sh
+
+# 5. Open services
+echo "
+🏦 BankChurn API:    http://localhost:8001/docs
+🚗 CarVision API:    http://localhost:8002/docs
+🚗 CarVision UI:     http://localhost:8501
+📱 TelecomAI API:    http://localhost:8003/docs
+📊 MLflow:           http://localhost:5000
+"
+```
+
+### 🤖 AI-Assisted Development Setup
+
+```bash
+# If using Windsurf IDE:
+1. Open this repo in Windsurf
+2. AI automatically detects .windsurf/rules/
+3. Ask: "Explain the architecture"
+4. Get context-aware responses
+
+# If using Cursor/Claude Code:
+1. Open this repo
+2. AI reads AGENTS.md
+3. Start coding with full project context
+```
 
 ---
 
 ## 👤 Author
 
-**Duque Ortega Mutis** · MLOps / ML Platform Engineer
+**Duque Ortega Mutis (DuqueOM)**  
+*Machine Learning & MLOps Engineer*
 
-14 years running operations taught me that systems fail silently when nobody monitors them, nobody documents decisions, and nobody thinks about what happens at 2am. That's the mindset I bring to ML infrastructure — not just deploying models, but building systems you can actually trust in production.
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin)](https://linkedin.com/in/duqueom)
-[![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=flat&logo=github)](https://github.com/DuqueOM)
-[![Portfolio](https://img.shields.io/badge/Portfolio-Live_Docs-blue?style=flat)](https://duqueom.github.io/ML-MLOps-Portfolio/)
-[![Email](https://img.shields.io/badge/Email-Contact-EA4335?style=flat&logo=gmail)](mailto:DuqueOrtegaMutis@gmail.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://linkedin.com/in/duqueom)
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-black?style=flat&logo=github)](https://github.com/DuqueOM)
 
 ---
 
-<div align="center">
+## 📬 How to Reach Me
 
-**Portfolio Version**: 3.6.0 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) + AWS (EKS)
+* **Issues**: [GitHub Issues](https://github.com/DuqueOM/ML-MLOps-Portfolio/issues)
+* **Discussions**: [GitHub Discussions](https://github.com/DuqueOM/ML-MLOps-Portfolio/discussions)
+* **Contributing**: See [Contributing Guidelines](./docs/contributing/guidelines.md)
 
-*Building ML systems that work at 2am* 🌙
+---
 
-</div>
+**Status**: ✅ Production-Ready | **Last Updated**: March 2026
+
+*Star ⭐ this repo if you find it useful!*
