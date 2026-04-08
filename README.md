@@ -48,9 +48,10 @@ The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0. Each entry
 |------------------------|-----------|
 | Why decisions were made (not just what) | [17 ADRs ↓](#-architectural-decision-records--17-documented) |
 | Incidents diagnosed in production | [ENGINEERING_HIGHLIGHTS.md →](ENGINEERING_HIGHLIGHTS.md) |
-| What was built and how it performs | [Key Metrics ↓](#-key-metrics) |
+| Agentic Development Configuration | [AGENTS.md ↓](#-agentic-development-configuration) |
+| What was built and how it performs | [Projects ↓](#production-ready-projects) |
 | How to run it locally in 5 minutes | [Quick Start ↓](#-quick-start) |
-| Multi-cloud deployment evidence | [GCP + AWS Evidence ↓](#️-multi-cloud-production-deployment) |
+| Multi-cloud deployment evidence | [Deployment ↓](#multi-cloud-production-deployment) |
 | What broke and when | [CHANGELOG.md →](CHANGELOG.md) |
 
 ---
