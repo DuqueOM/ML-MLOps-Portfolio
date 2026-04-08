@@ -1,7 +1,7 @@
 # ML/MLOps Portfolio — Production-Ready
 
 <div style="text-align: center; margin-bottom: 1em;">
-<strong>3 ML Models &bull; Multi-Cloud (GKE + EKS) &bull; CI/CD &bull; Prometheus + Grafana + MLflow</strong>
+<strong>3 ML Models &bull; Multi-Cloud (GKE + EKS) &bull; 17 ADRs &bull; Agentic Dev Config &bull; CI/CD &bull; Prometheus + Grafana + MLflow</strong>
 </div>
 
 [![CI](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
@@ -28,7 +28,7 @@
 | Project | Algorithm | Metric | Coverage | Latency p50 (GCP / AWS) |
 |---------|-----------|--------|:--------:|:---------:|
 | **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC **0.87** | 90% | 200ms / 110ms |
-| **[NLPInsight](projects/nlpinsight.md)** | TF-IDF + LogReg (dual-backend) | Acc **80.6%** | 98% | 78ms / 100ms |
+| **[NLPInsight](projects/nlpinsight.md)** | TF-IDF + LogReg (prod, 5ms) · FinBERT (GPU opt-in) | Acc **80.6%** | 98% | 78ms / 100ms |
 | **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL (6.3M rows) + LightGBM | R² **0.96** | 91% | 100ms / 120ms |
 
 > **395+ tests** across all projects, **0 failures**, **85% CI threshold enforced**.
@@ -124,17 +124,15 @@ All services expose FastAPI with Swagger UI, Prometheus `/metrics`, and structur
 
 *CPU-based HPA: 1→3 replicas under load, automatic scale-down after traffic subsides.*
 
-| Service | CPU Target | Pods | Memory |
-|---------|-----------|------|--------|
-| BankChurn | 50% | 1–5 | ~396Mi |
-| NLPInsight | 60% | 1–3 | ~283Mi |
-| ChicagoTaxi | 60% | 1–3 | ~288Mi |
+| Service | CPU Target | Pods | Notes |
+|---------|-----------|------|-------|
+| BankChurn | **50%** | 1–5 | Refined by ADR-014 for faster scale-out |
+| NLPInsight | **60%** | 1–3 | I/O-bound inference, single worker |
+| ChicagoTaxi | **60%** | 1–3 | Lightweight LightGBM inference |
 
 ---
 
 ## Responsible AI
-
-![Fairness Audit](media/screenshots/monitoring/34-grafana-dashboard.png)
 
 - **Fairness Audits**: Disparate impact ratio + equal opportunity (BankChurn by Gender/Geography)
 - **Drift Detection**: KS + PSI + Evidently per feature, automated alerting
@@ -143,19 +141,39 @@ All services expose FastAPI with Swagger UI, Prometheus `/metrics`, and structur
 
 ---
 
+## Agentic Development Configuration
+
+This portfolio includes a production-grade agentic setup encoding 17 ADRs and 3 production
+incidents directly into the AI development environment.
+
+| Layer | Contents |
+|-------|---------|
+| **AGENTS.md** | Project identity, critical DO NOT VIOLATE patterns, HPA targets, model metrics |
+| **rules/** (7) | Context-aware constraints, glob-triggered per file type (K8s, Terraform, Python, Docker…) |
+| **skills/** (6) | Operational procedures: debug-ml-inference, deploy-gke, deploy-aws, drift-detection, model-retrain, release-checklist |
+| **workflows/** (6) | Structured prompt workflows: /incident, /retrain, /release, /load-test, /new-adr, /drift-check |
+
+The agent knows: 50%/60%/60% CPU targets, KernelExplainer for SHAP, workers=1 under K8s.
+Operational knowledge encoded as behavioral constraints — not just referenced.
+
+→ [AGENTS.md](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/AGENTS.md) · [.windsurf/](https://github.com/DuqueOM/ML-MLOps-Portfolio/tree/main/.windsurf)
+
+---
+
 ## Technology Stack
 
 | Layer | Technologies |
 |-------|-------------|
 | **ML/DS** | scikit-learn 1.8.0, XGBoost, LightGBM, PySpark, Dask, SHAP, Optuna |
-| **API** | FastAPI, Pydantic, uvicorn (1 worker per pod — [ADR-014](architecture/decisions.md)) |
+| **API** | FastAPI, Pydantic, uvicorn (1 worker per pod — [ADR-014](decisions/014-single-worker-pod-ml-inference.md)) |
 | **MLOps** | MLflow, DVC, Evidently AI, OpenTelemetry |
 | **Cloud** | GCP (GKE, GCS, AR, Cloud SQL), AWS (EKS, S3, ECR) |
 | **IaC** | Terraform (GCP + AWS), Kustomize overlays |
-| **Monitoring** | Prometheus, Grafana (25 panels), 16 alert rules |
+| **Monitoring** | Prometheus, Grafana (26 panels), 16 alert rules |
 | **CI/CD** | GitHub Actions (CI + deploy-gcp + deploy-aws), Codecov |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit, Network Policies, PDBs |
 | **Testing** | pytest (395+ tests, 90–98%), Locust load testing |
+| **Agentic** | Windsurf Cascade, AGENTS.md, 7 rules + 6 skills + 6 workflows |
 | **Managed ML** | AWS SageMaker + GCP Vertex AI (BankChurn) — [Guide](MANAGED_ML_GUIDE.md) |
 
 ---
