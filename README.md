@@ -16,7 +16,6 @@
 [![K8s](https://img.shields.io/badge/K8s-GKE_%2B_EKS-326CE5.svg?logo=kubernetes&logoColor=white)](k8s/)
 [![Terraform](https://img.shields.io/badge/Terraform-Multi--Cloud-7B42BC.svg?logo=terraform&logoColor=white)](infra/terraform/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-3.6.0-brightgreen.svg)](CHANGELOG.md)
 
 </div>
 
@@ -24,29 +23,17 @@
 
 ## ⚡ Why This Portfolio Is Different
 
-Most ML portfolios show models that score well. This one shows what happens **after you deploy** — production incidents diagnosed from first principles, wrong decisions corrected and documented, trade-offs measured and justified.
+Most ML portfolios show models that score well. This one shows what happens **after you deploy** — production incidents diagnosed from first principles, wrong decisions corrected, and engineering trade-offs measured with business context. 
 
-### Three production incidents diagnosed — root cause to fix, documented with data:
+> **Career Transition Note:** Bringing 14 years of operational leadership to ML engineering. I understand that downtime costs real money and poor monitoring creates real problems.
+
+### Three production incidents diagnosed — root cause to fix:
 
 | Incident | Root Cause | Fix | Outcome | ADR |
 |----------|------------|-----|---------|-----|
-| 81% error rate under load | `uvicorn --workers N` on K8s: workers share one CPU budget → thrashing, not parallelism | `asyncio.run_in_executor` + `ThreadPoolExecutor(4)` — sklearn C extensions release the GIL | Errors 81% → 0% · CPU 2000m → 1000m | [014](docs/decisions/014-single-worker-pod-ml-inference.md)/[015](docs/decisions/015-async-inference-threadpool.md) |
-| SHAP returning all zeros | `TreeExplainer` incompatible with `StackingClassifier` — evaluated 4 alternatives before deciding | `KernelExplainer` in original 10-feature space (interpretable by business, not 38 encoded cols) | Real SHAP values in production | [010](docs/decisions/010-shap-kernelexplainer-bankchurn.md) |
-| HPA never scaled down | Memory-based HPA + fixed ML footprint: `ceil(replicas × usage/target)` always ≥ current replicas | CPU-only HPA — CPU correlates with traffic; memory is constant signal | 3→1 pods in 8 minutes | [001](docs/decisions/001-cpu-only-hpa.md) |
-
----
-
-**This is not a tutorial project. It's an operational record.**
-
-The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0 — SHAP production bug, Grafana broken panels, AWS EKS LoadBalancer migration, async inference fix — each with root cause and resolution.
-
-<div align="center">
-
-<img src="docs/media/gifs/portfolio-demo.gif" alt="Portfolio Demo" width="600">
-
-*End-to-end: API predictions with SHAP explainability, multi-cloud deployment, monitoring*
-
-</div>
+| **81% error rate under load** | `uvicorn --workers N` on K8s: workers thrashing for shared CPU budget | `asyncio.run_in_executor` + `ThreadPoolExecutor(4)` (GIL release in C extensions) | **Errors 81% → 0%** · CPU 2k → 1k | [014](docs/decisions/014-single-worker-pod-ml-inference.md)/[015](docs/decisions/015-async-inference-threadpool.md) |
+| **SHAP returning all zeros** | `TreeExplainer` incompatible with `StackingClassifier` | `KernelExplainer` in original 10-feature space (vs 38 encoded cols) | Real SHAP values in production | [010](docs/decisions/010-shap-kernelexplainer-bankchurn.md) |
+| **HPA never scaled down** | Memory HPA + fixed ML footprint: math prevents `replicas` from decreasing | CPU-only HPA — correlated with traffic; memory remains constant | **3 → 1 pods** in 8 minutes | [001](docs/decisions/001-cpu-only-hpa.md) |
 
 ---
 
@@ -54,60 +41,33 @@ The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0 — SHAP pr
 
 | I want to understand... | Start here |
 |------------------------|-----------|
-| Why decisions were made (not just what) | [17 ADRs →](docs/decisions/) |
-| Incidents diagnosed in production | [ENGINEERING_HIGHLIGHTS.md →](ENGINEERING_HIGHLIGHTS.md) |
-| What was built and how it performs | [Key Metrics ↓](#-key-metrics) · [Projects ↓](#-production-ready-projects) |
-| How to run it locally in 5 minutes | [Quick Start ↓](#-quick-start) |
-| Multi-cloud deployment evidence | [GCP + AWS Evidence ↓](#️-multi-cloud-production-deployment) |
-| What broke and when | [CHANGELOG.md →](CHANGELOG.md) |
+| Why decisions were made (not just what) | [17 ADRs →](#-architectural-decision-records) |
+| Agentic constraints & automation | [Agentic Config →](#-agentic-development-configuration) |
+| Detailed project business context | [Projects ↓](#-production-ready-projects) |
+| Multi-cloud deployment evidence | [GCP + AWS Evidence ↓](#-multi-cloud-production-deployment) |
 
 ---
 
-## 📐 Architectural Decision Records — 17 Documented
+## 📐 Architectural Decision Records
 
-These are not explanations of what was built — they are records of what was **evaluated, rejected, and why**. Written for technical reviewers and hiring managers.
+Every non-trivial decision is documented as a record of what was **evaluated, rejected, and why**.
 
 | ADR | Decision | The Harder Choice |
 |-----|----------|-------------------|
 | [001](docs/decisions/001-cpu-only-hpa.md) | CPU-only HPA | Proved mathematically that memory HPA cannot scale down ML pods |
-| [003](docs/decisions/003-stacking-classifier-bankchurn.md) | StackingClassifier | Acknowledged single LightGBM achieves comparable AUC at lower cost |
-| [005](docs/decisions/005-compatible-release-pinning.md) | Compatible release pinning | numpy 2.x silently broke serialized models — silent failure, worst category |
-| [006](docs/decisions/006-drift-triggered-retraining.md) | CronJob over Airflow | Documented why Airflow is over-engineering for 3-model portfolio |
-| [007](docs/decisions/007-feature-store-decision.md) | No Feature Store | Designed full Feast architecture for when time-window features are needed |
-| [008](docs/decisions/008-argo-rollouts-canary.md) | Argo Rollouts canary | Progressive delivery with Prometheus analysis gates — not all-or-nothing rollout |
-| [009](docs/decisions/009-simplification-when-not-to-build.md) | Removed CarVision | MAPE 32.9% not defensible — knowing when not to build is harder |
-| [010](docs/decisions/010-shap-kernelexplainer-bankchurn.md) | SHAP KernelExplainer | Diagnosed production bug, evaluated 4 alternatives before deciding |
-| [014](docs/decisions/014-single-worker-pod-ml-inference.md) | Single-worker pods | Found uvicorn --workers anti-pattern under K8s from first principles |
-| [015](docs/decisions/015-async-inference-threadpool.md) | Async inference | GIL analysis → ThreadPoolExecutor → 81% errors → 0% |
-| [016](docs/decisions/016-gcp-aws-performance-parity.md) | GCP/AWS latency gap | $24/mo vs $145/mo — both meet SLA; chose FinOps over vanity metrics |
-| [017](docs/decisions/017-custom-vs-managed-ml-platforms.md) | Custom vs Managed ML | FastAPI+K8s primary, SageMaker/Vertex AI as documented complement |
+| [006](docs/decisions/006-drift-triggered-retraining.md) | CronJob over Airflow | Documented why Airflow is over-engineering for this scale |
+| [009](docs/decisions/009-simplification-when-not-to-build.md) | Removed CarVision | MAPE 32.9% was not defensible — knowing when **not** to build |
+| [010](docs/decisions/010-shap-kernelexplainer-bankchurn.md) | SHAP KernelExplainer | Diagnosed production bug; evaluated 4 alternatives before deciding |
+| [015](docs/decisions/015-async-inference-threadpool.md) | Async inference | Deep GIL analysis → ThreadPoolExecutor → 81% error reduction |
+| [016](docs/decisions/016-gcp-aws-performance-parity.md) | GCP/AWS Latency Gap | Chose FinOps over vanity metrics ($24/mo vs $145/mo) |
 
-[View all 17 ADRs with full context, alternatives considered, and trade-offs →](docs/decisions/)
+[View all 17 ADRs with full context and trade-offs →](docs/decisions/)
 
 ---
 
-## 📊 Key Metrics
+## 🤖 Agentic Development Configuration
 
-| Project | Type | Best Metric | Coverage | Latency p50 | Key Engineering Decision |
-|---------|------|-------------|----------|-------------|--------------------------|
-| [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87** | 90% | 200ms GCP / 110ms AWS | Async inference via ThreadPoolExecutor · threshold 0.35 (30:1 cost ratio) |
-| [📝 NLPInsight](NLPInsight-Analyzer/) | NLP Sentiment | **Acc 80.6%** | 98% | 78ms GCP / 100ms AWS | Upgraded to harder dataset (97%→80.6%) for honest benchmark |
-| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96** | 91% | 100ms GCP / 120ms AWS | Data leakage found & fixed · lag features + temporal split |
-
-| Infrastructure | Status | Details |
-|----------------|--------|---------|
-| **GCP Deployment** | ✅ Verified | GKE 1-5 nodes, 6 pods, 0% error rate under 100 concurrent users |
-| **AWS Deployment** | ✅ Verified | EKS 1-5 nodes, 6 pods, CI/CD via GitHub Actions |
-| **CI/CD** | ✅ Unified | 10-job matrix, security scanning (Trivy/Bandit/Gitleaks), automated deploy to both clouds |
-| **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) · `terraform plan` = 0 drift |
-| **Monitoring** | ✅ Full Stack | Prometheus + Grafana (26 panels, 16 alert rules) + MLflow |
-| **Security** | ✅ Automated | Blocking on HIGH severity · non-root containers · Network Policies · IRSA/Workload Identity |
-
-> **☁️ Deployment Status**: Both clusters were deployed to production, load-tested, and fully verified — all screenshots, metrics, and evidence are from real running infrastructure. Clusters are provisioned on-demand via Terraform and decommissioned after validation (~$300/month combined when running). This is a deliberate **FinOps practice**: infrastructure is reproducible and re-deployable in <15 minutes with `terraform apply`.
-
----
-
-## Agentic Development Configuration
+This repository encodes the 17 ADRs and production fixes directly into the AI development environment. These aren't just docs; they are **behavioral constraints** the agent follows automatically.
 
 This repository includes a production-grade agentic development setup that encodes
 the portfolio's 17 ADRs and 3 production incidents directly into the AI development
