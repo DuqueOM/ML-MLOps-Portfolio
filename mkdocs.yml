@@ -95,6 +95,8 @@ nav:
     - ADR-015 Async Inference: decisions/015-async-inference-threadpool.md
     - ADR-016 GCP/AWS Parity: decisions/016-gcp-aws-performance-parity.md
     - ADR-017 Custom vs Managed ML: decisions/017-custom-vs-managed-ml-platforms.md
+  - Agentic Development:
+    - Overview: agentic/overview.md
   - Deployment:
     - Multi-Cloud Evidence: DEPLOYMENT_EVIDENCE.md
     - GCP vs AWS Comparison: MULTI_CLOUD_COMPARISON.md
