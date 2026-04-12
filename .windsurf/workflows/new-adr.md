@@ -8,6 +8,7 @@ description: Create a new Architecture Decision Record following the project ADR
    - Short title for the decision (e.g., "CPU-only HPA for ML pods")
    - Context: What problem or question prompted this decision?
 
+// turbo
 2. Determine the next ADR number:
    ```bash
    ls docs/decisions/ | grep -E '^[0-9]+' | sort -n | tail -1

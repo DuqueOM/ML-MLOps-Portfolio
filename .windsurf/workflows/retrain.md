@@ -6,6 +6,7 @@ description: Retrain an ML model — data validation, training, evaluation again
 
 1. Ask the user which service to retrain: BankChurn, NLPInsight, or ChicagoTaxi
 
+// turbo
 2. Validate training data integrity:
    ```bash
    python -c "
@@ -45,6 +46,7 @@ description: Retrain an ML model — data validation, training, evaluation again
 
 8. Deploy using the `/release` workflow or manual `kubectl apply -k`
 
+// turbo
 9. Run load test to verify inference latency:
    ```bash
    python scripts/load_test_services.py --service <service-name> --users 10 --duration 30

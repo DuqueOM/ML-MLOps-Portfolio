@@ -226,6 +226,7 @@ resource "google_storage_bucket" "ml_models" {
   force_destroy = var.environment != "production"
 
   uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
 
   versioning {
     enabled = true
@@ -240,6 +241,20 @@ resource "google_storage_bucket" "ml_models" {
       storage_class = "NEARLINE"
     }
   }
+
+  lifecycle_rule {
+    condition {
+      age = 365
+    }
+    action {
+      type = "Delete"
+    }
+  }
+
+  logging {
+    log_bucket        = google_storage_bucket.audit_logs.name
+    log_object_prefix = "ml-models/"
+  }
 }
 
 #tfsec:ignore:AVD-GCP-0066 -- Staging uses Google-managed encryption. CMEK reserved for production. See ADR-012.
@@ -249,9 +264,54 @@ resource "google_storage_bucket" "mlflow_artifacts" {
   force_destroy = var.environment != "production"
 
   uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
 
   versioning {
     enabled = true
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 90
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "NEARLINE"
+    }
+  }
+
+  lifecycle_rule {
+    condition {
+      age = 365
+    }
+    action {
+      type = "Delete"
+    }
+  }
+
+  logging {
+    log_bucket        = google_storage_bucket.audit_logs.name
+    log_object_prefix = "mlflow-artifacts/"
+  }
+}
+
+# Audit Logs Bucket (target for access logging from ml_models and mlflow_artifacts)
+#tfsec:ignore:AVD-GCP-0066 -- Audit logs use Google-managed encryption. See ADR-012.
+resource "google_storage_bucket" "audit_logs" {
+  name          = "${var.project_id}-audit-logs-${var.environment}"
+  location      = var.region
+  force_destroy = true
+
+  uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
+
+  lifecycle_rule {
+    condition {
+      age = 90
+    }
+    action {
+      type = "Delete"
+    }
   }
 }
 
@@ -327,10 +387,18 @@ resource "google_service_account" "gke_workload" {
   display_name = "GKE Workload Service Account"
 }
 
-resource "google_project_iam_member" "gke_workload_storage" {
-  project = var.project_id
-  role    = "roles/storage.objectAdmin"
-  member  = "serviceAccount:${google_service_account.gke_workload.email}"
+# Bucket-level IAM (least-privilege — replaces project-level objectAdmin)
+# GKE workload SA can read models (inference) and read/write mlflow artifacts (tracking)
+resource "google_storage_bucket_iam_member" "gke_workload_models_viewer" {
+  bucket = google_storage_bucket.ml_models.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${google_service_account.gke_workload.email}"
+}
+
+resource "google_storage_bucket_iam_member" "gke_workload_mlflow_admin" {
+  bucket = google_storage_bucket.mlflow_artifacts.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.gke_workload.email}"
 }
 
 resource "google_project_iam_member" "gke_workload_sql" {

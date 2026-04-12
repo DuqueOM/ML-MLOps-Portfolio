@@ -1,156 +1,85 @@
-# S3 Artifact Store - Simplified Infrastructure Module
+# AWS S3 Storage — ML Portfolio
 
 ## Overview
 
-This module provides a lightweight, production-ready S3 infrastructure for ML model artifact storage and MLflow experiment tracking. It demonstrates Infrastructure as Code (IaC) best practices for MLOps without the complexity of a full EKS/GKE deployment.
+All S3 storage is consolidated in `main.tf`. The previous `s3-artifacts-simple.tf` was removed to eliminate bucket naming conflicts and encryption inconsistencies.
 
-## What This Creates
+## Buckets Created (via `main.tf`)
 
-### 1. ML Models Artifact Store
-- **Bucket**: `{project_name}-mlops-models-store-{environment}`
+### 1. ML Models (`ml-portfolio-ml-models-{env}`)
 - **Versioning**: Enabled (immutable model history)
-- **Encryption**: AES256 server-side encryption
-- **Public Access**: Blocked (security compliance)
-- **Lifecycle**: Old versions archived to Glacier after 90 days, deleted after 365 days
+- **Encryption**: `aws:kms` (AWS-managed KMS key)
+- **Public Access**: Blocked (4-way block)
+- **Logging**: Self-referential access logs at `access-logs/ml-models/`
+- **Lifecycle**: Non-current versions → Glacier after 90d, expire after 365d
 
-### 2. MLflow Artifacts Store
-- **Bucket**: `{project_name}-mlflow-artifacts-{environment}`
+### 2. Datasets (`ml-portfolio-datasets-{env}`)
 - **Versioning**: Enabled
-- **Encryption**: AES256 server-side encryption
+- **Encryption**: `aws:kms`
 - **Public Access**: Blocked
+- **Logging**: Self-referential access logs at `access-logs/datasets/`
+- **DVC**: Connected via `.dvc/config` as `aws-prod` remote
 
-## Quick Start
+### 3. MLflow Artifacts (`ml-portfolio-mlflow-artifacts-{env}`)
+- **Versioning**: Enabled
+- **Encryption**: `aws:kms`
+- **Public Access**: Blocked
+- **Logging**: Self-referential access logs at `access-logs/mlflow/`
+- **Lifecycle**: Non-current versions → Glacier after 90d, expire after 365d
 
-### Prerequisites
+## Secrets Management
 
-```bash
-# Install Terraform
-brew install terraform  # macOS
-# or
-sudo apt-get install terraform  # Linux
-
-# Configure AWS credentials
-aws configure
-```
-
-### Deploy
+Database passwords are managed via **AWS Secrets Manager** (parity with GCP Secret Manager):
 
 ```bash
-cd infra/terraform/aws
+# Create secret
+aws secretsmanager create-secret \
+  --name ml-portfolio-mlflow-db-password-production \
+  --secret-string "$(openssl rand -base64 24)"
 
-# Initialize Terraform (first time only)
-terraform init
-
-# Review what will be created
-terraform plan
-
-# Apply the infrastructure
-terraform apply
-
-# Outputs will show your bucket names
-```
-
-## Configuration
-
-The module uses variables from `variables.tf`. To customize:
-
-```hcl
-# Example: terraform.tfvars
-project_name = "ml-portfolio"
-environment  = "production"
-aws_region   = "us-east-1"
+# Terraform reads automatically when db_password = "" in tfvars
 ```
 
 ## Integration with CI/CD
-
-Once deployed, configure your GitHub Actions workflow to upload artifacts:
 
 ```yaml
 # .github/workflows/deploy-model.yml
 - name: Upload model to S3
   run: |
-    aws s3 cp artifacts/model.pkl \
-      s3://ml-portfolio-mlops-models-store-production/models/$(git rev-parse --short HEAD)/model.pkl \
-      --metadata "version=$(git describe --tags),commit=$(git rev-parse HEAD)"
+    aws s3 cp artifacts/model.joblib \
+      s3://ml-portfolio-ml-models-production/bankchurn/v${VERSION}/model.joblib \
+      --metadata "version=${VERSION},commit=$(git rev-parse HEAD)"
 ```
 
-## Integration with MLflow
+## Integration with DVC
 
-Configure MLflow to use the S3 bucket:
+```bash
+# Pull training data from S3
+dvc pull data/raw/
 
-```python
-# In your MLflow tracking script
-import mlflow
+# Push new data versions
+dvc push
 
-mlflow.set_tracking_uri("http://localhost:5000")  # Your MLflow server
-mlflow.set_experiment("my-experiment")
-
-# MLflow will automatically use S3 if configured via environment:
-# export MLFLOW_S3_ENDPOINT_URL=s3.us-east-1.amazonaws.com
-# export MLFLOW_ARTIFACT_ROOT=s3://ml-portfolio-mlflow-artifacts-production
+# Switch to GCP remote
+dvc remote default gcp-prod
+dvc push
 ```
 
 ## Cost Estimation
 
-### Development Environment
-- S3 Storage (10 GB): ~$0.23/month
-- PUT/GET requests (10k/month): ~$0.05/month
-- **Total**: ~$0.30/month
+| Resource | Dev | Production |
+|----------|-----|------------|
+| S3 Standard (10–100 GB) | ~$0.23 | ~$2.30 |
+| Glacier Archive | — | ~$2.00 |
+| PUT/GET requests | ~$0.05 | ~$0.50 |
+| **Total** | **~$0.30/mo** | **~$5/mo** |
 
-### Production Environment
-- S3 Storage (100 GB): ~$2.30/month
-- Glacier Archive (500 GB): ~$2.00/month
-- PUT/GET requests (100k/month): ~$0.50/month
-- **Total**: ~$5/month
+## Security Checklist
 
-## Security Best Practices
-
-1. **Versioning**: Never lose a model version
-2. **Encryption**: At-rest encryption (AES256)
-3. **Public Access**: Blocked by default
-4. **Lifecycle**: Automatic archiving to reduce costs
-5. **IAM**: Use least-privilege policies (not included in this simplified module)
-
-## Advanced: IAM Policy for CI/CD
-
-To allow GitHub Actions to upload artifacts, create an IAM user with this policy:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:ListBucket"
-      ],
-      "Resource": [
-        "arn:aws:s3:::ml-portfolio-mlops-models-store-production",
-        "arn:aws:s3:::ml-portfolio-mlops-models-store-production/*"
-      ]
-    }
-  ]
-}
-```
-
-## Cleanup
-
-To destroy the infrastructure:
-
-```bash
-terraform destroy
-```
-
-⚠️ **Warning**: This will delete all model artifacts. Export important models before destroying.
-
-## Why This Approach?
-
-This simplified module demonstrates:
-- ✅ **Infrastructure as Code**: Reproducible, version-controlled infrastructure
-- ✅ **Cost-Effective**: S3 is cheaper than full K8s clusters for portfolio projects
-- ✅ **Production-Ready**: Includes versioning, encryption, lifecycle management
-- ✅ **Interview-Ready**: Shows you understand IaC, security, and cost optimization
-
-For enterprise projects, consider the full `main.tf` module with EKS, RDS, and ECR.
+- [x] Versioning enabled on all buckets
+- [x] `aws:kms` encryption (consistent across all buckets)
+- [x] Public access blocked (4-way)
+- [x] Access logging enabled
+- [x] Lifecycle rules for cost management
+- [x] Secrets Manager for database passwords (no hardcoded credentials)
+- [x] IAM auth enabled on RDS

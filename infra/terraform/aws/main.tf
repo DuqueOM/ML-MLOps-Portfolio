@@ -30,6 +30,19 @@ provider "aws" {
   }
 }
 
+# Optional: Read db_password from Secrets Manager instead of tfvars
+# To use: aws secretsmanager create-secret --name ml-portfolio-mlflow-db-password-{env} --secret-string "$(openssl rand -base64 24)"
+# Then set var.db_password = "" in tfvars to trigger Secrets Manager lookup
+data "aws_secretsmanager_secret_version" "db_password" {
+  count     = var.db_password == "" ? 1 : 0
+  secret_id = "${var.project_name}-mlflow-db-password-${var.environment}"
+}
+
+locals {
+  # Use Secrets Manager if db_password is empty, otherwise use tfvars value
+  db_password_resolved = var.db_password != "" ? var.db_password : data.aws_secretsmanager_secret_version.db_password[0].secret_string
+}
+
 # EKS Cluster
 #tfsec:ignore:AVD-AWS-0040 -- Public API access restricted to allowed_cidr_blocks (not 0.0.0.0/0). Required for CI/CD and developer kubectl access. Private access also enabled. See ADR-012.
 #tfsec:ignore:AVD-AWS-0104 -- Node egress to internet required for ECR image pulls, S3 model downloads, and CloudWatch logs. NAT Gateway restricts to private subnets only. See ADR-012.
@@ -152,6 +165,33 @@ resource "aws_s3_bucket_logging" "ml_models" {
   target_prefix = "access-logs/ml-models/"
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "ml_models" {
+  bucket = aws_s3_bucket.ml_models.id
+
+  rule {
+    id     = "transition-old-models"
+    status = "Enabled"
+
+    noncurrent_version_transition {
+      noncurrent_days = 90
+      storage_class   = "GLACIER"
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 365
+    }
+  }
+
+  rule {
+    id     = "expire-incomplete-multipart-uploads"
+    status = "Enabled"
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+}
+
 # S3 Bucket for Datasets (equivalent to GCP datasets-production bucket)
 resource "aws_s3_bucket" "ml_datasets" {
   bucket = "${var.project_name}-datasets-${var.environment}"
@@ -244,6 +284,33 @@ resource "aws_s3_bucket_logging" "mlflow_artifacts" {
   target_prefix = "access-logs/mlflow/"
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "mlflow_artifacts" {
+  bucket = aws_s3_bucket.mlflow_artifacts.id
+
+  rule {
+    id     = "transition-old-artifacts"
+    status = "Enabled"
+
+    noncurrent_version_transition {
+      noncurrent_days = 90
+      storage_class   = "GLACIER"
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 365
+    }
+  }
+
+  rule {
+    id     = "expire-incomplete-multipart-uploads"
+    status = "Enabled"
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+}
+
 # RDS for MLflow Backend
 #tfsec:ignore:AVD-AWS-0133 -- Performance Insights not needed for staging MLflow DB (minimal query load). Enable in production via performance_insights_enabled variable. See ADR-012.
 resource "aws_db_instance" "mlflow_db" {
@@ -258,7 +325,7 @@ resource "aws_db_instance" "mlflow_db" {
 
   db_name  = "mlflow"
   username = var.db_username
-  password = var.db_password
+  password = local.db_password_resolved
 
   vpc_security_group_ids = [aws_security_group.mlflow_db.id]
   db_subnet_group_name   = aws_db_subnet_group.mlflow.name

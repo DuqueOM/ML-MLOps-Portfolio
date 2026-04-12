@@ -65,7 +65,8 @@ variable "db_username" {
 }
 
 variable "db_password" {
-  description = "Password for MLflow database"
+  description = "Password for MLflow database. Leave empty to use AWS Secrets Manager lookup."
   type        = string
+  default     = ""
   sensitive   = true
 }

@@ -6,6 +6,7 @@ description: Run Locust load tests against ML services and analyze latency, thro
 
 1. Ask the user which service(s) to test (or all 3)
 
+// turbo
 2. Verify the target service is running and healthy:
    ```bash
    curl -s http://localhost:8000/health | jq .
@@ -41,6 +42,7 @@ description: Run Locust load tests against ML services and analyze latency, thro
 
 7. Generate summary report with findings and recommendations
 
+// turbo
 8. If testing in K8s, verify HPA behavior during load:
    ```bash
    kubectl get hpa -w

@@ -1,4 +1,10 @@
 [core]
     analytics = false
-[remote "storage"]
+    remote = aws-prod
+    autostage = true
+[remote "local"]
     url = /home/duque_om/projects/ML-MLOps-Portfolio/.dvc-storage
+[remote "aws-prod"]
+    url = s3://ml-portfolio-datasets-production/dvc-cache
+[remote "gcp-prod"]
+    url = gs://ml-portfolio-duque-om-202602-ml-models-production/dvc-cache

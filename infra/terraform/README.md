@@ -6,15 +6,20 @@ This directory contains Terraform configurations for deploying the ML Portfolio 
 
 ```
 terraform/
-├── aws/                    # AWS infrastructure
-│   ├── main.tf            # Main AWS resources (EKS, VPC, S3, RDS, ECR)
-│   ├── variables.tf       # Input variables
-│   └── terraform.tfvars   # Variable values (gitignored)
+├── aws/                          # AWS infrastructure
+│   ├── main.tf                  # EKS, VPC, S3 (3 buckets), RDS, ECR + Secrets Manager
+│   ├── route53.tf               # DNS + ACM TLS certificate
+│   ├── outputs.tf               # Exported values for CI/CD
+│   ├── variables.tf             # Input variables (db_password defaults to Secrets Manager)
+│   ├── staging.tfvars           # Staging env values (no hardcoded secrets)
+│   └── S3_ARTIFACTS_README.md   # Storage documentation
 │
-└── gcp/                    # GCP infrastructure
-    ├── main.tf            # Main GCP resources (GKE, GCS, Cloud SQL)
-    ├── variables.tf       # Input variables
-    └── terraform.tfvars   # Variable values (gitignored)
+└── gcp/                          # GCP infrastructure
+    ├── main.tf                  # GKE, VPC, GCS (3 buckets + audit), Cloud SQL, IAM
+    ├── variables.tf             # Input variables (db_password defaults to Secret Manager)
+    ├── terraform.tfvars         # Production env values
+    └── staging.tfvars           # Staging env values
+    └── README.md                # GCP-specific docs (secret rotation)
 ```
 
 ## 🚀 AWS Deployment
@@ -35,12 +40,14 @@ aws configure
 
 - **EKS Cluster**: Managed Kubernetes cluster (v1.28)
 - **VPC**: Networking with public/private subnets
-- **S3 Buckets**: 
-  - ML models storage
-  - MLflow artifacts storage
-- **RDS PostgreSQL**: Backend for MLflow tracking server
-- **ECR Repositories**: Docker image registries for all 7 ML services
-- **CloudWatch**: Centralized logging
+- **S3 Buckets**: 3 buckets (ml-models, datasets, mlflow-artifacts) with:
+  - `aws:kms` encryption, versioning, lifecycle (Glacier 90d, expire 365d)
+  - Access logging, public access blocked
+- **AWS Secrets Manager**: Database password lookup (parity with GCP)
+- **RDS PostgreSQL**: Backend for MLflow (IAM auth enabled)
+- **ECR Repositories**: 3 repos (bankchurn, nlpinsight, chicagotaxi) — IMMUTABLE tags + scan
+- **ACM Certificate**: TLS for api.{domain} (when Route53 enabled)
+- **CloudWatch**: Centralized logging (30d retention)
 
 ### Deploy
 
@@ -54,8 +61,13 @@ environment  = "production"
 aws_region   = "us-east-1"
 
 db_username = "mlflow"
-db_password = "your-secure-password"
+db_password = "" # Uses AWS Secrets Manager when empty
 EOF
+
+# Create secret in AWS Secrets Manager
+aws secretsmanager create-secret \
+  --name ml-portfolio-mlflow-db-password-production \
+  --secret-string "$(openssl rand -base64 24)"
 
 # Initialize Terraform
 terraform init
@@ -98,12 +110,14 @@ gcloud config set project YOUR_PROJECT_ID
 
 - **GKE Cluster**: Managed Kubernetes cluster (auto-upgrade enabled)
 - **VPC & Subnets**: Networking with secondary ranges for pods/services
-- **Cloud Storage**: 
-  - ML models bucket
-  - MLflow artifacts bucket
-- **Cloud SQL PostgreSQL**: Backend for MLflow
+- **Cloud Storage**: 3 buckets (ml-models, mlflow-artifacts, audit-logs) with:
+  - `public_access_prevention = enforced`, lifecycle (NEARLINE 90d, delete 365d)
+  - Access logging to dedicated audit-logs bucket
+- **GCP Secret Manager**: Database password lookup
+- **Cloud SQL PostgreSQL**: Backend for MLflow (SSL required, audit flags enabled)
 - **Artifact Registry**: Container image registry
-- **Workload Identity**: Secure service account bindings
+- **Workload Identity**: Secure SA bindings
+- **Bucket-level IAM**: Least-privilege (objectViewer for models, objectAdmin for mlflow only)
 
 ### Deploy
 
@@ -117,8 +131,12 @@ project_name = "ml-portfolio"
 environment  = "production"
 region       = "us-central1"
 
-db_password = "your-secure-password"
+db_password = "" # Uses GCP Secret Manager when empty
 EOF
+
+# Create secret in GCP Secret Manager
+gcloud secrets create mlflow-db-password \
+  --data-file=<(openssl rand -base64 24)
 
 # Initialize Terraform
 terraform init
@@ -178,16 +196,20 @@ For dev/staging, set `environment = "dev"` in `terraform.tfvars`:
 
 ### Secrets Management
 
-Never commit sensitive values. Use environment variables or secret management tools:
+Both clouds use managed secret stores — **never commit passwords to tfvars**:
 
 ```bash
-# AWS
-export TF_VAR_db_password="your-secure-password"
+# AWS: Secrets Manager (auto-lookup when db_password = "")
+aws secretsmanager create-secret \
+  --name ml-portfolio-mlflow-db-password-production \
+  --secret-string "$(openssl rand -base64 24)"
 
-# GCP
-export TF_VAR_db_password="your-secure-password"
+# GCP: Secret Manager (auto-lookup when db_password = "")
+gcloud secrets create mlflow-db-password \
+  --data-file=<(openssl rand -base64 24)
 
-# Or use AWS Secrets Manager / GCP Secret Manager
+# Fallback: environment variable
+export TF_VAR_db_password="$(openssl rand -base64 24)"
 ```
 
 ### State Management
@@ -251,6 +273,21 @@ terraform destroy
 cd infra/terraform/gcp
 terraform destroy
 ```
+
+## 🔄 DVC Integration
+
+Training datasets are versioned with DVC, connected to both cloud storage backends:
+
+```bash
+# Pull data from AWS (default)
+dvc pull data/raw/
+
+# Switch to GCP
+dvc remote default gcp-prod
+dvc pull data/raw/
+```
+
+See `.dvc/config` for remote configuration.
 
 ## 📚 Additional Resources
 

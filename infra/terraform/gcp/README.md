@@ -92,10 +92,15 @@ terraform output
 
 ## Resources Created
 
-- GKE Cluster: `ml-portfolio-gke-production`
-- Cloud SQL (PostgreSQL): `ml-portfolio-mlflow-db-production`
-- Cloud Storage: ML models + MLflow artifacts
-- Artifact Registry: Docker images
-- VPC Network: Custom network with private subnets
+- **GKE Cluster**: `ml-portfolio-gke-production` (Workload Identity, network policy, private nodes)
+- **Cloud SQL** (PostgreSQL 15): `ml-portfolio-mlflow-db-production` (SSL required, audit flags)
+- **Cloud Storage**:
+  - `ml-models` — lifecycle (NEARLINE 90d, delete 365d), access logging
+  - `mlflow-artifacts` — lifecycle (NEARLINE 90d, delete 365d), access logging
+  - `audit-logs` — dedicated logging target (auto-delete 90d)
+  - All buckets: `public_access_prevention = enforced`, uniform access
+- **Artifact Registry**: Docker images for 3 ML services
+- **VPC Network**: Custom network with private subnets, VPC flow logs
+- **IAM**: Bucket-level least-privilege (objectViewer for models, objectAdmin for mlflow only)
 
 See `main.tf` for complete resource definitions.
