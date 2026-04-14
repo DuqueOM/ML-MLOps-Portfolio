@@ -6,19 +6,33 @@ This directory contains Terraform configurations for deploying the ML Portfolio 
 
 ```
 terraform/
-├── aws/                          # AWS infrastructure
-│   ├── main.tf                  # EKS, VPC, S3 (3 buckets), RDS, ECR + Secrets Manager
+├── aws/                          # AWS infrastructure (split-file layout)
+│   ├── versions.tf              # Terraform block, providers, S3 backend
+│   ├── main.tf                  # Provider config + Secrets Manager locals
+│   ├── network.tf               # VPC, subnets, NAT, security groups
+│   ├── compute.tf               # EKS cluster, node groups, CloudWatch
+│   ├── storage.tf               # S3 buckets (ml-models, datasets, mlflow-artifacts)
+│   ├── database.tf              # RDS PostgreSQL for MLflow
+│   ├── registry.tf              # ECR repositories (3 services)
 │   ├── route53.tf               # DNS + ACM TLS certificate
+│   ├── variables.tf             # Input variables
 │   ├── outputs.tf               # Exported values for CI/CD
-│   ├── variables.tf             # Input variables (db_password defaults to Secrets Manager)
 │   ├── staging.tfvars           # Staging env values (no hardcoded secrets)
 │   └── S3_ARTIFACTS_README.md   # Storage documentation
 │
-└── gcp/                          # GCP infrastructure
-    ├── main.tf                  # GKE, VPC, GCS (3 buckets + audit), Cloud SQL, IAM
-    ├── variables.tf             # Input variables (db_password defaults to Secret Manager)
+└── gcp/                          # GCP infrastructure (split-file layout)
+    ├── versions.tf              # Terraform block, providers, GCS backend
+    ├── main.tf                  # Provider config + Secret Manager locals
+    ├── network.tf               # VPC, subnets, private service connection
+    ├── compute.tf               # GKE cluster, node pools
+    ├── storage.tf               # GCS buckets (ml-models, mlflow-artifacts, audit-logs)
+    ├── database.tf              # Cloud SQL PostgreSQL for MLflow
+    ├── registry.tf              # Artifact Registry
+    ├── iam.tf                   # Service accounts, bucket-level IAM
+    ├── variables.tf             # Input variables
+    ├── outputs.tf               # Exported values
     ├── terraform.tfvars         # Production env values
-    └── staging.tfvars           # Staging env values
+    ├── staging.tfvars           # Staging env values
     └── README.md                # GCP-specific docs (secret rotation)
 ```
 
