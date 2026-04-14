@@ -5,11 +5,18 @@ globs: "**/*.tf,**/*.tfvars"
 
 # Terraform Conventions
 
-## File Structure (per module)
-- main.tf — resource definitions
+## File Structure (split-file layout per cloud)
+- versions.tf — terraform block, required_providers, backend config
+- main.tf — provider config, secrets lookup (locals)
 - variables.tf — all input variables with description + type
+- network.tf — VPC, subnets, private service connection
+- compute.tf — GKE/EKS cluster + node pool
+- storage.tf — GCS/S3 buckets (models, datasets, mlflow)
+- database.tf — Cloud SQL / RDS for MLflow
+- registry.tf — Artifact Registry / ECR repositories
+- iam.tf — service accounts, Workload Identity / IRSA bindings (GCP only)
+- route53.tf — DNS + ACM certificate (AWS only)
 - outputs.tf — all output values
-- versions.tf — required_providers with version constraints
 
 ## Variables
 - ALL variables MUST have `description` and `type`
