@@ -56,6 +56,14 @@ The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0. Each entry
 
 ---
 
+## Template
+
+The MLOps patterns in this portfolio are available as a reusable template:
+
+[ML-MLOps-Production-template](https://github.com/DuqueOM/ML-MLOps-Production-template)
+
+---
+
 ## 📐 Architectural Decision Records — 17 Documented
 
 Not explanations of what was built — records of what was **evaluated, rejected, and why**. Written for technical reviewers.
