@@ -43,7 +43,7 @@ The production deployment uses TF-IDF + LogReg for CPU-optimized inference. FinB
 4. **Inference**: Unified `SentimentPredictor` with auto-backend detection
 5. **API**: FastAPI + Pydantic validation + Prometheus metrics
 
-## Model Performance (v3.5.0)
+## Model Performance (v3.6.0)
 
 | Metric | TF-IDF + LogReg (production) | FinBERT (GPU) |
 |--------|------------------------------|---------------|
@@ -100,7 +100,7 @@ curl -X POST http://localhost:8000/predict \
 | Metric | Value |
 |--------|-------|
 | Test Coverage | 98% (74 tests) |
-| Docker Image | 267 MB (`nlpinsight:v3.5.0`, python:3.11-slim-bookworm, no torch) |
+| Docker Image | 267 MB (`nlpinsight:v3.6.0`, python:3.11-slim-bookworm, no torch) |
 | Model Size | ~5 MB (TF-IDF production) / ~440 MB (FinBERT GPU) |
 | P50 / P95 Latency | 5ms / 15ms (in-pod, GKE, TF-IDF) |
 | Load Test | 0% error rate (Locust, 10 users, 2min, 1,030 requests via Ingress) |

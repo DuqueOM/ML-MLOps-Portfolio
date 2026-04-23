@@ -14,7 +14,16 @@
 [![Portfolio Site](https://img.shields.io/badge/%F0%9F%9A%80_Portfolio-Live_Demo-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
 [![YouTube](https://img.shields.io/badge/Video_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
 
+[![Status](https://img.shields.io/badge/status-reference%20%2F%20showcase-blue?style=for-the-badge)](PORTFOLIO_STATUS.md)
+
 </div>
+
+> **⚙️ Operational status:** Infrastructure (GKE + EKS) is **currently offline**.
+> The code, manifests, Terraform, and CI/CD are production-tested — the clusters
+> were deployed to during development (v3.6.0, March 2026) and torn down after.
+> See [**PORTFOLIO_STATUS.md**](PORTFOLIO_STATUS.md) for what is live, what is
+> paused, and how to reactivate in ~1 hour. See [**ADR-018**](docs/decisions/018-portfolio-maintenance-mode.md)
+> for the decision record.
 
 ---
 

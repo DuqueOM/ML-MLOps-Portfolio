@@ -305,6 +305,10 @@ jobs:
           format: 'sarif'
           output: 'trivy-results-${{ matrix.project }}.sarif'
           severity: 'CRITICAL,HIGH'
+          # Only surface CVEs that have an upstream fix available.
+          # Base-image CVEs with status "will_not_fix" are noise \u2014 they
+          # cannot be remediated from our side. See ADR-018.
+          ignore-unfixed: true
           skip-setup-trivy: true
       
       - name: Upload Trivy results to GitHub Security

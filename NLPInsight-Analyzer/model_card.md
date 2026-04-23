@@ -17,14 +17,14 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Model ID** | `nlpinsight-sentiment-v3.5.0` |
+| **Model ID** | `nlpinsight-sentiment-v3.6.0` |
 | **Model Type** | Multi-class Classification (3-class Sentiment) |
 | **Algorithm** | TF-IDF + LogReg (production) / ProsusAI/FinBERT (GPU fine-tuning) |
 | **Framework** | scikit-learn 1.8+ / PyTorch 2.6+ / HuggingFace Transformers 4.48+ |
 | **Primary Metric** | Accuracy: **80.6%**, F1-macro: **0.748** |
 | **Business Impact** | Automated sentiment scoring for financial intelligence |
 | **Production Status** | ✅ Active |
-| **Last Updated** | March 2026 |
+| **Last Updated** | April 2026 |
 | **Owner** | Duque Ortega Mutis (DuqueOM) |
 
 ---
@@ -220,7 +220,7 @@ The 64.7% neutral class means a naive classifier achieves 64.7% accuracy at zero
 | Model | Accuracy | F1 (weighted) | F1 (macro) | Latency | Notes |
 |-------|----------|---------------|------------|---------|-------|
 | Majority class baseline | 64.7% | 0.51 | 0.26 | <1ms | Predicts "neutral" for every input |
-| **TF-IDF + LogReg (v3.5.0)** | **80.6%** | **0.810** | **0.748** | **<5ms** | **Production — deployed** |
+| **TF-IDF + LogReg (v3.6.0)** | **80.6%** | **0.810** | **0.748** | **<5ms** | **Production — deployed** |
 | ProsusAI/FinBERT (fine-tuned)* | ~85-88% | ~0.85 | ~0.82 | ~87ms | Requires GPU for training/inference |
 
 \* *FinBERT estimates based on published benchmarks on similar financial tweet datasets.*
@@ -434,7 +434,7 @@ rate(nlpinsight_requests_total{status="500"}[5m])
 
 <div align="center">
 
-**Model Card Version**: 3.5.0 | **Last Updated**: March 2026  
+**Model Card Version**: 3.5.0 | **Last Updated**: April 2026  
 **Model Version**: 3.0.0 | **Framework**: PyTorch 2.6+, HuggingFace Transformers 4.48+
 
 ⭐ **Production-Ready Financial Sentiment Analysis** ⭐

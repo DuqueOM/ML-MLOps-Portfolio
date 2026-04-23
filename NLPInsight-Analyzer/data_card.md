@@ -26,9 +26,9 @@
 | **Domain** | Financial tweets (stock tickers, market commentary, earnings reactions) |
 | **Source** | [HuggingFace: zeroshot/twitter-financial-news-sentiment](https://huggingface.co/datasets/zeroshot/twitter-financial-news-sentiment) |
 | **Data Version** | v2.0.0 (tracked via DVC) |
-| **Last Updated** | March 2026 |
+| **Last Updated** | April 2026 |
 
-> **Dataset upgrade (v3.5.0)**: Replaced Financial PhraseBank (4,845 expert-annotated sentences, 97% acc) with Twitter Financial News (11,931 real tweets, 80.6% acc). The harder, noisier dataset better demonstrates real-world NLP capability.
+> **Dataset upgrade (v3.6.0)**: Replaced Financial PhraseBank (4,845 expert-annotated sentences, 97% acc) with Twitter Financial News (11,931 real tweets, 80.6% acc). The harder, noisier dataset better demonstrates real-world NLP capability.
 
 ---
 
@@ -265,7 +265,7 @@ def validate_nlpinsight_data(file_path):
 
 <div align="center">
 
-**Data Card Version**: 2.0 | **Last Updated**: March 2026
+**Data Card Version**: 2.0 | **Last Updated**: April 2026
 **Dataset Version**: 2.0.0 | **Records**: 11,931
 
 ⭐ **Production-Ready Financial Sentiment Data** ⭐

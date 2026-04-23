@@ -90,4 +90,4 @@ docker compose -f docker-compose.demo.yml up -d --build
 
 ---
 
-**Last Updated**: March 2026 — v3.5.3
+**Last Updated**: April 2026 — v3.6.0

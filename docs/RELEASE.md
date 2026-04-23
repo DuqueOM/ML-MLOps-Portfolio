@@ -4,7 +4,7 @@
 
 [Semantic Versioning](https://semver.org/) — `MAJOR.MINOR.PATCH`
 
-**Current**: v3.5.3 (March 2026) — Python 3.11.14, sklearn 1.8.0, LightGBM 4.6+, FinBERT, PySpark 4.1
+**Current**: v3.6.0 (April 2026) — Python 3.11.14, sklearn 1.8.0, LightGBM 4.6+, FinBERT, PySpark 4.1
 
 ## Release Checklist
 
@@ -52,4 +52,4 @@ Images pushed to GCP Artifact Registry:
 
 ---
 
-*Last Updated: March 2026 — v3.5.3*
+*Last Updated: April 2026 — v3.6.0*

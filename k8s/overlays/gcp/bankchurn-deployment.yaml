@@ -6,7 +6,7 @@ metadata:
   labels:
     app: bankchurn-predictor
     tier: ml-service
-    version: v3.5.0
+    version: v3.6.0
 spec:
   replicas: 1
   strategy:
@@ -22,7 +22,7 @@ spec:
       labels:
         app: bankchurn-predictor
         tier: ml-service
-        version: v3.5.0
+        version: v3.6.0
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8000"

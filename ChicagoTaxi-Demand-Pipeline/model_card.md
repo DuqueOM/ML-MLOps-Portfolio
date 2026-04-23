@@ -2,14 +2,14 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Model ID** | `chicagotaxi-rf-v3.5.0` |
+| **Model ID** | `chicagotaxi-rf-v3.6.0` |
 | **Model Type** | Regression (hourly demand count) |
 | **Algorithm** | RandomForestRegressor (scikit-learn 1.8+) |
 | **Primary Metric** | R² 0.9649, RMSE 7.87 |
 | **Training Data** | 355,207 aggregated hourly demand records (after lag feature computation) |
 | **Source Data** | 6,364,313 Chicago taxi trips (2013–2023) |
 | **Production Status** | Active |
-| **Last Updated** | March 2026 |
+| **Last Updated** | April 2026 |
 
 ---
 
@@ -128,4 +128,4 @@ ChicagoTaxi benefits from strong temporal periodicity (rush hours, weekends) tha
 
 ---
 
-*Model v3.5.0: Fixed data leakage (removed same-period aggregates, added lag features, temporal split). Docker image: 154 MB (`chicagotaxi:v3.5.0`, python:3.11-slim-bookworm). In-pod latency: 75ms p50 `/demand`, 187ms `/areas`.*
+*Model v3.6.0: Fixed data leakage (removed same-period aggregates, added lag features, temporal split). Docker image: 154 MB (`chicagotaxi:v3.6.0`, python:3.11-slim-bookworm). In-pod latency: 75ms p50 `/demand`, 187ms `/areas`.*

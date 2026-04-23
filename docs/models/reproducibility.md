@@ -65,4 +65,4 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 
 ---
 
-*Last Updated: March 2026 — v3.5.3*
+*Last Updated: April 2026 — v3.6.0*

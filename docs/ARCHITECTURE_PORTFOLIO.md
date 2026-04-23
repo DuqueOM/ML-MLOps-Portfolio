@@ -45,7 +45,7 @@ graph TB
 | **Scalability** | Kubernetes HPA, CPU-based autoscaling |
 | **Multi-Cloud** | GKE + EKS with Kustomize overlays ([ADR-013](decisions/013-multicloud-parity-policy.md)) |
 
-## Projects (v3.5.3, Python 3.11.14 + sklearn 1.8.0)
+## Projects (v3.6.0, Python 3.11.14 + sklearn 1.8.0)
 
 | Project | Algorithm | Primary Metric | In-Pod Latency | Tests | Coverage |
 |---------|-----------|----------------|---------------|:-----:|:--------:|
@@ -123,4 +123,4 @@ graph TB
 
 ---
 
-*Last Updated: March 2026 — Portfolio v3.6.0 (GKE + EKS deployed, NLB)*
+*Last Updated: April 2026 — Portfolio v3.6.0 (GKE + EKS deployed, NLB)*

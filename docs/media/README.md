@@ -59,4 +59,4 @@ All GIFs extracted from [Portfolio Demo Video](https://youtu.be/7dFFqq2ROPw) wit
 
 ---
 
-*Last Updated: March 2026 — v3.5.3*
+*Last Updated: April 2026 — v3.6.0*

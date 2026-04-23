@@ -45,4 +45,4 @@ dvc pull                       # Pull on another machine
 
 ---
 
-*Last Updated: March 2026 — v3.5.3*
+*Last Updated: April 2026 — v3.6.0*

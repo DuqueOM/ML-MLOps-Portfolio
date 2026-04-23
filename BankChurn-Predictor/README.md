@@ -142,7 +142,7 @@ BankChurn-Predictor/
 
 | Metric | Value |
 |--------|-------|
-| Docker Image | 342 MB (`bankchurn:v3.5.0`, python:3.11-slim-bookworm) |
+| Docker Image | 342 MB (`bankchurn:v3.6.0`, python:3.11-slim-bookworm) |
 | Model Size | 4.1 MB (joblib compressed) |
 | P50 / P95 Latency | 103ms / 111ms (in-pod, GKE) |
 | SHAP Latency | ~4.5s in-pod (`?explain=true`, KernelExplainer + StackingClassifier) |

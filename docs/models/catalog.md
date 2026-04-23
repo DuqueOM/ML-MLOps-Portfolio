@@ -7,8 +7,8 @@
 | Project | Model ID | Algorithm | Size | Primary Metric | Status |
 |---------|----------|-----------|------|----------------|--------|
 | **BankChurn** | `bankchurn-stacking-v3.0.0` | StackingClassifier (RF+GB+XGB+LGB→LR) | 4.1 MB | AUC 0.87 | Production |
-| **NLPInsight** | `nlpinsight-tfidf-v3.5.0` | TF-IDF + LogReg (prod) / FinBERT (GPU) | ~5 MB / ~440 MB | Acc 80.6% | Production |
-| **ChicagoTaxi** | `chicagotaxi-rf-v3.5.0` | RandomForest (lag features) | ~2 MB | R² 0.96 | Production |
+| **NLPInsight** | `nlpinsight-tfidf-v3.6.0` | TF-IDF + LogReg (prod) / FinBERT (GPU) | ~5 MB / ~440 MB | Acc 80.6% | Production |
+| **ChicagoTaxi** | `chicagotaxi-rf-v3.6.0` | RandomForest (lag features) | ~2 MB | R² 0.96 | Production |
 
 ## BankChurn Predictor
 
@@ -70,4 +70,4 @@ Automated via K8s CronJob → GitHub Actions `workflow_dispatch`.
 
 ---
 
-*Last Updated: March 2026 — v3.5.3*
+*Last Updated: April 2026 — v3.6.0*

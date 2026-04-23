@@ -70,4 +70,4 @@ Each project makes deliberate trade-offs documented in [ADRs](../architecture/de
 
 ---
 
-*Last Updated: March 2026 — v3.5.3*
+*Last Updated: April 2026 — v3.6.0*

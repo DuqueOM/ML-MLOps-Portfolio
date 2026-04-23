@@ -1,6 +1,6 @@
 # Features
 
-## Performance (v3.5.3, March 2026)
+## Performance (v3.6.0, April 2026)
 
 | Feature | Impact |
 |---------|--------|
@@ -41,7 +41,7 @@
 - **Multi-Cloud** — GCP (GKE) + AWS (EKS) parity with Terraform IaC
 - **Locust Load Testing** — Port-forward + Ingress IP modes
 
-## Responsible AI (v3.5.3)
+## Responsible AI (v3.6.0)
 
 - **Fairness Audits** — BankChurn (disparate impact), NLPInsight (F1 parity)
 - **Drift Detection** — KS + PSI + Evidently, vocabulary drift for NLP

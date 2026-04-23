@@ -33,7 +33,7 @@ All APIs expose `/metrics`. Key metrics per service:
 
 ![Prometheus Targets](../media/screenshots/monitoring/37-prometheus-targets-up.png)
 
-## MLflow Experiments (v3.5.3)
+## MLflow Experiments (v3.6.0)
 
 | Experiment | Best Run | Key Metric |
 |------------|----------|------------|
@@ -112,4 +112,4 @@ locust -f tests/load/locustfile.py --headless     # Load tests
 
 ---
 
-*Last Updated: March 2026 — v3.5.3*
+*Last Updated: April 2026 — v3.6.0*

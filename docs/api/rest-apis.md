@@ -87,4 +87,4 @@ curl "http://localhost:8004/demand?area=8&hour=14&limit=5"
 
 ---
 
-*Last Updated: March 2026 — v3.5.3*
+*Last Updated: April 2026 — v3.6.0*

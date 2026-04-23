@@ -65,6 +65,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Portfolio Status: PORTFOLIO_STATUS.md
   - Projects:
     - Overview: projects/overview.md
     - BankChurn Predictor: projects/bankchurn.md
@@ -95,6 +96,7 @@ nav:
     - ADR-015 Async Inference: decisions/015-async-inference-threadpool.md
     - ADR-016 GCP/AWS Parity: decisions/016-gcp-aws-performance-parity.md
     - ADR-017 Custom vs Managed ML: decisions/017-custom-vs-managed-ml-platforms.md
+    - ADR-018 Portfolio Maintenance Mode: decisions/018-portfolio-maintenance-mode.md
   - Agentic Development:
     - Overview: agentic/overview.md
   - Deployment:
@@ -121,6 +123,7 @@ nav:
     - Managed ML Guide: MANAGED_ML_GUIDE.md
     - Load Test Results: load-test-results.md
     - Contributing: contributing/guidelines.md
+    - Related Projects: related-projects.md
 
 extra:
   social:

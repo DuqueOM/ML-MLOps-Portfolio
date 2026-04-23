@@ -6,7 +6,7 @@ metadata:
   labels:
     app: chicagotaxi-pipeline
     tier: ml-service
-    version: v3.5.1
+    version: v3.6.0
 spec:
   replicas: 1
   strategy:
@@ -22,7 +22,7 @@ spec:
       labels:
         app: chicagotaxi-pipeline
         tier: ml-service
-        version: v3.5.0
+        version: v3.6.0
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8000"
@@ -64,7 +64,7 @@ spec:
             name: chicagotaxi-predictions-config
       containers:
       - name: chicagotaxi-api
-        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/chicagotaxi:v3.5.2
+        image: us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/chicagotaxi:v3.6.0
         imagePullPolicy: Always
         command: ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000"]
         ports:

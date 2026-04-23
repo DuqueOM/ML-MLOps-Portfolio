@@ -11,7 +11,7 @@
 | **License** | Open Data — public domain |
 | **Format** | CSV (raw), Parquet (processed) |
 | **Size** | 2.8 GB raw CSV → 95 MB Parquet (97% compression) |
-| **Last Updated** | March 2026 |
+| **Last Updated** | April 2026 |
 
 ---
 
@@ -117,4 +117,4 @@ python scripts/spark_etl.py --input <path-to-csv> --output data/processed/
 
 ---
 
-*Last Updated: March 2026 — v3.5.0*
+*Last Updated: April 2026 — v3.6.0*

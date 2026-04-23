@@ -1,9 +1,12 @@
 name: Data Drift Detection
 
+# Scheduled runs disabled while the portfolio is in Reference/Showcase mode
+# (clusters are not active — see PORTFOLIO_STATUS.md and ADR-018).
+# To reactivate: uncomment the `schedule:` block below.
 on:
-  schedule:
-    - cron: '0 2 * * *'  # Run every day at 2 AM UTC
-  workflow_dispatch:  # Manual trigger
+  # schedule:
+  #   - cron: '0 2 * * *'  # Run every day at 2 AM UTC
+  workflow_dispatch:  # Manual trigger only
   push:
     branches: [ main ]
     paths:
@@ -125,8 +128,10 @@ jobs:
               body: message
             });
       
+      # Create an issue ONLY when drift is truly detected
+      # (not when the script fails for unrelated reasons — ADR-018)
       - name: Create GitHub Issue on drift alert
-        if: steps.drift.outcome == 'failure'
+        if: steps.drift.outcome == 'success' && steps.metrics.outputs.drift_detected == 'true'
         uses: actions/github-script@v7
         continue-on-error: true
         with:

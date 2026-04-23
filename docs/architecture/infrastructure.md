@@ -177,4 +177,4 @@ The Terraform configuration includes **security hardening** that goes beyond wha
 
 ---
 
-*Last Updated: March 2026 — v3.5.3 (both clouds live with LoadBalancer Ingress)*
+*Last Updated: April 2026 — v3.6.0 (both clouds live with LoadBalancer Ingress)*
