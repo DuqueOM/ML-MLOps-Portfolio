@@ -91,6 +91,7 @@ Not explanations of what was built — records of what was **evaluated, rejected
 | [015](docs/decisions/015-async-inference-threadpool.md) | Async inference | GIL analysis → ThreadPoolExecutor → 81% errors → 0% |
 | [016](docs/decisions/016-gcp-aws-performance-parity.md) | GCP/AWS latency gap | $24/mo vs $145/mo — both meet SLA; chose FinOps over vanity metrics |
 | [017](docs/decisions/017-custom-vs-managed-ml-platforms.md) | Custom vs Managed ML | FastAPI+K8s primary, SageMaker/Vertex AI as documented complement |
+| [018](docs/decisions/018-portfolio-maintenance-mode.md) | Portfolio Maintenance Mode | $180–220/mo idle cost — documented teardown and reactivation path |
 
 [View all 18 ADRs with full context, alternatives considered, and trade-offs →](docs/decisions/)
 
