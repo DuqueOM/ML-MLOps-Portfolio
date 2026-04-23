@@ -2,14 +2,14 @@
 
 **Last Updated**: April 2026 | **Portfolio Version**: 3.6.0
 
-> 17 ADRs and 3 production incidents encoded as behavioral constraints for AI-assisted development.
+> 18 ADRs and 3 production incidents encoded as behavioral constraints for AI-assisted development.
 > Not documentation the agent reads — rules the agent follows automatically.
 
 ---
 
 ## What this is
 
-This portfolio was built using [Windsurf Cascade](https://windsurf.ai/) as the AI development assistant. Most developers who use AI tools configure them with style preferences or basic project context. This portfolio takes a different approach: the same 17 Architectural Decision Records that document production decisions are encoded as **behavioral constraints** that govern every interaction between the AI and the codebase.
+This portfolio was built using [Windsurf Cascade](https://windsurf.ai/) as the AI development assistant. Most developers who use AI tools configure them with style preferences or basic project context. This portfolio takes a different approach: the same 18 Architectural Decision Records that document production decisions are encoded as **behavioral constraints** that govern every interaction between the AI and the codebase.
 
 The result: the agent cannot accidentally introduce `uvicorn --workers N` under Kubernetes (ADR-014), generate HPA manifests with the old 70% threshold instead of 50%/60% (ADR-001), or use `TreeExplainer` for SHAP with a `StackingClassifier` (ADR-010). Operational knowledge encoded, not just referenced.
 

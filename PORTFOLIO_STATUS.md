@@ -14,7 +14,7 @@ runnable vs. what is documentation of a prior active state.
 
 A reference implementation of production-grade MLOps patterns — 3 ML microservices,
 multi-cloud Kubernetes (GKE + EKS), Terraform IaC, CI/CD, observability, drift
-detection, and 17 ADRs capturing the design decisions.
+detection, and 18 ADRs capturing the design decisions.
 
 **The code, manifests, Terraform, and CI/CD pipelines are real and were deployed
 to live clusters during development.** Screenshots, GIFs, measured latencies, and
@@ -44,7 +44,7 @@ load-testing but not as a permanent showcase. The technical material that
 demonstrates the deployments (manifests, runbooks, ADRs, screenshots, load-test
 results, incident post-mortems) is preserved.
 
-See [ADR-018: Portfolio Maintenance Mode](docs/decisions/018-portfolio-maintenance-mode.md)
+See [ADR-018: Portfolio Maintenance Mode](decisions/018-portfolio-maintenance-mode.md)
 for the full decision record.
 
 ## 4. How noise from inactive infrastructure is handled
@@ -92,7 +92,7 @@ reactivation takes ~1–2 hours plus cloud spend. Steps (documented in
 - **Disabled the daily schedule** on `drift-detection.yml` (kept `workflow_dispatch`).
 - **Hardened Trivy**: `ignore-unfixed: true` to prevent re-accumulation of unfixable base-image CVEs.
 - **Dismissed ~210 legacy Trivy alerts** with documented `won't fix` reason.
-- Added this file and [ADR-018](docs/decisions/018-portfolio-maintenance-mode.md).
+- Added this file and [ADR-018](decisions/018-portfolio-maintenance-mode.md).
 
 ## 7. Questions frequently asked by reviewers
 

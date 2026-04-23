@@ -65,7 +65,7 @@ Custom FastAPI + K8s is the primary architecture (SHAP middleware, Prometheus cu
 
 | If you want to understand... | Start here |
 |------------------------------|-----------|
-| **Why decisions were made** | [docs/decisions/](docs/decisions/) — 17 ADRs with context, alternatives, and trade-offs |
+| **Why decisions were made** | [docs/decisions/](docs/decisions/) — 18 ADRs with context, alternatives, and trade-offs |
 | **What was built** | [README.md](README.md) — architecture, metrics, evidence |
 | **How it runs** | [QUICK_START.md](QUICK_START.md) — 5-minute demo |
 | **What broke and how it was fixed** | [CHANGELOG.md](CHANGELOG.md) — incident history from v1.0.0 to v3.6.0 |

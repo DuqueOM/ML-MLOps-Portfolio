@@ -2,7 +2,7 @@
 
 # 🚀 ML/MLOps Portfolio — Production-Ready
 
-**3 ML services · GKE + EKS · 17 ADRs · 395+ tests · Multi-cloud Terraform**
+**3 ML services · GKE + EKS · 18 ADRs · 395+ tests · Multi-cloud Terraform**
 
 [![CI](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
 [![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)
@@ -55,7 +55,7 @@ The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0. Each entry
 
 | I want to understand... | Start here |
 |------------------------|-----------|
-| Why decisions were made (not just what) | [17 ADRs ↓](#-architectural-decision-records--17-documented) |
+| Why decisions were made (not just what) | [18 ADRs ↓](#-architectural-decision-records--18-documented) |
 | Incidents diagnosed in production | [ENGINEERING_HIGHLIGHTS.md →](ENGINEERING_HIGHLIGHTS.md) |
 | Agentic Development Configuration | [AGENTS.md ↓](#-agentic-development-configuration) |
 | What was built and how it performs | [Projects ↓](#production-ready-projects) |
@@ -73,7 +73,7 @@ The MLOps patterns in this portfolio are available as a reusable template:
 
 ---
 
-## 📐 Architectural Decision Records — 17 Documented
+## 📐 Architectural Decision Records — 18 Documented
 
 Not explanations of what was built — records of what was **evaluated, rejected, and why**. Written for technical reviewers.
 
@@ -92,13 +92,13 @@ Not explanations of what was built — records of what was **evaluated, rejected
 | [016](docs/decisions/016-gcp-aws-performance-parity.md) | GCP/AWS latency gap | $24/mo vs $145/mo — both meet SLA; chose FinOps over vanity metrics |
 | [017](docs/decisions/017-custom-vs-managed-ml-platforms.md) | Custom vs Managed ML | FastAPI+K8s primary, SageMaker/Vertex AI as documented complement |
 
-[View all 17 ADRs with full context, alternatives considered, and trade-offs →](docs/decisions/)
+[View all 18 ADRs with full context, alternatives considered, and trade-offs →](docs/decisions/)
 
 ---
 
 ## 🤖 Agentic Development Configuration
 
-Those 17 ADRs don't just live in docs — they're encoded as behavioral constraints in the AI development environment itself.
+Those 18 ADRs don't just live in docs — they're encoded as behavioral constraints in the AI development environment itself.
 
 ```
 AGENTS.md           — Project identity, critical DO NOT VIOLATE patterns, HPA targets

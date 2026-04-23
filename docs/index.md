@@ -1,7 +1,7 @@
 # ML/MLOps Portfolio — Production-Ready
 
 <div style="text-align: center; margin-bottom: 1em;">
-<strong>3 ML Models &bull; Multi-Cloud (GKE + EKS) &bull; 17 ADRs &bull; Agentic Dev Config &bull; CI/CD &bull; Prometheus + Grafana + MLflow</strong>
+<strong>3 ML Models &bull; Multi-Cloud (GKE + EKS) &bull; 18 ADRs &bull; Agentic Dev Config &bull; CI/CD &bull; Prometheus + Grafana + MLflow</strong>
 </div>
 
 [![CI](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
@@ -143,7 +143,7 @@ All services expose FastAPI with Swagger UI, Prometheus `/metrics`, and structur
 
 ## Agentic Development Configuration
 
-This portfolio includes a production-grade agentic setup encoding 17 ADRs and 3 production
+This portfolio includes a production-grade agentic setup encoding 18 ADRs and 3 production
 incidents directly into the AI development environment.
 
 | Layer | Contents |

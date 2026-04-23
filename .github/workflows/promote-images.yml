@@ -11,11 +11,14 @@ name: Promote Images to Cloud Registries
 #
 # This ensures deployment uses the exact same image that passed all CI checks.
 # ─────────────────────────────────────────────────────────────────────────────
+# Automatic promotion disabled while portfolio is in Reference/Showcase mode
+# (clusters are not active — see PORTFOLIO_STATUS.md and ADR-018).
+# To reactivate: uncomment the workflow_run block below.
 on:
-  workflow_run:
-    workflows: ["CI/CD MLOps Portfolio"]
-    types: [completed]
-    branches: [main]
+  # workflow_run:
+  #   workflows: ["CI/CD MLOps Portfolio"]
+  #   types: [completed]
+  #   branches: [main]
   workflow_dispatch:
     inputs:
       tag:

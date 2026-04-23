@@ -29,5 +29,5 @@ trigger: always_on
 - 3 services: BankChurn-Predictor, NLPInsight-Analyzer, ChicagoTaxi-Demand-Pipeline
 - K8s: k8s/base/ (shared) + k8s/overlays/{gcp,aws}/
 - Infra: infra/terraform/
-- Docs: docs/ with MkDocs Material, 17 ADRs in docs/decisions/
+- Docs: docs/ with MkDocs Material, 18 ADRs in docs/decisions/
 - CI: .github/workflows/ (ci-mlops, ci-infra, deploy-gcp, deploy-aws, drift, retrain)

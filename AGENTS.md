@@ -4,7 +4,7 @@
 
 **ML-MLOps Portfolio**: Production-ready ML systems with multi-cloud deployment (GKE + EKS),
 comprehensive observability, and enterprise CI/CD. Built and operated from scratch — every
-architectural decision documented in 17 ADRs with measured trade-offs.
+architectural decision documented in 18 ADRs with measured trade-offs.
 
 - **Author**: Duque Ortega Mutis
 - **Repository**: https://github.com/DuqueOM/ML-MLOps-Portfolio
@@ -63,7 +63,7 @@ ML-MLOps-Portfolio/
 │   └── terraform/                # Cloud infrastructure IaC (GCP + AWS)
 ├── helm/ml-portfolio/            # Helm chart (3 services + HPA + drift)
 ├── docs/
-│   ├── decisions/                # 17 ADRs (001–017)
+│   ├── decisions/                # 18 ADRs (001–018)
 │   ├── architecture/             # System design docs
 │   └── media/                    # GIFs, screenshots, videos
 ├── scripts/                      # Automation scripts
@@ -120,7 +120,7 @@ Full index: `docs/decisions/` | Live: https://duqueom.github.io/ML-MLOps-Portfol
 ## Agentic Configuration (.windsurf/)
 
 This project uses a layered agentic architecture for AI-assisted development with Windsurf Cascade.
-The configuration encodes operational knowledge from 17 ADRs and 3 production incidents into
+The configuration encodes operational knowledge from 18 ADRs and 3 production incidents into
 behavioral constraints, reusable skills, and structured workflows.
 
 ```
