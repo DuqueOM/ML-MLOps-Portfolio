@@ -383,7 +383,7 @@ Same ML system deployed cloud-agnostically on **both GCP and AWS**:
 | Document | Description |
 |----------|-------------|
 | **[⭐ Engineering Highlights](ENGINEERING_HIGHLIGHTS.md)** | **Start here** — incidents diagnosed, decisions made, trade-offs documented |
-| **[ADRs (17)](docs/decisions/)** | Every non-trivial architectural decision with context, alternatives, and trade-offs |
+| **[ADRs (18)](docs/decisions/)** | Every non-trivial architectural decision with context, alternatives, and trade-offs |
 | **[AGENTS.md](AGENTS.md)** | Agentic development configuration |
 | **[RUNBOOK.md](RUNBOOK.md)** | Copy-paste commands for common operations |
 | **[Quick Start](QUICK_START.md)** | 5-minute demo with API examples and health checks |
