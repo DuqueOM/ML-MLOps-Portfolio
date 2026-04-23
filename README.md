@@ -67,9 +67,19 @@ The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0. Each entry
 
 ## Template
 
-The MLOps patterns in this portfolio are available as a reusable template:
+The MLOps patterns in this portfolio are available as a reusable, opinionated template:
 
-[ML-MLOps-Production-template](https://github.com/DuqueOM/ML-MLOps-Production-template)
+**[ML-MLOps-Production-Template](https://github.com/DuqueOM/ML-MLOps-Production-Template)** · [related-projects.md](docs/related-projects.md)
+
+**v1.6.0 highlights:**
+- **19 encoded anti-patterns** (D-01 → D-19) covering runtime, data, EDA, and security
+- **Agent Behavior Protocol** — AUTO / CONSULT / STOP modes for every agentic operation
+- **6-phase EDA pipeline** with leakage hard gate + baseline distributions feeding drift detection
+- **SLSA L2 supply chain** — Syft SBOM + Cosign keyless signing (GitHub OIDC) + Kyverno admission
+- **Cloud-native secrets** — `common_utils/secrets.py` (AWS Secrets Manager / GCP Secret Manager via IRSA/WI)
+- **Typed inter-agent handoffs** — frozen dataclasses validating invariants at construction
+- **Multi-IDE parity** — Windsurf (12 rules + 11 skills + 10 workflows), Cursor (7 rules), Claude Code (7 rules)
+- **Incident playbooks** — `/secret-breach`, `/incident`, `/drift-check` slash commands
 
 ---
 
