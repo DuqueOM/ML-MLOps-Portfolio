@@ -71,15 +71,20 @@ The MLOps patterns in this portfolio are available as a reusable, opinionated te
 
 **[ML-MLOps-Production-Template](https://github.com/DuqueOM/ML-MLOps-Production-Template)** · [related-projects.md](docs/related-projects.md)
 
-**v1.6.0 highlights:**
-- **19 encoded anti-patterns** (D-01 → D-19) covering runtime, data, EDA, and security
-- **Agent Behavior Protocol** — AUTO / CONSULT / STOP modes for every agentic operation
+**v1.9.0 highlights:**
+- **30 encoded anti-patterns** (D-01 → D-30) — runtime, data, EDA, security, closed-loop, lifecycle (warm-up, PDB, PSS), delivery (env gates, API contracts, SBOM)
+- **Two Behavior Protocols** — static AUTO/CONSULT/STOP mapping (AGENTS.md) PLUS dynamic risk escalation (ADR-010) based on live signals: `incident_active`, `drift_severe`, `error_budget_exhausted`, `off_hours`, `recent_rollback`
 - **6-phase EDA pipeline** with leakage hard gate + baseline distributions feeding drift detection
-- **SLSA L2 supply chain** — Syft SBOM + Cosign keyless signing (GitHub OIDC) + Kyverno admission
-- **Cloud-native secrets** — `common_utils/secrets.py` (AWS Secrets Manager / GCP Secret Manager via IRSA/WI)
-- **Typed inter-agent handoffs** — frozen dataclasses validating invariants at construction
-- **Multi-IDE parity** — Windsurf (12 rules + 11 skills + 10 workflows), Cursor (7 rules), Claude Code (7 rules)
-- **Incident playbooks** — `/secret-breach`, `/incident`, `/drift-check` slash commands
+- **Supply chain** — Syft SBOM + Cosign keyless signing (GitHub OIDC) + CycloneDX attestation + Kyverno admission + Pod Security Standards namespace labels
+- **Cloud-native secrets** — `common_utils/secrets.py` (AWS Secrets Manager / GCP Secret Manager via IRSA/WI); scheduled-rotation runbook + emergency `/secret-breach` workflow
+- **Typed inter-agent handoffs** — frozen dataclasses validating invariants at construction; `DeploymentRequest` refuses to construct when `env=production` + `audit.passed=False`
+- **Audit trail** — every agentic operation appends to `ops/audit.jsonl` with risk signals + base mode
+- **Tri-IDE full parity** — Windsurf (15 rules / 16 skills / 12 workflows) · Claude Code (14 rules / 12 commands / 16-skill index) · Cursor (12 rules / 12 commands / 16-skill index)
+- **Closed-loop monitoring** — prediction logger + ground truth ingestion + sliced performance (ADR-007) + Champion/Challenger McNemar + bootstrap ΔAUC gate (ADR-008) + 10-panel Grafana dashboard
+- **Governed delivery** — dev → staging → prod chain with GitHub Environment Protection, 2 reviewers + 15min soak + tag-only for prod (ADR-011); reusable `deploy-common.yml` single source of truth
+- **DORA metrics** — exporter script aggregates deployment_frequency, lead_time_for_changes, change_failure_rate, mttr from GitHub API + `ops/audit.jsonl`
+- **Incident playbooks** — `/rollback` (STOP-class 7-step), `/secret-breach`, `/incident`, `/drift-check`, `/performance-review` slash commands
+- **13 ADRs** — each records alternatives rejected AND measurable revisit triggers (e.g. ADR-013 GitOps defers ArgoCD until 4 specific signals fire)
 
 ---
 
