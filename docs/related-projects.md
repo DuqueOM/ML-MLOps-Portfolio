@@ -9,38 +9,68 @@ opinionated **production template** was extracted. The template encodes the
 operational patterns, ADR-driven conventions, and agentic development workflows
 distilled from building this portfolio end-to-end.
 
-### What's in the template
+### What's in the template (v1.10.0)
 
-- **Agentic system** — 12 rules, 11 skills, 10 workflows that guide AI coding
-  assistants (Windsurf Cascade, Claude Code, Cursor) to follow enterprise
-  MLOps patterns automatically
-- **Agent Behavior Protocol (AUTO / CONSULT / STOP)** — formal modes per
-  operation so agents know when to execute, when to propose + wait, and when
-  to refuse (e.g., `terraform apply prod` → STOP, model promotion → STOP,
-  staging deploy → CONSULT)
-- **EDA phase integration** — 6-phase exploratory analysis with a hard leakage
-  gate and baseline distributions that feed production drift detection (no more
-  disconnected data-to-training gap)
-- **Supply-chain security out of the box** — gitleaks + Trivy + Syft SBOM
-  (CycloneDX + SPDX) + Cosign keyless signing (GitHub OIDC) + Kyverno admission
-  controller that rejects unsigned images in production. Targets SLSA Level 2.
-- **Cloud-native secret management** — `common_utils/secrets.py` with
-  environment-aware resolution (AWS Secrets Manager / GCP Secret Manager via
-  IRSA/WI); refuses `os.environ` fallback in staging/production
-- **Production templates** for every layer: EDA → training → FastAPI serving →
-  Terraform (GKE + EKS) → CI/CD (GitHub Actions) → Kustomize overlays →
-  monitoring (Prometheus + Grafana) → Kyverno policies
-- **19 encoded anti-patterns (D-01 → D-19)** — automated detection for the most
-  common ML production failures: event-loop blocking, memory-based HPA, models
-  baked into images, data leakage, hardcoded credentials, static cloud keys,
-  unsigned images, and more
+- **Agentic system across three IDEs** — Windsurf (15 rules / 16 skills /
+  12 workflows), Claude Code (14 rules / 12 commands), Cursor (12 rules /
+  12 commands). Same invariants, native config per assistant.
+- **Two Agent Behavior Protocols**:
+  - **Static** — AUTO / CONSULT / STOP per operation in `AGENTS.md`
+    (e.g., `terraform apply prod` → STOP, model promotion → STOP,
+    staging deploy → CONSULT)
+  - **Dynamic** (ADR-010) — live-signal escalation: any of
+    `incident_active`, `drift_severe`, `error_budget_exhausted`,
+    `off_hours`, `recent_rollback` upgrades the mode by one step;
+    Prometheus-backed with file-system fallback and explicit
+    `risk_signals: UNAVAILABLE` audit when neither is reachable
+- **6 environment overlays** — `gcp-{dev,staging,prod}` +
+  `aws-{dev,staging,prod}`, each with its own PSS-labeled namespace
+  (baseline for dev/staging, restricted for prod) and tier-scaled
+  resources (D-29). Deploy chain pins images by digest BEFORE
+  `kubectl apply` so the Kyverno digest gate has compliant manifests.
+- **Supply chain — closed loop end-to-end**: gitleaks + Trivy + Syft
+  SBOM (CycloneDX + SPDX) + Cosign keyless signing (GitHub OIDC) +
+  Kyverno admission policy that rejects unsigned or non-digest images
+  in prod. SLSA Level 2 targeted; signing actually installed and run
+  in `deploy-{gcp,aws}.yml` (was a silent gap until v1.10.0).
+- **Cloud-native secret management** — `common_utils/secrets.py`
+  resolves AWS Secrets Manager or GCP Secret Manager via IRSA / WI;
+  refuses `os.environ` fallback in staging/production. Two runbooks
+  cover bootstrap: `docs/runbooks/gcp-wif-setup.md` +
+  `docs/runbooks/aws-irsa-setup.md`.
+- **Per-environment Terraform remote state** — partial backend configs
+  under `templates/infra/terraform/{gcp,aws}/backend-configs/` segregate
+  dev / staging / prod state buckets with the bootstrap runbook
+  `docs/runbooks/terraform-state-bootstrap.md`.
+- **Drift + retrain operationalized** — `templates/cicd/drift-detection.yml`
+  and `retrain-service.yml` ship cloud-aware data/model adapters (GCS or
+  S3 via OIDC), Prometheus Pushgateway integration, and MLflow promotion
+  hooks. Was scaffolded but inert before v1.10.0.
+- **Audit trail wired into CI** — `scripts/audit_record.py` CLI wrapper
+  appends `ops/audit.jsonl` and mirrors a markdown summary to the
+  GitHub Actions step summary. `deploy-common.yml` calls it on every
+  deploy (success AND failure via `if: always()`).
+- **Golden Path E2E workflow** — `.github/workflows/golden-path.yml`
+  validates the full chain in CI: scaffold → build + sign by digest →
+  kind cluster + Kyverno admit + smoke → audit trail. Trust anchor
+  for every PR.
+- **30 encoded anti-patterns (D-01 → D-30)** — runtime, training,
+  EDA, security, closed-loop, lifecycle (warm-up, PDB, PSS), delivery
+  (env gates, API contracts, SBOM, digest pin)
 - **Typed inter-agent handoffs** — frozen dataclasses (`EDAHandoff`,
   `TrainingArtifact`, `BuildArtifact`, `SecurityAuditResult`,
-  `DeploymentRequest`) that validate invariants at construction (e.g.,
-  production deploy with failed security audit raises at construction time,
-  cannot be bypassed)
-- **Engineering calibration** — every component sized to actual requirements,
-  avoiding both under- and over-engineering
+  `DeploymentRequest`) that validate invariants at construction.
+  `DeploymentRequest` refuses to construct when `env=production` AND
+  `audit.passed=False`; `SecurityAuditResult` blocks any `trivy_high`
+  finding regardless of caller intent.
+- **Productization roadmap published (ADR-015)** — 3 phases / 12 PRs
+  going from v1.10.0 (audit-closed) toward a self-service product:
+  bootstrap/live Terraform split, IAM least-privilege defaults, EDA
+  artifact contracts, real retrain loop, alert→runbook→action wiring,
+  multi-environment SLO budgets, and a public reproducible demo.
+- **Engineering calibration** — every component sized to actual
+  requirements, avoiding both under- and over-engineering. ADRs
+  document alternatives rejected AND measurable revisit triggers.
 
 ### Portfolio vs. Template — which should I use?
 
@@ -59,16 +89,25 @@ ML-MLOps-Portfolio (this repo)
     │  Real deployments, 3 ML services, 18 ADRs,
     │  measured incidents, 395+ tests
     │
-    └──▶ ML-MLOps-Production-Template (v1.6.0)
+    └──▶ ML-MLOps-Production-Template (v1.10.0)
             │
             │  Extracted patterns + reusable templates:
-            │  - Agentic: 12 rules + 11 skills + 10 workflows
-            │  - Behavior Protocol: AUTO / CONSULT / STOP
-            │  - 19 anti-patterns (runtime, data, security)
-            │  - EDA pipeline + drift detection loop
-            │  - SLSA L2 supply chain (Cosign + SBOM + Kyverno)
-            │  - Cloud-native secrets (IRSA / Workload Identity)
-            │  - Typed inter-agent handoffs
+            │  - Agentic, tri-IDE: Windsurf · Claude Code · Cursor
+            │  - Behavior Protocol: AUTO / CONSULT / STOP (static + dynamic)
+            │  - 30 anti-patterns D-01 → D-30
+            │  - EDA pipeline + drift detection + retrain loop
+            │    (cloud-aware GCS/S3 adapters via OIDC)
+            │  - SLSA L2 supply chain — Cosign signing actually invoked
+            │    in deploy chain, Kyverno digest + signature gates,
+            │    SBOM (CycloneDX + SPDX) attested by digest
+            │  - Cloud-native secrets (IRSA + Workload Identity) +
+            │    /secret-breach incident playbook
+            │  - 6 env overlays (gcp-{dev,staging,prod} + aws-…) with
+            │    PSS-labeled namespaces and tier-scaled resources
+            │  - Typed inter-agent handoffs that validate at construction
+            │  - Audit trail (ops/audit.jsonl) wired into CI on every deploy
+            │  - Golden Path E2E workflow as PR trust anchor
+            │  - ADR-015 productization roadmap (3 phases / 12 PRs)
             │
             └──▶ Your next MLOps project
 ```

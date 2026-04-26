@@ -71,20 +71,25 @@ The MLOps patterns in this portfolio are available as a reusable, opinionated te
 
 **[ML-MLOps-Production-Template](https://github.com/DuqueOM/ML-MLOps-Production-Template)** · [related-projects.md](docs/related-projects.md)
 
-**v1.9.0 highlights:**
-- **30 encoded anti-patterns** (D-01 → D-30) — runtime, data, EDA, security, closed-loop, lifecycle (warm-up, PDB, PSS), delivery (env gates, API contracts, SBOM)
+**v1.10.0 highlights** — *15-finding audit closure release; the template now does what the docs say*:
+- **30 encoded anti-patterns** (D-01 → D-30) — runtime, data, EDA, security, closed-loop, lifecycle (warm-up, PDB, PSS), delivery (env gates, API contracts, SBOM, digest pin)
 - **Two Behavior Protocols** — static AUTO/CONSULT/STOP mapping (AGENTS.md) PLUS dynamic risk escalation (ADR-010) based on live signals: `incident_active`, `drift_severe`, `error_budget_exhausted`, `off_hours`, `recent_rollback`
+- **6 environment overlays** (`gcp-{dev,staging,prod}` + `aws-{dev,staging,prod}`) with PSS-labeled namespaces (baseline for dev/staging, restricted for prod) and tier-scaled resources — closes the silent gap where the deploy workflows referenced names the repo never shipped
+- **Image digest pinning end-to-end** — build job captures `sha256:...`, `deploy-common.yml` runs `kustomize edit set image …@<digest>` BEFORE `kubectl apply`; the Kyverno digest gate finally has compliant manifests to admit
+- **Cosign + SBOM actually invoked** in `deploy-{gcp,aws}.yml` (was a silent gap until v1.10.0); SLSA L2 trust chain end-to-end
 - **6-phase EDA pipeline** with leakage hard gate + baseline distributions feeding drift detection
-- **Supply chain** — Syft SBOM + Cosign keyless signing (GitHub OIDC) + CycloneDX attestation + Kyverno admission + Pod Security Standards namespace labels
-- **Cloud-native secrets** — `common_utils/secrets.py` (AWS Secrets Manager / GCP Secret Manager via IRSA/WI); scheduled-rotation runbook + emergency `/secret-breach` workflow
-- **Typed inter-agent handoffs** — frozen dataclasses validating invariants at construction; `DeploymentRequest` refuses to construct when `env=production` + `audit.passed=False`
-- **Audit trail** — every agentic operation appends to `ops/audit.jsonl` with risk signals + base mode
+- **Cloud-native secrets** — `common_utils/secrets.py` (AWS Secrets Manager / GCP Secret Manager via IRSA/WI); two bootstrap runbooks (GCP WIF + AWS IRSA) + `/secret-breach` emergency workflow
+- **Per-environment Terraform remote state** — partial backend configs under `templates/infra/terraform/{gcp,aws}/backend-configs/` with the `terraform-state-bootstrap.md` runbook
+- **Drift + retrain operationalized** — cloud-aware GCS/S3 adapters via OIDC, Prometheus Pushgateway integration, MLflow promotion hooks
+- **Typed inter-agent handoffs** — frozen dataclasses validating invariants at construction; `DeploymentRequest` refuses to construct when `env=production` + `audit.passed=False`; `SecurityAuditResult` blocks on any `trivy_high` finding
+- **Audit trail** — every agentic operation appends to `ops/audit.jsonl` with risk signals + base mode; CI calls `scripts/audit_record.py` on every deploy (success AND failure via `if: always()`) and mirrors a markdown summary to the GitHub Actions step summary
+- **Golden Path E2E workflow** — `.github/workflows/golden-path.yml` validates the full chain on every PR: scaffold → build + sign by digest → kind cluster + Kyverno admit + smoke → audit trail. **Trust anchor for the audit closure.**
 - **Tri-IDE full parity** — Windsurf (15 rules / 16 skills / 12 workflows) · Claude Code (14 rules / 12 commands / 16-skill index) · Cursor (12 rules / 12 commands / 16-skill index)
 - **Closed-loop monitoring** — prediction logger + ground truth ingestion + sliced performance (ADR-007) + Champion/Challenger McNemar + bootstrap ΔAUC gate (ADR-008) + 10-panel Grafana dashboard
 - **Governed delivery** — dev → staging → prod chain with GitHub Environment Protection, 2 reviewers + 15min soak + tag-only for prod (ADR-011); reusable `deploy-common.yml` single source of truth
 - **DORA metrics** — exporter script aggregates deployment_frequency, lead_time_for_changes, change_failure_rate, mttr from GitHub API + `ops/audit.jsonl`
 - **Incident playbooks** — `/rollback` (STOP-class 7-step), `/secret-breach`, `/incident`, `/drift-check`, `/performance-review` slash commands
-- **13 ADRs** — each records alternatives rejected AND measurable revisit triggers (e.g. ADR-013 GitOps defers ArgoCD until 4 specific signals fire)
+- **15 ADRs** — each records alternatives rejected AND measurable revisit triggers; **ADR-015 publishes the productization roadmap** (3 phases / 12 PRs) toward a self-service product
 
 ---
 
