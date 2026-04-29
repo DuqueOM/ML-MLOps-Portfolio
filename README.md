@@ -71,8 +71,13 @@ The MLOps patterns in this portfolio are available as a reusable, opinionated te
 
 **[ML-MLOps-Production-Template](https://github.com/DuqueOM/ML-MLOps-Production-Template)** · [related-projects.md](docs/related-projects.md)
 
-**v1.10.0 highlights** — *15-finding audit closure release; the template now does what the docs say*:
-- **30 encoded anti-patterns** (D-01 → D-30) — runtime, data, EDA, security, closed-loop, lifecycle (warm-up, PDB, PSS), delivery (env gates, API contracts, SBOM, digest pin)
+**v1.12.0 highlights** — *audit Round-3 close + pre-commit hardened as mandatory first filter*:
+- **32 encoded anti-patterns** (D-01 → D-32) — runtime, data, EDA, security, closed-loop, lifecycle (warm-up, PDB, PSS), delivery (env gates, API contracts, SBOM, digest pin), placeholder hygiene (D-32: kebab-vs-snake path bug)
+- **Pre-commit as mandatory first filter** — 14 hooks (black, isort, flake8, mypy, bandit, gitleaks, trailing-whitespace, EOF, YAML, merge-conflict, large-files, validate-agentic, ci-autofix-policy-contract, scaffold-smoke); `default_install_hook_types: [pre-commit, pre-push]` so a single `pre-commit install` covers both stages; `make verify-hooks` audits any time; `scripts/dev-setup.sh` bootstraps idempotently and verifies hooks actually landed in `.git/hooks/`
+- **Closed-loop verification workflow** — `golden-path-extended.yml` re-deploys + posts 100 valid + 5 invalid `/predict` requests + asserts the prediction-log counter increments; new `test_closed_loop_workflow_contract.py` parses both schema and workflow and fails LOUD if they drift (R3 HIGH-1 fix)
+- **GCP ↔ AWS Terraform parity** (v1.11.0) — secrets / logging / KMS at the live layer + bootstrap split + 14 parity contract tests; cluster defaults (private endpoint opt-in, system/workload pool split with taint, deny-default NetworkPolicy)
+- **ADR-018 Operational Memory Plane + ADR-019 Agentic CI Self-Healing (Phase 0)** — policy YAMLs (`templates/config/{ci_autofix_policy,model_routing_policy}.yaml`) + 10-invariant contract test enforcing escalation-only semantics; runtime phases scoped as explicit follow-ons
+- **OSS package complete** (v1.11.0) — NOTICE (Apache-2.0 attribution) + DCO.md + `.github/CODEOWNERS` routing for AGENTS.md, ADRs, infra, governance YAMLs
 - **Two Behavior Protocols** — static AUTO/CONSULT/STOP mapping (AGENTS.md) PLUS dynamic risk escalation (ADR-010) based on live signals: `incident_active`, `drift_severe`, `error_budget_exhausted`, `off_hours`, `recent_rollback`
 - **6 environment overlays** (`gcp-{dev,staging,prod}` + `aws-{dev,staging,prod}`) with PSS-labeled namespaces (baseline for dev/staging, restricted for prod) and tier-scaled resources — closes the silent gap where the deploy workflows referenced names the repo never shipped
 - **Image digest pinning end-to-end** — build job captures `sha256:...`, `deploy-common.yml` runs `kustomize edit set image …@<digest>` BEFORE `kubectl apply`; the Kyverno digest gate finally has compliant manifests to admit
@@ -89,7 +94,7 @@ The MLOps patterns in this portfolio are available as a reusable, opinionated te
 - **Governed delivery** — dev → staging → prod chain with GitHub Environment Protection, 2 reviewers + 15min soak + tag-only for prod (ADR-011); reusable `deploy-common.yml` single source of truth
 - **DORA metrics** — exporter script aggregates deployment_frequency, lead_time_for_changes, change_failure_rate, mttr from GitHub API + `ops/audit.jsonl`
 - **Incident playbooks** — `/rollback` (STOP-class 7-step), `/secret-breach`, `/incident`, `/drift-check`, `/performance-review` slash commands
-- **15 ADRs** — each records alternatives rejected AND measurable revisit triggers; **ADR-015 publishes the productization roadmap** (3 phases / 12 PRs) toward a self-service product
+- **19 ADRs** — each records alternatives rejected AND measurable revisit triggers; ADR-015 publishes the productization roadmap (3 phases / 12 PRs); ADR-016 codifies the external-audit R2 remediation backlog; ADR-018/019 ratify the new agent capabilities at policy-only Phase 0
 
 ---
 
