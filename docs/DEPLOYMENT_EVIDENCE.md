@@ -143,7 +143,7 @@ graph TB
 | **NLPInsight p50** | 99ms | 98ms | -1% | 🟢 Identical — TF-IDF+LogReg is fast on both |
 | **NLPInsight p95** | 220ms | 200ms | -9% | 🟢 AWS slightly better |
 | **ChicagoTaxi p50** | 75ms | 240ms | +220% | 🟡 AWS slower — batch lookup from S3 vs GCS latency |
-| **Failure rate** | 0.00% | 0.00% | 0% | 🟢 Both production-grade |
+| **Failure rate** | 0.00% | 0.00% | 0% | 🟢 Both meet target |
 | **RPS (10 users)** | ~6.6 | ~8.4 | +27% | AWS slightly higher (Classic ELB routing efficiency) |
 | **Node type** | e2-medium (2vCPU/4GB) | t3.small (2vCPU/2GB) | -50% RAM | AWS uses half the RAM per node |
 | **Total nodes** | 4 | 3 | -25% | GCP autoscaler holds 4 for memory headroom |
@@ -208,7 +208,7 @@ graph TB
 
 ### Why BankChurn is slower
 
-BankChurn uses a **StackingClassifier** ensemble: 4 base learners (RandomForest, GradientBoosting, XGBoost, LightGBM) feed into a LogisticRegression meta-learner. Each prediction runs 5 models sequentially. A P50 of ~103ms is **expected and acceptable** for this architecture — enterprise SLA target is P95 < 500ms.
+BankChurn uses a **StackingClassifier** ensemble: 4 base learners (RandomForest, GradientBoosting, XGBoost, LightGBM) feed into a LogisticRegression meta-learner. Each prediction runs 5 models sequentially. A P50 of ~103ms is **expected and acceptable** for this architecture — service target is P95 < 500ms.
 
 ## Load Test Results (Locust, 30 users, 120s, via port-forward, 2026-03-05)
 
@@ -302,7 +302,7 @@ BankChurn uses a **StackingClassifier** ensemble: 4 base learners (RandomForest,
 | IAM | IRSA (`ml-portfolio-eks-workload-role`) |
 
 > **Note**: AWS uses Classic ELB (provisioned 2026-03-13) via nginx-ingress LoadBalancer service.
-> Same enterprise pattern as GCP: LoadBalancer + nginx Ingress path-based routing.
+> Same professional pattern as GCP: LoadBalancer + nginx Ingress path-based routing.
 > ELB DNS: `a6ed6b93fdbf14be2853d91bd2086d6b-1565798194.us-east-1.elb.amazonaws.com`
 
 ### Prometheus Monitoring (16/16 targets UP, 0 DOWN)

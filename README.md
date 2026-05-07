@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🚀 ML/MLOps Portfolio — Production-Ready
+# 🚀 ML/MLOps Portfolio — Production ML Systems
 
-**3 ML services · GKE + EKS · 18 ADRs · 395+ tests · Multi-cloud Terraform**
+**Human-first portfolio for entry-level MLOps / Production ML roles · 3 ML services · GKE + EKS evidence · 18 ADRs · 395+ tests**
 
 [![CI](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
 [![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)
@@ -11,7 +11,7 @@
 [![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC?logo=terraform&logoColor=white)](https://terraform.io)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-[![Portfolio Site](https://img.shields.io/badge/%F0%9F%9A%80_Portfolio-Live_Demo-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
+[![Portfolio Site](https://img.shields.io/badge/Portfolio-Human_Overview-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
 [![YouTube](https://img.shields.io/badge/Video_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
 
 [![Status](https://img.shields.io/badge/status-reference%20%2F%20showcase-blue?style=for-the-badge)](PORTFOLIO_STATUS.md)
@@ -29,7 +29,11 @@
 
 ## ⚡ Why This Portfolio Is Different
 
-Most ML portfolios show models that score well. This one shows what happens **after you deploy** — production incidents diagnosed from first principles, wrong decisions corrected and documented, trade-offs measured and justified.
+Most ML portfolios show models that score well. This one shows what happens **after a model has to become a service**: APIs, tests, deployment artifacts, monitoring, cost trade-offs, and documented lessons.
+
+The GitHub Pages site is now the best entry point for recruiters and non-technical reviewers:
+[duqueom.github.io/ML-MLOps-Portfolio](https://duqueom.github.io/ML-MLOps-Portfolio/).
+This README remains the deeper technical record.
 
 ### Three production incidents diagnosed — root cause to fix, documented with data:
 
@@ -58,7 +62,7 @@ The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0. Each entry
 | Why decisions were made (not just what) | [18 ADRs ↓](#-architectural-decision-records--18-documented) |
 | Incidents diagnosed in production | [ENGINEERING_HIGHLIGHTS.md →](ENGINEERING_HIGHLIGHTS.md) |
 | Agentic Development Configuration | [AGENTS.md ↓](#-agentic-development-configuration) |
-| What was built and how it performs | [Projects ↓](#production-ready-projects) |
+| What was built and how it performs | [Projects ↓](#production-style-projects) |
 | How to run it locally in 5 minutes | [Quick Start ↓](#-quick-start) |
 | Multi-cloud deployment evidence | [Deployment ↓](#multi-cloud-production-deployment) |
 | What broke and when | [CHANGELOG.md →](CHANGELOG.md) |
@@ -172,11 +176,11 @@ The agent knows: 50%/60%/60% CPU targets (not 70%), `KernelExplainer` for SHAP (
 
 ---
 
-## 🌟 Production-Ready Projects
+## 🌟 Production-Style Projects
 
 ### 🏦 1. [BankChurn Predictor](BankChurn-Predictor/) — Customer Churn Prediction
 
-Production-grade churn prediction with **StackingClassifier** ensemble (RF + GradientBoosting + XGBoost + LightGBM → LogisticRegression meta-learner). `ChurnFeatureEngineer` with domain-specific ratios, bins, and risk scores. MLflow experiment tracking.
+Production-style churn prediction with **StackingClassifier** ensemble (RF + GradientBoosting + XGBoost + LightGBM → LogisticRegression meta-learner). `ChurnFeatureEngineer` with domain-specific ratios, bins, and risk scores. MLflow experiment tracking.
 
 | AUC-ROC | F1 | Precision | Recall | Coverage | In-Pod Latency (GKE) |
 |---------|-----|-----------|--------|----------|----------------------|

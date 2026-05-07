@@ -84,4 +84,4 @@ Every ADR follows a consistent structure:
 - **ML Engineers**: Start with ADR-003 (model choice), ADR-010 (explainability), ADR-006 (drift retraining).
 - **Platform/DevOps Engineers**: Start with ADR-001 (HPA), ADR-014 (single-worker), ADR-002 (model storage), ADR-008 (canary).
 - **Security Engineers**: ADR-012 (scanner policy), ADR-005 (dependency pinning).
-- **Hiring Managers (enterprise focus)**: ADR-017 (custom vs managed platforms) — demonstrates ability to articulate build-vs-buy trade-offs.
+- **Hiring Managers (platform focus)**: ADR-017 (custom vs managed platforms) — demonstrates ability to articulate build-vs-buy trade-offs.

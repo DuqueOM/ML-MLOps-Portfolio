@@ -75,7 +75,7 @@ shap~=0.46.0          # allows 0.46.x, blocks 0.47+
 | Strategy | Reproducibility | Security Patches | Maintenance | Verdict |
 |----------|----------------|-----------------|-------------|---------|
 | No pinning (`numpy`) | None | Auto | None | Rejected — caused the numpy 2.x incident |
-| Exact pinning (`numpy==1.26.4`) | Perfect | Manual | High (every CVE requires manual bump) | Rejected — too rigid for a portfolio; enterprise uses lockfiles instead |
+| Exact pinning (`numpy==1.26.4`) | Perfect | Manual | High (every CVE requires manual bump) | Rejected — too rigid for a portfolio; larger teams use lockfiles instead |
 | **Compatible release (`numpy~=1.26.4`)**  | High | Auto (patches) | Low | **Selected** — balances safety with maintainability |
 | Lockfile (`pip-compile`, `poetry.lock`) | Perfect | Manual/Dependabot | Medium | Deferred — best option at scale; overkill for 3 services |
 

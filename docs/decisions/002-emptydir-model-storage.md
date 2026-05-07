@@ -62,7 +62,7 @@ Each service has a dedicated ConfigMap (`k8s/model-configmaps.yaml`) specifying:
 
 ### Why Not Bake Models into Docker Images?
 
-In enterprise ML, **model release cadence ≠ code release cadence**. Models may be retrained weekly (via drift detection — see [ADR-006](006-drift-triggered-retraining.md)), while application code changes monthly. Coupling them forces unnecessary image rebuilds and increases deployment risk.
+In production ML, **model release cadence ≠ code release cadence**. Models may be retrained weekly (via drift detection — see [ADR-006](006-drift-triggered-retraining.md)), while application code changes monthly. Coupling them forces unnecessary image rebuilds and increases deployment risk.
 
 ---
 

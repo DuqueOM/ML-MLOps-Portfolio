@@ -20,7 +20,7 @@ The question: should the portfolio use managed platforms instead of (or in addit
 
 This "multi-paradigm" approach demonstrates:
 1. Deep infrastructure knowledge (custom)
-2. Pragmatism with enterprise tools (managed)
+2. Pragmatism with managed tools
 3. Ability to articulate trade-offs (this ADR)
 
 ## Comparison
@@ -46,7 +46,7 @@ This "multi-paradigm" approach demonstrates:
 
 ## Why SageMaker as Complement
 
-1. **Enterprise relevance**: ~60% of ML teams in enterprise use SageMaker (2025 MLOps survey)
+1. **Managed-platform relevance**: many ML teams use SageMaker (2025 MLOps survey)
 2. **Demonstrates versatility**: "I can build custom AND use managed" > "I only know one way"
 3. **Low effort, high signal**: One endpoint for BankChurn adds significant portfolio value for ~2 hours of work
 4. **Real comparison data**: Latency, cost, deploy-time comparisons with actual numbers

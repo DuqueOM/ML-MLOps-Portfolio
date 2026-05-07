@@ -1,7 +1,7 @@
 # Managed ML Platforms — SageMaker (AWS) & Vertex AI (GCP)
 
 > **Multi-paradigm portfolio**: Custom FastAPI + Kubernetes as the primary serving architecture,
-> AND managed endpoints (SageMaker + Vertex AI) to demonstrate enterprise platform skills.
+> AND managed endpoints (SageMaker + Vertex AI) to demonstrate managed-platform skills.
 > See [ADR-017](decisions/017-custom-vs-managed-ml-platforms.md) for the full comparison.
 
 ## Architecture: Three Paradigms, One Portfolio
@@ -427,7 +427,7 @@ job = aiplatform.ModelDeploymentMonitoringJob.create(
 | **GCP-only shop** | Vertex AI | Native integration + BigQuery ML |
 | **Portfolio / interviews** | **All three** | Demonstrates versatility |
 | **Cost-sensitive startup** | Custom on K8s | No per-endpoint charges |
-| **Enterprise with ML team** | SageMaker / Vertex AI | Focus on models, not infra |
+| **Larger team with ML ownership** | SageMaker / Vertex AI | Focus on models, not infra |
 
 ---
 

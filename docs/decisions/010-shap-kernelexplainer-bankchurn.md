@@ -110,7 +110,7 @@ At larger scale, this pattern would be extended as follows:
 | **>1000 RPS** | Dedicated explainability microservice with model replica + explanation cache (Redis TTL 1h for repeated inputs) |
 | **Batch** | Nightly SHAP job on high-risk segment, stored in feature store |
 
-The current synchronous implementation is appropriate for a portfolio demo and for low-traffic enterprise use cases (e.g., a retention analyst requesting explanations for flagged customers).
+The current synchronous implementation is appropriate for a portfolio demo and for low-traffic business use cases (e.g., a retention analyst requesting explanations for flagged customers).
 
 ---
 

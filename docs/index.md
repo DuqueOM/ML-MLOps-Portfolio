@@ -1,205 +1,120 @@
-# ML/MLOps Portfolio — Production-Ready
+# Duque Ortega Mutis
 
-<div style="text-align: center; margin-bottom: 1em;">
-<strong>3 ML Models &bull; Multi-Cloud (GKE + EKS) &bull; 18 ADRs &bull; Agentic Dev Config &bull; CI/CD &bull; Prometheus + Grafana + MLflow</strong>
-</div>
+## MLOps & Production ML Portfolio
 
-[![CI](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
-[![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)
-[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue?logo=python&logoColor=white)](https://python.org)
-[![Kubernetes](https://img.shields.io/badge/K8s-GKE%20%2B%20EKS-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io)
-[![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC?logo=terraform&logoColor=white)](https://terraform.io)
+I am an entry-level MLOps / Production ML candidate based in Mexico City. Before
+moving into machine learning, I spent 14 years running business operations:
+teams, vendors, budgets, customer processes, and cost decisions. That background
+shapes the way I build ML systems: not as isolated notebooks, but as services
+that need to be deployed, monitored, explained, and improved.
 
-[![GitHub](https://img.shields.io/badge/Source_Code-Repository-181717?style=for-the-badge&logo=github)](https://github.com/DuqueOM/ML-MLOps-Portfolio)
-[![YouTube](https://img.shields.io/badge/Video_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
+I am looking for my first formal role in **MLOps, Production ML, Applied AI, ML
+Platform, or Data Engineering with ML workflows**.
 
----
-
-## Multi-Cloud: GKE vs EKS — Live
-
-<img src="media/gifs/portfolio-demo.gif" alt="Portfolio Demo" width="600">
-
-*Same 6 services running on GCP (GKE, us-central1) and AWS (EKS, us-east-1) — multi-cloud deployed and verified.*
+[Contact me](contact.md) | [View the template](template.md) | [See technical evidence](technical-evidence.md)
 
 ---
 
-## ML Projects
+## The Short Version
 
-| Project | Algorithm | Metric | Coverage | Latency p50 (GCP / AWS) |
-|---------|-----------|--------|:--------:|:---------:|
-| **[BankChurn](projects/bankchurn.md)** | StackingClassifier (RF+GB+XGB+LGB→LR) + SHAP | AUC **0.87** | 90% | 200ms / 110ms |
-| **[NLPInsight](projects/nlpinsight.md)** | TF-IDF + LogReg (prod, 5ms) · FinBERT (GPU opt-in) | Acc **80.6%** | 98% | 78ms / 100ms |
-| **[ChicagoTaxi](projects/chicagotaxi.md)** | PySpark ETL (6.3M rows) + LightGBM | R² **0.96** | 91% | 100ms / 120ms |
-
-> **395+ tests** across all projects, **0 failures**, **85% CI threshold enforced**.
-
-![Multi-Cloud HERO: GKE vs EKS Side-by-Side](media/screenshots/aws-terminal/36-multicloud-side-by-side.png)
-
-*End-to-end: API predictions with SHAP explainability, sentiment analysis, and demand forecasting.*
+| What I am building toward | Evidence in this portfolio |
+|---------------------------|----------------------------|
+| Reliable ML services | FastAPI APIs, Docker images, Kubernetes manifests, health checks, and smoke tests. |
+| Production-minded workflows | CI/CD, MLflow tracking, model versioning, monitoring, and deployment runbooks. |
+| Business-aware engineering | Cost comparisons, trade-off documentation, and decisions tied to reliability and maintainability. |
+| Clear communication | Architecture Decision Records, model cards, project summaries, and video walkthroughs. |
+| Reusable systems | A separate MLOps template that packages the lessons from this portfolio into a starter framework. |
 
 ---
 
-## Production Infrastructure
+## Why This Portfolio Exists
 
-| Component | GCP (GKE) | AWS (EKS) |
-|-----------|-----------|-----------|
-| **Cluster** | GKE 1 node baseline, auto-scales to 5 (e2-medium, `us-central1`) | EKS 1 node baseline, auto-scales to 5 (t3.small, `us-east-1`) |
-| **Pods** | 6 Running, 0 restarts | 6 Running, 0 restarts |
-| **Ingress** | nginx + static IP (`136.111.152.72`) | nginx + NLB (AWS Load Balancer Controller) |
-| **Registry** | Artifact Registry | ECR (3 repos) |
-| **Storage** | GCS (versioned) | S3 (encrypted, versioned) |
-| **IAM** | Workload Identity | IRSA |
-| **Drift Detection** | CronJob (daily 06:00 UTC) | CronJob (daily 06:00 UTC) |
-| **Load Test** | 0% errors, p95 190ms | 0% errors, p95 450ms |
+Many beginner ML portfolios stop at training a model and reporting a metric.
+This one asks the next question: **what happens after the model needs to serve
+real requests?**
 
-| GKE Workloads (6 pods) | EKS Cluster Active |
-|:---:|:---:|
-| ![GKE](media/screenshots/gcp-console/05-gke-workloads-running.png) | ![EKS](media/screenshots/aws-console/29-eks-cluster-overview.png) |
+That is why the projects include APIs, containers, tests, deployment artifacts,
+monitoring, incident notes, and documented decisions. The goal is not to claim
+senior-level production ownership. The goal is to show that I understand the
+operational side of ML and can grow quickly inside a team that builds real
+systems.
 
 ---
 
-## Observability Stack
+## Featured Project: ML-MLOps Production Template
 
-| Grafana ML Dashboard | Prometheus Targets (UP) | MLflow Experiments |
-|:---:|:---:|:---:|
-| ![Grafana](media/screenshots/monitoring/34-grafana-dashboard.png) | ![Prometheus](media/screenshots/monitoring/37-prometheus-targets-up.png) | ![MLflow](media/screenshots/monitoring/39-mlflow-experiments.png) |
+The most important project here is the reusable
+[ML-MLOps Production Template](template.md).
 
-- **Prometheus**: 16 targets UP, 16 alert rules, 15s scrape interval
-- **Grafana**: 2 dashboards, 26 panels (latency, throughput, predictions, errors, resources)
-- **MLflow**: 9 experiments tracked across 3 projects
+It grew out of the mistakes and lessons from the portfolio: blocked inference
+APIs, fragile deploy paths, missing monitoring, unclear model promotion rules,
+and documentation that can drift away from reality.
 
----
+The template turns those lessons into a reusable starting point for ML services:
 
-## CI/CD Pipeline
+- FastAPI serving structure
+- Docker and Kubernetes defaults
+- Terraform examples for GCP and AWS
+- MLflow, drift detection, and retraining hooks
+- CI/CD and validation workflows
+- safety checks for secrets, images, and deployment decisions
+- agent-assisted workflow rules that keep automation inside documented limits
 
-| GitHub Actions (10 jobs) | Deploy Workflows (GCP + AWS) | Codecov Dashboard |
-|:---:|:---:|:---:|
-| ![Pipeline](media/screenshots/cicd/46-workflow-completado.png) | ![Deploy](media/screenshots/cicd/48-deploy-aws-workflow-success.png) | ![Codecov](media/screenshots/cicd/68-codecov-dashboard.png) |
+For recruiters, this shows product thinking: I did not only build one portfolio;
+I extracted the reusable system behind it.
 
-- **CI**: tests (matrix) → security (Gitleaks, Bandit) → Docker build (Trivy) → integration tests
-- **CD**: `deploy-gcp.yml` + `deploy-aws.yml` — automated multi-cloud deployment
-- **Coverage**: 90–98% enforced at 85% threshold via Codecov
-
----
-
-## Infrastructure as Code
-
-| Terraform Multi-Cloud | K8s Overlays (GCP vs AWS) | Infra Tests |
-|:---:|:---:|:---:|
-| ![Terraform](media/screenshots/terraform/01-terraform-multicloud-structure.png) | ![Overlays](media/screenshots/terraform/03-k8s-overlays-multicloud.png) | ![Tests](media/screenshots/terminal/22b-infra-test-terraform.png) |
-
-- **Terraform**: GCP + AWS modules, remote state, `terraform plan` = no drift
-- **Kustomize**: Shared base manifests + cloud-specific overlays
-- **Testing**: `tfsec` + `checkov` + `conftest` (OPA) + `kube-linter` — 9/9 GCP, 8/8 AWS
+[Read the template overview](template.md) | [Open the GitHub repo](https://github.com/DuqueOM/ML-MLOps-Production-Template)
 
 ---
 
-## API Evidence
+## Portfolio Projects
 
-| BankChurn (SHAP) | NLPInsight (Sentiment) | ChicagoTaxi (Demand) |
-|:---:|:---:|:---:|
-| ![BankChurn](media/screenshots/apis/26-bankchurn-prediccion-real.png) | ![NLPInsight](media/screenshots/apis/28-nlpinsight-prediccion.png) | ![ChicagoTaxi](media/screenshots/apis/30-chicagotaxi-prediccion.png) |
+These three projects show the technical foundation behind the template.
 
-All services expose FastAPI with Swagger UI, Prometheus `/metrics`, and structured health checks.
+| Project | What it shows | Why it matters |
+|---------|---------------|----------------|
+| [BankChurn Predictor](projects/bankchurn.md) | Customer churn model served through an API with SHAP explanations and threshold tuning. | Connects ML metrics to business cost: missing a churner is more expensive than a retention offer. |
+| [NLPInsight Analyzer](projects/nlpinsight.md) | Financial sentiment analysis with a lightweight production path and an optional transformer path. | Shows honest benchmark selection instead of chasing an inflated metric. |
+| [ChicagoTaxi Pipeline](projects/chicagotaxi.md) | PySpark data processing and demand forecasting on millions of taxi trips. | Shows data engineering, leakage detection, and temporal validation. |
 
----
-
-## Security & Automation
-
-| Feature | Status |
-|---------|--------|
-| **Pod Security Standards** | `enforce=baseline`, `warn=restricted` |
-| **Network Policies** | default-deny + 3 allow rules |
-| **Pod Disruption Budgets** | `minAvailable=1` (3 ML services) |
-| **Drift Detection** | Daily CronJob on both clouds |
-| **Retraining Trigger** | Automated CronJob → GitHub Actions dispatch |
-| **Scanning** | Gitleaks + Bandit + Trivy + pip-audit (blocking on HIGH) |
-| **Non-root** | All containers run as UID 1000 |
+<img src="media/gifs/portfolio-demo.gif" alt="Portfolio walkthrough" width="640">
 
 ---
 
-## HPA Auto-Scaling
+## A Concrete Debugging Story
 
-<img src="media/gifs/monitoring-observability.gif" alt="Monitoring & Observability" width="480">
+During load testing, one ML API reached an 81% error rate. The quick answer
+would have been "add more resources." Instead, I traced the behavior to CPU
+contention in the serving path, changed the inference pattern to use
+asynchronous execution with a thread pool, and brought the error rate down to
+0%.
 
-*CPU-based HPA: 1→3 replicas under load, automatic scale-down after traffic subsides.*
+That experience is a good summary of how I want to work:
 
-| Service | CPU Target | Pods | Notes |
-|---------|-----------|------|-------|
-| BankChurn | **50%** | 1–5 | Refined by ADR-014 for faster scale-out |
-| NLPInsight | **60%** | 1–3 | I/O-bound inference, single worker |
-| ChicagoTaxi | **60%** | 1–3 | Lightweight LightGBM inference |
+1. measure the problem;
+2. understand the cause;
+3. fix the smallest meaningful thing;
+4. document the lesson so the next system is better.
 
----
-
-## Responsible AI
-
-- **Fairness Audits**: Disparate impact ratio + equal opportunity (BankChurn by Gender/Geography)
-- **Drift Detection**: KS + PSI + Evidently per feature, automated alerting
-- **Data Validation**: Pandera schemas for all projects (training + inference)
-- **Adversarial Testing**: 43 robustness tests (SQL injection, XSS, boundary, Unicode)
+[Read the technical evidence](technical-evidence.md)
 
 ---
 
-## Agentic Development Configuration
+## How To Review This Site In 3 Minutes
 
-This portfolio includes a production-grade agentic setup encoding 18 ADRs and 3 production
-incidents directly into the AI development environment.
-
-| Layer | Contents |
-|-------|---------|
-| **AGENTS.md** | Project identity, critical DO NOT VIOLATE patterns, HPA targets, model metrics |
-| **rules/** (7) | Context-aware constraints, glob-triggered per file type (K8s, Terraform, Python, Docker…) |
-| **skills/** (6) | Operational procedures: debug-ml-inference, deploy-gke, deploy-aws, drift-detection, model-retrain, release-checklist |
-| **workflows/** (6) | Structured prompt workflows: /incident, /retrain, /release, /load-test, /new-adr, /drift-check |
-
-The agent knows: 50%/60%/60% CPU targets, KernelExplainer for SHAP, workers=1 under K8s.
-Operational knowledge encoded as behavioral constraints — not just referenced.
-
-→ [AGENTS.md](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/AGENTS.md) · [.windsurf/](https://github.com/DuqueOM/ML-MLOps-Portfolio/tree/main/.windsurf)
+1. Start with [About Me](about.md) to understand my background and target roles.
+2. Open [Production Template](template.md) to see the reusable project I am most proud of.
+3. Skim [Projects](projects/overview.md) for the three ML systems.
+4. Use [Technical Evidence](technical-evidence.md) if you want the deeper engineering proof.
+5. Reach out through [Contact](contact.md) if the profile fits an entry-level or junior ML/MLOps opening.
 
 ---
 
-## Technology Stack
+## Current Operating Status
 
-| Layer | Technologies |
-|-------|-------------|
-| **ML/DS** | scikit-learn 1.8.0, XGBoost, LightGBM, PySpark, Dask, SHAP, Optuna |
-| **API** | FastAPI, Pydantic, uvicorn (1 worker per pod — [ADR-014](decisions/014-single-worker-pod-ml-inference.md)) |
-| **MLOps** | MLflow, DVC, Evidently AI, OpenTelemetry |
-| **Cloud** | GCP (GKE, GCS, AR, Cloud SQL), AWS (EKS, S3, ECR) |
-| **IaC** | Terraform (GCP + AWS), Kustomize overlays |
-| **Monitoring** | Prometheus, Grafana (26 panels), 16 alert rules |
-| **CI/CD** | GitHub Actions (CI + deploy-gcp + deploy-aws), Codecov |
-| **Security** | Gitleaks, Bandit, Trivy, pip-audit, Network Policies, PDBs |
-| **Testing** | pytest (395+ tests, 90–98%), Locust load testing |
-| **Agentic** | Windsurf Cascade, AGENTS.md, 7 rules + 6 skills + 6 workflows |
-| **Managed ML** | AWS SageMaker + GCP Vertex AI (BankChurn) — [Guide](MANAGED_ML_GUIDE.md) |
+The cloud infrastructure is currently **off to control cost**, but the code,
+deployment manifests, CI/CD workflows, screenshots, and runbooks remain available
+as evidence from the active development period. The system can be reactivated
+from the documented infrastructure and deployment steps.
 
----
-
-## Quick Start
-
-```bash
-git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git
-cd ML-MLOps-Portfolio
-bash scripts/setup_demo_models.sh
-docker compose -f docker-compose.demo.yml up -d --build
-```
-
-| Service | URL |
-|---------|-----|
-| BankChurn API | [localhost:8001/docs](http://localhost:8001/docs) |
-| NLPInsight API | [localhost:8003/docs](http://localhost:8003/docs) |
-| ChicagoTaxi API | [localhost:8004/docs](http://localhost:8004/docs) |
-| MLflow UI | [localhost:5000](http://localhost:5000) |
-
----
-
-<div style="text-align: center;">
-
-**Built by [Duque Ortega Mutis](https://github.com/DuqueOM)** | [LinkedIn](https://linkedin.com/in/duqueom) | [Video Demo](https://youtu.be/7dFFqq2ROPw)
-
-*Portfolio v3.6.0 — April 2026 — Deployed on GCP (GKE) + AWS (EKS)*
-
-</div>
+[Portfolio status](PORTFOLIO_STATUS.md) | [Video demo](https://youtu.be/7dFFqq2ROPw)

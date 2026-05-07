@@ -30,20 +30,20 @@ After removing CarVision (and its Streamlit dashboard) from the portfolio in v3.
 | Argument | Weight |
 |----------|--------|
 | **Inconsistency**: Only 1 of 3 projects would have a UI → asymmetric architecture | High |
-| **Not enterprise-grade**: No auth, no RBAC, limited scaling, no production hardening | High |
+| **Not suited for a hardened service**: No auth, no RBAC, limited scaling, no production hardening | High |
 | **Redundant**: Swagger UI already provides interactive API testing for all 3 services | High |
 | **Resource impact**: Additional pod on an e2-medium cluster (shared vCPU, 4GB RAM) | Medium |
 | **Scope creep**: Portfolio demonstrates MLOps (CI/CD, K8s, monitoring), not UI/UX | Medium |
 | **Over-engineering**: Adding infrastructure that doesn't serve the portfolio's thesis | Medium |
 
-### What enterprise teams actually do
+### What mature teams actually do
 
 In production ML platforms, the frontend is typically:
 - A dedicated React/Vue/Next.js application built by a frontend team
 - An internal tool (Retool, Streamlit Cloud) for stakeholders
 - NOT a Gradio widget embedded in the ML service pod
 
-Deploying Gradio alongside FastAPI conflates two concerns: **ML serving** (FastAPI) and **user interface** (Gradio). Enterprise architecture separates these.
+Deploying Gradio alongside FastAPI conflates two concerns: **ML serving** (FastAPI) and **user interface** (Gradio). Mature service architecture separates these.
 
 ## Alternatives Considered
 

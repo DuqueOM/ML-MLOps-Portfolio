@@ -41,7 +41,7 @@ The autoscaler operates **independently per cloud** based on:
 - Pod resource requests and bin-packing efficiency
 - Cloud-specific overhead (kube-system, CNI, etc.)
 
-**Enterprise pattern**: Node counts should never be hard-coded equal across clouds. The autoscaler's job is to right-size per environment.
+**Professional pattern**: Node counts should never be hard-coded equal across clouds. The autoscaler's job is to right-size per environment.
 
 ## Consequences
 
