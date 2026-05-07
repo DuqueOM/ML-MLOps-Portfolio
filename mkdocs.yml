@@ -34,6 +34,9 @@ theme:
   icon:
     repo: fontawesome/brands/github
 
+extra_css:
+  - assets/stylesheets/portfolio.css
+
 plugins:
   - search
   - mermaid2
