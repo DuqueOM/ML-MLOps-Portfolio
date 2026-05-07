@@ -2,7 +2,8 @@
 
 <div class="portfolio-page portfolio-home" markdown="1">
 
-<div class="portfolio-hero" markdown="1">
+<div class="portfolio-hero portfolio-hero--profile" markdown="1">
+<div class="portfolio-hero-copy" markdown="1">
 <span class="portfolio-eyebrow">MLOps & Production ML Portfolio</span>
 
 # Building ML systems that can be tested, shipped and operated
@@ -18,6 +19,10 @@ clear trade-offs and documentation people can actually use.
 [View the production template](template.md){ .portfolio-button }
 [Contact me](contact.md){ .portfolio-button }
 </div>
+</div>
+<figure class="portfolio-profile-frame">
+<img src="media/profile/duque-ortega-mutis.webp" alt="Duque Ortega Mutis, MLOps and Production ML candidate">
+</figure>
 </div>
 
 <div class="portfolio-stat-strip" markdown="1">
