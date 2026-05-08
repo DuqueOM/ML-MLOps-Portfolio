@@ -196,7 +196,8 @@ body:has(.portfolio-page) .md-typeset h3 {
 .md-typeset .portfolio-stat-strip,
 .md-typeset .portfolio-card-grid,
 .md-typeset .portfolio-status-grid,
-.md-typeset .portfolio-project-grid {
+.md-typeset .portfolio-project-grid,
+.md-typeset .portfolio-system-map {
   display: grid;
   gap: 0.9rem;
   margin: 1.15rem 0;
@@ -218,9 +219,15 @@ body:has(.portfolio-page) .md-typeset h3 {
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
 }
 
+.md-typeset .portfolio-system-map {
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  counter-reset: portfolio-system;
+}
+
 .md-typeset .portfolio-card,
 .md-typeset .portfolio-stat,
 .md-typeset .portfolio-status-card,
+.md-typeset .portfolio-system-node,
 .md-typeset .portfolio-step,
 .md-typeset .portfolio-faq-item {
   border: 1px solid var(--portfolio-line);
@@ -232,6 +239,7 @@ body:has(.portfolio-page) .md-typeset h3 {
 [data-md-color-scheme="slate"] .md-typeset .portfolio-card,
 [data-md-color-scheme="slate"] .md-typeset .portfolio-stat,
 [data-md-color-scheme="slate"] .md-typeset .portfolio-status-card,
+[data-md-color-scheme="slate"] .md-typeset .portfolio-system-node,
 [data-md-color-scheme="slate"] .md-typeset .portfolio-step,
 [data-md-color-scheme="slate"] .md-typeset .portfolio-faq-item {
   box-shadow: none;
@@ -239,6 +247,7 @@ body:has(.portfolio-page) .md-typeset h3 {
 
 .md-typeset .portfolio-card,
 .md-typeset .portfolio-status-card,
+.md-typeset .portfolio-system-node,
 .md-typeset .portfolio-faq-item {
   padding: 1rem;
 }
@@ -249,6 +258,7 @@ body:has(.portfolio-page) .md-typeset h3 {
 
 .md-typeset .portfolio-stat small,
 .md-typeset .portfolio-card small,
+.md-typeset .portfolio-system-node small,
 .md-typeset .portfolio-status-card small {
   display: block;
   color: var(--portfolio-muted);
@@ -268,18 +278,33 @@ body:has(.portfolio-page) .md-typeset h3 {
 
 .md-typeset .portfolio-stat span,
 .md-typeset .portfolio-card p,
+.md-typeset .portfolio-system-node p,
 .md-typeset .portfolio-status-card p,
 .md-typeset .portfolio-step p {
   color: var(--portfolio-muted);
 }
 
 .md-typeset .portfolio-card h3,
+.md-typeset .portfolio-system-node h3,
 .md-typeset .portfolio-status-card h3,
 .md-typeset .portfolio-step h3 {
   margin: 0.15rem 0 0.35rem;
   color: var(--portfolio-ink);
   font-size: 1.05rem;
   letter-spacing: 0;
+}
+
+.md-typeset .portfolio-system-node {
+  position: relative;
+  overflow: hidden;
+}
+
+.md-typeset .portfolio-system-node::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--portfolio-teal);
 }
 
 .md-typeset .portfolio-status-card {
