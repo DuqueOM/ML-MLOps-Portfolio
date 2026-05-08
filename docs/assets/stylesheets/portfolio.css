@@ -75,9 +75,9 @@ body:has(.portfolio-page) .md-typeset h3 {
 
 .md-typeset .portfolio-hero h1 {
   color: var(--portfolio-ink);
-  max-width: 18ch;
-  font-size: clamp(1.95rem, 3vw, 2.85rem);
-  line-height: 1.08;
+  max-width: 64rem;
+  font-size: clamp(1.65rem, 2.35vw, 2.35rem);
+  line-height: 1.12;
   letter-spacing: 0;
   margin: 0.35rem 0 0.7rem;
   overflow-wrap: normal;
@@ -91,20 +91,20 @@ body:has(.portfolio-page) .md-typeset h3 {
 }
 
 .md-typeset .portfolio-hero--home-intro h1 {
-  max-width: 27ch;
-  font-size: clamp(1.55rem, 2.35vw, 2.15rem);
+  max-width: 72rem;
+  font-size: clamp(1.45rem, 1.9vw, 1.9rem);
   line-height: 1.12;
 }
 
-.md-typeset .portfolio-hero--home-intro p {
-  max-width: 58rem;
-}
-
 .md-typeset .portfolio-hero p {
-  max-width: 44rem;
+  max-width: 70rem;
   color: var(--portfolio-muted);
   font-size: 1.02rem;
   line-height: 1.62;
+}
+
+.md-typeset .portfolio-hero--home-intro p {
+  max-width: 74rem;
 }
 
 .md-typeset .portfolio-hero--profile {
@@ -120,7 +120,7 @@ body:has(.portfolio-page) .md-typeset h3 {
 
 .md-typeset .portfolio-profile-frame {
   justify-self: end;
-  width: clamp(13rem, 18vw, 17rem);
+  width: clamp(15.5rem, 21.5vw, 20.5rem);
   margin: 0;
   align-self: start;
 }
@@ -178,6 +178,31 @@ body:has(.portfolio-page) .md-typeset h3 {
 
 .md-typeset .portfolio-actions--contact {
   margin-top: 0.85rem;
+}
+
+.md-typeset .portfolio-actions--home {
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.85rem 1.8rem;
+  max-width: 100%;
+}
+
+.md-typeset .portfolio-actions-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.md-typeset .portfolio-actions-group p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  margin: 0;
+}
+
+.md-typeset .portfolio-actions-group--priority {
+  margin-left: auto;
 }
 
 .md-typeset .portfolio-button {
@@ -435,15 +460,17 @@ body:has(.portfolio-page) .md-typeset h3 {
   margin: 0 0 1.15rem;
 }
 
-.md-typeset .portfolio-story-banner figcaption {
+.md-typeset .portfolio-banner-copy {
   position: absolute;
-  left: clamp(0.75rem, 2vw, 1.25rem);
-  bottom: clamp(0.75rem, 2vw, 1.25rem);
-  width: min(24rem, 36%);
+  z-index: 2;
+  left: clamp(1rem, 3vw, 2.25rem);
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(25rem, 31%);
   margin: 0;
-  padding: 0.85rem 0.95rem;
+  padding: 0.9rem 1rem;
   color: rgba(244, 247, 251, 0.9);
-  font-size: 0.88rem;
+  font-size: clamp(0.76rem, 0.92vw, 0.92rem);
   line-height: 1.5;
   border: 1px solid rgba(232, 238, 247, 0.16);
   border-radius: 8px;
@@ -451,7 +478,9 @@ body:has(.portfolio-page) .md-typeset h3 {
   backdrop-filter: blur(8px);
 }
 
-.md-typeset .portfolio-story-banner figcaption strong {
+.md-typeset .portfolio-banner-copy strong {
+  display: block;
+  margin-bottom: 0.2rem;
   color: #ffffff;
 }
 
@@ -501,21 +530,27 @@ body:has(.portfolio-page) .md-typeset h3 {
 
   .md-typeset .portfolio-profile-frame {
     justify-self: start;
-    width: min(100%, 15rem);
-    max-width: 16rem;
+    width: min(100%, 18rem);
+    max-width: 18rem;
   }
 
   .md-typeset .portfolio-split {
     grid-template-columns: 1fr;
   }
 
-  .md-typeset .portfolio-actions {
-    max-width: 34ch;
+  .md-typeset .portfolio-actions,
+  .md-typeset .portfolio-actions-group {
+    max-width: 100%;
   }
 
-  .md-typeset .portfolio-story-banner figcaption {
+  .md-typeset .portfolio-actions-group--priority {
+    margin-left: 0;
+  }
+
+  .md-typeset .portfolio-banner-copy {
     position: static;
     width: auto;
+    transform: none;
     color: var(--portfolio-muted);
     border: 0;
     border-top: 1px solid var(--portfolio-line);
@@ -524,7 +559,7 @@ body:has(.portfolio-page) .md-typeset h3 {
     backdrop-filter: none;
   }
 
-  .md-typeset .portfolio-story-banner figcaption strong {
+  .md-typeset .portfolio-banner-copy strong {
     color: var(--portfolio-ink);
   }
 

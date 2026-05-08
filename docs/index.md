@@ -2,12 +2,12 @@
 
 <figure class="portfolio-media portfolio-story-banner">
 <img src="media/banners/mlops-production-ml-banner.png" alt="Visual summary of operations mindset becoming reliable MLOps and Production ML systems">
-<figcaption>
+<div class="portfolio-banner-copy">
 <strong>Operations mindset → reliable ML systems.</strong>
 This visual summarizes the portfolio narrative: business operations, data
 pipelines, model training, deployment, monitoring, cost awareness and continuous
 improvement.
-</figcaption>
+</div>
 </figure>
 
 <div class="portfolio-hero portfolio-hero--home-intro" markdown="1">
@@ -22,13 +22,15 @@ teams, vendors, budgets, customer processes and cost decisions. That background
 shapes how I build ML systems: as services that need reliability, monitoring,
 clear trade-offs and documentation people can actually use.
 
-<div class="portfolio-actions portfolio-actions--primary" markdown="1">
+<div class="portfolio-actions portfolio-actions--home" markdown="1">
+<div class="portfolio-actions-group" markdown="1">
 [Recruiter brief](recruiter-brief.md){ .portfolio-button .portfolio-button--primary }
 [Review the technical evidence](technical-evidence.md){ .portfolio-button }
 [View the production template](template.md){ .portfolio-button }
 </div>
 
-<div class="portfolio-actions portfolio-actions--contact" markdown="1">
+<div class="portfolio-actions-group portfolio-actions-group--priority" markdown="1">
+[About Me](about.md){ .portfolio-button .portfolio-button--primary }
 [Contact me](contact.md){ .portfolio-button }
 </div>
 </div>
