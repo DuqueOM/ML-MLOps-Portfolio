@@ -11,7 +11,7 @@
 [![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC?logo=terraform&logoColor=white)](https://terraform.io)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-[![Portfolio Site](https://img.shields.io/badge/Portfolio-Live-Site-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
+[![Portfolio Site](https://img.shields.io/badge/Portfolio-Human_Overview-blue?style=for-the-badge)](https://duqueom.github.io/ML-MLOps-Portfolio/)
 [![YouTube](https://img.shields.io/badge/Video_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
 
 [![Status](https://img.shields.io/badge/status-reference%20%2F%20showcase-blue?style=for-the-badge)](PORTFOLIO_STATUS.md)

@@ -86,6 +86,20 @@ body:has(.portfolio-page) .md-typeset h3 {
   text-wrap: balance;
 }
 
+.md-typeset .portfolio-hero--home-intro {
+  padding: clamp(1.15rem, 2.4vw, 1.8rem);
+}
+
+.md-typeset .portfolio-hero--home-intro h1 {
+  max-width: 27ch;
+  font-size: clamp(1.55rem, 2.35vw, 2.15rem);
+  line-height: 1.12;
+}
+
+.md-typeset .portfolio-hero--home-intro p {
+  max-width: 58rem;
+}
+
 .md-typeset .portfolio-hero p {
   max-width: 44rem;
   color: var(--portfolio-muted);
@@ -160,6 +174,10 @@ body:has(.portfolio-page) .md-typeset h3 {
   gap: 0.65rem;
   align-items: center;
   margin-top: 1rem;
+}
+
+.md-typeset .portfolio-actions--contact {
+  margin-top: 0.85rem;
 }
 
 .md-typeset .portfolio-button {
@@ -413,21 +431,28 @@ body:has(.portfolio-page) .md-typeset h3 {
 }
 
 .md-typeset .portfolio-story-banner {
-  margin: 1.15rem 0 1.35rem;
+  position: relative;
+  margin: 0 0 1.15rem;
 }
 
 .md-typeset .portfolio-story-banner figcaption {
+  position: absolute;
+  left: clamp(0.75rem, 2vw, 1.25rem);
+  bottom: clamp(0.75rem, 2vw, 1.25rem);
+  width: min(24rem, 36%);
   margin: 0;
-  padding: 0.8rem 1rem;
-  color: var(--portfolio-muted);
+  padding: 0.85rem 0.95rem;
+  color: rgba(244, 247, 251, 0.9);
   font-size: 0.88rem;
   line-height: 1.5;
-  border-top: 1px solid var(--portfolio-line);
-  background: var(--portfolio-panel);
+  border: 1px solid rgba(232, 238, 247, 0.16);
+  border-radius: 8px;
+  background: rgba(8, 20, 38, 0.72);
+  backdrop-filter: blur(8px);
 }
 
 .md-typeset .portfolio-story-banner figcaption strong {
-  color: var(--portfolio-ink);
+  color: #ffffff;
 }
 
 @media (max-width: 760px) {
@@ -457,7 +482,7 @@ body:has(.portfolio-page) .md-typeset h3 {
   }
 
   .md-typeset .portfolio-hero h1 {
-    max-width: 16ch;
+    max-width: 100%;
     font-size: clamp(1.25rem, 5.5vw, 1.55rem);
     line-height: 1.12;
     text-wrap: wrap;
@@ -486,6 +511,21 @@ body:has(.portfolio-page) .md-typeset h3 {
 
   .md-typeset .portfolio-actions {
     max-width: 34ch;
+  }
+
+  .md-typeset .portfolio-story-banner figcaption {
+    position: static;
+    width: auto;
+    color: var(--portfolio-muted);
+    border: 0;
+    border-top: 1px solid var(--portfolio-line);
+    border-radius: 0;
+    background: var(--portfolio-panel);
+    backdrop-filter: none;
+  }
+
+  .md-typeset .portfolio-story-banner figcaption strong {
+    color: var(--portfolio-ink);
   }
 
   .md-typeset .portfolio-step {
