@@ -77,6 +77,12 @@ discipline.</p>
 <h3><a href="https://youtu.be/7dFFqq2ROPw">YouTube demo</a></h3>
 <p>A guided walkthrough of the project evidence.</p>
 </div>
+
+<div class="portfolio-card" markdown="1">
+<small>Recruiter view</small>
+<h3><a href="../recruiter-brief/">Recruiter brief</a></h3>
+<p>A short screening page with target roles, fit and first-90-days contribution.</p>
+</div>
 </div>
 
 ## Short Recruiter Summary

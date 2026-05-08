@@ -38,8 +38,8 @@ observability hooks, runbooks and an explicit agentic governance model.
 </div>
 <div class="portfolio-stat">
 <small>Adoption status</small>
-<strong>Production-ready by design</strong>
-<span>Template defaults are documented, tested and reviewable.</span>
+<strong>Review-ready by design</strong>
+<span>Template defaults are documented, tested and scoped for adoption.</span>
 </div>
 </div>
 
@@ -58,7 +58,7 @@ portfolio services. I extracted the reusable production system behind them.
 
 </div>
 <div class="portfolio-callout" markdown="1">
-<strong>Staff reviewer signal</strong>
+<strong>Technical reviewer signal</strong>
 
 The most distinctive part is the agentic operating model: canonical rules,
 skills, workflows and risk escalation are written as code-adjacent governance,
@@ -165,7 +165,7 @@ readiness based on model loading rather than a superficial health endpoint.</p>
 <div class="portfolio-card" markdown="1">
 <small>Governance contract</small>
 <h3>Can agents act safely?</h3>
-<p>The strongest enterprise signal is whether agent workflows are bounded by
+<p>The strongest technical signal is whether agent workflows are bounded by
 rules, manifests, validations and explicit escalation points.</p>
 </div>
 

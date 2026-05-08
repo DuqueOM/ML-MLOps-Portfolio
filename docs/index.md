@@ -15,7 +15,8 @@ shapes how I build ML systems: as services that need reliability, monitoring,
 clear trade-offs and documentation people can actually use.
 
 <div class="portfolio-actions" markdown="1">
-[Review the technical evidence](technical-evidence.md){ .portfolio-button .portfolio-button--primary }
+[Recruiter brief](recruiter-brief.md){ .portfolio-button .portfolio-button--primary }
+[Review the technical evidence](technical-evidence.md){ .portfolio-button }
 [View the production template](template.md){ .portfolio-button }
 [Contact me](contact.md){ .portfolio-button }
 </div>
@@ -74,9 +75,33 @@ focus on cost, reliability and maintainability.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Best first click</small>
-<h3><a href="PORTFOLIO_STATUS/">Current portfolio status</a></h3>
-<p>Clear separation between active assets, paused cloud runtime and deployment
-evidence.</p>
+<h3><a href="recruiter-brief/">Recruiter brief</a></h3>
+<p>A short screening view: target roles, why the background matters and where
+to inspect technical proof.</p>
+</div>
+</div>
+
+## For Recruiters And Technical Reviewers
+
+<div class="portfolio-split" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Recruiter lens</small>
+<h3>Junior candidate with operating maturity</h3>
+<p>This profile is best read as an entry-level ML/MLOps candidate who brings
+unusual business operations experience: cost awareness, ownership, customer
+pressure, process discipline and clear written communication.</p>
+
+[Open the recruiter brief](recruiter-brief.md){ .portfolio-button }
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Technical lens</small>
+<h3>Evidence beyond course projects</h3>
+<p>The technical proof is in the serving paths, CI/CD, Docker/Kubernetes
+artifacts, MLflow patterns, monitoring notes, incident writeups and reusable
+MLOps template.</p>
+
+[Review technical evidence](technical-evidence.md){ .portfolio-button }
 </div>
 </div>
 
@@ -109,6 +134,31 @@ maintenance.</p>
 <h3>Evidence reviewers can follow</h3>
 <p>ADRs, model cards, project summaries, load-test notes and portfolio status
 documentation.</p>
+</div>
+</div>
+
+## First 90 Days On A Junior MLOps Team
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Days 1-30</small>
+<h3>Learn the stack and reduce friction</h3>
+<p>Understand the model lifecycle, document the current workflow, run tests,
+fix small issues and make setup or handoff steps easier for the team.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Days 31-60</small>
+<h3>Support reliable ML delivery</h3>
+<p>Contribute to API paths, validation checks, model packaging, CI/CD tasks,
+monitoring dashboards or deployment documentation under senior review.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Days 61-90</small>
+<h3>Own a small production improvement</h3>
+<p>Take responsibility for a focused improvement: better smoke tests, clearer
+runbooks, model registry hygiene, drift checks or cost-aware deployment notes.</p>
 </div>
 </div>
 

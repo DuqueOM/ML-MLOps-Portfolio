@@ -43,7 +43,9 @@ multi-cloud deployment evidence, monitoring, CI/CD and documentation.
 </div>
 
 <div class="portfolio-media" markdown="1">
-<img src="../media/gifs/portfolio-demo.gif" alt="Portfolio demo showing the MLOps portfolio flow">
+
+<img src="../../media/gifs/portfolio-demo.gif" alt="Portfolio demo showing the MLOps portfolio flow">
+
 </div>
 
 ## How To Read The Portfolio

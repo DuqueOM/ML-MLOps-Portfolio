@@ -21,6 +21,7 @@ That is the lens I bring to machine learning.
 
 <div class="portfolio-actions" markdown="1">
 [Contact me](contact.md){ .portfolio-button .portfolio-button--primary }
+[Recruiter brief](recruiter-brief.md){ .portfolio-button }
 [Review technical evidence](technical-evidence.md){ .portfolio-button }
 </div>
 </div>
