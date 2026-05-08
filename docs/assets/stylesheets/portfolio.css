@@ -412,6 +412,24 @@ body:has(.portfolio-page) .md-typeset h3 {
   height: auto;
 }
 
+.md-typeset .portfolio-story-banner {
+  margin: 1.15rem 0 1.35rem;
+}
+
+.md-typeset .portfolio-story-banner figcaption {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  color: var(--portfolio-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  border-top: 1px solid var(--portfolio-line);
+  background: var(--portfolio-panel);
+}
+
+.md-typeset .portfolio-story-banner figcaption strong {
+  color: var(--portfolio-ink);
+}
+
 @media (max-width: 760px) {
   body:has(.portfolio-page) .md-main__inner.md-grid {
     max-width: 100%;

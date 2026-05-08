@@ -26,6 +26,16 @@ clear trade-offs and documentation people can actually use.
 </figure>
 </div>
 
+<figure class="portfolio-media portfolio-story-banner">
+<img src="media/banners/mlops-production-ml-banner.png" alt="Visual summary of operations mindset becoming reliable MLOps and Production ML systems">
+<figcaption>
+<strong>Operations mindset → reliable ML systems.</strong>
+This visual summarizes the portfolio narrative: business operations, data
+pipelines, model training, deployment, monitoring, cost awareness and continuous
+improvement.
+</figcaption>
+</figure>
+
 <div class="portfolio-stat-strip" markdown="1">
 <div class="portfolio-stat">
 <small>Portfolio scope</small>
