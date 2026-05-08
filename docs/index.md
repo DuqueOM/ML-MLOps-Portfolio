@@ -48,6 +48,38 @@ clear trade-offs and documentation people can actually use.
 </div>
 </div>
 
+## Recruiter Snapshot
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Target roles</small>
+<h3>Junior MLOps / Production ML</h3>
+<p>Also aligned with Junior ML Engineer, AI Engineer I, ML Platform and data
+engineering roles connected to ML workflows.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Location</small>
+<h3>Mexico City</h3>
+<p>Open to remote-first teams and roles where strong written technical evidence
+matters during review.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Differentiator</small>
+<h3>Operations background</h3>
+<p>14 years running business operations before moving into ML, with a practical
+focus on cost, reliability and maintainability.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Best first click</small>
+<h3><a href="PORTFOLIO_STATUS/">Current portfolio status</a></h3>
+<p>Clear separation between active assets, paused cloud runtime and deployment
+evidence.</p>
+</div>
+</div>
+
 ## The Short Version
 
 <div class="portfolio-card-grid" markdown="1">
