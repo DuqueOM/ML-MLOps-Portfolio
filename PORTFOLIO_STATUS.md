@@ -5,7 +5,7 @@
 <div class="portfolio-hero" markdown="1">
 <span class="portfolio-eyebrow">Operating status</span>
 
-# Production-grade evidence, currently in showcase mode
+# Production-oriented evidence, currently in showcase mode
 
 This page separates what is active today from what was proven during the live
 cloud deployment period. It is designed for recruiters, hiring managers, and

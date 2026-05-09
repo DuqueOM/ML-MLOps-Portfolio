@@ -16,17 +16,19 @@ improvement.
 
 # Reliable ML systems, built from an operations mindset
 
-I am an entry-level MLOps / Production ML candidate based in Mexico City. Before
-moving into machine learning, I spent 14 years running business operations:
-teams, vendors, budgets, customer processes and cost decisions. That background
-shapes how I build ML systems: as services that need reliability, monitoring,
-clear trade-offs and documentation people can actually use.
+I'm Duque, an early-career MLOps / Production ML candidate based in Mexico
+City. Before moving into machine learning, I spent 14 years running business
+operations: teams, vendors, budgets, customer processes and cost decisions.
+
+That background shapes how I build ML systems: not as isolated notebooks, but
+as services that need tests, deployment paths, monitoring, cost awareness and
+documentation another person can actually use.
 
 <div class="portfolio-actions portfolio-actions--home" markdown="1">
 <div class="portfolio-actions-group" markdown="1">
 [Recruiter brief](recruiter-brief.md){ .portfolio-button .portfolio-button--primary }
-[Review the technical evidence](technical-evidence.md){ .portfolio-button }
-[View the production template](template.md){ .portfolio-button }
+[Projects](projects/overview.md){ .portfolio-button }
+[Technical evidence](technical-evidence.md){ .portfolio-button }
 </div>
 
 <div class="portfolio-actions-group portfolio-actions-group--priority" markdown="1">
@@ -41,22 +43,22 @@ clear trade-offs and documentation people can actually use.
 <div class="portfolio-stat">
 <small>Portfolio scope</small>
 <strong>3 ML services</strong>
-<span>Churn, financial sentiment and taxi demand.</span>
+<span>Models turned into reviewable APIs and data workflows.</span>
 </div>
 <div class="portfolio-stat">
 <small>Engineering proof</small>
 <strong>395+ tests</strong>
-<span>CI, coverage, infra checks and smoke paths.</span>
+<span>CI validates code, docs, infrastructure and smoke paths before deploy.</span>
 </div>
 <div class="portfolio-stat">
 <small>Cloud evidence</small>
 <strong>GKE + EKS</strong>
-<span>Real deployment period, now cost-controlled.</span>
+<span>Google Cloud and AWS Kubernetes evidence from the live build period.</span>
 </div>
 <div class="portfolio-stat">
 <small>Reusable system</small>
 <strong>MLOps template</strong>
-<span>The portfolio lessons packaged into a starter framework.</span>
+<span>Lessons from the portfolio packaged into a reusable starter framework.</span>
 </div>
 </div>
 
@@ -65,7 +67,7 @@ clear trade-offs and documentation people can actually use.
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Target roles</small>
-<h3>Junior MLOps / Production ML</h3>
+<h3>Early-career MLOps / Production ML</h3>
 <p>Also aligned with Junior ML Engineer, AI Engineer I, ML Platform and data
 engineering roles connected to ML workflows.</p>
 </div>
@@ -87,8 +89,8 @@ focus on cost, reliability and maintainability.</p>
 <div class="portfolio-card" markdown="1">
 <small>Best first click</small>
 <h3><a href="recruiter-brief/">Recruiter brief</a></h3>
-<p>A short screening view: target roles, why the background matters and where
-to inspect technical proof.</p>
+<p>A three-minute screening view: fit, differentiators, proof points and
+questions a hiring team can ask.</p>
 </div>
 </div>
 
@@ -97,10 +99,10 @@ to inspect technical proof.</p>
 <div class="portfolio-split" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Recruiter lens</small>
-<h3>Junior candidate with operating maturity</h3>
-<p>This profile is best read as an entry-level ML/MLOps candidate who brings
-unusual business operations experience: cost awareness, ownership, customer
-pressure, process discipline and clear written communication.</p>
+<h3>Early-career candidate with operating maturity</h3>
+<p>This profile is best read as an early-career ML/MLOps candidate who brings
+unusual operating experience: cost awareness, ownership, customer pressure,
+process discipline and clear written communication.</p>
 
 [Open the recruiter brief](recruiter-brief.md){ .portfolio-button }
 </div>
@@ -258,6 +260,8 @@ technical evidence.</p>
 </div>
 </div>
 
+[Read the BankChurn debugging deep dive](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
+
 ## How To Review This Site In 3 Minutes
 
 <div class="portfolio-step" markdown="1">
@@ -298,10 +302,12 @@ cost-controlled cloud runtime.
 ## Current Operating Status
 
 <div class="portfolio-callout" markdown="1">
-The cloud infrastructure is currently **off to control cost**, but the code,
-deployment manifests, CI/CD workflows, screenshots and runbooks remain available
-as evidence from the active development period. The system can be reactivated
-from the documented infrastructure and deployment steps.
+Running cloud infrastructure 24/7 costs real money, even when nobody is using
+the demo. The live clusters were built, tested and documented during the active
+development period, then intentionally paused to control cost. The evidence
+remains reviewable here: code, CI/CD workflows, Terraform, Kubernetes manifests,
+screenshots, deployment notes and runbooks. The system can be reactivated from
+the documented steps when a live review is needed.
 
 [Read the portfolio status](PORTFOLIO_STATUS.md) ·
 [Watch the video demo](https://youtu.be/7dFFqq2ROPw)

@@ -1,5 +1,5 @@
 site_name: Duque Ortega Mutis | MLOps & Production ML Portfolio
-site_description: A Live-Site portfolio for entry-level MLOps, Production ML, and Applied AI roles.
+site_description: Portfolio for early-career MLOps, Production ML, and Applied AI roles, built around operations experience and production-minded project evidence.
 site_author: Duque Ortega Mutis
 site_url: https://duqueom.github.io/ML-MLOps-Portfolio/
 
@@ -73,6 +73,7 @@ nav:
   - Projects:
       - Overview: projects/overview.md
       - BankChurn Predictor: projects/bankchurn.md
+      - BankChurn Debugging Deep Dive: projects/bankchurn-debugging.md
       - NLPInsight Analyzer: projects/nlpinsight.md
       - ChicagoTaxi Pipeline: projects/chicagotaxi.md
   - Production Template: template.md

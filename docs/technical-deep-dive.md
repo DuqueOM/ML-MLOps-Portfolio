@@ -21,6 +21,12 @@ into the detailed docs only when useful.
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
+<small>Failure story</small>
+<h3><a href="projects/bankchurn-debugging.md">BankChurn debugging deep dive</a></h3>
+<p>The 81% API error-rate investigation, root cause, fix and reusable lesson.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
 <small>System shape</small>
 <h3><a href="../architecture/overview/">Architecture overview</a></h3>
 <p>How the monorepo, services, data paths, CI/CD and cloud pieces fit together.</p>

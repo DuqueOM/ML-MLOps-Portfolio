@@ -7,6 +7,10 @@
 
 # Entry-level MLOps candidate with production-minded project evidence
 
+If you have three minutes: I am a career-switcher who spent 14 years running
+business operations and now builds the infrastructure around ML models so they
+can be tested, shipped, monitored and understood by a team.
+
 I am looking for my first formal role in ML/MLOps. My strongest fit is a junior
 team where I can contribute to model serving, ML workflow reliability,
 documentation, monitoring and deployment support while learning from experienced
@@ -19,6 +23,7 @@ and clear handoffs.
 
 <div class="portfolio-actions" markdown="1">
 [Contact me](contact.md){ .portfolio-button .portfolio-button--primary }
+[Projects](projects/overview.md){ .portfolio-button }
 [View the template](template.md){ .portfolio-button }
 [Review technical evidence](technical-evidence.md){ .portfolio-button }
 </div>
@@ -56,6 +61,31 @@ conversations in English with preparation.</p>
 </div>
 </div>
 
+## Best-Fit Roles
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Primary fit</small>
+<h3>Junior MLOps / Production ML</h3>
+<p>Model serving, Docker/Kubernetes artifacts, CI/CD support, monitoring,
+MLflow hygiene, deployment notes and reliability improvements.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Also strong</small>
+<h3>Junior ML Engineer / AI Engineer I</h3>
+<p>Applied ML roles where model work needs APIs, testing, documentation and
+clear handoff into an engineering workflow.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Adjacent path</small>
+<h3>ML Platform or Data Engineering</h3>
+<p>Teams working on ML pipelines, feature workflows, batch jobs, validation,
+cloud runtime support or production data paths.</p>
+</div>
+</div>
+
 ## Why The Background Matters
 
 <div class="portfolio-split" markdown="1">
@@ -76,6 +106,38 @@ clarity, process, trade-offs and systems that can survive real team usage.
 
 Junior in formal ML/MLOps employment, but mature in ownership, communication,
 cost awareness and operating discipline.
+</div>
+</div>
+
+## What Makes Me Different
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Cost awareness</small>
+<h3>I think in trade-offs</h3>
+<p>My operations background makes budget, scope and maintenance part of the
+engineering discussion instead of an afterthought.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Ownership</small>
+<h3>I document decisions</h3>
+<p>The portfolio includes ADRs, runbooks and status pages so reviewers can see
+why decisions were made, not only what was built.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Debugging</small>
+<h3>I measure before guessing</h3>
+<p>The strongest technical story is an API failure that moved from 81% errors
+to 0% after isolating the serving-pattern root cause.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Reliability</small>
+<h3>I care about the operating layer</h3>
+<p>Tests, deployment paths, monitoring, model packaging and current-status
+communication are first-class parts of the work.</p>
 </div>
 </div>
 
@@ -127,6 +189,70 @@ trade-offs rather than only final model metrics.</p>
 <p>Architecture notes, model cards, runbooks, deployment evidence and current
 portfolio status are written so both technical and non-technical reviewers can
 understand the story.</p>
+</div>
+</div>
+
+## Suggested Screening Questions
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Debugging</small>
+<h3>Ask about the 81% API error rate</h3>
+<p>The important signal is the diagnosis process: how I moved from symptoms to
+root cause, fixed the serving path and verified the result.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Product thinking</small>
+<h3>Ask why I built the template</h3>
+<p>The template shows how I converted repeated portfolio lessons into reusable
+guardrails for future ML services.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Cost judgment</small>
+<h3>Ask about GCP vs AWS trade-offs</h3>
+<p>The cloud comparison is useful because it connects technical deployment
+evidence with operating cost and scope control.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Self-awareness</small>
+<h3>Ask what I would improve next</h3>
+<p>This opens the most honest conversation: where the portfolio is strong,
+where it is still controlled evidence, and how I would evolve it on a team.</p>
+</div>
+</div>
+
+## What I Am Building Next
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Live evidence</small>
+<h3>More real traffic windows</h3>
+<p>Run short, cost-controlled live demos to capture fresh Grafana, Prometheus
+and MLflow evidence without leaving infrastructure online permanently.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Collaboration</small>
+<h3>More public review signals</h3>
+<p>Add external feedback, PR review examples or open-source contributions so
+the portfolio shows how I work with other engineers.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Depth</small>
+<h3>One deeper infrastructure writeup</h3>
+<p>Expand one operational topic, such as monitoring or deployment strategy,
+into a concise trade-off article.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Domain fit</small>
+<h3>A project closer to operations</h3>
+<p>Explore a future project around inventory, staffing, cost anomalies or
+operations forecasting, where my previous background is a direct advantage.</p>
 </div>
 </div>
 

@@ -21,7 +21,7 @@ deep dive only if you want the full technical archive.
 </div>
 </div>
 
-## What This Proves In One Minute
+## Quick Technical Signal
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
@@ -85,25 +85,63 @@ grouped index instead of a long sidebar.</p>
 </div>
 </div>
 
-## Strongest Technical Signal
+## Failure Stories
 
-<div class="portfolio-split" markdown="1">
-<div markdown="1">
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Serving failure</small>
+<h3>81% API errors under load</h3>
+<p>The strongest signal is the diagnosis habit: the fix was not to blindly add
+resources, but to isolate a blocked inference path and verify the correction
+with load testing.</p>
 
-One of the strongest signals in the portfolio is not a tool choice; it is the
-debugging habit.
-
-During load testing, an ML API reached an **81% error rate**. The fix was not to
-blindly add resources. I traced the failure to the serving pattern, changed the
-inference execution model, and verified the result with a new test. The error
-rate dropped to **0%**.
-
+[Read deep dive](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
 </div>
-<div class="portfolio-callout" markdown="1">
-<strong>Reliability lesson</strong>
 
-Measure first, isolate the cause, make the smallest meaningful fix, then
-document the lesson so the next system is better.
+<div class="portfolio-card" markdown="1">
+<small>Explainability issue</small>
+<h3>All-zero SHAP outputs</h3>
+<p>The portfolio documents why explainability must match the actual model
+structure and feature space, not only use the most familiar SHAP class.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Scaling issue</small>
+<h3>HPA that could not scale down</h3>
+<p>Memory-based autoscaling was rejected for ML pods because fixed model memory
+creates a misleading signal. CPU became the clearer scaling input.</p>
+</div>
+</div>
+
+## Key Engineering Decisions
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Serving</small>
+<h3>One worker per pod plus executor</h3>
+<p>Kubernetes handles horizontal scaling; the API keeps the event loop free by
+offloading CPU-bound inference work.</p>
+
+[ADR-014](decisions/014-single-worker-pod-ml-inference.md){ .portfolio-button }
+[ADR-015](decisions/015-async-inference-threadpool.md){ .portfolio-button }
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Cost control</small>
+<h3>Cloud evidence, not always-on waste</h3>
+<p>The portfolio preserves deployment proof while pausing live clusters when
+the monthly cost is not justified for a public showcase.</p>
+
+[Portfolio status](PORTFOLIO_STATUS.md){ .portfolio-button }
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Template extraction</small>
+<h3>Lessons became guardrails</h3>
+<p>The reusable template turns repeated failure modes into documented defaults,
+rules and reviewable workflows.</p>
+
+[Production template](template.md){ .portfolio-button }
 </div>
 </div>
 
@@ -132,27 +170,33 @@ the system would be operated, not only trained.</p>
 </div>
 </div>
 
-## What To Open Next
+## Deep Archive
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<h3><a href="../projects/overview/">Projects overview</a></h3>
+<h3><a href="projects/overview.md">Projects overview</a></h3>
 <p>The three ML systems and their main results.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<h3><a href="../template/">Production template</a></h3>
+<h3><a href="projects/bankchurn-debugging.md">BankChurn debugging deep dive</a></h3>
+<p>The full failure story: symptoms, hypotheses, root cause, fix, validation
+and template lesson.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<h3><a href="template.md">Production template</a></h3>
 <p>The reusable MLOps project extracted from portfolio lessons.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<h3><a href="../technical-deep-dive/">Deep dive index</a></h3>
+<h3><a href="technical-deep-dive.md">Deep dive index</a></h3>
 <p>Grouped technical archive for architecture, deployment, operations, models
 and API references.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<h3><a href="../PORTFOLIO_STATUS/">Portfolio status</a></h3>
+<h3><a href="PORTFOLIO_STATUS.md">Portfolio status</a></h3>
 <p>What is active now, what is paused, and how to reactivate a live demo.</p>
 </div>
 </div>

@@ -8,8 +8,8 @@
 
 # From operations to production ML
 
-My name is **Duque Ortega Mutis**. I am based in Mexico City and I am building
-my first formal career step in ML/MLOps.
+I go by **Duque**. My full name is **Duque Ortega Mutis**, I am based in Mexico
+City, and I am building my first formal career step in ML/MLOps.
 
 Before this transition, I spent 14 years running business operations. That meant
 working with teams, budgets, customers, vendors, deadlines, process failures and
@@ -17,7 +17,9 @@ cost trade-offs. I learned that a good system is not the one that looks most
 impressive in a presentation. A good system is the one a team can understand,
 operate, improve and trust.
 
-That is the lens I bring to machine learning.
+That is the lens I bring to machine learning: early-career in formal ML work,
+but experienced in operating under pressure, explaining decisions and keeping
+systems useful for the people around them.
 
 <div class="portfolio-actions" markdown="1">
 [Contact me](contact.md){ .portfolio-button .portfolio-button--primary }
@@ -119,6 +121,38 @@ reliability and business impact.
 
 Build the smallest system that proves the operating idea, then make the evidence
 clear enough that another engineer can review it.
+</div>
+</div>
+
+## What I Am Building Next
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Live operations</small>
+<h3>More traffic-backed evidence</h3>
+<p>Run short, budget-controlled live windows to capture fresh metrics,
+monitoring screenshots and failure-response notes.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Team signal</small>
+<h3>More collaboration artifacts</h3>
+<p>Add public feedback, PR review examples and external review notes so the
+portfolio shows how I communicate in engineering conversations.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Technical depth</small>
+<h3>One focused infrastructure deep dive</h3>
+<p>Go deeper on one operational component, such as monitoring, deployment
+strategy or model-serving reliability, with trade-offs and examples.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Domain leverage</small>
+<h3>A project closer to real operations</h3>
+<p>Build a future ML project around staffing, inventory, cost anomalies or
+operations forecasting, where my background is directly relevant.</p>
 </div>
 </div>
 

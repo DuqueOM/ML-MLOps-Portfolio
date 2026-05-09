@@ -153,6 +153,47 @@ from the feature set.</p>
 </div>
 </div>
 
+## Project Decision Snapshot
+
+<div class="portfolio-project-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>BankChurn Predictor</small>
+<h3>Cost-aware churn decisions</h3>
+<p><strong>Business impact:</strong> the threshold favors catching likely
+churners because a missed churner is much more expensive than an unnecessary
+retention offer.</p>
+<p><strong>Key engineering decision:</strong> serve the model through a tested
+FastAPI path and move CPU-bound inference away from the async event loop.</p>
+<p><strong>Improve next:</strong> add request tracing and fresher traffic-backed
+monitoring screenshots.</p>
+
+[Read debugging deep dive](bankchurn-debugging.md){ .portfolio-button }
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>NLPInsight Analyzer</small>
+<h3>Low-cost financial sentiment</h3>
+<p><strong>Business impact:</strong> the system is optimized for explainable,
+low-cost inference rather than chasing a heavier model that would be harder to
+operate.</p>
+<p><strong>Key engineering decision:</strong> keep a lightweight baseline and
+document the transformer path as an intentional trade-off, not an omission.</p>
+<p><strong>Improve next:</strong> add richer domain evaluation and compare
+latency/cost against a small transformer model.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>ChicagoTaxi Pipeline</small>
+<h3>Forecasting with temporal discipline</h3>
+<p><strong>Business impact:</strong> demand forecasting is useful only if the
+pipeline avoids leakage and can scale beyond a small notebook sample.</p>
+<p><strong>Key engineering decision:</strong> use PySpark and temporal
+validation to process high-volume trip data with realistic forecasting rules.</p>
+<p><strong>Improve next:</strong> add scheduled batch scoring and a dashboard
+that compares forecast drift over time.</p>
+</div>
+</div>
+
 ## Monorepo Depth
 
 <div class="portfolio-card-grid" markdown="1">
