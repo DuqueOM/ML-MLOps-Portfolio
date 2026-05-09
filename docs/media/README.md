@@ -42,9 +42,13 @@ keeps motion smooth, text sharper and page weight lower.
 
 | Asset | Size | Duration | Resolution | FPS | Use |
 |-------|------|----------|------------|-----|-----|
-| `videos/portfolio-demo-preview.mp4` | 458KB | 9.6s | 1280×720 | 60 | Primary browser fallback |
-| `videos/portfolio-demo-preview.webm` | 635KB | 9.6s | 1280×720 | 60 | Preferred modern browser source |
-| `videos/portfolio-demo-poster.jpg` | 56KB | static | 1280×720 | — | Poster frame |
+| `videos/portfolio-demo-preview.mp4` | 1.7MB | 18s | 1280×720 | 30 | Primary browser fallback |
+| `videos/portfolio-demo-preview.webm` | 1.5MB | 18s | 1280×720 | 30 | Preferred modern browser source |
+| `videos/portfolio-demo-poster.jpg` | 54KB | static | 1280×720 | — | Poster frame |
+
+Preview reel segments: multi-cloud infrastructure, live predictions, MLflow,
+observability, CI/CD, multi-cloud parity, IaC/DevSecOps, repository/GitHub
+Pages and summary/contact.
 
 ## GIFs
 
