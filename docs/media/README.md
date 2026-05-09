@@ -15,9 +15,9 @@ media/
 │   ├── monitoring/      # Grafana dashboards, Prometheus, MLflow experiments
 │   ├── cicd/            # GitHub Actions, Codecov, secrets
 │   └── terraform/       # Multi-cloud IaC structure, AWS validation, K8s overlays
-├── gifs/                # Animated demos extracted from portfolio video
+├── gifs/                # Legacy animated demos extracted from portfolio video
 ├── thumbnails/          # Video thumbnail for YouTube
-└── video/               # Portfolio demo video
+└── videos/              # Portfolio demo video and optimized web previews
 ```
 
 ## Key Screenshots
@@ -35,9 +35,21 @@ media/
 | 39 | `monitoring/39-mlflow-experiments.png` | MLflow: 3 experiments, 14 runs |
 | 46 | `cicd/46-workflow-completado.png` | CI/CD pipeline: 10 jobs green |
 
+## Video Previews
+
+The portfolio pages use short HTML5 video previews instead of large GIFs. This
+keeps motion smooth, text sharper and page weight lower.
+
+| Asset | Size | Duration | Resolution | FPS | Use |
+|-------|------|----------|------------|-----|-----|
+| `videos/portfolio-demo-preview.mp4` | 458KB | 9.6s | 1280×720 | 60 | Primary browser fallback |
+| `videos/portfolio-demo-preview.webm` | 635KB | 9.6s | 1280×720 | 60 | Preferred modern browser source |
+| `videos/portfolio-demo-poster.jpg` | 56KB | static | 1280×720 | — | Poster frame |
+
 ## GIFs
 
-All GIFs extracted from [Portfolio Demo Video](https://youtu.be/7dFFqq2ROPw) with optimized palettes.
+Legacy GIFs extracted from [Portfolio Demo Video](https://youtu.be/7dFFqq2ROPw)
+with optimized palettes.
 
 | GIF | Size | Duration | Content | Source Segment |
 |-----|------|----------|---------|----------------|

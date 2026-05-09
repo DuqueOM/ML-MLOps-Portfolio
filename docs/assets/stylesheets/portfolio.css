@@ -449,15 +449,15 @@ body:has(.portfolio-page) .md-typeset h3 {
   background: var(--portfolio-panel);
 }
 
-.md-typeset .portfolio-media img {
+.md-typeset .portfolio-media img,
+.md-typeset .portfolio-media video {
   display: block;
   width: 100%;
   height: auto;
 }
 
 .md-typeset .portfolio-media--demo {
-  width: fit-content;
-  max-width: 100%;
+  max-width: 1120px;
   margin: 1.15rem auto;
 }
 
@@ -465,9 +465,9 @@ body:has(.portfolio-page) .md-typeset h3 {
   margin: 0;
 }
 
-.md-typeset .portfolio-media--demo img {
-  width: 800px;
-  max-width: 100%;
+.md-typeset .portfolio-media--demo video {
+  aspect-ratio: 16 / 9;
+  background: #0b1320;
 }
 
 .md-typeset .portfolio-story-banner {

@@ -44,7 +44,11 @@ multi-cloud deployment evidence, monitoring, CI/CD and documentation.
 
 <div class="portfolio-media portfolio-media--demo" markdown="1">
 
-<img src="../../media/gifs/portfolio-demo.gif" alt="Portfolio demo showing the MLOps portfolio flow">
+<video autoplay muted loop playsinline controls preload="metadata" poster="../../media/videos/portfolio-demo-poster.jpg" aria-label="Portfolio demo showing the MLOps portfolio flow">
+  <source src="../../media/videos/portfolio-demo-preview.webm" type="video/webm">
+  <source src="../../media/videos/portfolio-demo-preview.mp4" type="video/mp4">
+  <a href="https://youtu.be/7dFFqq2ROPw">Watch the portfolio video demo</a>
+</video>
 
 </div>
 
