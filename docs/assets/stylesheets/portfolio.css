@@ -456,8 +456,18 @@ body:has(.portfolio-page) .md-typeset h3 {
 }
 
 .md-typeset .portfolio-media--demo {
-  max-width: 800px;
+  width: fit-content;
+  max-width: 100%;
   margin: 1.15rem auto;
+}
+
+.md-typeset .portfolio-media--demo p {
+  margin: 0;
+}
+
+.md-typeset .portfolio-media--demo img {
+  width: 800px;
+  max-width: 100%;
 }
 
 .md-typeset .portfolio-story-banner {
