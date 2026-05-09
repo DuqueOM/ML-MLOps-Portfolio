@@ -91,7 +91,9 @@ discipline.</p>
 Entry-level MLOps / Production ML candidate with 14 years of operations
 experience and hands-on projects in Python, FastAPI, Docker, Kubernetes,
 Terraform, MLflow, CI/CD, monitoring and PySpark. Looking for junior roles where
-I can help build, deploy, monitor and improve ML systems.
+I can help build, deploy, monitor and improve ML systems. Formal training:
+Data Science Professional Program, TripleTen, 2026. AWS certification target is
+planned, not yet claimed.
 </div>
 
 </div>

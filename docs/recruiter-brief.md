@@ -58,6 +58,13 @@ where written technical communication matters.</p>
 <p>Comfortable with technical documentation, async collaboration and interview
 conversations in English with preparation.</p>
 </div>
+
+<div class="portfolio-card" markdown="1">
+<small>Education</small>
+<h3>TripleTen Data Science, 2026</h3>
+<p>Formal training layer supporting the portfolio projects and MLOps transition.
+AWS certification is planned and will be listed only after completion.</p>
+</div>
 </div>
 
 <div class="portfolio-callout" markdown="1">

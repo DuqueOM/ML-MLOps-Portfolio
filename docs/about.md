@@ -114,6 +114,25 @@ support real engineering growth.</p>
 </div>
 </div>
 
+## Education And Certifications
+
+<div class="portfolio-card-grid portfolio-card-grid--compact" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Formal ML training</small>
+<h3>Data Science Professional Program — TripleTen</h3>
+<p>Completed in 2026. This is the formal training layer behind the portfolio
+work: applied machine learning, data workflows, evaluation and project delivery.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Certification roadmap</small>
+<h3>AWS certification target — planned</h3>
+<p>I plan to add an AWS certification after completion. The goal is to reinforce
+the cloud/platform side of my MLOps profile without claiming a credential before
+it is earned.</p>
+</div>
+</div>
+
 ## What I Can Contribute Early
 
 <div class="portfolio-card-grid" markdown="1">

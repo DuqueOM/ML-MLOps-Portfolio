@@ -56,6 +56,31 @@ promotion gates.
 </div>
 </div>
 
+## How To Read This Template
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Recruiter view</small>
+<h3>Reusable system, not only a project</h3>
+<p>The important signal is that portfolio lessons became a repeatable starter
+system for future ML services, with defaults, guardrails and documentation.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Technical lead view</small>
+<h3>Inspect the operating contracts</h3>
+<p>The best evidence is in the rules, skills, workflows, manifest and
+anti-pattern catalog that constrain how services are generated and operated.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Team adoption view</small>
+<h3>Can another engineer use it?</h3>
+<p>The template is designed around quick start, service scaffold, tests,
+deployment artifacts and reviewable AI-assisted workflows.</p>
+</div>
+</div>
+
 ## Code Review Shortcuts
 
 <div class="portfolio-actions" markdown="1">
@@ -64,6 +89,9 @@ promotion gates.
 [CI template](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/cicd/ci.yml){ .portfolio-button }
 [Deploy GCP](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/cicd/deploy-gcp.yml){ .portfolio-button }
 [Agent manifest](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/config/agentic_manifest.yaml){ .portfolio-button }
+[Agent rules](https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/.windsurf/rules){ .portfolio-button }
+[Agent skills](https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/.windsurf/skills){ .portfolio-button }
+[Agent workflows](https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/.windsurf/workflows){ .portfolio-button }
 </div>
 
 ## Why This Is More Than A Template
@@ -165,6 +193,113 @@ release, incident and security workflows are encoded as reusable agent skills.</
 <h3>Agents leave evidence</h3>
 <p>The model is designed around validation logs, changelogs, ADRs, runbooks and
 explicit test commands so agent-assisted work remains auditable.</p>
+</div>
+</div>
+
+## Rules, Skills And Workflows
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Rules</small>
+<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/.windsurf/rules">Context-aware engineering constraints</a></h3>
+<p>Rules cover Python serving, training, Kubernetes, Terraform, Docker,
+GitHub Actions, monitoring, data validation, security, API contracts and
+documentation. The goal is to make failure modes harder to reintroduce.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Skills</small>
+<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/.windsurf/skills">Reusable MLOps procedures</a></h3>
+<p>Skills include new service creation, EDA, deploy to GKE/EKS, drift checks,
+model retraining, release checklist, rollback, cost audit, security audit and
+incident response.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Workflows</small>
+<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/.windsurf/workflows">Slash-command operating paths</a></h3>
+<p>Workflows such as <code>/new-service</code>, <code>/incident</code>,
+<code>/release</code>, <code>/drift-check</code>, <code>/retrain</code>,
+<code>/rollback</code> and <code>/secret-breach</code> turn repeatable MLOps
+work into auditable steps.</p>
+</div>
+</div>
+
+## Anti-Pattern Catalog
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Serving</small>
+<h3>No <code>uvicorn --workers N</code> under Kubernetes</h3>
+<p><strong>Corrective action:</strong> one worker per pod, HPA for horizontal
+scaling, and <code>ThreadPoolExecutor</code> for CPU-bound inference.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Autoscaling</small>
+<h3>No memory-based HPA for ML pods</h3>
+<p><strong>Corrective action:</strong> use CPU as the scaling signal because
+loaded models keep a fixed memory footprint even when traffic drops.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Async APIs</small>
+<h3>No direct <code>model.predict()</code> in async endpoints</h3>
+<p><strong>Corrective action:</strong> move CPU-bound prediction work behind
+<code>asyncio.run_in_executor()</code> so request handling stays responsive.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Explainability</small>
+<h3>No TreeExplainer for StackingClassifier</h3>
+<p><strong>Corrective action:</strong> use KernelExplainer with a
+predict-proba wrapper in the original feature space.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Packaging</small>
+<h3>No model artifacts baked into Docker images</h3>
+<p><strong>Corrective action:</strong> keep images immutable and load model
+artifacts through runtime storage patterns such as init containers.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Security</small>
+<h3>No static cloud credentials in production paths</h3>
+<p><strong>Corrective action:</strong> use Workload Identity on GCP and IRSA on
+AWS, with CI/deploy/runtime identities separated by purpose.</p>
+</div>
+</div>
+
+## Multi-IDE Governance
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Canonical source</small>
+<h3>Windsurf as the body store</h3>
+<p>The rules, skills and workflows live in the canonical <code>.windsurf/</code>
+tree so the operating model has one source of truth.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Portable adapters</small>
+<h3>Codex, Cursor and Claude pointers</h3>
+<p>Adapter directories are discovery layers. They point back to the canonical
+rules instead of becoming separate, drifting copies of the same policy.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Manifest</small>
+<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/config/agentic_manifest.yaml">Cross-surface index</a></h3>
+<p>The manifest maps rules, skills and workflows across IDE surfaces so the
+governance model can be validated instead of trusted by memory.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Behavior protocol</small>
+<h3>AUTO / CONSULT / STOP everywhere</h3>
+<p>Risk class is independent of the assistant being used. Low-risk work can
+run, ambiguous work asks, and destructive or production-sensitive work stops.</p>
 </div>
 </div>
 
