@@ -57,6 +57,38 @@ failure modes that appear after a model leaves the notebook.</p>
 </div>
 </div>
 
+## Career Timeline
+
+<div class="portfolio-card-grid portfolio-card-grid--compact" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>2010-2024</small>
+<h3>Business operations</h3>
+<p>Teams, budgets, vendors, customer pressure and process ownership across
+multiple ventures.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>2024-2026</small>
+<h3>Pivot to Data Science and MLOps</h3>
+<p>Applied ML projects, TripleTen training and a production-minded portfolio
+built around services rather than notebooks.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>2026</small>
+<h3>Reusable MLOps template</h3>
+<p>Portfolio lessons packaged into a starter system with serving, CI/CD,
+deployment and operating guardrails.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Now</small>
+<h3>First formal ML/MLOps role</h3>
+<p>Looking for an entry-level or junior team where operational maturity can
+support real engineering growth.</p>
+</div>
+</div>
+
 ## What I Can Contribute Early
 
 <div class="portfolio-card-grid" markdown="1">

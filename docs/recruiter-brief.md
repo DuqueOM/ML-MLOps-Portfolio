@@ -67,6 +67,31 @@ plans. My operations maturity is a contribution to the team, not a seniority
 claim.
 </div>
 
+## Key Proof Points
+
+<div class="portfolio-card-grid portfolio-card-grid--compact" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Reusable system</small>
+<h3><a href="template.md">Production template</a></h3>
+<p>A starter framework for FastAPI, Docker, Kubernetes, MLflow, CI/CD and
+deployment guardrails.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Incident diagnosis</small>
+<h3><a href="projects/bankchurn-debugging.md">81% errors to 0%</a></h3>
+<p>The clearest debugging story: measured failure, root cause, fix and
+verification.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Cost judgment</small>
+<h3><a href="PORTFOLIO_STATUS.md">Cloud paused by design</a></h3>
+<p>The runtime was paused to control cost; the code, evidence and reactivation
+path remain documented.</p>
+</div>
+</div>
+
 ## Best-Fit Roles
 
 <div class="portfolio-card-grid" markdown="1">

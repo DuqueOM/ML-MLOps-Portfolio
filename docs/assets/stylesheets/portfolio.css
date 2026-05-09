@@ -228,6 +228,10 @@ body:has(.portfolio-page) .md-typeset h3 {
   background: var(--portfolio-panel);
 }
 
+.md-typeset .portfolio-button:visited {
+  color: var(--portfolio-ink);
+}
+
 .md-typeset .portfolio-button:hover {
   border-color: var(--portfolio-teal);
   color: var(--portfolio-teal);
@@ -239,9 +243,24 @@ body:has(.portfolio-page) .md-typeset h3 {
   background: var(--portfolio-teal);
 }
 
+.md-typeset .portfolio-button--primary:visited {
+  color: #ffffff;
+}
+
 .md-typeset .portfolio-button--primary:hover {
   color: #ffffff;
   background: #025f69;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .portfolio-button--primary,
+[data-md-color-scheme="slate"] .md-typeset .portfolio-button--primary:visited {
+  color: #07131f;
+  background: var(--portfolio-teal);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .portfolio-button--primary:hover {
+  color: #07131f;
+  background: #8be8ee;
 }
 
 .md-typeset .portfolio-stat-strip,
@@ -329,6 +348,19 @@ body:has(.portfolio-page) .md-typeset h3 {
   color: var(--portfolio-ink);
   font-size: clamp(1.25rem, 2.5vw, 1.75rem);
   line-height: 1.1;
+}
+
+.md-typeset .portfolio-stat strong a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.md-typeset .portfolio-stat strong a:visited {
+  color: inherit;
+}
+
+.md-typeset .portfolio-stat strong a:hover {
+  color: var(--portfolio-teal);
 }
 
 .md-typeset .portfolio-stat span,

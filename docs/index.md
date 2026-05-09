@@ -79,60 +79,28 @@ trade-offs.</p>
 <div class="portfolio-stat-strip" markdown="1">
 <div class="portfolio-stat">
 <small>Portfolio scope</small>
-<strong>3 ML services</strong>
+<strong><a href="projects/overview/">3 ML services</a></strong>
 <span>Models turned into reviewable APIs and data workflows.</span>
 </div>
 <div class="portfolio-stat">
 <small>Engineering proof</small>
-<strong>395+ tests</strong>
+<strong><a href="https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/.github/workflows/ci-mlops.yml">395+ tests</a></strong>
 <span>CI validates code, docs, infrastructure and smoke paths before deploy.</span>
 </div>
 <div class="portfolio-stat">
 <small>Cloud evidence</small>
-<strong>GKE + EKS</strong>
+<strong><a href="DEPLOYMENT_EVIDENCE/">GKE + EKS</a></strong>
 <span>Google Cloud and AWS Kubernetes evidence from the live build period.</span>
 </div>
 <div class="portfolio-stat">
 <small>Decision trail</small>
-<strong>18 ADRs</strong>
+<strong><a href="architecture/decisions/">18 ADRs</a></strong>
 <span>Written trade-offs a team can review, challenge and improve.</span>
 </div>
 <div class="portfolio-stat">
 <small>Reusable system</small>
-<strong>MLOps template</strong>
+<strong><a href="template/">MLOps template</a></strong>
 <span>Lessons from the portfolio packaged into a reusable starter framework.</span>
-</div>
-</div>
-
-## Recruiter Snapshot
-
-<div class="portfolio-card-grid" markdown="1">
-<div class="portfolio-card" markdown="1">
-<small>Target roles</small>
-<h3>Early-career MLOps / Production ML</h3>
-<p>Also aligned with Junior ML Engineer, AI Engineer I, ML Platform and data
-engineering roles connected to ML workflows.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Location</small>
-<h3>Mexico City</h3>
-<p>Open to remote-first teams and roles where strong written technical evidence
-matters during review.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Differentiator</small>
-<h3>Operations background</h3>
-<p>14 years running business operations before moving into ML, with a practical
-focus on cost, reliability and maintainability.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Best first click</small>
-<h3><a href="recruiter-brief/">Recruiter brief</a></h3>
-<p>A three-minute screening view: fit, differentiators, proof points and
-questions a hiring team can ask.</p>
 </div>
 </div>
 
@@ -300,6 +268,10 @@ quantity.</p>
 <p>The inference path was changed and verified with load testing and documented
 technical evidence.</p>
 </div>
+</div>
+
+<div class="portfolio-callout" markdown="1">
+<code>Locust stress test: 81% API errors -&gt; 0% after moving CPU-bound inference to asyncio.run_in_executor() + ThreadPoolExecutor.</code>
 </div>
 
 [Read the BankChurn debugging deep dive](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
