@@ -35,6 +35,7 @@ clear trade-offs and documentation people can actually use.
 </div>
 </div>
 </div>
+</div>
 
 <div class="portfolio-stat-strip" markdown="1">
 <div class="portfolio-stat">
