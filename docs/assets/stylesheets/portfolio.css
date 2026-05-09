@@ -457,6 +457,39 @@ body:has(.portfolio-page) .md-typeset h3 {
   background: var(--portfolio-soft);
 }
 
+.md-typeset .portfolio-feature-band {
+  border: 1px solid var(--portfolio-line);
+  border-left: 4px solid var(--portfolio-teal);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0 1.35rem;
+  background: var(--portfolio-soft);
+}
+
+.md-typeset .portfolio-feature-band .portfolio-card-grid {
+  margin: 0;
+}
+
+.md-typeset .portfolio-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.45rem 0 0.65rem;
+}
+
+.md-typeset .portfolio-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.55rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--portfolio-line);
+  border-radius: 999px;
+  color: var(--portfolio-ink);
+  font-size: 0.72rem;
+  font-weight: 760;
+  background: var(--portfolio-soft);
+}
+
 .md-typeset .portfolio-step {
   display: grid;
   grid-template-columns: 2.4rem minmax(0, 1fr);

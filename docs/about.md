@@ -89,6 +89,31 @@ support real engineering growth.</p>
 </div>
 </div>
 
+## Operations Experience In Numbers
+
+<div class="portfolio-stat-strip" markdown="1">
+<div class="portfolio-stat">
+<small>People leadership</small>
+<strong>20 people</strong>
+<span>Teams coordinated under real operating pressure.</span>
+</div>
+<div class="portfolio-stat">
+<small>Budget ownership</small>
+<strong>$20K USD</strong>
+<span>Operating budgets where cost discipline mattered.</span>
+</div>
+<div class="portfolio-stat">
+<small>Technical coordination</small>
+<strong>8 developers</strong>
+<span>Freelance developers directed across delivery work.</span>
+</div>
+<div class="portfolio-stat">
+<small>Delivery record</small>
+<strong>15+ projects</strong>
+<span>Web projects delivered with about 90% on-time completion.</span>
+</div>
+</div>
+
 ## What I Can Contribute Early
 
 <div class="portfolio-card-grid" markdown="1">

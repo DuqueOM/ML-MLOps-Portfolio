@@ -90,6 +90,13 @@ verification.</p>
 <p>The runtime was paused to control cost; the code, evidence and reactivation
 path remain documented.</p>
 </div>
+
+<div class="portfolio-card" markdown="1">
+<small>Engineering proof</small>
+<h3><a href="https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/.github/workflows/ci-mlops.yml">395+ tests</a></h3>
+<p>CI validates code, docs, infrastructure checks, smoke paths and project
+quality gates before deploy.</p>
+</div>
 </div>
 
 ## Best-Fit Roles
@@ -174,6 +181,7 @@ communication are first-class parts of the work.</p>
 
 ## First 90 Days Contribution
 
+<div class="portfolio-feature-band" markdown="1">
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Days 1-30</small>
@@ -194,6 +202,7 @@ Docker/Kubernetes artifacts or monitoring improvements under review.</p>
 <h3>Own a focused reliability improvement</h3>
 <p>Take one scoped improvement from issue to documentation: smoke tests,
 readiness checks, drift notes, runbooks, cost tracking or deployment evidence.</p>
+</div>
 </div>
 </div>
 

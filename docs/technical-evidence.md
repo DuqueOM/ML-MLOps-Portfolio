@@ -22,6 +22,50 @@ deep dive only if you want the full technical archive.
 </div>
 </div>
 
+## Production Incidents
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Serving concurrency</small>
+<h3>81% API errors -> 0%</h3>
+<p><strong>Symptom:</strong> Locust exposed an 81% error rate under concurrent
+prediction traffic.</p>
+<p><strong>Hypothesis:</strong> it first looked like a scaling or CPU allocation
+problem.</p>
+<p><strong>Diagnosis:</strong> <code>uvicorn --workers N</code> under
+Kubernetes created contention inside a shared pod CPU budget, while synchronous
+ML inference blocked the FastAPI event loop.</p>
+<p><strong>Fix:</strong> one worker per pod, Kubernetes HPA for horizontal
+scaling, and CPU-bound inference moved to
+<code>asyncio.run_in_executor()</code> with <code>ThreadPoolExecutor</code>.</p>
+<p><strong>Result:</strong> error rate dropped to 0% in validation and the CPU
+request was reduced by roughly 50%.</p>
+
+[Read the full incident writeup](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Explainability</small>
+<h3>All-zero SHAP outputs</h3>
+<p><strong>Symptom:</strong> SHAP explanations returned unusable all-zero
+contributions.</p>
+<p><strong>Diagnosis:</strong> the BankChurn StackingClassifier pipeline was not
+compatible with the initial TreeExplainer path.</p>
+<p><strong>Fix:</strong> use KernelExplainer through a predict-proba wrapper in
+the original feature space, so explanations match the served model contract.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Autoscaling</small>
+<h3>HPA scale-down fixed</h3>
+<p><strong>Symptom:</strong> pods stayed overprovisioned after traffic dropped.</p>
+<p><strong>Diagnosis:</strong> memory was a misleading HPA signal because ML pods
+keep a fixed model memory footprint even when request volume falls.</p>
+<p><strong>Fix:</strong> remove memory-based scaling and use CPU-only HPA,
+reducing replicas from 3 to 1 in 8 minutes.</p>
+</div>
+</div>
+
 ## Quick Technical Signal
 
 <div class="portfolio-card-grid" markdown="1">
@@ -122,42 +166,16 @@ grouped index instead of a long sidebar.</p>
 </div>
 </div>
 
-## Failure Stories
-
-<div class="portfolio-card-grid" markdown="1">
-<div class="portfolio-card" markdown="1">
-<small>Serving failure</small>
-<h3>81% API errors under load</h3>
-<p>The strongest signal is the diagnosis habit: the fix was not to blindly add
-resources, but to isolate a blocked inference path and verify the correction
-with load testing.</p>
-
-[Read the full incident writeup](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Explainability issue</small>
-<h3>All-zero SHAP outputs</h3>
-<p>The portfolio documents why explainability must match the actual model
-structure and feature space, not only use the most familiar SHAP class.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Scaling issue</small>
-<h3>HPA that could not scale down</h3>
-<p>Memory-based autoscaling was rejected for ML pods because fixed model memory
-creates a misleading signal. CPU became the clearer scaling input.</p>
-</div>
-</div>
-
 ## Key Engineering Decisions
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Serving</small>
 <h3>One worker per pod plus executor</h3>
-<p>Kubernetes handles horizontal scaling; the API keeps the event loop free by
-offloading CPU-bound inference work.</p>
+<p>Kubernetes handles horizontal scaling; the API avoids
+<code>uvicorn --workers N</code> inside one pod and keeps the event loop free by
+offloading CPU-bound inference work to <code>asyncio.run_in_executor()</code>
+and <code>ThreadPoolExecutor</code>.</p>
 
 [ADR-014](decisions/014-single-worker-pod-ml-inference.md){ .portfolio-button }
 [ADR-015](decisions/015-async-inference-threadpool.md){ .portfolio-button }

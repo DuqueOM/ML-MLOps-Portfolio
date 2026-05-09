@@ -11,7 +11,10 @@ The [ML-MLOps Production Template](https://github.com/DuqueOM/ML-MLOps-Productio
 is the strongest artifact in this portfolio. It packages the production lessons
 from the monorepo into a starter system for ML services: FastAPI serving,
 training/serving parity, CI/CD, Docker, Kubernetes, Terraform examples,
-observability hooks, runbooks and an explicit agentic governance model.
+observability hooks, runbooks and an explicit agentic governance model. The
+template also encodes 32 anti-patterns with corrective actions, SLSA L2
+supply-chain security practices and closed-loop monitoring with statistical
+promotion gates.
 
 <div class="portfolio-actions" markdown="1">
 [Open the template repo](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button .portfolio-button--primary }
@@ -32,14 +35,24 @@ observability hooks, runbooks and an explicit agentic governance model.
 <span>Kubernetes overlays and Terraform examples for both paths.</span>
 </div>
 <div class="portfolio-stat">
+<small>Failure modes</small>
+<strong>32 anti-patterns</strong>
+<span>Corrective actions for serving, HPA, SHAP, IAM, CI/CD and deployment risks.</span>
+</div>
+<div class="portfolio-stat">
+<small>Supply chain</small>
+<strong>SLSA L2 posture</strong>
+<span>Security scanning, build hygiene and provenance-oriented release practices.</span>
+</div>
+<div class="portfolio-stat">
 <small>Agentic governance</small>
 <strong>AUTO / CONSULT / STOP</strong>
 <span>Rules for when agents can act, ask or halt for safety.</span>
 </div>
 <div class="portfolio-stat">
-<small>Adoption status</small>
-<strong>Review-ready by design</strong>
-<span>Template defaults are documented, tested and scoped for adoption.</span>
+<small>Monitoring loop</small>
+<strong>Promotion gates</strong>
+<span>Closed-loop monitoring ideas tied to statistical quality gates.</span>
 </div>
 </div>
 

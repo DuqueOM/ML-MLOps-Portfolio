@@ -82,6 +82,11 @@ flowchart LR
 serve but less useful as a portfolio signal for ensemble modeling,
 explainability and inference-path debugging.
 
+The StackingClassifier also forced a concrete explainability fix:
+TreeExplainer produced unusable all-zero outputs for this ensemble/pipeline
+shape, so the service moved to KernelExplainer through a predict-proba wrapper
+in the original feature space.
+
 [Read the debugging deep dive](bankchurn-debugging.md)
 </div>
 
@@ -104,6 +109,7 @@ explainability and inference-path debugging.
 | Model Size | 4.1 MB | Joblib compress=3; includes preprocessor + 4 base learners + meta-learner |
 | P50 / P95 Latency | 200ms / 410ms (GCP), 110ms / 140ms (AWS) | Through ingress, Locust smoke test (6 users) |
 | SHAP | Lazy, CPU-only | `?explain=true` adds ~4.5s (KernelExplainer); skipped by default |
+| HPA correction | Memory -> CPU-only | Replicas reduced from 3 to 1 in 8 minutes after rejecting memory as the scaling signal |
 
 ## Responsible AI
 

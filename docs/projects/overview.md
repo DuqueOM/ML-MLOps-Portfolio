@@ -128,6 +128,10 @@ decisions make the system easier to operate.</p>
 <div class="portfolio-card" markdown="1">
 <small>Banking churn service</small>
 <h3><a href="../bankchurn/">BankChurn Predictor</a></h3>
+<div class="portfolio-badge-row" markdown="1">
+<span class="portfolio-badge">AUC 0.87</span>
+<span class="portfolio-badge">90% coverage</span>
+</div>
 <p>Predicts customer churn and connects model performance to cost-aware
 threshold tuning, SHAP explanations and serving reliability improvements.</p>
 <p><strong>Main signal:</strong> AUC 0.87, 90% test coverage and documented
@@ -137,6 +141,10 @@ FastAPI/Kubernetes hardening.</p>
 <div class="portfolio-card" markdown="1">
 <small>Financial NLP service</small>
 <h3><a href="../nlpinsight/">NLPInsight Analyzer</a></h3>
+<div class="portfolio-badge-row" markdown="1">
+<span class="portfolio-badge">80.6% accuracy</span>
+<span class="portfolio-badge">98% coverage</span>
+</div>
 <p>Classifies sentiment in financial text with a lightweight production path,
 an optional transformer path and explicit dataset trade-off documentation.</p>
 <p><strong>Main signal:</strong> 80.6% accuracy, 98% coverage and an honest
@@ -146,6 +154,10 @@ modeling path over an easier benchmark.</p>
 <div class="portfolio-card" markdown="1">
 <small>Demand forecasting pipeline</small>
 <h3><a href="../chicagotaxi/">ChicagoTaxi Pipeline</a></h3>
+<div class="portfolio-badge-row" markdown="1">
+<span class="portfolio-badge">R2 0.96</span>
+<span class="portfolio-badge">6.3M rows</span>
+</div>
 <p>Forecasts taxi demand from trip data using PySpark ETL, temporal validation
 and leakage-aware feature engineering.</p>
 <p><strong>Main signal:</strong> R2 0.96, 6.3M rows processed and leakage removed

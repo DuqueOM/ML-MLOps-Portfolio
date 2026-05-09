@@ -31,17 +31,18 @@ looked like a simple scaling or CPU allocation problem.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Root cause</small>
-<h3>Blocked event loop</h3>
-<p>The synchronous ML inference call was blocking FastAPI's async serving path,
-so the service could not accept new requests reliably under concurrency.</p>
+<h3>Blocked event loop + worker contention</h3>
+<p><code>uvicorn --workers N</code> inside one Kubernetes pod shared a single
+CPU budget, while synchronous ML inference blocked FastAPI's async serving path
+under concurrency.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Fix</small>
 <h3>ThreadPoolExecutor</h3>
-<p>The CPU-bound prediction work was moved behind
-<code>asyncio.run_in_executor()</code>, keeping the event loop free for request
-handling.</p>
+<p>The API moved to one worker per pod and the CPU-bound prediction work was
+placed behind <code>asyncio.run_in_executor()</code> with
+<code>ThreadPoolExecutor</code>.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -94,7 +95,9 @@ The BankChurn model uses a scikit-learn style pipeline and ensemble inference
 path. The prediction call is CPU-bound and synchronous. When that call runs
 directly inside an async FastAPI endpoint, it blocks the event loop. Under load,
 the service spends too much time waiting on inference work and cannot keep
-serving new connections reliably.
+serving new connections reliably. Using <code>uvicorn --workers N</code> inside
+the same Kubernetes pod did not solve the issue because the workers still shared
+one pod CPU budget and made the HPA signal harder to reason about.
 
 The key lesson was that **async API code does not automatically make CPU-bound
 ML inference concurrent**. The serving pattern must intentionally separate

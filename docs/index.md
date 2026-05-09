@@ -14,14 +14,13 @@ improvement.
 <div class="portfolio-hero-copy" markdown="1">
 <span class="portfolio-eyebrow">MLOps & Production ML Portfolio</span>
 
-# Reliable ML systems, built from an operations mindset
+# 81% -> 0% API error rate in a production-style ML service
 
 <p class="portfolio-hero-lead">
-I'm Duque: I build the infrastructure that makes ML models reliable in
-production.
+That is what measuring before guessing looks like in production ML.
 </p>
 
-I am an early-career MLOps / Production ML candidate based in Mexico City.
+I'm Duque, an early-career MLOps / Production ML candidate based in Mexico City.
 Before moving into machine learning, I spent 14 years running business
 operations: teams, vendors, budgets, customer processes and cost decisions.
 
@@ -42,6 +41,14 @@ documentation another person can actually use.
 </div>
 </div>
 </div>
+</div>
+
+<div class="portfolio-media portfolio-media--demo" markdown="1">
+<video autoplay muted loop playsinline controls preload="metadata" poster="media/videos/portfolio-demo-poster.jpg" aria-label="Portfolio walkthrough video preview">
+  <source src="media/videos/portfolio-demo-preview.webm" type="video/webm">
+  <source src="media/videos/portfolio-demo-preview.mp4" type="video/mp4">
+  <a href="https://youtu.be/7dFFqq2ROPw">Watch the portfolio video demo</a>
+</video>
 </div>
 
 ## 60-Second Fit
@@ -162,6 +169,7 @@ documentation.</p>
 
 ## First 90 Days On A Junior MLOps Team
 
+<div class="portfolio-feature-band" markdown="1">
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Days 1-30</small>
@@ -182,6 +190,7 @@ monitoring dashboards or deployment documentation under senior review.</p>
 <h3>Own a small production improvement</h3>
 <p>Take responsibility for a focused improvement: better smoke tests, clearer
 runbooks, model registry hygiene, drift checks or cost-aware deployment notes.</p>
+</div>
 </div>
 </div>
 
@@ -206,6 +215,9 @@ portfolio; I extracted the reusable system behind it.
 - FastAPI serving structure
 - Docker and Kubernetes defaults
 - Terraform examples for GCP and AWS
+- 32 anti-patterns with corrective actions
+- SLSA L2 supply-chain security posture
+- Closed-loop monitoring with statistical promotion gates
 - MLflow, drift detection and retraining hooks
 - CI/CD and validation workflows
 - Agent-assisted workflow rules
@@ -218,6 +230,10 @@ portfolio; I extracted the reusable system behind it.
 <div class="portfolio-card" markdown="1">
 <small>Classification</small>
 <h3><a href="projects/bankchurn/">BankChurn Predictor</a></h3>
+<div class="portfolio-badge-row" markdown="1">
+<span class="portfolio-badge">AUC 0.87</span>
+<span class="portfolio-badge">90% coverage</span>
+</div>
 <p>Customer churn model with cost-aware threshold tuning, SHAP explanations and
 FastAPI serving.</p>
 </div>
@@ -225,6 +241,10 @@ FastAPI serving.</p>
 <div class="portfolio-card" markdown="1">
 <small>NLP</small>
 <h3><a href="projects/nlpinsight/">NLPInsight Analyzer</a></h3>
+<div class="portfolio-badge-row" markdown="1">
+<span class="portfolio-badge">80.6% accuracy</span>
+<span class="portfolio-badge">98% coverage</span>
+</div>
 <p>Financial sentiment analysis with a lightweight production path and honest
 benchmark selection.</p>
 </div>
@@ -232,17 +252,13 @@ benchmark selection.</p>
 <div class="portfolio-card" markdown="1">
 <small>Data engineering</small>
 <h3><a href="projects/chicagotaxi/">ChicagoTaxi Pipeline</a></h3>
+<div class="portfolio-badge-row" markdown="1">
+<span class="portfolio-badge">R2 0.96</span>
+<span class="portfolio-badge">6.3M rows</span>
+</div>
 <p>PySpark demand forecasting with temporal validation and leakage detection on
 millions of taxi trips.</p>
 </div>
-</div>
-
-<div class="portfolio-media portfolio-media--demo" markdown="1">
-<video autoplay muted loop playsinline controls preload="metadata" poster="media/videos/portfolio-demo-poster.jpg" aria-label="Portfolio walkthrough video preview">
-  <source src="media/videos/portfolio-demo-preview.webm" type="video/webm">
-  <source src="media/videos/portfolio-demo-preview.mp4" type="video/mp4">
-  <a href="https://youtu.be/7dFFqq2ROPw">Watch the portfolio video demo</a>
-</video>
 </div>
 
 ## A Concrete Debugging Story
@@ -258,15 +274,16 @@ problem from the outside.</p>
 <div class="portfolio-card" markdown="1">
 <small>Diagnosis</small>
 <h3>CPU contention in inference</h3>
-<p>The problem was traced to the serving execution pattern, not just resource
-quantity.</p>
+<p>The problem was traced to <code>uvicorn --workers N</code> under Kubernetes
+and CPU-bound inference blocking the async serving path.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Outcome</small>
 <h3>0% error rate after fix</h3>
-<p>The inference path was changed and verified with load testing and documented
-technical evidence.</p>
+<p>The fix used one worker per pod plus
+<code>asyncio.run_in_executor()</code> and <code>ThreadPoolExecutor</code>,
+then verified the result with load testing.</p>
 </div>
 </div>
 
@@ -316,13 +333,15 @@ cost-controlled cloud runtime.
 ## Current Operating Status
 
 <div class="portfolio-callout" markdown="1">
+<strong>Infrastructure paused for cost efficiency. Reactivatable from documented
+runbooks.</strong> That is the point of having them.
+
 Running cloud infrastructure 24/7 costs real money, the same way a team would
 not leave servers on when nobody is using them. The live clusters were built,
 tested and documented during the active development period, then intentionally
 paused to control cost. The evidence remains reviewable here: code, CI/CD
 workflows, Terraform, Kubernetes manifests, screenshots, deployment notes and
-runbooks. The system can be reactivated from the documented steps when a live
-review is needed.
+runbooks.
 
 [Read the portfolio status](PORTFOLIO_STATUS.md) ·
 [Watch the video demo](https://youtu.be/7dFFqq2ROPw)
