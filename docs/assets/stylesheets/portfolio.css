@@ -455,6 +455,11 @@ body:has(.portfolio-page) .md-typeset h3 {
   height: auto;
 }
 
+.md-typeset .portfolio-media--demo {
+  max-width: 800px;
+  margin: 1.15rem auto;
+}
+
 .md-typeset .portfolio-story-banner {
   position: relative;
   margin: 0 0 1.15rem;

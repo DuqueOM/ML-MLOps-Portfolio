@@ -225,7 +225,7 @@ millions of taxi trips.</p>
 </div>
 </div>
 
-<div class="portfolio-media" markdown="1">
+<div class="portfolio-media portfolio-media--demo" markdown="1">
 <img src="media/gifs/portfolio-demo.gif" alt="Portfolio walkthrough">
 </div>
 
