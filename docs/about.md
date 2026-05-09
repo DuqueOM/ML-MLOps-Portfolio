@@ -156,6 +156,30 @@ operations forecasting, where my background is directly relevant.</p>
 </div>
 </div>
 
+## Current Boundaries
+
+<div class="portfolio-split" markdown="1">
+<div markdown="1">
+
+I try to be precise about what this portfolio proves. It shows controlled
+production-oriented evidence: live deployment windows, load tests, CI/CD,
+Kubernetes artifacts, screenshots, ADRs and incident-style debugging. It does
+not claim years of corporate ML platform ownership or continuous production
+traffic from real users.
+
+That honesty matters to me because I want the first interview to start from the
+right place: junior formal level, strong operating maturity, and a clear path to
+grow inside a real team.
+
+</div>
+<div class="portfolio-callout" markdown="1">
+<strong>Best reading</strong>
+
+Early-career in ML/MLOps employment; mature in ownership, documentation,
+cost-awareness and operational reasoning.
+</div>
+</div>
+
 ## Links
 
 <div class="portfolio-card-grid" markdown="1">

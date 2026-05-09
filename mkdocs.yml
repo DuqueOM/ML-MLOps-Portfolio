@@ -79,6 +79,7 @@ nav:
   - Production Template: template.md
   - Technical Evidence:
       - Evidence Overview: technical-evidence.md
+      - BankChurn Debugging Deep Dive: projects/bankchurn-debugging.md
       - Portfolio Status: PORTFOLIO_STATUS.md
       - Deep Dive Index: technical-deep-dive.md
   - Contact: contact.md

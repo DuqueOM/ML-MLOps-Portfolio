@@ -15,7 +15,8 @@ Use it as a map: start with the summary, choose one review path, and open the
 deep dive only if you want the full technical archive.
 
 <div class="portfolio-actions" markdown="1">
-[Open deep dive index](technical-deep-dive.md){ .portfolio-button .portfolio-button--primary }
+[Read incident writeup](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
+[Open deep dive index](technical-deep-dive.md){ .portfolio-button }
 [Check current status](PORTFOLIO_STATUS.md){ .portfolio-button }
 [Review projects](projects/overview.md){ .portfolio-button }
 </div>
@@ -50,6 +51,42 @@ architecture decisions with trade-offs.</p>
 <h3>Cost and scope are documented</h3>
 <p>The portfolio separates active assets from paused cloud runtime and explains
 cost-control decisions honestly.</p>
+</div>
+</div>
+
+## Green Checks And Runtime Evidence
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>CI proof</small>
+<h3>GitHub Actions completed</h3>
+<img class="portfolio-evidence-image" src="media/screenshots/cicd/46-workflow-completado.png" alt="GitHub Actions workflow completed successfully">
+<p>Visible green checks reduce the time a technical reviewer spends wondering
+whether the 395+ tests are only a claim.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Smoke proof</small>
+<h3>API health checks passed</h3>
+<img class="portfolio-evidence-image" src="media/screenshots/terminal/23-health-checks-apis.png" alt="Terminal showing API health checks passing">
+<p>Health-check screenshots show that the APIs were exercised as running
+services, not only described in documentation.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Model lifecycle</small>
+<h3>MLflow experiment tracking</h3>
+<img class="portfolio-evidence-image" src="media/screenshots/monitoring/39-mlflow-experiments.png" alt="MLflow experiments screenshot">
+<p>MLflow evidence makes model tracking tangible for reviewers who want to see
+experiment and model registry habits.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Observability</small>
+<h3>Grafana and load testing</h3>
+<img class="portfolio-evidence-image" src="media/screenshots/monitoring/38c-load-test-results.png" alt="Load test results screenshot">
+<p>The load-test evidence connects observability claims to measured runtime
+behavior.</p>
 </div>
 </div>
 
@@ -95,7 +132,7 @@ grouped index instead of a long sidebar.</p>
 resources, but to isolate a blocked inference path and verify the correction
 with load testing.</p>
 
-[Read deep dive](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
+[Read the full incident writeup](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
 </div>
 
 <div class="portfolio-card" markdown="1">

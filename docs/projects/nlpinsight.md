@@ -8,6 +8,38 @@ Classify financial text sentiment — and understand why domain-specific pre-tra
 
 Financial markets generate 10,000+ news articles/day. Manual sentiment review costs $50–100/hour per analyst. Automated classification must handle domain nuance: "revenue declined less than expected" is **positive** in financial context — a pattern that bag-of-words models consistently misclassify.
 
+## Business Translation
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Problem</small>
+<h3>Financial text is noisy</h3>
+<p>Market language carries domain nuance, abbreviations and class imbalance
+that a generic sentiment demo can hide.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Decision</small>
+<h3>Use a lightweight production path</h3>
+<p>TF-IDF + Logistic Regression keeps inference fast, small and explainable for
+resource-constrained deployment.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Impact</small>
+<h3>Useful under cost constraints</h3>
+<p>The service trades some accuracy upside for latency, image size and
+operational simplicity.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Trade-off</small>
+<h3>FinBERT stays optional</h3>
+<p>The heavier transformer path is documented, but not forced into the default
+runtime without GPU and cost justification.</p>
+</div>
+</div>
+
 ## Why Accuracy Works Here (and F1-Macro as Guard Rail)
 
 The dataset has 3 classes: 58.0% neutral, 26.9% positive, 15.1% negative. Trained on **Twitter Financial News Sentiment** (11,931 real tweets) — noisy, informal text with stock tickers and abbreviations. F1-macro (0.748) guards the minority negative class — the highest-value signal for risk management.
@@ -47,6 +79,28 @@ flowchart TD
 > **Green** = Production path (TF-IDF, 5ms, 267 MB) · **Purple** = GPU path (FinBERT, 87ms, 1.4 GB)
 
 **Why TF-IDF in production**: TF-IDF runs in 5ms (in-pod) with a 267 MB image vs FinBERT's 87ms with a 1.4 GB image. For latency-critical pipelines, the accuracy trade-off (80.6% vs ~88%) is acceptable. The training pipeline supports FinBERT fine-tuning when GPU is available.
+
+## Engineering Trade-Off
+
+<div class="portfolio-callout" markdown="1">
+<strong>Chosen:</strong> small, fast, explainable default model.
+<strong>Rejected:</strong> making the heaviest model the default before the
+serving cost and GPU requirement are justified.
+
+This follows the same operating principle used in the
+[BankChurn debugging deep dive](bankchurn-debugging.md): production ML choices
+should be measured against runtime behavior, not only model score.
+</div>
+
+## Code Review Shortcuts
+
+<div class="portfolio-actions" markdown="1">
+[FastAPI app](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/NLPInsight-Analyzer/app/fastapi_app.py){ .portfolio-button .portfolio-button--primary }
+[Dockerfile](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/NLPInsight-Analyzer/Dockerfile){ .portfolio-button }
+[Training code](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/NLPInsight-Analyzer/src/nlpinsight/training.py){ .portfolio-button }
+[Tests](https://github.com/DuqueOM/ML-MLOps-Portfolio/tree/main/NLPInsight-Analyzer/tests){ .portfolio-button }
+[K8s manifest](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/k8s/overlays/gcp/nlpinsight-deployment.yaml){ .portfolio-button }
+</div>
 
 ## Operational
 
@@ -100,6 +154,12 @@ flowchart TD
     ```
 
 📄 [Full Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/NLPInsight-Analyzer/model_card.md) — includes metric rationale, performance benchmarks, and production decision narrative.
+
+## Related Operating Evidence
+
+- [BankChurn debugging deep dive](bankchurn-debugging.md)
+- [Technical evidence overview](../technical-evidence.md)
+- [Projects overview](overview.md)
 
 ---
 

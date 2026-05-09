@@ -23,7 +23,7 @@ detail.
 <div class="portfolio-stat">
 <small>Mode</small>
 <strong>Showcase</strong>
-<span>Reference implementation; live clusters are off.</span>
+<span>Reference implementation; live clusters are intentionally paused.</span>
 </div>
 <div class="portfolio-stat">
 <small>Last live deploy</small>
@@ -157,6 +157,10 @@ Running GKE + EKS + managed Postgres + container registries continuously costs
 roughly **$180-$220/month** combined. That spend was justified during active
 development, load testing and incident-style validation; it is not economical as
 an always-on showcase.
+
+This is the same operating logic a team would use with any paid infrastructure:
+keep the evidence, automation and reactivation path available, but do not pay
+for idle runtime when nobody is reviewing it live.
 
 The important distinction is that the portfolio is not claiming a fictional
 live environment. It keeps the evidence that matters: manifests, Terraform,

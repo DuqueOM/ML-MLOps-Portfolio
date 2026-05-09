@@ -8,6 +8,38 @@ Process 6.3 million taxi trips into hourly demand predictions — the data engin
 
 Chicago has 77 community areas, each with different taxi demand patterns by hour, day, and season. Predicting hourly demand per area enables driver allocation optimization. The dataset is 2.8 GB (too large for pandas), requiring distributed processing.
 
+## Business Translation
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Problem</small>
+<h3>Demand changes by place and time</h3>
+<p>Driver allocation needs area/hour forecasts, not a single city-wide demand
+number.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Decision</small>
+<h3>Separate ETL from serving</h3>
+<p>PySpark handles heavy historical processing; FastAPI serves precomputed
+predictions so requests stay lightweight.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Impact</small>
+<h3>Large data becomes usable</h3>
+<p>Millions of raw trips become compact hourly demand records that can support
+planning or downstream dashboards.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Trade-off</small>
+<h3>Batch realism over live inference</h3>
+<p>The API avoids request-time model inference because this workload is better
+served as a scheduled batch prediction problem.</p>
+</div>
+</div>
+
 ## Architecture
 
 ```mermaid
@@ -40,6 +72,29 @@ flowchart LR
 | Serving | FastAPI | Query pre-computed predictions by area/hour |
 
 pandas would OOM on the full CSV. PySpark handles the heavy ETL; Dask handles the embarrassingly parallel batch prediction. FastAPI serves the pre-computed results — no model inference at request time.
+
+## Engineering Trade-Off
+
+<div class="portfolio-callout" markdown="1">
+<strong>Chosen:</strong> PySpark ETL, Dask batch prediction and FastAPI lookup
+serving.
+<strong>Rejected:</strong> forcing online model inference into a demand pipeline
+where precomputed forecasts are simpler, cheaper and easier to operate.
+
+The reliability mindset is the same as in the
+[BankChurn debugging deep dive](bankchurn-debugging.md): match the serving
+pattern to the workload instead of using one architecture everywhere.
+</div>
+
+## Code Review Shortcuts
+
+<div class="portfolio-actions" markdown="1">
+[FastAPI app](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/ChicagoTaxi-Demand-Pipeline/app/fastapi_app.py){ .portfolio-button .portfolio-button--primary }
+[Dockerfile](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/ChicagoTaxi-Demand-Pipeline/Dockerfile){ .portfolio-button }
+[Batch prediction](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/ChicagoTaxi-Demand-Pipeline/scripts/batch_predict.py){ .portfolio-button }
+[Tests](https://github.com/DuqueOM/ML-MLOps-Portfolio/tree/main/ChicagoTaxi-Demand-Pipeline/tests){ .portfolio-button }
+[K8s manifest](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/k8s/overlays/gcp/chicagotaxi-deployment.yaml){ .portfolio-button }
+</div>
 
 ## Pipeline Metrics
 
@@ -119,6 +174,12 @@ This is a regression problem on aggregated hourly counts. R² 0.9649 means 96.5%
     ```
 
 📄 [Full Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/ChicagoTaxi-Demand-Pipeline/model_card.md)
+
+## Related Operating Evidence
+
+- [BankChurn debugging deep dive](bankchurn-debugging.md)
+- [Technical evidence overview](../technical-evidence.md)
+- [Projects overview](overview.md)
 
 ---
 

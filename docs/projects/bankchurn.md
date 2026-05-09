@@ -8,6 +8,38 @@ Predict which bank customers are likely to leave — and quantify the cost of ge
 
 A bank with 100K customers and a 20% annual churn rate loses ~$30M/year in lifetime value. The question isn't "can we predict churn?" — it's "at what threshold do we act, and what does each error cost?"
 
+## Business Translation
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Problem</small>
+<h3>Retention budget is limited</h3>
+<p>The useful question is which customers deserve intervention, not whether the
+model can produce a score.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Decision</small>
+<h3>Favor recall with a lower threshold</h3>
+<p>A missed churner is much more expensive than an unnecessary retention offer,
+so the threshold is tuned around cost of error.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Impact</small>
+<h3>Predictions become operational</h3>
+<p>The output supports action: probability, risk category, threshold rationale
+and explanation path.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Trade-off</small>
+<h3>More complexity for explainability</h3>
+<p>The ensemble improves performance, but it requires careful SHAP handling and
+serving-path discipline.</p>
+</div>
+</div>
+
 ## Why AUC-ROC, Not Accuracy
 
 The dataset is 80/20 retained/churned. A model predicting "no churn" for everyone scores 79.6% accuracy — and catches zero churners. AUC-ROC measures **rank-ordering quality** across all thresholds, independently of class imbalance.
@@ -41,6 +73,27 @@ flowchart LR
 ```
 
 **Why StackingClassifier**: 4 diverse base learners capture complementary patterns (bagging + boosting + tree + gradient). AUC improved from 0.84 (best single model) to 0.87. CV variance is tight (±0.006), confirming generalization over memorization. See [ADR-003](../decisions/003-stacking-classifier-bankchurn.md).
+
+## Engineering Trade-Off
+
+<div class="portfolio-callout" markdown="1">
+<strong>Chosen:</strong> StackingClassifier + FastAPI serving + async executor pattern.
+<strong>Rejected:</strong> a simpler single-model API that would be easier to
+serve but less useful as a portfolio signal for ensemble modeling,
+explainability and inference-path debugging.
+
+[Read the debugging deep dive](bankchurn-debugging.md)
+</div>
+
+## Code Review Shortcuts
+
+<div class="portfolio-actions" markdown="1">
+[FastAPI app](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/BankChurn-Predictor/app/fastapi_app.py){ .portfolio-button .portfolio-button--primary }
+[Dockerfile](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/BankChurn-Predictor/Dockerfile){ .portfolio-button }
+[Tests](https://github.com/DuqueOM/ML-MLOps-Portfolio/tree/main/BankChurn-Predictor/tests){ .portfolio-button }
+[K8s manifest](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/k8s/overlays/gcp/bankchurn-deployment.yaml){ .portfolio-button }
+[CI pipeline](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/.github/workflows/ci-mlops.yml){ .portfolio-button }
+</div>
 
 ## Operational
 
@@ -93,6 +146,12 @@ flowchart LR
     ```
 
 📄 [Full Model Card](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/BankChurn-Predictor/models/model_card.md) — includes metric rationale, performance benchmarks, and production decision narrative.
+
+## Related Operating Evidence
+
+- [BankChurn debugging deep dive](bankchurn-debugging.md)
+- [Technical evidence overview](../technical-evidence.md)
+- [ADR-015: Async inference thread pool](../decisions/015-async-inference-threadpool.md)
 
 ---
 

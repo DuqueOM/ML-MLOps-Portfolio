@@ -7,9 +7,8 @@
 
 # Entry-level MLOps candidate with production-minded project evidence
 
-If you have three minutes: I am a career-switcher who spent 14 years running
-business operations and now builds the infrastructure around ML models so they
-can be tested, shipped, monitored and understood by a team.
+3 minutes: career-switcher with 14 years of operations experience, now building
+the infrastructure that makes ML models reliable. That is the whole story.
 
 I am looking for my first formal role in ML/MLOps. My strongest fit is a junior
 team where I can contribute to model serving, ML workflow reliability,
@@ -59,6 +58,13 @@ where written technical communication matters.</p>
 <p>Comfortable with technical documentation, async collaboration and interview
 conversations in English with preparation.</p>
 </div>
+</div>
+
+<div class="portfolio-callout" markdown="1">
+<strong>Seniority alignment:</strong> I am fully aligned with entry-level /
+junior role scope, compensation bands, code review expectations and growth
+plans. My operations maturity is a contribution to the team, not a seniority
+claim.
 </div>
 
 ## Best-Fit Roles
@@ -253,6 +259,38 @@ into a concise trade-off article.</p>
 <h3>A project closer to operations</h3>
 <p>Explore a future project around inventory, staffing, cost anomalies or
 operations forecasting, where my previous background is a direct advantage.</p>
+</div>
+</div>
+
+## Current Boundaries And Next Proof
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Live traffic</small>
+<h3>Controlled load tests, not 24/7 users</h3>
+<p>The strongest runtime evidence comes from controlled load tests and live
+development windows, not persistent production user traffic.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Cloud ML platforms</small>
+<h3>GCP and AWS Kubernetes first</h3>
+<p>My cloud work is centered on GKE, EKS, Terraform and kubectl. SageMaker and
+Azure ML are not yet core strengths.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>ML depth</small>
+<h3>Engineering and deployment side</h3>
+<p>I am not presenting myself as an ML researcher. My strongest signal is
+turning applied models into testable, operable systems.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>External collaboration</small>
+<h3>Next public signal</h3>
+<p>Open-source contribution, external review or a PR review sample is the next
+proof I want to add.</p>
 </div>
 </div>
 

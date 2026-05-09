@@ -16,8 +16,13 @@ improvement.
 
 # Reliable ML systems, built from an operations mindset
 
-I'm Duque, an early-career MLOps / Production ML candidate based in Mexico
-City. Before moving into machine learning, I spent 14 years running business
+<p class="portfolio-hero-lead">
+I'm Duque: I build the infrastructure that makes ML models reliable in
+production.
+</p>
+
+I am an early-career MLOps / Production ML candidate based in Mexico City.
+Before moving into machine learning, I spent 14 years running business
 operations: teams, vendors, budgets, customer processes and cost decisions.
 
 That background shapes how I build ML systems: not as isolated notebooks, but
@@ -39,6 +44,38 @@ documentation another person can actually use.
 </div>
 </div>
 
+## 60-Second Fit
+
+<div class="portfolio-card-grid portfolio-card-grid--compact" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>What I do</small>
+<h3>Production-minded ML systems</h3>
+<p>I connect models to APIs, tests, CI/CD, deployment paths, monitoring and
+documentation.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Target level</small>
+<h3>Early-career / junior</h3>
+<p>I am looking for my first formal ML/MLOps role with room to contribute and
+grow under senior guidance.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Differentiator</small>
+<h3>14 years in operations</h3>
+<p>Cost, process, ownership and customer pressure shape how I think about ML
+systems.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Why it matters</small>
+<h3>Less notebook-only risk</h3>
+<p>The portfolio shows deployable, reviewable work with failure stories and
+trade-offs.</p>
+</div>
+</div>
+
 <div class="portfolio-stat-strip" markdown="1">
 <div class="portfolio-stat">
 <small>Portfolio scope</small>
@@ -54,6 +91,11 @@ documentation another person can actually use.
 <small>Cloud evidence</small>
 <strong>GKE + EKS</strong>
 <span>Google Cloud and AWS Kubernetes evidence from the live build period.</span>
+</div>
+<div class="portfolio-stat">
+<small>Decision trail</small>
+<strong>18 ADRs</strong>
+<span>Written trade-offs a team can review, challenge and improve.</span>
 </div>
 <div class="portfolio-stat">
 <small>Reusable system</small>
@@ -302,12 +344,13 @@ cost-controlled cloud runtime.
 ## Current Operating Status
 
 <div class="portfolio-callout" markdown="1">
-Running cloud infrastructure 24/7 costs real money, even when nobody is using
-the demo. The live clusters were built, tested and documented during the active
-development period, then intentionally paused to control cost. The evidence
-remains reviewable here: code, CI/CD workflows, Terraform, Kubernetes manifests,
-screenshots, deployment notes and runbooks. The system can be reactivated from
-the documented steps when a live review is needed.
+Running cloud infrastructure 24/7 costs real money, the same way a team would
+not leave servers on when nobody is using them. The live clusters were built,
+tested and documented during the active development period, then intentionally
+paused to control cost. The evidence remains reviewable here: code, CI/CD
+workflows, Terraform, Kubernetes manifests, screenshots, deployment notes and
+runbooks. The system can be reactivated from the documented steps when a live
+review is needed.
 
 [Read the portfolio status](PORTFOLIO_STATUS.md) ·
 [Watch the video demo](https://youtu.be/7dFFqq2ROPw)

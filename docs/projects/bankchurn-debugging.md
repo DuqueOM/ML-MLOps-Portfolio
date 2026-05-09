@@ -143,6 +143,29 @@ informed the reusable MLOps template.</p>
 </div>
 </div>
 
+<div class="portfolio-before-after-chart" markdown="1">
+<div class="portfolio-bar-row" markdown="1">
+<span>Before: API error rate</span>
+<div class="portfolio-bar-track">
+<div class="portfolio-bar portfolio-bar--danger" style="width: 81%;">81%</div>
+</div>
+</div>
+
+<div class="portfolio-bar-row" markdown="1">
+<span>After: API error rate</span>
+<div class="portfolio-bar-track">
+<div class="portfolio-bar portfolio-bar--success" style="width: 2%;">0%</div>
+</div>
+</div>
+
+<div class="portfolio-bar-row" markdown="1">
+<span>CPU request after fix</span>
+<div class="portfolio-bar-track">
+<div class="portfolio-bar portfolio-bar--neutral" style="width: 50%;">~50% lower</div>
+</div>
+</div>
+</div>
+
 ## What This Became In The Template
 
 The important outcome was not only that BankChurn worked. The lesson became a

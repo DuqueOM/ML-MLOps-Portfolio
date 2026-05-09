@@ -103,6 +103,14 @@ body:has(.portfolio-page) .md-typeset h3 {
   line-height: 1.62;
 }
 
+.md-typeset .portfolio-hero .portfolio-hero-lead {
+  max-width: 78rem;
+  color: var(--portfolio-ink);
+  font-size: clamp(1.08rem, 1.65vw, 1.35rem);
+  font-weight: 720;
+  line-height: 1.35;
+}
+
 .md-typeset .portfolio-hero--home-intro p {
   max-width: 74rem;
 }
@@ -252,6 +260,10 @@ body:has(.portfolio-page) .md-typeset h3 {
 
 .md-typeset .portfolio-card-grid {
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.md-typeset .portfolio-card-grid--compact {
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
 }
 
 .md-typeset .portfolio-status-grid {
@@ -468,6 +480,65 @@ body:has(.portfolio-page) .md-typeset h3 {
 .md-typeset .portfolio-media--demo video {
   aspect-ratio: 16 / 9;
   background: #0b1320;
+}
+
+.md-typeset .portfolio-evidence-image {
+  display: block;
+  width: 100%;
+  margin: 0.7rem 0;
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+}
+
+.md-typeset .portfolio-before-after-chart {
+  display: grid;
+  gap: 0.85rem;
+  margin: 1.2rem 0;
+  padding: 1rem;
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  background: var(--portfolio-panel);
+}
+
+.md-typeset .portfolio-bar-row {
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.28fr) minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.md-typeset .portfolio-bar-row > span {
+  color: var(--portfolio-muted);
+  font-size: 0.82rem;
+  font-weight: 720;
+}
+
+.md-typeset .portfolio-bar-track {
+  overflow: hidden;
+  min-height: 2rem;
+  border-radius: 8px;
+  background: var(--portfolio-soft);
+}
+
+.md-typeset .portfolio-bar {
+  min-width: max-content;
+  height: 2rem;
+  padding: 0.35rem 0.65rem;
+  color: #ffffff;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.md-typeset .portfolio-bar--danger {
+  background: var(--portfolio-rose);
+}
+
+.md-typeset .portfolio-bar--success {
+  background: var(--portfolio-green);
+}
+
+.md-typeset .portfolio-bar--neutral {
+  background: var(--portfolio-blue);
 }
 
 .md-typeset .portfolio-story-banner {

@@ -43,6 +43,16 @@ observability hooks, runbooks and an explicit agentic governance model.
 </div>
 </div>
 
+## Code Review Shortcuts
+
+<div class="portfolio-actions" markdown="1">
+[Service Dockerfile](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/service/Dockerfile){ .portfolio-button .portfolio-button--primary }
+[K8s deployment](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/k8s/base/deployment.yaml){ .portfolio-button }
+[CI template](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/cicd/ci.yml){ .portfolio-button }
+[Deploy GCP](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/cicd/deploy-gcp.yml){ .portfolio-button }
+[Agent manifest](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/config/agentic_manifest.yaml){ .portfolio-button }
+</div>
+
 ## Why This Is More Than A Template
 
 <div class="portfolio-split" markdown="1">
