@@ -98,6 +98,34 @@ cost-control decisions honestly.</p>
 </div>
 </div>
 
+## Visual Evidence Shortcuts
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Serving path</small>
+<h3>Live ML predictions</h3>
+<img class="portfolio-evidence-image" src="../media/gifs/ml-predictions.gif" alt="Animated walkthrough of ML prediction APIs">
+<p>FastAPI prediction paths for the portfolio services, shown as a short visual
+review instead of another long code block.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Observability path</small>
+<h3>Monitoring under load</h3>
+<img class="portfolio-evidence-image" src="../media/gifs/monitoring-observability.gif" alt="Animated walkthrough of monitoring and observability evidence">
+<p>Grafana, Prometheus, Locust and MLflow evidence grouped for reviewers who
+want runtime behavior, not only architecture claims.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Cloud path</small>
+<h3>GKE and EKS parity</h3>
+<img class="portfolio-evidence-image" src="../media/gifs/multicloud-parity.gif" alt="Animated walkthrough of GKE and EKS multi-cloud evidence">
+<p>Side-by-side cloud evidence showing that the portfolio was exercised across
+Google Cloud and AWS Kubernetes environments.</p>
+</div>
+</div>
+
 ## Green Checks And Runtime Evidence
 
 <div class="portfolio-card-grid" markdown="1">

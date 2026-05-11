@@ -37,7 +37,7 @@ Classify financial text sentiment — and understand why domain-specific pre-tra
 </div>
 </div>
 
-<div class="portfolio-media" markdown="1">
+<div class="portfolio-media portfolio-media--project-hero" markdown="1">
 ![NLPInsight API](../media/screenshots/apis/27-fastapi-swagger-nlpinsight.png)
 </div>
 

@@ -37,7 +37,7 @@ Predict which bank customers are likely to leave — and quantify the cost of ge
 </div>
 </div>
 
-<div class="portfolio-media" markdown="1">
+<div class="portfolio-media portfolio-media--project-hero" markdown="1">
 ![BankChurn API](../media/screenshots/apis/25-fastapi-swagger-bankchurn.png)
 </div>
 

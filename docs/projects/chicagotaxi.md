@@ -37,7 +37,7 @@ Process 6.3 million taxi trips into hourly demand predictions — the data engin
 </div>
 </div>
 
-<div class="portfolio-media" markdown="1">
+<div class="portfolio-media portfolio-media--project-hero" markdown="1">
 ![ChicagoTaxi API](../media/screenshots/apis/29-fastapi-swagger-chicagotaxi.png)
 </div>
 
