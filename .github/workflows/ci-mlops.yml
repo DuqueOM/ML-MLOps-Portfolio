@@ -3,6 +3,11 @@ name: CI/CD MLOps Portfolio
 on:
   push:
     branches: [ main, develop ]
+    paths-ignore:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'requirements-docs.txt'
+      - '.github/workflows/docs.yml'
   pull_request:
     branches: [ main ]
   workflow_dispatch:
