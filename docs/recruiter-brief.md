@@ -20,11 +20,13 @@ science and MLOps, I spent 14 years running business operations. That experience
 shows up in the way I think about cost, reliability, ownership, customer impact
 and clear handoffs.
 
-<div class="portfolio-actions" markdown="1">
-[Contact me](contact.md){ .portfolio-button .portfolio-button--primary }
-[Projects](projects/overview.md){ .portfolio-button }
-[View the template](template.md){ .portfolio-button }
-[Review technical evidence](technical-evidence.md){ .portfolio-button }
+<div class="portfolio-actions portfolio-actions--anchors" markdown="1">
+[Snapshot](#quick-screening-snapshot){ .portfolio-button .portfolio-button--primary }
+[Proof Points](#key-proof-points){ .portfolio-button }
+[Roles](#best-fit-roles){ .portfolio-button }
+[Background](#why-the-background-matters){ .portfolio-button }
+[Difference](#what-makes-me-different){ .portfolio-button }
+[90 Days](#first-90-days-contribution){ .portfolio-button }
 </div>
 </div>
 
@@ -33,16 +35,9 @@ and clear handoffs.
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Target level</small>
-<h3>Entry-level / junior</h3>
-<p>I am not positioning myself as senior. I am looking for a role with room to
+<h3>Entry-level / MLOps - Production ML</h3>
+<p>I am looking for a role with room to
 learn, contribute and grow into stronger production ML ownership.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Best-fit titles</small>
-<h3>Junior MLOps / Production ML</h3>
-<p>Also relevant: Junior ML Engineer, AI Engineer I, ML Platform Associate or
-Data Engineer roles connected to ML pipelines and model operations.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -70,7 +65,7 @@ infrastructure code.</p>
 
 <div class="portfolio-callout" markdown="1">
 <strong>Seniority alignment:</strong> I am fully aligned with entry-level /
-junior role scope, compensation bands, code review expectations and growth
+Entry-level role scope, compensation bands, code review expectations and growth
 plans. My operations maturity is a contribution to the team, not a seniority
 claim.
 </div>
@@ -80,21 +75,21 @@ claim.
 <div class="portfolio-card-grid portfolio-card-grid--compact" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Reusable system</small>
-<h3><a href="template.md">Production template</a></h3>
+<h3><a href="../template/">Production template</a></h3>
 <p>A starter framework for FastAPI, Docker, Kubernetes, MLflow, CI/CD and
 deployment guardrails.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Incident diagnosis</small>
-<h3><a href="projects/bankchurn-debugging.md">81% errors to 0%</a></h3>
+<h3><a href="../projects/bankchurn-debugging/">81% errors to 0%</a></h3>
 <p>The clearest debugging story: measured failure, root cause, fix and
 verification.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Cost judgment</small>
-<h3><a href="PORTFOLIO_STATUS.md">Cloud paused by design</a></h3>
+<h3><a href="../PORTFOLIO_STATUS/">Cloud paused by design</a></h3>
 <p>The runtime was paused to control cost; the code, evidence and reactivation
 path remain documented.</p>
 </div>
@@ -112,7 +107,7 @@ quality gates before deploy.</p>
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Primary fit</small>
-<h3>Junior MLOps / Production ML</h3>
+<h3>MLOps / Production ML</h3>
 <p>Model serving, Docker/Kubernetes artifacts, CI/CD support, monitoring,
 MLflow hygiene, deployment notes and reliability improvements.</p>
 </div>
@@ -340,22 +335,22 @@ proof I want to add.</p>
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<h3><a href="about.md">About Me</a></h3>
+<h3><a href="../">Home</a></h3>
 <p>Personal-professional story, target roles and working style.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<h3><a href="template.md">Production Template</a></h3>
+<h3><a href="../template/">Production Template</a></h3>
 <p>The reusable MLOps project that best summarizes the portfolio.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<h3><a href="technical-evidence.md">Technical Evidence</a></h3>
+<h3><a href="../technical-evidence/">Technical Evidence</a></h3>
 <p>Deeper proof for technical hiring managers.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<h3><a href="contact.md">Contact</a></h3>
+<h3><a href="../contact/">Contact</a></h3>
 <p>Email, LinkedIn, GitHub, video demo and repository links.</p>
 </div>
 </div>

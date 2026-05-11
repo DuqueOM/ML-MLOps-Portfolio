@@ -371,7 +371,7 @@ structure.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Portfolio context</small>
-<h3><a href="technical-evidence.md">Technical evidence</a></h3>
+<h3><a href="../technical-evidence/">Technical evidence</a></h3>
 <p>See how the template relates to the broader monorepo, cloud evidence and
 production ML portfolio.</p>
 </div>

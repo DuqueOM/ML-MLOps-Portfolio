@@ -163,6 +163,19 @@ and leakage-aware feature engineering.</p>
 <p><strong>Main signal:</strong> R2 0.96, 6.3M rows processed and leakage removed
 from the feature set.</p>
 </div>
+
+<div class="portfolio-card" markdown="1">
+<small>Reusable MLOps system</small>
+<h3><a href="../../template/">Production Template</a></h3>
+<div class="portfolio-badge-row" markdown="1">
+<span class="portfolio-badge">32 anti-patterns</span>
+<span class="portfolio-badge">AUTO / CONSULT / STOP</span>
+</div>
+<p>Packages the production lessons from BankChurn, NLPInsight and ChicagoTaxi
+into a reusable starter system for future ML services.</p>
+<p><strong>Main signal:</strong> rules, skills, workflows, multi-IDE governance,
+CI/CD defaults and operating guardrails.</p>
+</div>
 </div>
 
 ## Project Decision Snapshot
@@ -203,6 +216,21 @@ pipeline avoids leakage and can scale beyond a small notebook sample.</p>
 validation to process high-volume trip data with realistic forecasting rules.</p>
 <p><strong>Improve next:</strong> add scheduled batch scoring and a dashboard
 that compares forecast drift over time.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Production Template</small>
+<h3>Portfolio lessons became guardrails</h3>
+<p><strong>Business impact:</strong> repeated production lessons do not stay
+trapped in one portfolio; they become reusable defaults for the next ML
+service.</p>
+<p><strong>Key engineering decision:</strong> encode rules, workflows and
+anti-pattern corrections so AI-assisted development remains reviewable and
+bounded.</p>
+<p><strong>Improve next:</strong> validate adoption with an external service or
+collaborator using the template end to end.</p>
+
+[Open production template](../template.md){ .portfolio-button }
 </div>
 </div>
 

@@ -1,8 +1,45 @@
+<div class="portfolio-page" markdown="1">
+
+<div class="portfolio-hero" markdown="1">
+<span class="portfolio-eyebrow">Demand forecasting pipeline</span>
+
 # ChicagoTaxi Demand Pipeline
 
 Process 6.3 million taxi trips into hourly demand predictions — the data engineering complement to the portfolio's online inference services.
 
+<div class="portfolio-actions" markdown="1">
+[Projects overview](overview.md){ .portfolio-button .portfolio-button--primary }
+[BankChurn debugging pattern](bankchurn-debugging.md){ .portfolio-button }
+[Technical evidence](../technical-evidence.md){ .portfolio-button }
+</div>
+</div>
+
+<div class="portfolio-stat-strip" markdown="1">
+<div class="portfolio-stat">
+<small>Data volume</small>
+<strong>6.3M rows</strong>
+<span>Chicago taxi trips processed into hourly demand records.</span>
+</div>
+<div class="portfolio-stat">
+<small>Model quality</small>
+<strong>R2 0.96</strong>
+<span>Temporal and spatial lag features explain most variance.</span>
+</div>
+<div class="portfolio-stat">
+<small>Compression</small>
+<strong>2.8 GB -> 95 MB</strong>
+<span>Columnar Parquet output with snappy compression.</span>
+</div>
+<div class="portfolio-stat">
+<small>Batch scoring</small>
+<strong>19K rows/s</strong>
+<span>Dask prediction path for scheduled workloads.</span>
+</div>
+</div>
+
+<div class="portfolio-media" markdown="1">
 ![ChicagoTaxi API](../media/screenshots/apis/29-fastapi-swagger-chicagotaxi.png)
+</div>
 
 ## The Problem
 
@@ -184,3 +221,5 @@ This is a regression problem on aggregated hourly counts. R² 0.9649 means 96.5%
 ---
 
 *Source: [Chicago Data Portal — Taxi Trips](https://data.cityofchicago.org/Transportation/Taxi-Trips/wrvz-psew)*
+
+</div>

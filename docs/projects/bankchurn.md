@@ -1,8 +1,45 @@
+<div class="portfolio-page" markdown="1">
+
+<div class="portfolio-hero" markdown="1">
+<span class="portfolio-eyebrow">Banking churn service</span>
+
 # BankChurn Predictor
 
 Predict which bank customers are likely to leave — and quantify the cost of getting it wrong.
 
+<div class="portfolio-actions" markdown="1">
+[Debugging deep dive](bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
+[Projects overview](overview.md){ .portfolio-button }
+[Technical evidence](../technical-evidence.md){ .portfolio-button }
+</div>
+</div>
+
+<div class="portfolio-stat-strip" markdown="1">
+<div class="portfolio-stat">
+<small>Model quality</small>
+<strong>AUC 0.87</strong>
+<span>Cost-aware churn ranking with a production threshold.</span>
+</div>
+<div class="portfolio-stat">
+<small>Coverage</small>
+<strong>90%</strong>
+<span>199 tests with CI threshold discipline.</span>
+</div>
+<div class="portfolio-stat">
+<small>Incident</small>
+<strong>81% -> 0%</strong>
+<span>Error-rate fix documented as a serving-pattern lesson.</span>
+</div>
+<div class="portfolio-stat">
+<small>Explainability</small>
+<strong>Kernel SHAP</strong>
+<span>StackingClassifier explanations in original feature space.</span>
+</div>
+</div>
+
+<div class="portfolio-media" markdown="1">
 ![BankChurn API](../media/screenshots/apis/25-fastapi-swagger-bankchurn.png)
+</div>
 
 ## The Problem
 
@@ -162,3 +199,5 @@ in the original feature space.
 ---
 
 *Last Updated: April 2026 — v3.6.0*
+
+</div>

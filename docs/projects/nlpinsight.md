@@ -1,8 +1,45 @@
+<div class="portfolio-page" markdown="1">
+
+<div class="portfolio-hero" markdown="1">
+<span class="portfolio-eyebrow">Financial NLP service</span>
+
 # NLPInsight Analyzer
 
 Classify financial text sentiment — and understand why domain-specific pre-training matters more than model size.
 
+<div class="portfolio-actions" markdown="1">
+[Projects overview](overview.md){ .portfolio-button .portfolio-button--primary }
+[BankChurn debugging pattern](bankchurn-debugging.md){ .portfolio-button }
+[Technical evidence](../technical-evidence.md){ .portfolio-button }
+</div>
+</div>
+
+<div class="portfolio-stat-strip" markdown="1">
+<div class="portfolio-stat">
+<small>Model quality</small>
+<strong>80.6%</strong>
+<span>Accuracy on noisy financial tweets.</span>
+</div>
+<div class="portfolio-stat">
+<small>Coverage</small>
+<strong>98%</strong>
+<span>74 tests with CI threshold discipline.</span>
+</div>
+<div class="portfolio-stat">
+<small>Latency</small>
+<strong>5ms path</strong>
+<span>TF-IDF route stays small, fast and explainable.</span>
+</div>
+<div class="portfolio-stat">
+<small>Runtime size</small>
+<strong>267 MB</strong>
+<span>No heavy transformer dependency in the default image.</span>
+</div>
+</div>
+
+<div class="portfolio-media" markdown="1">
 ![NLPInsight API](../media/screenshots/apis/27-fastapi-swagger-nlpinsight.png)
+</div>
 
 ## The Problem
 
@@ -164,3 +201,5 @@ should be measured against runtime behavior, not only model score.
 ---
 
 *Last Updated: April 2026 — v3.6.0*
+
+</div>

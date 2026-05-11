@@ -8,7 +8,7 @@
 
 # From operations to production ML
 
-I go by **Duque**. My full name is **Duque Ortega Mutis**, I am based in Mexico
+I'm **Duque Ortega Mutis**, I am based in Mexico
 City, and I am making my first formal career move into ML/MLOps.
 
 My previous career was not technical by title, but it was technical in practice:
@@ -134,8 +134,8 @@ work: applied machine learning, data workflows, evaluation and project delivery.
 <small>Cloud / platform evidence</small>
 <h3>Hands-on AWS practitioner</h3>
 <p>EKS, ECR, IRSA and Terraform exercised across the portfolio. Multi-cloud
-parity is documented in <a href="architecture/decisions/012-security-scanner-policy/">ADR-012</a>
-and <a href="architecture/decisions/013-multicloud-parity-policy/">ADR-013</a>;
+parity is documented in <a href="../decisions/012-security-scanner-staging-policy/">ADR-012</a>
+and <a href="../decisions/013-multicloud-parity-policy/">ADR-013</a>;
 infrastructure code lives in
 <a href="https://github.com/DuqueOM/ML-MLOps-Portfolio/tree/main/infra/terraform">infra/terraform/aws/</a>.</p>
 </div>
