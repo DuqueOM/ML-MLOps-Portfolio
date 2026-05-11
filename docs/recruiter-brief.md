@@ -10,8 +10,8 @@
 3 minutes: career-switcher with 14 years of operations experience, now building
 the infrastructure that makes ML models reliable. That is the whole story.
 
-I am looking for my first formal role in ML/MLOps. My strongest fit is a junior
-team where I can contribute to model serving, ML workflow reliability,
+I am looking for my first formal role in ML/MLOps. My strongest fit is an
+entry-level / junior role where I can contribute to model serving, ML workflow reliability,
 documentation, monitoring and deployment support while learning from experienced
 engineers.
 
@@ -35,7 +35,7 @@ and clear handoffs.
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Target level</small>
-<h3>Entry-level / MLOps - Production ML</h3>
+<h3>Entry-level / junior MLOps & Production ML</h3>
 <p>I am looking for a role with room to
 learn, contribute and grow into stronger production ML ownership.</p>
 </div>
@@ -65,7 +65,7 @@ infrastructure code.</p>
 
 <div class="portfolio-callout" markdown="1">
 <strong>Seniority alignment:</strong> I am fully aligned with entry-level /
-Entry-level role scope, compensation bands, code review expectations and growth
+junior role scope, compensation bands, code review expectations and growth
 plans. My operations maturity is a contribution to the team, not a seniority
 claim.
 </div>
@@ -107,14 +107,14 @@ quality gates before deploy.</p>
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Primary fit</small>
-<h3>MLOps / Production ML</h3>
+<h3>Entry-level MLOps / Production ML</h3>
 <p>Model serving, Docker/Kubernetes artifacts, CI/CD support, monitoring,
 MLflow hygiene, deployment notes and reliability improvements.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Also strong</small>
-<h3>Junior ML Engineer / AI Engineer I</h3>
+<h3>Entry-level ML Engineer / AI Engineer I</h3>
 <p>Applied ML roles where model work needs APIs, testing, documentation and
 clear handoff into an engineering workflow.</p>
 </div>
@@ -145,7 +145,7 @@ clarity, process, trade-offs and systems that can survive real team usage.
 <div class="portfolio-callout" markdown="1">
 <strong>Positioning</strong>
 
-Junior in formal ML/MLOps employment, but mature in ownership, communication,
+Entry-level / junior in formal ML/MLOps employment, but mature in ownership, communication,
 cost awareness and operating discipline.
 </div>
 </div>

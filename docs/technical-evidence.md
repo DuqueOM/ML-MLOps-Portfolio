@@ -257,29 +257,29 @@ the system would be operated, not only trained.</p>
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<h3><a href="projects/overview.md">Projects overview</a></h3>
+<h3><a href="../projects/overview/">Projects overview</a></h3>
 <p>The three ML systems and their main results.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<h3><a href="projects/bankchurn-debugging.md">BankChurn debugging deep dive</a></h3>
+<h3><a href="../projects/bankchurn-debugging/">BankChurn debugging deep dive</a></h3>
 <p>The full failure story: symptoms, hypotheses, root cause, fix, validation
 and template lesson.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<h3><a href="template.md">Production template</a></h3>
+<h3><a href="../template/">Production template</a></h3>
 <p>The reusable MLOps project extracted from portfolio lessons.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<h3><a href="technical-deep-dive.md">Deep dive index</a></h3>
+<h3><a href="../technical-deep-dive/">Deep dive index</a></h3>
 <p>Grouped technical archive for architecture, deployment, operations, models
 and API references.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<h3><a href="PORTFOLIO_STATUS.md">Portfolio status</a></h3>
+<h3><a href="../PORTFOLIO_STATUS/">Portfolio status</a></h3>
 <p>What is active now, what is paused, and how to reactivate a live demo.</p>
 </div>
 </div>

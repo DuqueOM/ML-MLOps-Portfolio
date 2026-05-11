@@ -38,7 +38,9 @@ Predict which bank customers are likely to leave — and quantify the cost of ge
 </div>
 
 <div class="portfolio-media portfolio-media--project-hero" markdown="1">
-![BankChurn API](../media/screenshots/apis/25-fastapi-swagger-bankchurn.png)
+<video autoplay muted loop playsinline controls preload="metadata" poster="../../media/videos/bankchurn-api-demo-poster.jpg" aria-label="BankChurn Predictor API demo clip">
+  <source src="../../media/videos/bankchurn-api-demo.mp4" type="video/mp4">
+</video>
 </div>
 
 ## The Problem

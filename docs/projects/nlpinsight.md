@@ -38,7 +38,9 @@ Classify financial text sentiment — and understand why domain-specific pre-tra
 </div>
 
 <div class="portfolio-media portfolio-media--project-hero" markdown="1">
-![NLPInsight API](../media/screenshots/apis/27-fastapi-swagger-nlpinsight.png)
+<video autoplay muted loop playsinline controls preload="metadata" poster="../../media/videos/nlpinsight-api-demo-poster.jpg" aria-label="NLPInsight Analyzer API demo clip">
+  <source src="../../media/videos/nlpinsight-api-demo.mp4" type="video/mp4">
+</video>
 </div>
 
 ## The Problem

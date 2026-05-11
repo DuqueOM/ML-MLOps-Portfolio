@@ -36,7 +36,7 @@ or junior opportunities where production-minded ML work matters.
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Primary target</small>
-<h3>Junior MLOps / Production ML</h3>
+<h3>Entry-level / junior MLOps / Production ML</h3>
 <p>Teams building, deploying, monitoring and improving ML systems.</p>
 </div>
 
@@ -105,7 +105,7 @@ discipline.</p>
 <div class="portfolio-callout" markdown="1">
 Entry-level MLOps & Production ML candidate with 14 years of operations
 experience and hands-on projects in Python, FastAPI, Docker, Kubernetes,
-Terraform, MLflow, CI/CD, monitoring and PySpark. Looking for junior roles where
+Terraform, MLflow, CI/CD, monitoring and PySpark. Looking for entry-level / junior roles where
 I can help build, deploy, monitor and improve ML systems. Formal training:
 Data Science Professional Program, TripleTen, 2026. Hands-on AWS work
 (EKS, ECR, IRSA, Terraform) exercised across the portfolio.

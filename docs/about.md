@@ -23,7 +23,7 @@ ownership, trade-offs, documentation or operating under pressure.
 <div class="portfolio-quote-card portfolio-quote-card--inline" markdown="1">
 <small>How to read my seniority</small>
 
-> Junior in formal ML/MLOps employment. Experienced in ownership, pressure,
+> Entry-level / junior in formal ML/MLOps employment. Experienced in ownership, pressure,
 > cost-awareness and making systems easier for other people to operate.
 </div>
 
@@ -43,7 +43,7 @@ ownership, trade-offs, documentation or operating under pressure.
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Target level</small>
-<h3>Entry-level or junior</h3>
+<h3>Entry-level / junior</h3>
 <p>I am looking for teams where I can contribute early, learn quickly and grow
 toward production ML work under experienced technical guidance.</p>
 </div>
@@ -51,8 +51,8 @@ toward production ML work under experienced technical guidance.</p>
 <div class="portfolio-card" markdown="1">
 <small>Best-fit roles</small>
 <h3>MLOps, ML engineering and applied AI</h3>
-<p>Junior MLOps / Production ML, Junior Machine Learning Engineer, AI Engineer I,
-Junior ML Platform or Data Engineering with ML workflows.</p>
+<p>Entry-level / junior MLOps or Production ML, Machine Learning Engineer,
+AI Engineer I, ML Platform or Data Engineering roles with ML workflows.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -90,7 +90,7 @@ deployment and operating guardrails.</p>
 <div class="portfolio-card" markdown="1">
 <small>Now</small>
 <h3>First formal ML/MLOps role</h3>
-<p>Looking for an entry-level or junior team where operational maturity can
+<p>Looking for an entry-level / junior role where operational maturity can
 support real engineering growth.</p>
 </div>
 </div>
@@ -196,7 +196,7 @@ value it provides, I want to document the trade-off.
 
 I am not presenting this portfolio as years of corporate ML experience. I am
 presenting it as evidence of learning velocity, engineering discipline and a
-strong fit for teams that need someone junior who already thinks about
+strong fit for teams that need an entry-level / junior teammate who already thinks about
 reliability and business impact.
 
 </div>
@@ -252,7 +252,7 @@ not claim years of corporate ML platform ownership or continuous production
 traffic from real users.
 
 That honesty matters to me because I want the first interview to start from the
-right place: junior formal level, strong operating maturity, and a clear path to
+right place: formal entry-level / junior scope, strong operating maturity, and a clear path to
 grow inside a real team.
 
 </div>

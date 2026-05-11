@@ -38,7 +38,9 @@ Process 6.3 million taxi trips into hourly demand predictions — the data engin
 </div>
 
 <div class="portfolio-media portfolio-media--project-hero" markdown="1">
-![ChicagoTaxi API](../media/screenshots/apis/29-fastapi-swagger-chicagotaxi.png)
+<video autoplay muted loop playsinline controls preload="metadata" poster="../../media/videos/chicagotaxi-api-demo-poster.jpg" aria-label="ChicagoTaxi Pipeline API demo clip">
+  <source src="../../media/videos/chicagotaxi-api-demo.mp4" type="video/mp4">
+</video>
 </div>
 
 ## The Problem

@@ -285,7 +285,7 @@ notes and operational docs to review independently.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>For team fit</small>
-<h3>Junior scope, production habits</h3>
+<h3>Entry-level scope, production habits</h3>
 <p>I am not claiming years of ML platform ownership. I am showing that I can
 learn quickly, build carefully and work inside real engineering constraints.</p>
 </div>
