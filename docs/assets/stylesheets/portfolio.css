@@ -736,3 +736,361 @@ body:has(.portfolio-page) .md-typeset h3 {
     max-width: 18rem;
   }
 }
+
+/* =========================================================
+   Modern UX/UI layer (2026 refresh)
+   ---------------------------------------------------------
+   - Smooth global motion
+   - Pulse-dot for "available now"
+   - Hover lift on cards
+   - Gradient accent on primary buttons
+   - Quote card for recruiter-friendly positioning
+   - Availability block on contact page
+   - Accessible focus ring
+   - Subtle entry fade-in
+   ========================================================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .md-typeset .portfolio-card,
+  .md-typeset .portfolio-stat,
+  .md-typeset .portfolio-status-card,
+  .md-typeset .portfolio-system-node,
+  .md-typeset .portfolio-step,
+  .md-typeset .portfolio-button,
+  .md-typeset .portfolio-pulse-dot {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Pulse dot for "available now" / live signals
+   ------------------------------------------------------- */
+.md-typeset .portfolio-pulse-dot {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-right: 0.15rem;
+  border-radius: 50%;
+  background: var(--portfolio-green);
+  box-shadow: 0 0 0 0 rgba(21, 115, 71, 0.55);
+  animation: portfolio-pulse 2.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .portfolio-pulse-dot {
+  box-shadow: 0 0 0 0 rgba(123, 217, 157, 0.4);
+}
+
+@keyframes portfolio-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(21, 115, 71, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 0.5rem rgba(21, 115, 71, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(21, 115, 71, 0);
+  }
+}
+
+/* Hover lift on cards (desktop only)
+   ------------------------------------------------------- */
+@media (hover: hover) and (pointer: fine) {
+  .md-typeset .portfolio-card,
+  .md-typeset .portfolio-stat,
+  .md-typeset .portfolio-status-card,
+  .md-typeset .portfolio-system-node,
+  .md-typeset .portfolio-step,
+  .md-typeset .portfolio-faq-item {
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 220ms ease;
+    will-change: transform;
+  }
+
+  .md-typeset .portfolio-card:hover,
+  .md-typeset .portfolio-stat:hover,
+  .md-typeset .portfolio-status-card:hover,
+  .md-typeset .portfolio-system-node:hover,
+  .md-typeset .portfolio-step:hover,
+  .md-typeset .portfolio-faq-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 38px rgba(23, 32, 51, 0.12);
+    border-color: rgba(4, 116, 129, 0.32);
+  }
+
+  [data-md-color-scheme="slate"] .md-typeset .portfolio-card:hover,
+  [data-md-color-scheme="slate"] .md-typeset .portfolio-stat:hover,
+  [data-md-color-scheme="slate"] .md-typeset .portfolio-status-card:hover,
+  [data-md-color-scheme="slate"] .md-typeset .portfolio-system-node:hover,
+  [data-md-color-scheme="slate"] .md-typeset .portfolio-step:hover,
+  [data-md-color-scheme="slate"] .md-typeset .portfolio-faq-item:hover {
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45);
+    border-color: rgba(103, 214, 221, 0.45);
+  }
+}
+
+/* Buttons: smoother transitions + subtle gradient on primary
+   ------------------------------------------------------- */
+.md-typeset .portfolio-button {
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 180ms ease, border-color 180ms ease, background 180ms ease,
+    color 180ms ease;
+}
+
+.md-typeset .portfolio-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(23, 32, 51, 0.1);
+}
+
+.md-typeset .portfolio-button--primary {
+  background: linear-gradient(135deg, #047481 0%, #035c66 100%);
+  box-shadow: 0 6px 18px rgba(4, 116, 129, 0.25);
+}
+
+.md-typeset .portfolio-button--primary:hover {
+  background: linear-gradient(135deg, #058a99 0%, #036870 100%);
+  box-shadow: 0 12px 26px rgba(4, 116, 129, 0.32);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .portfolio-button--primary {
+  background: linear-gradient(135deg, #67d6dd 0%, #4cb6bd 100%);
+  box-shadow: 0 6px 18px rgba(103, 214, 221, 0.18);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .portfolio-button--primary:hover {
+  background: linear-gradient(135deg, #8be8ee 0%, #67d6dd 100%);
+  box-shadow: 0 12px 26px rgba(103, 214, 221, 0.28);
+}
+
+/* Accessible focus ring (keyboard navigation)
+   ------------------------------------------------------- */
+.md-typeset .portfolio-button:focus-visible,
+.md-typeset .portfolio-card a:focus-visible,
+.md-typeset .portfolio-stat strong a:focus-visible {
+  outline: 2px solid var(--portfolio-teal);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* Quote card — recruiter-friendly positioning callout
+   ------------------------------------------------------- */
+.md-typeset .portfolio-quote-card {
+  position: relative;
+  margin: 1rem 0 1.2rem;
+  padding: 1rem 1.1rem 0.85rem;
+  border: 1px solid var(--portfolio-line);
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(4, 116, 129, 0.06) 0%,
+    rgba(49, 95, 159, 0.04) 100%
+  );
+  box-shadow: 0 8px 24px rgba(23, 32, 51, 0.06);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .portfolio-quote-card {
+  background: linear-gradient(
+    135deg,
+    rgba(103, 214, 221, 0.08) 0%,
+    rgba(149, 185, 246, 0.05) 100%
+  );
+  box-shadow: none;
+}
+
+.md-typeset .portfolio-quote-card small {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--portfolio-teal);
+  font-size: 0.7rem;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.md-typeset .portfolio-quote-card blockquote {
+  margin: 0;
+  padding: 0 0 0 0.8rem;
+  border-left: 3px solid var(--portfolio-teal);
+  color: var(--portfolio-ink);
+  font-size: 1rem;
+  line-height: 1.55;
+  font-style: normal;
+  background: transparent;
+}
+
+.md-typeset .portfolio-quote-card blockquote p {
+  margin: 0;
+  color: inherit;
+}
+
+.md-typeset .portfolio-quote-card--inline {
+  margin: 0.8rem 0 1rem;
+}
+
+/* Availability block (contact page)
+   ------------------------------------------------------- */
+.md-typeset .portfolio-availability {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.95rem 0 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--portfolio-line);
+  border-left: 4px solid var(--portfolio-green);
+  border-radius: 10px;
+  background: var(--portfolio-soft);
+}
+
+.md-typeset .portfolio-availability-row {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, auto) minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: baseline;
+}
+
+.md-typeset .portfolio-availability-label {
+  color: var(--portfolio-muted);
+  font-size: 0.72rem;
+  font-weight: 760;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.md-typeset .portfolio-availability strong {
+  color: var(--portfolio-ink);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .md-typeset .portfolio-availability-row {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+}
+
+/* Eyebrow refinement to fit the pulse dot
+   ------------------------------------------------------- */
+.md-typeset .portfolio-eyebrow {
+  align-items: center;
+  line-height: 1;
+}
+
+/* Stat numbers: subtle gradient text on emphasis
+   ------------------------------------------------------- */
+.md-typeset .portfolio-stat strong {
+  background: linear-gradient(135deg, var(--portfolio-ink) 0%, var(--portfolio-teal) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .portfolio-stat strong {
+  background: linear-gradient(135deg, var(--portfolio-ink) 0%, var(--portfolio-teal) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Hero: subtle radial accent for more depth
+   ------------------------------------------------------- */
+.md-typeset .portfolio-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.md-typeset .portfolio-hero::before {
+  content: "";
+  position: absolute;
+  inset: -40% -10% auto auto;
+  width: 60%;
+  height: 180%;
+  background: radial-gradient(
+    closest-side,
+    rgba(4, 116, 129, 0.06) 0%,
+    rgba(4, 116, 129, 0) 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .portfolio-hero::before {
+  background: radial-gradient(
+    closest-side,
+    rgba(103, 214, 221, 0.08) 0%,
+    rgba(103, 214, 221, 0) 70%
+  );
+}
+
+.md-typeset .portfolio-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Subtle entry fade-in for cards (no layout shift)
+   ------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .md-typeset .portfolio-card,
+  .md-typeset .portfolio-stat,
+  .md-typeset .portfolio-system-node,
+  .md-typeset .portfolio-status-card,
+  .md-typeset .portfolio-step {
+    animation: portfolio-fade-up 540ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .md-typeset .portfolio-card:nth-child(2),
+  .md-typeset .portfolio-stat:nth-child(2),
+  .md-typeset .portfolio-status-card:nth-child(2) {
+    animation-delay: 60ms;
+  }
+  .md-typeset .portfolio-card:nth-child(3),
+  .md-typeset .portfolio-stat:nth-child(3),
+  .md-typeset .portfolio-status-card:nth-child(3) {
+    animation-delay: 120ms;
+  }
+  .md-typeset .portfolio-card:nth-child(4),
+  .md-typeset .portfolio-stat:nth-child(4) {
+    animation-delay: 180ms;
+  }
+  .md-typeset .portfolio-card:nth-child(5),
+  .md-typeset .portfolio-stat:nth-child(5) {
+    animation-delay: 240ms;
+  }
+}
+
+@keyframes portfolio-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Project badges: subtle hover for engagement
+   ------------------------------------------------------- */
+.md-typeset .portfolio-badge {
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.md-typeset .portfolio-card:hover .portfolio-badge {
+  border-color: var(--portfolio-teal);
+  color: var(--portfolio-teal);
+}
+
+/* Improved blockquote inside callouts (readability)
+   ------------------------------------------------------- */
+.md-typeset .portfolio-callout blockquote {
+  margin: 0.4rem 0 0;
+  padding-left: 0.8rem;
+  border-left: 3px solid var(--portfolio-teal);
+  font-style: normal;
+}

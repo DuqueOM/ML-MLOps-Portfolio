@@ -21,6 +21,14 @@ That is the lens I bring to machine learning: early-career in formal ML work,
 but experienced in operating under pressure, explaining decisions and keeping
 systems useful for the people around them.
 
+<div class="portfolio-quote-card portfolio-quote-card--inline" markdown="1">
+<small>One-line summary for recruiters</small>
+
+> Career changer with **14 years in operations**, now building a career in
+> **MLOps & Production ML**. The portfolio shows production-style engineering
+> — not years of corporate ML experience — and that distinction is intentional.
+</div>
+
 <div class="portfolio-actions" markdown="1">
 [Contact me](contact.md){ .portfolio-button .portfolio-button--primary }
 [Recruiter brief](recruiter-brief.md){ .portfolio-button }
@@ -125,11 +133,13 @@ work: applied machine learning, data workflows, evaluation and project delivery.
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Certification roadmap</small>
-<h3>AWS certification target — planned</h3>
-<p>I plan to add an AWS certification after completion. The goal is to reinforce
-the cloud/platform side of my MLOps profile without claiming a credential before
-it is earned.</p>
+<small>Cloud / platform evidence</small>
+<h3>Hands-on AWS practitioner</h3>
+<p>EKS, ECR, IRSA and Terraform exercised across the portfolio. Multi-cloud
+parity is documented in <a href="architecture/decisions/012-security-scanner-policy/">ADR-012</a>
+and <a href="architecture/decisions/013-multicloud-parity-policy/">ADR-013</a>;
+infrastructure code lives in
+<a href="https://github.com/DuqueOM/ML-MLOps-Portfolio/tree/main/infra/terraform">infra/terraform/aws/</a>.</p>
 </div>
 </div>
 

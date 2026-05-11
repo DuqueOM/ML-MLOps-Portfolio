@@ -63,7 +63,8 @@ conversations in English with preparation.</p>
 <small>Education</small>
 <h3>TripleTen Data Science, 2026</h3>
 <p>Formal training layer supporting the portfolio projects and MLOps transition.
-AWS certification is planned and will be listed only after completion.</p>
+Hands-on AWS (EKS, ECR, IRSA, Terraform) exercised across the portfolio
+infrastructure code.</p>
 </div>
 </div>
 

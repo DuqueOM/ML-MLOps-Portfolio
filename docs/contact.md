@@ -6,12 +6,27 @@
 <div class="portfolio-mini-profile" markdown="1">
 <img src="../media/profile/duque-ortega-mutis.webp" alt="Duque Ortega Mutis professional portrait">
 <div markdown="1">
-<span class="portfolio-eyebrow">Available for junior roles</span>
+<span class="portfolio-eyebrow"><span class="portfolio-pulse-dot"></span> Open to opportunities</span>
 
 # Let's talk about MLOps, Production ML and Applied AI roles
 
 I am looking for my first formal role in ML/MLOps, with a focus on entry-level
 or junior opportunities where production-minded ML work matters.
+
+<div class="portfolio-availability" markdown="1">
+<div class="portfolio-availability-row" markdown="1">
+<span class="portfolio-availability-label">Available to start</span>
+<strong>In 2 weeks</strong>
+</div>
+<div class="portfolio-availability-row" markdown="1">
+<span class="portfolio-availability-label">Work modes</span>
+<strong>CDMX hybrid · MX remote · LATAM remote for USA/EU companies</strong>
+</div>
+<div class="portfolio-availability-row" markdown="1">
+<span class="portfolio-availability-label">Languages</span>
+<strong>Spanish (native) · English (professional)</strong>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -88,12 +103,12 @@ discipline.</p>
 ## Short Recruiter Summary
 
 <div class="portfolio-callout" markdown="1">
-Entry-level MLOps / Production ML candidate with 14 years of operations
+Entry-level MLOps & Production ML candidate with 14 years of operations
 experience and hands-on projects in Python, FastAPI, Docker, Kubernetes,
 Terraform, MLflow, CI/CD, monitoring and PySpark. Looking for junior roles where
 I can help build, deploy, monitor and improve ML systems. Formal training:
-Data Science Professional Program, TripleTen, 2026. AWS certification target is
-planned, not yet claimed.
+Data Science Professional Program, TripleTen, 2026. Hands-on AWS work
+(EKS, ECR, IRSA, Terraform) exercised across the portfolio.
 </div>
 
 </div>
