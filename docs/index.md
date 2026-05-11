@@ -14,27 +14,24 @@ improvement.
 <div class="portfolio-hero-copy" markdown="1">
 <span class="portfolio-eyebrow"><span class="portfolio-pulse-dot"></span> MLOps & Production ML Portfolio</span>
 
-# Diagnosed and fixed a bug breaking 8 of 10 requests to a production ML API
+# From operations experience to reliable ML systems
 
 <p class="portfolio-hero-lead">
-That is what measuring before guessing looks like in production ML —
-concretely, an <strong>81% → 0% API error rate</strong> after one focused fix.
+I build ML work that recruiters can understand and technical reviewers can
+inspect: APIs, tests, deployment paths, monitoring, documentation and clear
+trade-offs.
 </p>
 
-I'm Duque, an MLOps & Production ML candidate based in Mexico City.
-Before moving into machine learning, I spent 14 years running business
-operations: teams, vendors, budgets, customer processes and cost decisions.
-
-That background shapes how I build ML systems: not as isolated notebooks, but
-as services that need tests, deployment paths, monitoring, cost awareness and
-documentation another person can actually use.
+I'm Duque, an MLOps & Production ML candidate based in Mexico City. My
+differentiator is not years of corporate ML experience; it is 14 years of
+operations ownership applied to production-style ML engineering.
 
 <div class="portfolio-quote-card" markdown="1">
-<small>How recruiters can describe me in one line</small>
+<small>Fast recruiter takeaway</small>
 
-> Career changer with **14 years in operations**, now building a career in
-> **MLOps & Production ML**. The portfolio shows production-style engineering
-> — not years of corporate ML experience — and that distinction is intentional.
+> Career changer with operating maturity, building toward **MLOps & Production
+> ML** roles through a portfolio of deployable, testable and reviewable ML
+> systems.
 </div>
 
 <div class="portfolio-actions portfolio-actions--home" markdown="1">

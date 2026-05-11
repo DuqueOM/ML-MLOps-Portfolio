@@ -9,24 +9,22 @@
 # From operations to production ML
 
 I go by **Duque**. My full name is **Duque Ortega Mutis**, I am based in Mexico
-City, and I am building my first formal career step in ML/MLOps.
+City, and I am making my first formal career move into ML/MLOps.
 
-Before this transition, I spent 14 years running business operations. That meant
-working with teams, budgets, customers, vendors, deadlines, process failures and
-cost trade-offs. I learned that a good system is not the one that looks most
-impressive in a presentation. A good system is the one a team can understand,
-operate, improve and trust.
+My previous career was not technical by title, but it was technical in practice:
+I spent 14 years coordinating people, budgets, vendors, customer pressure,
+deadlines and process failures. That work taught me to value systems that are
+clear, measurable and usable by the next person responsible for them.
 
-That is the lens I bring to machine learning: early-career in formal ML work,
-but experienced in operating under pressure, explaining decisions and keeping
-systems useful for the people around them.
+That is why this portfolio is built around production habits rather than only
+model scores. I am early-career in formal ML employment, but I am not new to
+ownership, trade-offs, documentation or operating under pressure.
 
 <div class="portfolio-quote-card portfolio-quote-card--inline" markdown="1">
-<small>One-line summary for recruiters</small>
+<small>How to read my seniority</small>
 
-> Career changer with **14 years in operations**, now building a career in
-> **MLOps & Production ML**. The portfolio shows production-style engineering
-> — not years of corporate ML experience — and that distinction is intentional.
+> Junior in formal ML/MLOps employment. Experienced in ownership, pressure,
+> cost-awareness and making systems easier for other people to operate.
 </div>
 
 <div class="portfolio-actions" markdown="1">
