@@ -27,6 +27,19 @@ permissions:
 env:
   PYTHON_VERSION: '3.12'
   MLFLOW_TRACKING_URI: http://localhost:5000
+  # docker/build-push-action v6+ uploads a "build record" artifact
+  # (named <owner>~<repo>~<hash>.dockerbuild) by default after every
+  # build. The downstream `integration-report` job uses
+  # actions/download-artifact@v4 without a name filter ("download all"),
+  # which intermittently fails to retrieve those build-record blobs from
+  # the actions-results storage backend (race / TLS hiccup) and breaks
+  # the run. We don't consume build-record anywhere, so we opt out at
+  # workflow scope so EVERY job (docker, integration-test, ghcr-publish)
+  # inherits the disable. Refs:
+  #   https://github.com/docker/build-push-action/releases/tag/v6.0.0
+  #   https://github.com/docker/build-push-action/blob/v7.0.0/src/main.ts
+  DOCKER_BUILD_RECORD_UPLOAD: "false"
+  DOCKER_BUILD_SUMMARY: "false"
 
 jobs:
   # Job 1: Unit tests per project
@@ -266,16 +279,8 @@ jobs:
   docker:
     name: Docker Build & Scan
     runs-on: ubuntu-latest
-    # docker/build-push-action v6+ uploads a "build record" artifact by
-    # default. With a 3-project matrix, those uploads collide on artifact
-    # name and break the downstream `integration-report` job which uses
-    # actions/download-artifact@v4 with no name filter ("download all").
-    # We don't consume the build-record anywhere, so we opt out at the
-    # workflow scope and keep the integration report contract intact.
-    # Refs: https://github.com/docker/build-push-action/releases/tag/v6.0.0
-    env:
-      DOCKER_BUILD_RECORD_UPLOAD: "false"
-      DOCKER_BUILD_SUMMARY: "false"
+    # build-record opt-out lives at the top-level `env:` so every job
+    # (docker, integration-test, ghcr-publish) inherits it.
     strategy:
       matrix:
         project:
@@ -623,10 +628,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-      
+
+      # NOTE: previously this job downloaded ALL artifacts via
+      #   uses: actions/download-artifact@v4
+      # but the summary below only consumes `needs.<job>.result` outputs,
+      # never the artifact contents. Removed because:
+      #   (a) it was dead code from the report's perspective, and
+      #   (b) the unconditional "download all" pattern is brittle —
+      #       it failed intermittently after docker/build-push-action v6+
+      #       started uploading a `<owner>~<repo>~<hash>.dockerbuild`
+      #       artifact whose blob occasionally couldn't be retrieved
+      #       (5-retry failure), red-X'ing the whole pipeline.
+      # The build-record artifact upload is also disabled at workflow
+      # scope (DOCKER_BUILD_RECORD_UPLOAD=false) as defense in depth.
       - name: Generate summary report
         run: |
           echo "# 📊 CI/CD Pipeline Summary" >> $GITHUB_STEP_SUMMARY

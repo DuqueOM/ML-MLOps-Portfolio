@@ -6,6 +6,38 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [3.6.2] — 2026-05-25
+
+Hotfix follow-up to `[3.6.1]` — the previous opt-out only covered the
+`docker:` job, but `build-push-action@v7` is also called from
+`integration-test:` and `ghcr-publish:`, both of which kept uploading
+the `<owner>~<repo>~<hash>.dockerbuild` artifact and broke
+`Generate Integration Report` again on `main`.
+
+### Fixed
+
+- **`DOCKER_BUILD_RECORD_UPLOAD` / `DOCKER_BUILD_SUMMARY` promoted to
+  workflow-level `env:`** in `.github/workflows/ci-mlops.yml`, so all
+  five `docker/build-push-action@v7` call sites (across `docker:`,
+  `integration-test:`, `ghcr-publish:`) inherit the disable.
+- **Removed the dead `actions/download-artifact@v4` step** from
+  `integration-report:`. The summary that follows it only reads
+  `needs.<job>.result` outputs and never consumed the downloaded
+  artifacts — the step was both functionally dead code AND the actual
+  red-X surface (it was the consumer that failed to retrieve the
+  `.dockerbuild` blob with `Artifact download failed after 5 retries`).
+  Defense in depth: even if the env-var opt-out regresses upstream,
+  the report no longer cares.
+
+### Lesson
+Job-scope `env:` does not propagate to peer jobs. When a setting must
+apply to every invocation of an action across a workflow, put it at
+**workflow scope** from the start. The minimum-blast-radius placement
+heuristic (smallest scope that satisfies the contract) failed here
+because the contract was wider than the first failing job revealed.
+
+---
+
 ## [3.6.1] — 2026-05-25
 
 CI maintenance pass — Dependabot GitHub Actions bumps merged after
