@@ -293,7 +293,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
       
       - name: Build Docker image (with cache)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: ${{ matrix.project }}
           file: ${{ matrix.project }}/Dockerfile
@@ -423,7 +423,7 @@ jobs:
         run: docker compose version
       
       - name: Build demo images for docker-compose (no cache)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: BankChurn-Predictor
           file: BankChurn-Predictor/Dockerfile
@@ -433,7 +433,7 @@ jobs:
           no-cache: true
       
       - name: Build NLPInsight image (no cache)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: NLPInsight-Analyzer
           file: NLPInsight-Analyzer/Dockerfile
@@ -443,7 +443,7 @@ jobs:
           no-cache: true
 
       - name: Build ChicagoTaxi image (no cache)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: ChicagoTaxi-Demand-Pipeline
           file: ChicagoTaxi-Demand-Pipeline/Dockerfile
@@ -718,7 +718,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
       
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: ${{ matrix.project }}
           file: ${{ matrix.project }}/Dockerfile
