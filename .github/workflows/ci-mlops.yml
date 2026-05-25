@@ -266,6 +266,16 @@ jobs:
   docker:
     name: Docker Build & Scan
     runs-on: ubuntu-latest
+    # docker/build-push-action v6+ uploads a "build record" artifact by
+    # default. With a 3-project matrix, those uploads collide on artifact
+    # name and break the downstream `integration-report` job which uses
+    # actions/download-artifact@v4 with no name filter ("download all").
+    # We don't consume the build-record anywhere, so we opt out at the
+    # workflow scope and keep the integration report contract intact.
+    # Refs: https://github.com/docker/build-push-action/releases/tag/v6.0.0
+    env:
+      DOCKER_BUILD_RECORD_UPLOAD: "false"
+      DOCKER_BUILD_SUMMARY: "false"
     strategy:
       matrix:
         project:

@@ -6,6 +6,65 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [3.6.1] — 2026-05-25
+
+CI maintenance pass — Dependabot GitHub Actions bumps merged after
+verification that the major version jumps are non-breaking for this
+repo's workflows.
+
+### Changed
+- **`docker/metadata-action`** bumped `v5` → `v6` (`#289`).
+  Major version: switches the action's internal runtime to Node 24
+  and migrates internals to ESM. **No workflow-visible API change**;
+  the `with:` and outputs contracts are unchanged. `ci-mlops.yml`
+  uses only `images:` and `tags:` inputs which are stable across
+  v5→v6.
+- **`docker/setup-buildx-action`** (template repo) and
+  **`docker/metadata-action`** (here) now require GitHub-hosted
+  runner `v2.327.1+`. GitHub-hosted runners auto-update, so no
+  pinning is needed; self-hosted runners (none in use here) would
+  need to upgrade.
+- **`docker/build-push-action`** bumped `v5` → `v7` (`#288`).
+  Two-major-version jump: v6 switched to ESM-only and required the
+  newer buildx version; v7 enforces strict push contract semantics
+  (errors instead of warnings if `push: true` without
+  `tags`/`load`). Audited the five call sites in
+  `.github/workflows/ci-mlops.yml` — all pass explicit `tags:` and
+  `push:` parameters, so the stricter contract is a no-op.
+
+### Why this matters
+GitHub Actions deprecated Node 20 in September 2025 with forced
+migration to Node 24 on June 2nd, 2026. Adopting the v6/v7 lines
+of the docker actions ahead of the deadline removes the
+"`Node.js 20 actions are deprecated`" warnings from every CI run
+and locks in the supported runtime for the next deprecation cycle.
+
+### Workflow change required by the build-push-action major bump
+PR #288's initial runs failed the downstream `Generate Integration
+Report` job with `Artifact download failed after 5 retries`. Root
+cause turned out to be a **real semantic change in
+`docker/build-push-action v6+`**, not infra flake: the action now
+uploads a "build record" artifact by default. With a 3-project
+matrix (`BankChurn-Predictor`, `NLPInsight-Analyzer`,
+`ChicagoTaxi-Demand-Pipeline`) the three build-record artifacts
+collide on name, and `actions/download-artifact@v4` (used without a
+name filter in `integration-report` to fetch everything) fails the
+batch.
+
+**Fix**: opt out of the new artifact upload at the `docker:` job
+scope:
+```yaml
+env:
+  DOCKER_BUILD_RECORD_UPLOAD: "false"
+  DOCKER_BUILD_SUMMARY: "false"
+```
+We don't consume `build-record` anywhere, so disabling it keeps the
+existing `integration-report` contract intact without giving up the
+v7 security/runtime benefits. See
+`.github/workflows/ci-mlops.yml::docker` for the inline rationale.
+
+---
+
 ## [3.6.0] — 2026-04-04
 
 ### Added
