@@ -3,15 +3,14 @@
 <div class="portfolio-page" markdown="1">
 
 <div class="portfolio-hero" markdown="1">
-<div class="portfolio-mini-profile" markdown="1">
-<img src="../media/profile/duque-ortega-mutis.webp" alt="Duque Ortega Mutis professional portrait">
-<div markdown="1">
 <span class="portfolio-eyebrow"><span class="portfolio-pulse-dot"></span> Open to opportunities</span>
 
 # Let's talk about MLOps, Production ML and Applied AI roles
 
-I am looking for my first formal role in ML/MLOps, with a focus on entry-level
-or junior opportunities where production-minded ML work matters.
+I build ML systems that survive production — three services on GKE and EKS,
+real incidents diagnosed and documented, and an open-source template born from
+those lessons. Looking for a junior ML Engineer, MLOps or production-leaning DS
+role where reliability and cost-awareness matter from day one.
 
 <div class="portfolio-availability" markdown="1">
 <div class="portfolio-availability-row" markdown="1">
@@ -25,8 +24,6 @@ or junior opportunities where production-minded ML work matters.
 <div class="portfolio-availability-row" markdown="1">
 <span class="portfolio-availability-label">Languages</span>
 <strong>Spanish (native) · English (professional)</strong>
-</div>
-</div>
 </div>
 </div>
 </div>

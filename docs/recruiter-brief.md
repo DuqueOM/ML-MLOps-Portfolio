@@ -5,20 +5,17 @@
 <div class="portfolio-hero" markdown="1">
 <span class="portfolio-eyebrow">Recruiter-friendly screening view</span>
 
-# Entry-level MLOps candidate with production-minded project evidence
+# ML engineer who builds systems that survive production
 
-3 minutes: career-switcher with 14 years of operations experience, now building
-the infrastructure that makes ML models reliable. That is the whole story.
+3 minutes of evidence: three services deployed on GKE + EKS, three incidents
+measured and root-caused, and an open-source production template that packaged
+the lessons. Early-career in formal ML employment — that is stated once and
+not repeated.
 
-I am looking for my first formal role in ML/MLOps. My strongest fit is an
-entry-level / junior role where I can contribute to model serving, ML workflow reliability,
-documentation, monitoring and deployment support while learning from experienced
-engineers.
-
-My background is unusual for an entry-level candidate: before moving into data
-science and MLOps, I spent 14 years running business operations. That experience
-shows up in the way I think about cost, reliability, ownership, customer impact
-and clear handoffs.
+Before tech, I spent 14 years running operations — teams, budgets, vendors,
+delivery under pressure. That is where the cost discipline, documentation habit
+and ownership come from. The engineering is the recent chapter; the production
+thinking has been there since before the first model.
 
 <div class="portfolio-actions portfolio-actions--anchors" markdown="1">
 [Snapshot](#quick-screening-snapshot){ .portfolio-button .portfolio-button--primary }
@@ -64,41 +61,40 @@ infrastructure code.</p>
 </div>
 
 <div class="portfolio-callout" markdown="1">
-<strong>Seniority alignment:</strong> I am fully aligned with entry-level /
-junior role scope, compensation bands, code review expectations and growth
-plans. My operations maturity is a contribution to the team, not a seniority
-claim.
+<strong>Level:</strong> Early-career in formal ML/MLOps employment. The scope,
+compensation band and code-review dynamic of a junior role are the right fit.
+The operations maturity is a contribution, not a claim of seniority.
 </div>
 
 ## Key Proof Points
 
 <div class="portfolio-card-grid portfolio-card-grid--compact" markdown="1">
 <div class="portfolio-card" markdown="1">
+<small>Incident: serving</small>
+<h3><a href="../projects/bankchurn-debugging/">81% errors → 0%</a></h3>
+<p>Load test exposed a Kubernetes serving failure. Root cause: uvicorn worker
+contention. Fixed with asyncio + ThreadPoolExecutor. CPU request halved.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Incident: explainability</small>
+<h3>SHAP returning all zeros</h3>
+<p>TreeExplainer silently incompatible with a StackingClassifier ensemble.
+Evaluated four alternatives; fixed with KernelExplainer in original feature space.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Incident: autoscaling</small>
+<h3>HPA that could never scale down</h3>
+<p>Memory-based HPA plus fixed ML model footprint makes scale-down mathematically
+impossible. Switched to CPU-only HPA: 3 → 1 pods in 8 minutes.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
 <small>Reusable system</small>
 <h3><a href="../template/">Production template</a></h3>
-<p>A starter framework for FastAPI, Docker, Kubernetes, MLflow, CI/CD and
-deployment guardrails.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Incident diagnosis</small>
-<h3><a href="../projects/bankchurn-debugging/">81% errors to 0%</a></h3>
-<p>The clearest debugging story: measured failure, root cause, fix and
-verification.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Cost judgment</small>
-<h3><a href="../DEPLOYMENT_EVIDENCE/">Cloud paused by design</a></h3>
-<p>The runtime was paused to control cost; the code, evidence and reactivation
-path remain documented.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Engineering proof</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/.github/workflows/ci-mlops.yml">395+ tests</a></h3>
-<p>CI validates code, docs, infrastructure checks, smoke paths and project
-quality gates before deploy.</p>
+<p>32 anti-patterns, 28 ADRs, SLSA L2 supply chain, governed AI-assisted
+development — all packaged as reusable defaults for the next ML service.</p>
 </div>
 </div>
 
@@ -107,23 +103,30 @@ quality gates before deploy.</p>
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Primary fit</small>
-<h3>Entry-level MLOps / Production ML</h3>
-<p>Model serving, Docker/Kubernetes artifacts, CI/CD support, monitoring,
-MLflow hygiene, deployment notes and reliability improvements.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Also strong</small>
-<h3>Entry-level ML Engineer / AI Engineer I</h3>
-<p>Applied ML roles where model work needs APIs, testing, documentation and
+<h3>Junior ML Engineer</h3>
+<p>Applied ML roles where model work needs APIs, testing, deployment and a
 clear handoff into an engineering workflow.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
+<small>Strong second</small>
+<h3>Junior Data Scientist (production-leaning)</h3>
+<p>DS roles where the model is not the end state — serving, monitoring and
+operability matter alongside the modeling work.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
 <small>Adjacent path</small>
-<h3>ML Platform or Data Engineering</h3>
-<p>Teams working on ML pipelines, feature workflows, batch jobs, validation,
-cloud runtime support or production data paths.</p>
+<h3>Junior Data Engineer (ML workflows)</h3>
+<p>Pipeline, batch and data-path roles connected to production ML systems —
+PySpark, validation, feature engineering, cloud storage.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Low-volume bonus</small>
+<h3>MLOps Engineer</h3>
+<p>Serving, CI/CD, monitoring, MLflow hygiene, deployment artifacts and
+reliability improvements for ML systems in production.</p>
 </div>
 </div>
 
@@ -132,21 +135,22 @@ cloud runtime support or production data paths.</p>
 <div class="portfolio-split" markdown="1">
 <div markdown="1">
 
-Many entry-level ML candidates can train models in notebooks. My portfolio is
-built around the next layer: what happens when a model needs an API, tests,
-deployment artifacts, monitoring, cost decisions and documentation another
-person can review.
+Most ML portfolios show model scores. This one shows what happens after the
+model works: APIs, tests, deployment artifacts, incidents diagnosed from first
+principles, monitoring, cost decisions and documentation another person can
+review.
 
-The 14 years in operations are not a substitute for engineering experience. They
-are a multiplier for how I approach engineering work: I care about evidence,
-clarity, process, trade-offs and systems that can survive real team usage.
+The 14 years in operations are the source of the cost discipline, the
+documentation habit and the bias toward ownership. The engineering is the
+recent chapter — and three deployed services, three root-caused incidents and
+one extracted production template are the proof.
 
 </div>
 <div class="portfolio-callout" markdown="1">
-<strong>Positioning</strong>
+<strong>One sentence on level</strong>
 
-Entry-level / junior in formal ML/MLOps employment, but mature in ownership, communication,
-cost awareness and operating discipline.
+Early-career in formal ML/MLOps employment. The right seat is junior — that is
+the honest scope, the right compensation band and where the learning happens.
 </div>
 </div>
 
@@ -154,31 +158,31 @@ cost awareness and operating discipline.
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<small>Cost awareness</small>
-<h3>I think in trade-offs</h3>
-<p>My operations background makes budget, scope and maintenance part of the
-engineering discussion instead of an afterthought.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Ownership</small>
-<h3>I document decisions</h3>
-<p>The portfolio includes ADRs, runbooks and status pages so reviewers can see
-why decisions were made, not only what was built.</p>
+<small>2026 differentiator</small>
+<h3>Governed AI-assisted development</h3>
+<p>I engineer my AI workflow — behavior protocols, audit trail, eval gates —
+instead of hiding it. The template's governance layer is the proof.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Debugging</small>
 <h3>I measure before guessing</h3>
-<p>The strongest technical story is an API failure that moved from 81% errors
-to 0% after isolating the serving-pattern root cause.</p>
+<p>Three incidents, three root causes found by measuring — not by trial and
+error. The 81%→0% writeup is the clearest example.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Reliability</small>
-<h3>I care about the operating layer</h3>
-<p>Tests, deployment paths, monitoring, model packaging and current-status
-communication are first-class parts of the work.</p>
+<small>Ownership</small>
+<h3>Decisions are documented</h3>
+<p>18 ADRs, runbooks and status pages so reviewers can see why, not only what.
+Another person can operate this system.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Cost awareness</small>
+<h3>Budget is part of the design</h3>
+<p>14 years of operations means cost, scope and maintenance enter the
+engineering discussion from the start, not as afterthoughts.</p>
 </div>
 </div>
 
