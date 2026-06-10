@@ -8,6 +8,7 @@ repo_url: https://github.com/DuqueOM/ML-MLOps-Portfolio
 
 theme:
   name: material
+  custom_dir: overrides
   language: en
   features:
     - navigation.tabs

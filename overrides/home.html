@@ -1,0 +1,437 @@
+{% extends "main.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ 'assets/stylesheets/home.css' | url }}">
+  <meta property="og:title" content="Duque Ortega Mutis — Building ML systems that survive production">
+  <meta property="og:description" content="Three ML services on GKE + EKS, three production incidents root-caused, one open-source MLOps template. 14 years of operations leadership behind the engineering.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://duqueom.github.io/ML-MLOps-Portfolio/">
+  <meta property="og:image" content="https://duqueom.github.io/ML-MLOps-Portfolio/media/profile/duque-ortega-mutis.webp">
+{% endblock %}
+
+{% block content %}
+<div class="ml-home">
+  <div class="mlh-glow" aria-hidden="true"></div>
+
+  <!-- ============ HERO ============ -->
+  <header class="mlh-hero">
+    <div class="mlh-wrap">
+      <p class="mlh-eyebrow mlh-stagger">Duque Ortega Mutis · Mexico City · open to junior ML / MLOps roles</p>
+      <h1 class="mlh-display mlh-stagger">Building ML systems<br>that <em>survive</em> production.</h1>
+      <p class="mlh-sub mlh-stagger">
+        Three services deployed on GKE and EKS. Three production incidents measured,
+        root-caused and fixed. One open-source template that packaged the lessons.
+        Built on fourteen years of running operations before the first model.
+      </p>
+      <div class="mlh-cta mlh-stagger">
+        <a class="mlh-btn mlh-btn--primary" href="#work" data-magnetic>View the work</a>
+        <a class="mlh-btn" href="{{ 'contact/' | url }}" data-magnetic>Contact</a>
+      </div>
+      <nav class="mlh-quicklinks mlh-stagger" aria-label="Direct project links">
+        <a href="{{ 'projects/bankchurn/' | url }}">bankchurn</a>
+        <a href="{{ 'projects/nlpinsight/' | url }}">nlpinsight</a>
+        <a href="{{ 'projects/chicagotaxi/' | url }}">chicagotaxi</a>
+        <a href="{{ 'template/' | url }}">production-template</a>
+      </nav>
+    </div>
+
+    <!-- SIGNATURE: career pipeline -->
+    <figure class="mlh-pipeline mlh-stagger" role="img"
+            aria-label="Career pipeline: 14 years of operations flowing into machine learning production — retrain, build three services, deploy to GKE and EKS, operate with monitoring">
+      <svg viewBox="0 0 1200 200" xmlns="http://www.w3.org/2000/svg" class="mlh-pipeline-svg" focusable="false">
+        <defs>
+          <linearGradient id="pipeflow" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#FBBF24"/>
+            <stop offset="0.35" stop-color="#22D3EE"/>
+            <stop offset="0.8" stop-color="#22D3EE"/>
+            <stop offset="1" stop-color="#34D399"/>
+          </linearGradient>
+        </defs>
+
+        <!-- ruler ticks -->
+        <g stroke="rgba(148,163,184,.18)" stroke-width="1">
+          <line x1="60"  y1="116" x2="60"  y2="124"/><line x1="180" y1="118" x2="180" y2="122"/>
+          <line x1="300" y1="116" x2="300" y2="124"/><line x1="420" y1="118" x2="420" y2="122"/>
+          <line x1="540" y1="116" x2="540" y2="124"/><line x1="660" y1="118" x2="660" y2="122"/>
+          <line x1="780" y1="116" x2="780" y2="124"/><line x1="900" y1="118" x2="900" y2="122"/>
+          <line x1="1020" y1="116" x2="1020" y2="124"/><line x1="1140" y1="116" x2="1140" y2="124"/>
+        </g>
+
+        <!-- main pipe -->
+        <line x1="60" y1="100" x2="1140" y2="100" stroke="rgba(148,163,184,.25)" stroke-width="2"/>
+        <line x1="60" y1="100" x2="1140" y2="100" stroke="url(#pipeflow)" stroke-width="2"
+              stroke-dasharray="6 14" class="mlh-pipe-dash"/>
+
+        <!-- particles -->
+        <circle r="3.5" fill="#FBBF24">
+          <animateMotion dur="9s" begin="-1s" repeatCount="indefinite" path="M60,100 L330,100"/>
+          <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="9s" begin="-1s" repeatCount="indefinite"/>
+        </circle>
+        <circle r="3" fill="#6EE7FF">
+          <animateMotion dur="11s" begin="0s" repeatCount="indefinite" path="M330,100 L1140,100"/>
+          <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.06;.92;1" dur="11s" begin="0s" repeatCount="indefinite"/>
+        </circle>
+        <circle r="3" fill="#6EE7FF">
+          <animateMotion dur="11s" begin="-5.5s" repeatCount="indefinite" path="M330,100 L1140,100"/>
+          <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.06;.92;1" dur="11s" begin="-5.5s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- stations -->
+        <g class="mlh-station">
+          <circle cx="60" cy="100" r="7" fill="#050816" stroke="#FBBF24" stroke-width="2"/>
+          <text x="60" y="66" class="mlh-st-label" fill="#FBBF24">OPS</text>
+          <text x="60" y="82" class="mlh-st-sub">2010–2024 · teams · budgets</text>
+        </g>
+        <g class="mlh-station">
+          <circle cx="330" cy="100" r="7" fill="#050816" stroke="#22D3EE" stroke-width="2"/>
+          <text x="330" y="66" class="mlh-st-label" fill="#22D3EE">RETRAIN</text>
+          <text x="330" y="82" class="mlh-st-sub">data science · 2024</text>
+        </g>
+        <g class="mlh-station">
+          <circle cx="600" cy="100" r="7" fill="#050816" stroke="#22D3EE" stroke-width="2"/>
+          <text x="600" y="66" class="mlh-st-label" fill="#22D3EE">BUILD ×3</text>
+          <text x="600" y="82" class="mlh-st-sub">churn · nlp · forecasting</text>
+          <text x="600" y="138" class="mlh-st-sub">395+ tests · 18 ADRs</text>
+        </g>
+        <g class="mlh-station">
+          <circle cx="870" cy="100" r="7" fill="#050816" stroke="#22D3EE" stroke-width="2"/>
+          <text x="870" y="66" class="mlh-st-label" fill="#22D3EE">DEPLOY</text>
+          <text x="870" y="82" class="mlh-st-sub">GKE + EKS · Terraform</text>
+        </g>
+        <g class="mlh-station">
+          <circle cx="1140" cy="100" r="7" fill="#050816" stroke="#34D399" stroke-width="2">
+            <animate attributeName="r" values="7;9;7" dur="2.4s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="1140" cy="100" r="14" fill="none" stroke="#34D399" stroke-width="1" opacity=".4">
+            <animate attributeName="r" values="10;22" dur="2.4s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".5;0" dur="2.4s" repeatCount="indefinite"/>
+          </circle>
+          <text x="1140" y="66" class="mlh-st-label" fill="#34D399">OPERATE</text>
+          <text x="1140" y="82" class="mlh-st-sub">monitoring · drift · SLOs</text>
+        </g>
+      </svg>
+      <p class="mlh-pipeline-fallback" aria-hidden="true">
+        OPS 2010–24 <span>→</span> RETRAIN <span>→</span> BUILD ×3 <span>→</span> DEPLOY GKE+EKS <span>→</span> <b>OPERATE</b>
+      </p>
+    </figure>
+  </header>
+
+  <!-- ============ STATS ============ -->
+  <section class="mlh-stats" aria-label="Key numbers">
+    <div class="mlh-wrap mlh-stats-row">
+      <div class="mlh-stat" data-reveal>
+        <span class="mlh-stat-num"><span data-count="3">0</span></span>
+        <span class="mlh-stat-label">ML services · one monorepo</span>
+      </div>
+      <div class="mlh-stat" data-reveal>
+        <span class="mlh-stat-num"><span data-count="395">0</span>+</span>
+        <span class="mlh-stat-label">automated tests</span>
+      </div>
+      <div class="mlh-stat" data-reveal>
+        <span class="mlh-stat-num"><span data-count="18">0</span></span>
+        <span class="mlh-stat-label">architecture decision records</span>
+      </div>
+      <div class="mlh-stat" data-reveal>
+        <span class="mlh-stat-num"><span data-countdown="81">81</span>%</span>
+        <span class="mlh-stat-label">error rate under load — after the fix</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STORY ============ -->
+  <section class="mlh-section mlh-story" id="story">
+    <div class="mlh-wrap mlh-story-grid">
+      <div class="mlh-story-copy" data-reveal>
+        <p class="mlh-kicker">The origin</p>
+        <h2>From operations to production ML</h2>
+        <p>
+          I'm Duque Ortega Mutis, based in Mexico City, and I am making my first
+          formal career move into ML/MLOps.
+        </p>
+        <p>
+          My previous career was not technical by title, but it was technical in
+          practice: I spent 14 years coordinating people, budgets, vendors, customer
+          pressure, deadlines and process failures. That work taught me to value
+          systems that are clear, measurable and usable by the next person
+          responsible for them.
+        </p>
+        <p>
+          That is why this portfolio is built around production habits rather than
+          only model scores. I am early-career in formal ML employment, but I am
+          not new to ownership, trade-offs, documentation or operating under pressure.
+        </p>
+        <p class="mlh-seniority">
+          <span>How to read my seniority</span>
+          Entry-level / junior in formal ML/MLOps employment. Experienced in
+          ownership, pressure, cost-awareness and making systems easier for other
+          people to operate.
+        </p>
+      </div>
+      <figure class="mlh-portrait" data-reveal>
+        <img src="{{ 'media/profile/duque-ortega-mutis.webp' | url }}"
+             alt="Duque Ortega Mutis in a professional portrait" loading="lazy" width="280" height="350">
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ WORK ============ -->
+  <section class="mlh-section mlh-work" id="work">
+    <div class="mlh-wrap">
+      <div class="mlh-section-head" data-reveal>
+        <p class="mlh-kicker">The work</p>
+        <h2>Read the failures first</h2>
+        <p class="mlh-section-note">The fastest way to evaluate this portfolio is through the
+        incidents it survived — measured, root-caused, fixed and documented.</p>
+      </div>
+
+      <!-- CASE: SERVING -->
+      <article class="mlh-case" data-reveal>
+        <div class="mlh-case-meta">
+          <p class="mlh-case-tag mlh-tag-cyan">incident // serving</p>
+          <dl class="mlh-case-metrics">
+            <div><dt>errors under load</dt><dd>81% → <b class="mlh-green">0%</b></dd></div>
+            <div><dt>cpu request</dt><dd>2000m → 1000m</dd></div>
+            <div><dt>model</dt><dd>AUC 0.87 · 90% cov</dd></div>
+          </dl>
+        </div>
+        <div class="mlh-case-body">
+          <h3><a href="{{ 'projects/bankchurn-debugging/' | url }}">81% of requests failing. The model was fine.</a></h3>
+          <p>
+            A load test exposed an 81% error rate on the BankChurn API. Root cause:
+            <code>uvicorn --workers</code> inside Kubernetes — multiple workers competing
+            for one shared CPU budget produce thrashing, not parallelism. Redesigned the
+            inference path with asyncio plus a ThreadPoolExecutor (GIL analysis documented),
+            errors dropped to zero and the CPU request was halved.
+          </p>
+          <svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="Serving architecture: client to FastAPI single worker, inference offloaded to thread pool, model and SHAP">
+            <g class="mlh-d-node"><rect x="2" y="32" width="86" height="32" rx="3"/><text x="45" y="52">client</text></g>
+            <path d="M88 48 H128" class="mlh-d-edge"/>
+            <g class="mlh-d-node mlh-d-accent"><rect x="128" y="32" width="150" height="32" rx="3"/><text x="203" y="52">fastapi · 1 worker</text></g>
+            <path d="M278 48 H318" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="318" y="32" width="120" height="32" rx="3"/><text x="378" y="52">threadpool</text></g>
+            <path d="M438 48 H478" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="478" y="32" width="80" height="32" rx="3"/><text x="518" y="52">model</text></g>
+            <text x="203" y="86" class="mlh-d-note">event loop stays free — probes alive under load</text>
+          </svg>
+          <a class="mlh-case-link" href="{{ 'projects/bankchurn-debugging/' | url }}">Read the debugging deep dive</a>
+        </div>
+      </article>
+
+      <!-- CASE: EXPLAINABILITY + NLP -->
+      <article class="mlh-case" data-reveal>
+        <div class="mlh-case-meta">
+          <p class="mlh-case-tag mlh-tag-cyan">trade-off // nlp serving</p>
+          <dl class="mlh-case-metrics">
+            <div><dt>accuracy</dt><dd>80.6%</dd></div>
+            <div><dt>coverage</dt><dd>98%</dd></div>
+            <div><dt>inference</dt><dd>CPU-only · low cost</dd></div>
+          </dl>
+        </div>
+        <div class="mlh-case-body">
+          <h3><a href="{{ 'projects/nlpinsight/' | url }}">The heavier model we chose not to ship</a></h3>
+          <p>
+            Financial sentiment classification where the production question mattered more
+            than the leaderboard: a transformer would score higher and cost more to operate,
+            explain and debug. NLPInsight ships a lightweight, explainable path — and documents
+            the rejected alternative as an engineering decision, not an omission.
+          </p>
+          <svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="NLP architecture: text to TF-IDF linear model to API; transformer path documented but not shipped">
+            <g class="mlh-d-node"><rect x="2" y="14" width="86" height="32" rx="3"/><text x="45" y="34">text</text></g>
+            <path d="M88 30 H128" class="mlh-d-edge"/>
+            <g class="mlh-d-node mlh-d-accent"><rect x="128" y="14" width="160" height="32" rx="3"/><text x="208" y="34">tf-idf + linear</text></g>
+            <path d="M288 30 H328" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="328" y="14" width="80" height="32" rx="3"/><text x="368" y="34">api</text></g>
+            <g class="mlh-d-node mlh-d-ghost"><rect x="128" y="58" width="160" height="30" rx="3"/><text x="208" y="77">transformer</text></g>
+            <text x="438" y="77" class="mlh-d-note">documented, not shipped — operability won</text>
+          </svg>
+          <a class="mlh-case-link" href="{{ 'projects/nlpinsight/' | url }}">See the NLPInsight service</a>
+        </div>
+      </article>
+
+      <!-- CASE: LEAKAGE -->
+      <article class="mlh-case" data-reveal>
+        <div class="mlh-case-meta">
+          <p class="mlh-case-tag mlh-tag-cyan">leakage // forecasting</p>
+          <dl class="mlh-case-metrics">
+            <div><dt>r²</dt><dd>0.96 — honest</dd></div>
+            <div><dt>volume</dt><dd>6.3M trips</dd></div>
+            <div><dt>etl</dt><dd>PySpark · temporal CV</dd></div>
+          </dl>
+        </div>
+        <div class="mlh-case-body">
+          <h3><a href="{{ 'projects/chicagotaxi/' | url }}">A score too good to be true — until it was</a></h3>
+          <p>
+            Demand forecasting over 6.3M Chicago taxi trips. The first model looked perfect
+            because a feature was leaking the future into training. Removed the leak, rebuilt
+            validation as strictly temporal, and the R² of 0.96 that survived honest
+            re-evaluation is the one published.
+          </p>
+          <svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="Forecasting pipeline: 6.3M trips through PySpark ETL and temporal cross-validation to forecast; leaky feature removed">
+            <g class="mlh-d-node"><rect x="2" y="32" width="100" height="32" rx="3"/><text x="52" y="52">6.3M trips</text></g>
+            <path d="M102 48 H142" class="mlh-d-edge"/>
+            <g class="mlh-d-node mlh-d-accent"><rect x="142" y="32" width="120" height="32" rx="3"/><text x="202" y="52">pyspark etl</text></g>
+            <path d="M262 48 H302" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="302" y="32" width="130" height="32" rx="3"/><text x="367" y="52">temporal cv</text></g>
+            <path d="M432 48 H472" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="472" y="32" width="86" height="32" rx="3"/><text x="515" y="52">forecast</text></g>
+            <text x="202" y="86" class="mlh-d-note mlh-d-warn">leaky feature → removed before metrics</text>
+          </svg>
+          <a class="mlh-case-link" href="{{ 'projects/chicagotaxi/' | url }}">See the ChicagoTaxi pipeline</a>
+        </div>
+      </article>
+
+      <!-- FLAGSHIP -->
+      <article class="mlh-case mlh-case--flagship" data-reveal>
+        <div class="mlh-case-meta">
+          <p class="mlh-case-tag mlh-tag-amber">flagship // open source</p>
+          <dl class="mlh-case-metrics">
+            <div><dt>anti-patterns</dt><dd>32 documented</dd></div>
+            <div><dt>adrs</dt><dd>28</dd></div>
+            <div><dt>supply chain</dt><dd>SLSA L2 · signed + SBOM</dd></div>
+          </dl>
+        </div>
+        <div class="mlh-case-body">
+          <h3><a href="{{ 'template/' | url }}">Every lesson, packaged as defaults</a></h3>
+          <p>
+            The ML-MLOps Production Template turns the three services' lessons into a reusable
+            system: serving and training scaffolds, GKE + EKS overlays, signed images with SBOM
+            attestation, closed-loop monitoring — and a <b>governed AI-assisted development
+            layer</b>: behavior protocols, audit trail and eval gates that keep agentic coding
+            reviewable instead of hidden.
+          </p>
+          <svg viewBox="0 0 560 70" class="mlh-diagram" role="img" aria-label="Template modules: serve, train, deploy, monitor, govern — connected as one system">
+            <g class="mlh-d-node"><rect x="2" y="20" width="96" height="32" rx="3"/><text x="50" y="40">serve</text></g>
+            <path d="M98 36 H116" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="116" y="20" width="96" height="32" rx="3"/><text x="164" y="40">train</text></g>
+            <path d="M212 36 H230" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="230" y="20" width="96" height="32" rx="3"/><text x="278" y="40">deploy</text></g>
+            <path d="M326 36 H344" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="344" y="20" width="96" height="32" rx="3"/><text x="392" y="40">monitor</text></g>
+            <path d="M440 36 H458" class="mlh-d-edge"/>
+            <g class="mlh-d-node mlh-d-amber"><rect x="458" y="20" width="100" height="32" rx="3"/><text x="508" y="40">govern</text></g>
+          </svg>
+          <a class="mlh-case-link" href="{{ 'template/' | url }}">Open the production template</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ TIMELINE ============ -->
+  <section class="mlh-section mlh-timeline-sec">
+    <div class="mlh-wrap">
+      <div class="mlh-section-head" data-reveal>
+        <p class="mlh-kicker">The route</p>
+        <h2>Fourteen years of context, two years of code</h2>
+      </div>
+      <ol class="mlh-timeline">
+        <li data-reveal>
+          <span class="mlh-tl-dot mlh-tl-amber"></span>
+          <span class="mlh-tl-year">2010</span>
+          <div>
+            <h3>Operations leadership</h3>
+            <p>Fourteen years coordinating teams of 5–10 (peak 20), budgets up to $20K USD,
+            vendors, customer pressure and process failures. The origin of the cost
+            discipline and the documentation habit.</p>
+          </div>
+        </li>
+        <li data-reveal>
+          <span class="mlh-tl-dot"></span>
+          <span class="mlh-tl-year">2024</span>
+          <div>
+            <h3>The deliberate pivot</h3>
+            <p>Full-time retraining into data science and machine learning —
+            TripleTen Data Science program.</p>
+          </div>
+        </li>
+        <li data-reveal>
+          <span class="mlh-tl-dot mlh-tl-cyan"></span>
+          <span class="mlh-tl-year">2025</span>
+          <div>
+            <h3>Three services, three incidents</h3>
+            <p>BankChurn, NLPInsight and ChicagoTaxi built, tested (395+) and deployed to
+            GKE + EKS. The serving failure, the SHAP zeros and the impossible HPA scale-down —
+            measured, root-caused, documented.</p>
+          </div>
+        </li>
+        <li data-reveal>
+          <span class="mlh-tl-dot mlh-tl-green"></span>
+          <span class="mlh-tl-year">2026</span>
+          <div>
+            <h3>Template, governance, certification</h3>
+            <p>TripleTen DS certificate. Open-source production template with governed
+            AI-assisted development. Preparing GCP Associate Cloud Engineer and
+            AWS ML Engineer Associate.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ CAPABILITIES ============ -->
+  <section class="mlh-section mlh-caps">
+    <div class="mlh-wrap">
+      <div class="mlh-section-head" data-reveal>
+        <p class="mlh-kicker">The toolbox</p>
+        <h2>Capability map</h2>
+      </div>
+      <div class="mlh-caps-grid" data-reveal>
+        <div class="mlh-cap">
+          <h3>ml engineering</h3>
+          <ul>
+            <li>Python</li><li>scikit-learn</li><li>XGBoost / LightGBM</li>
+            <li>SHAP explainability</li><li>Pandera validation</li>
+          </ul>
+        </div>
+        <div class="mlh-cap">
+          <h3>mlops · serving</h3>
+          <ul>
+            <li>FastAPI</li><li>Docker · Kubernetes</li><li>MLflow</li>
+            <li>GitHub Actions CI/CD</li><li>Prometheus · Grafana</li>
+          </ul>
+        </div>
+        <div class="mlh-cap">
+          <h3>cloud · infra</h3>
+          <ul>
+            <li>GCP — GKE · Workload Identity</li><li>AWS — EKS · IRSA</li>
+            <li>Terraform</li><li>Kustomize overlays</li><li>Cosign · SBOM</li>
+          </ul>
+        </div>
+        <div class="mlh-cap">
+          <h3>data</h3>
+          <ul>
+            <li>PySpark</li><li>Pandas</li><li>Temporal validation</li>
+            <li>Drift — PSI · Evidently</li><li>Leakage gates</li>
+          </ul>
+        </div>
+      </div>
+      <p class="mlh-caps-foot" data-reveal>
+        <span>governed ai-assisted development</span>
+        Claude Code · Cursor · Windsurf — behavior rules, skills, audit trail, eval gates.
+        Engineered, not hidden.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="mlh-section mlh-contact" id="contact">
+    <div class="mlh-wrap" data-reveal>
+      <p class="mlh-kicker">Next system</p>
+      <h2 class="mlh-contact-display">Let's talk about the systems<br>you need to survive production.</h2>
+      <a class="mlh-contact-mail" href="mailto:DuqueOrtegaMutis@gmail.com" data-magnetic>DuqueOrtegaMutis@gmail.com</a>
+      <nav class="mlh-contact-links" aria-label="Profiles and evidence">
+        <a href="https://linkedin.com/in/duqueom">LinkedIn</a>
+        <a href="https://github.com/DuqueOM">GitHub</a>
+        <a href="https://youtu.be/7dFFqq2ROPw">3-min video demo</a>
+        <a href="{{ 'recruiter-brief/' | url }}">Recruiter brief</a>
+        <a href="{{ 'technical-evidence/' | url }}">Technical evidence</a>
+      </nav>
+      <p class="mlh-contact-meta">available in 2 weeks · cdmx hybrid · remote latam / us / eu · spanish native · english professional</p>
+    </div>
+  </section>
+</div>
+<script src="{{ 'assets/javascripts/home.js' | url }}" defer></script>
+{% endblock %}
