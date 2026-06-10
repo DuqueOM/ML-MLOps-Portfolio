@@ -20,17 +20,20 @@ theme:
     - content.tabs.link
   palette:
     - scheme: default
-      primary: indigo
-      accent: indigo
+      primary: black
+      accent: teal
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: black
+      accent: teal
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
   icon:
     repo: fontawesome/brands/github
 
@@ -68,8 +71,6 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Recruiter Brief: recruiter-brief.md
-  - About: about.md
   - Projects:
       - BankChurn Predictor: projects/bankchurn.md
       - NLPInsight Analyzer: projects/nlpinsight.md
@@ -78,6 +79,8 @@ nav:
   - Technical Evidence:
       - Evidence Overview: technical-evidence.md
       - Deep Dive Index: technical-deep-dive.md
+  - Recruiter Brief: recruiter-brief.md
+  - About: about.md
   - Contact: contact.md
 
 extra:

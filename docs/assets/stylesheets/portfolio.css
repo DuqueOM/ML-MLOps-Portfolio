@@ -154,6 +154,71 @@ body:has(.portfolio-page) .md-typeset h3 {
   width: clamp(11rem, 14vw, 13.5rem);
 }
 
+/* ---------------------------------------------------------------------------
+   2026-06 technical refresh — engineering-forward accents.
+   Scoped additions only; the layout system above is untouched.
+--------------------------------------------------------------------------- */
+
+:root {
+  --portfolio-accent: #00897b;        /* teal-600 — matches the Material accent */
+  --portfolio-accent-soft: rgba(0, 137, 123, 0.10);
+}
+
+[data-md-color-scheme="slate"] {
+  --portfolio-accent: #26a69a;        /* teal-400 for dark backgrounds */
+  --portfolio-accent-soft: rgba(38, 166, 154, 0.14);
+}
+
+/* Eyebrow labels read as terminal prompts. */
+.md-typeset .portfolio-eyebrow {
+  color: var(--portfolio-accent);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.md-typeset .portfolio-eyebrow::before {
+  content: "▸ ";
+}
+
+/* Stat strip: teal keyline + monospace figures = dashboard feel. */
+.md-typeset .portfolio-stat {
+  border-left: 3px solid var(--portfolio-accent);
+}
+
+.md-typeset .portfolio-stat strong {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Badges: tinted with the accent instead of neutral gray. */
+.md-typeset .portfolio-badge {
+  background: var(--portfolio-accent-soft);
+  border: 1px solid var(--portfolio-accent);
+  color: inherit;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+}
+
+/* Cards lift slightly on hover — affordance for clickable evidence. */
+.md-typeset .portfolio-card {
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.md-typeset .portfolio-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.10);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .portfolio-card:hover {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+}
+
+/* System-map nodes get the numbered-pipeline treatment. */
+.md-typeset .portfolio-system-node small {
+  color: var(--portfolio-accent);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
 .md-typeset .portfolio-mini-profile {
   display: grid;
   grid-template-columns: 5.2rem minmax(0, 1fr);
