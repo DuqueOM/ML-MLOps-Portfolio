@@ -28,7 +28,8 @@ body:has(.portfolio-page) .md-main__inner.md-grid {
   max-width: min(92rem, calc(100vw - 2rem));
 }
 
-body:has(.portfolio-page) .md-sidebar--secondary {
+body:has(.portfolio-page) .md-sidebar--secondary,
+body:has(.portfolio-page) .md-sidebar--primary {
   display: none;
 }
 
@@ -1117,46 +1118,58 @@ html {
   z-index: 1;
 }
 
-/* Subtle entry fade-in for cards (no layout shift)
+/* Scroll reveals (driven by assets/javascripts/portfolio.js):
+   elements fade-rise as they enter the viewport, staggered per row.
+   Without JS or with reduced motion nothing is hidden.
    ------------------------------------------------------- */
 @media (prefers-reduced-motion: no-preference) {
-  .md-typeset .portfolio-card,
-  .md-typeset .portfolio-stat,
-  .md-typeset .portfolio-system-node,
-  .md-typeset .portfolio-status-card,
-  .md-typeset .portfolio-step {
-    animation: portfolio-fade-up 540ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  .js-reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
   }
-
-  .md-typeset .portfolio-card:nth-child(2),
-  .md-typeset .portfolio-stat:nth-child(2),
-  .md-typeset .portfolio-status-card:nth-child(2) {
-    animation-delay: 60ms;
-  }
-  .md-typeset .portfolio-card:nth-child(3),
-  .md-typeset .portfolio-stat:nth-child(3),
-  .md-typeset .portfolio-status-card:nth-child(3) {
-    animation-delay: 120ms;
-  }
-  .md-typeset .portfolio-card:nth-child(4),
-  .md-typeset .portfolio-stat:nth-child(4) {
-    animation-delay: 180ms;
-  }
-  .md-typeset .portfolio-card:nth-child(5),
-  .md-typeset .portfolio-stat:nth-child(5) {
-    animation-delay: 240ms;
+  .js-reveal.is-in {
+    opacity: 1;
+    transform: none;
   }
 }
 
-@keyframes portfolio-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Reading progress: a 2px cyan rule that fills as you read */
+.pf-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--portfolio-amber), var(--portfolio-teal));
+  transform-origin: left;
+  transform: scaleX(0);
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* Ambient cursor glow (desktop, non-home pages; home has its own) */
+.pf-glow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.06), transparent 65%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.pf-glow.is-on { opacity: 1; }
+body:has(.portfolio-page) .md-container {
+  position: relative;
+  z-index: 1;
+}
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .pf-glow { display: none; }
 }
 
 /* Project badges: subtle hover for engagement
@@ -1219,13 +1232,10 @@ html {
   padding-left: 0;
   padding-right: 0;
 }
-.md-typeset .portfolio-hero::before {
-  background: radial-gradient(
-    closest-side,
-    rgba(34, 211, 238, 0.07) 0%,
-    rgba(34, 211, 238, 0) 70%
-  );
-}
+/* The radial glow painted a hard-edged rectangle next to the sidebar —
+   atmosphere now comes from the site-wide cursor glow instead. */
+.md-typeset .portfolio-hero::before { display: none; }
+.md-typeset .portfolio-hero { overflow: visible; }
 
 /* De-box: every panel becomes an editorial ledger entry — hairline rule,
    no background, no radius, no shadow. Grids keep their columns, so

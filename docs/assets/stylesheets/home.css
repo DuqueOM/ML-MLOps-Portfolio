@@ -177,7 +177,6 @@
   padding: 0.5rem 0.95rem;
   transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
 }
-.md-typeset .ml-home .mlh-quicklinks a::before { content: "./"; color: rgba(148,163,184,0.5); }
 .md-typeset .ml-home .mlh-quicklinks a::after {
   content: " →"; opacity: 0;
   display: inline-block; width: 0;
@@ -191,7 +190,13 @@
 .md-typeset .ml-home .mlh-quicklinks a:hover::after { opacity: 1; }
 
 /* ---- signature pipeline ---- */
-.mlh-pipeline { margin: 0; padding: 0 28px; max-width: 1256px; margin-inline: auto; width: 100%; }
+/* width must beat Material's `.md-typeset figure { width: fit-content }` */
+.md-typeset .ml-home .mlh-pipeline {
+  margin: 0 auto;
+  padding: 0 28px;
+  max-width: 1256px;
+  width: 100%;
+}
 .mlh-pipeline-svg { width: 100%; height: auto; display: block; }
 .mlh-st-label {
   font-family: var(--mlh-mono); font-size: 19px; font-weight: 700;
