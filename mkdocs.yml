@@ -36,7 +36,15 @@ extra_css:
 
 plugins:
   - search
-  - mermaid2
+  - mermaid2:
+      arguments:
+        theme: dark
+        themeVariables:
+          primaryColor: "#0B1120"
+          primaryTextColor: "#F8FAFC"
+          primaryBorderColor: "#22D3EE"
+          lineColor: "#94A3B8"
+          fontFamily: "JetBrains Mono, monospace"
   - mkdocstrings:
       handlers:
         python:

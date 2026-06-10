@@ -1227,42 +1227,188 @@ html {
   );
 }
 
-/* Panels flatten: surface tint, tighter radius, no drop shadows */
+/* De-box: every panel becomes an editorial ledger entry — hairline rule,
+   no background, no radius, no shadow. Grids keep their columns, so
+   sections read as ruled ledgers instead of walls of cards. */
 .md-typeset .portfolio-card,
-.md-typeset .portfolio-stat,
 .md-typeset .portfolio-status-card,
-.md-typeset .portfolio-system-node,
 .md-typeset .portfolio-step,
-.md-typeset .portfolio-faq-item,
-.md-typeset .portfolio-media,
-.md-typeset .portfolio-before-after-chart,
-.md-typeset .portfolio-feature-band,
-.md-typeset .portfolio-availability,
-.md-typeset .portfolio-quote-card,
-.md-typeset .portfolio-evidence-image {
-  background: rgba(11, 17, 32, 0.55);
+.md-typeset .portfolio-faq-item {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--portfolio-line);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 1.3rem 0 0;
+}
+.md-typeset .portfolio-stat,
+.md-typeset .portfolio-system-node {
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--portfolio-line);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0.25rem 0 0.25rem 1.3rem;
+}
+.md-typeset .portfolio-system-node::before { display: none; }
+.md-typeset .portfolio-stat-strip {
+  gap: 0;
+  row-gap: 2rem;
+  margin: 2rem 0 2.8rem;
+}
+.md-typeset .portfolio-card-grid,
+.md-typeset .portfolio-project-grid,
+.md-typeset .portfolio-status-grid {
+  gap: 2.6rem 3rem;
+  margin: 1.8rem 0 3rem;
+}
+.md-typeset .portfolio-system-map {
+  gap: 2.4rem 2.4rem;
+  margin: 1.8rem 0 3rem;
+}
+
+/* Status semantics live in the hairline itself */
+.md-typeset .portfolio-status-card { border-top-width: 2px; border-top-color: var(--portfolio-blue); }
+.md-typeset .portfolio-status-card.is-active { border-top-color: var(--portfolio-green); }
+.md-typeset .portfolio-status-card.is-paused { border-top-color: var(--portfolio-amber); }
+.md-typeset .portfolio-status-card.is-inactive { border-top-color: var(--portfolio-rose); }
+
+/* Entry labels: mono cyan, like the home case tags */
+.md-typeset .portfolio-card small,
+.md-typeset .portfolio-stat small,
+.md-typeset .portfolio-status-card small,
+.md-typeset .portfolio-system-node small {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  color: var(--portfolio-teal);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  margin-bottom: 0.4rem;
+}
+.md-typeset .portfolio-card h3,
+.md-typeset .portfolio-status-card h3,
+.md-typeset .portfolio-system-node h3 {
+  font-size: 1.12rem;
+}
+
+/* Callouts and quotes: keylines, not boxes */
+.md-typeset .portfolio-callout {
+  background: transparent;
+  border: 0;
+  border-left: 2px solid var(--portfolio-teal);
+  border-radius: 0;
+  padding: 0.2rem 0 0.2rem 1.2rem;
+}
+.md-typeset .portfolio-quote-card {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 1.2rem 0 1.4rem;
+}
+.md-typeset .portfolio-quote-card small {
+  color: var(--portfolio-amber);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.2em;
+}
+.md-typeset .portfolio-quote-card blockquote {
+  border-left: 2px solid var(--portfolio-amber);
+  color: var(--portfolio-ink);
+}
+.md-typeset .portfolio-feature-band {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+.md-typeset .portfolio-availability {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--portfolio-line);
+  border-radius: 0;
+  padding: 1rem 0 0;
+  gap: 0.45rem;
+}
+.md-typeset .portfolio-availability-label {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.14em;
+}
+
+/* Media keeps a frame (images need edges); charts become ruled rows */
+.md-typeset .portfolio-media {
+  background: #0B1120;
+  border-color: var(--portfolio-line);
   border-radius: 4px;
   box-shadow: none;
 }
-.md-typeset .portfolio-callout {
-  background: rgba(11, 17, 32, 0.55);
-  border-radius: 0 4px 4px 0;
+.md-typeset .portfolio-evidence-image {
+  background: #0B1120;
+  border-radius: 4px;
 }
-.md-typeset .portfolio-quote-card {
-  background: rgba(34, 211, 238, 0.05);
+.md-typeset .portfolio-before-after-chart {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--portfolio-line);
+  border-radius: 0;
+  padding: 1.3rem 0 0;
 }
+.md-typeset .portfolio-bar-track {
+  background: rgba(11, 17, 32, 0.8);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 3px;
+}
+.md-typeset .portfolio-bar {
+  color: #04141A;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 700;
+}
+
+/* Hover: the rule brightens — ink moves, boxes don't */
 @media (hover: hover) and (pointer: fine) {
   .md-typeset .portfolio-card:hover,
-  .md-typeset .portfolio-stat:hover,
   .md-typeset .portfolio-status-card:hover,
-  .md-typeset .portfolio-system-node:hover,
   .md-typeset .portfolio-step:hover,
   .md-typeset .portfolio-faq-item:hover {
-    transform: translateY(-2px);
+    transform: none;
     box-shadow: none;
-    border-color: rgba(34, 211, 238, 0.45);
+    border-top-color: rgba(34, 211, 238, 0.55);
+  }
+  .md-typeset .portfolio-stat:hover,
+  .md-typeset .portfolio-system-node:hover {
+    transform: none;
+    box-shadow: none;
+    border-left-color: rgba(34, 211, 238, 0.55);
   }
 }
+
+/* Editorial rhythm: bigger type, more air, narrower section leads */
+.md-typeset .portfolio-page {
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+.md-typeset .portfolio-page h2 {
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  font-weight: 600;
+  margin: 3.2rem 0 1.2rem;
+}
+.md-typeset .portfolio-section-lead { max-width: 44rem; }
+
+/* The plain markdown H1 above each tab's hero becomes a mono page label
+   (every .portfolio-page tab carries its real headline inside the hero). */
+.md-content__inner:has(.portfolio-page) > h1:first-child {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--portfolio-muted);
+  margin: 0.6rem 0 0;
+}
+.md-content__inner:has(.portfolio-page) > h1:first-child::before {
+  content: "▸ ";
+  color: var(--portfolio-teal);
+}
+.md-content__inner:has(.portfolio-page) > h1:first-child .headerlink { display: none; }
 
 /* Eyebrows: mono cyan terminal prompts (one rule to settle the cascade) */
 .md-typeset .portfolio-eyebrow {
@@ -1307,17 +1453,17 @@ html {
   box-shadow: 0 0 28px rgba(110, 231, 255, 0.3);
 }
 
-/* Badges: mono chips with cyan tint */
+/* Badges: quiet mono chips — they label, they don't shout */
 .md-typeset .portfolio-badge {
   border-radius: 3px;
-  background: var(--portfolio-accent-soft);
-  border-color: rgba(34, 211, 238, 0.35);
-  color: var(--portfolio-blue);
+  background: transparent;
+  border-color: var(--portfolio-line);
+  color: var(--portfolio-muted);
   font-weight: 500;
 }
 .md-typeset .portfolio-card:hover .portfolio-badge {
-  border-color: var(--portfolio-teal);
-  color: var(--portfolio-teal);
+  border-color: rgba(34, 211, 238, 0.45);
+  color: var(--portfolio-blue);
 }
 
 /* Stats: solid display numerals (kill the gradient-text effect) */
@@ -1332,17 +1478,23 @@ html {
   font-weight: 700;
 }
 
-/* Step numbers: cyan block, ink digits */
+/* Step numbers: outlined mono digits (steps are real sequences) */
 .md-typeset .portfolio-step-number {
-  background: var(--portfolio-teal);
-  color: #04141A;
-  border-radius: 4px;
+  background: transparent;
+  border: 1px solid var(--portfolio-line);
+  border-radius: 3px;
+  color: var(--portfolio-teal);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-weight: 600;
 }
 
-/* Pills inherit the surface */
+/* Pills: mono status labels, no capsule fill */
 .md-typeset .portfolio-pill {
-  background: rgba(11, 17, 32, 0.8);
+  background: transparent;
   border: 1px solid var(--portfolio-line);
+  border-radius: 3px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.08em;
 }
 
 /* Portrait frame: match home treatment */
