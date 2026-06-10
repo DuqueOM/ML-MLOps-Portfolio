@@ -19,19 +19,12 @@ theme:
     - search.highlight
     - content.code.copy
     - content.tabs.link
+  # Single dark scheme — the editorial design system is one theme by design
+  # (Linear/Vercel pattern); colors are overridden in portfolio.css tokens.
   palette:
-    - scheme: default
-      primary: black
-      accent: teal
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    - scheme: slate
-      primary: black
-      accent: teal
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+    scheme: slate
+    primary: black
+    accent: cyan
   font:
     text: Inter
     code: JetBrains Mono

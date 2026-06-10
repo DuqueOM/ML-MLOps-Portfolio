@@ -2,30 +2,22 @@
    Scoped classes keep MkDocs Material defaults intact while improving the
    pages that are meant to be reviewed quickly by recruiters and technical leads. */
 
-:root {
-  --portfolio-ink: #172033;
-  --portfolio-muted: #5f6f86;
-  --portfolio-line: rgba(23, 32, 51, 0.12);
-  --portfolio-soft: #f7f9fc;
-  --portfolio-panel: #ffffff;
-  --portfolio-teal: #047481;
-  --portfolio-blue: #315f9f;
-  --portfolio-green: #157347;
-  --portfolio-amber: #a05a00;
-  --portfolio-rose: #b4233a;
-}
-
+/* Unified design system — same tokens as home.css ("The pipeline that
+   survived"): ink #050816, cyan #22D3EE/#6EE7FF, amber #FBBF24, green
+   #34D399. The site runs a single dark scheme; both selectors carry the
+   same values so every legacy rule resolves to the new palette. */
+:root,
 [data-md-color-scheme="slate"] {
-  --portfolio-ink: #f4f7fb;
-  --portfolio-muted: #b8c4d6;
-  --portfolio-line: rgba(232, 238, 247, 0.16);
-  --portfolio-soft: #151a25;
-  --portfolio-panel: #1d2432;
-  --portfolio-teal: #67d6dd;
-  --portfolio-blue: #95b9f6;
-  --portfolio-green: #7bd99d;
-  --portfolio-amber: #f4bf75;
-  --portfolio-rose: #ff99a8;
+  --portfolio-ink: #F8FAFC;
+  --portfolio-muted: #94A3B8;
+  --portfolio-line: rgba(148, 163, 184, 0.16);
+  --portfolio-soft: #0B1120;
+  --portfolio-panel: #0B1120;
+  --portfolio-teal: #22D3EE;
+  --portfolio-blue: #6EE7FF;
+  --portfolio-green: #34D399;
+  --portfolio-amber: #FBBF24;
+  --portfolio-rose: #FB7185;
 }
 
 .md-grid {
@@ -159,14 +151,10 @@ body:has(.portfolio-page) .md-typeset h3 {
    Scoped additions only; the layout system above is untouched.
 --------------------------------------------------------------------------- */
 
-:root {
-  --portfolio-accent: #00897b;        /* teal-600 — matches the Material accent */
-  --portfolio-accent-soft: rgba(0, 137, 123, 0.10);
-}
-
+:root,
 [data-md-color-scheme="slate"] {
-  --portfolio-accent: #26a69a;        /* teal-400 for dark backgrounds */
-  --portfolio-accent-soft: rgba(38, 166, 154, 0.14);
+  --portfolio-accent: #22D3EE;        /* electric cyan — matches home tokens */
+  --portfolio-accent-soft: rgba(34, 211, 238, 0.10);
 }
 
 /* Eyebrow labels read as terminal prompts. */
@@ -1190,3 +1178,176 @@ html {
   border-left: 3px solid var(--portfolio-teal);
   font-style: normal;
 }
+
+/* =========================================================
+   2026-06 design-system unification — inner pages match home
+   ("The pipeline that survived"). This layer is loaded last
+   and overrides the legacy teal/light skin above.
+   ========================================================= */
+
+/* Material chrome: ink canvas, cyan links, surface code blocks */
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #050816;
+  --md-default-fg-color: rgba(248, 250, 252, 0.95);
+  --md-default-fg-color--light: rgba(248, 250, 252, 0.62);
+  --md-default-fg-color--lighter: rgba(248, 250, 252, 0.36);
+  --md-default-fg-color--lightest: rgba(248, 250, 252, 0.12);
+  --md-typeset-color: #CBD5E1;
+  --md-typeset-a-color: #6EE7FF;
+  --md-accent-fg-color: #22D3EE;
+  --md-code-bg-color: #0B1120;
+  --md-code-fg-color: #CBD5E1;
+  --md-footer-bg-color: #030510;
+  --md-footer-bg-color--dark: #02040C;
+}
+
+/* Display typography site-wide */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  letter-spacing: -0.015em;
+}
+
+/* Heroes become editorial: no box, hairline only */
+.md-typeset .portfolio-hero {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--portfolio-line);
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+.md-typeset .portfolio-hero::before {
+  background: radial-gradient(
+    closest-side,
+    rgba(34, 211, 238, 0.07) 0%,
+    rgba(34, 211, 238, 0) 70%
+  );
+}
+
+/* Panels flatten: surface tint, tighter radius, no drop shadows */
+.md-typeset .portfolio-card,
+.md-typeset .portfolio-stat,
+.md-typeset .portfolio-status-card,
+.md-typeset .portfolio-system-node,
+.md-typeset .portfolio-step,
+.md-typeset .portfolio-faq-item,
+.md-typeset .portfolio-media,
+.md-typeset .portfolio-before-after-chart,
+.md-typeset .portfolio-feature-band,
+.md-typeset .portfolio-availability,
+.md-typeset .portfolio-quote-card,
+.md-typeset .portfolio-evidence-image {
+  background: rgba(11, 17, 32, 0.55);
+  border-radius: 4px;
+  box-shadow: none;
+}
+.md-typeset .portfolio-callout {
+  background: rgba(11, 17, 32, 0.55);
+  border-radius: 0 4px 4px 0;
+}
+.md-typeset .portfolio-quote-card {
+  background: rgba(34, 211, 238, 0.05);
+}
+@media (hover: hover) and (pointer: fine) {
+  .md-typeset .portfolio-card:hover,
+  .md-typeset .portfolio-stat:hover,
+  .md-typeset .portfolio-status-card:hover,
+  .md-typeset .portfolio-system-node:hover,
+  .md-typeset .portfolio-step:hover,
+  .md-typeset .portfolio-faq-item:hover {
+    transform: translateY(-2px);
+    box-shadow: none;
+    border-color: rgba(34, 211, 238, 0.45);
+  }
+}
+
+/* Eyebrows: mono cyan terminal prompts (one rule to settle the cascade) */
+.md-typeset .portfolio-eyebrow {
+  color: var(--portfolio-accent);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+}
+
+/* Buttons match the home .mlh-btn language: mono, flat, 4px radius */
+.md-typeset .portfolio-button {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--portfolio-ink);
+}
+.md-typeset .portfolio-button:hover {
+  transform: none;
+  border-color: rgba(34, 211, 238, 0.5);
+  color: var(--portfolio-blue);
+  background: rgba(34, 211, 238, 0.06);
+  box-shadow: none;
+}
+.md-typeset .portfolio-button--primary,
+.md-typeset .portfolio-button--primary:visited,
+[data-md-color-scheme="slate"] .md-typeset .portfolio-button--primary,
+[data-md-color-scheme="slate"] .md-typeset .portfolio-button--primary:visited {
+  background: var(--portfolio-teal);
+  border-color: var(--portfolio-teal);
+  color: #04141A;
+  font-weight: 700;
+  box-shadow: 0 0 22px rgba(34, 211, 238, 0.22);
+}
+.md-typeset .portfolio-button--primary:hover,
+[data-md-color-scheme="slate"] .md-typeset .portfolio-button--primary:hover {
+  background: var(--portfolio-blue);
+  border-color: var(--portfolio-blue);
+  color: #04141A;
+  box-shadow: 0 0 28px rgba(110, 231, 255, 0.3);
+}
+
+/* Badges: mono chips with cyan tint */
+.md-typeset .portfolio-badge {
+  border-radius: 3px;
+  background: var(--portfolio-accent-soft);
+  border-color: rgba(34, 211, 238, 0.35);
+  color: var(--portfolio-blue);
+  font-weight: 500;
+}
+.md-typeset .portfolio-card:hover .portfolio-badge {
+  border-color: var(--portfolio-teal);
+  color: var(--portfolio-teal);
+}
+
+/* Stats: solid display numerals (kill the gradient-text effect) */
+.md-typeset .portfolio-stat strong,
+[data-md-color-scheme="slate"] .md-typeset .portfolio-stat strong {
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  -webkit-text-fill-color: initial;
+  color: var(--portfolio-ink);
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-weight: 700;
+}
+
+/* Step numbers: cyan block, ink digits */
+.md-typeset .portfolio-step-number {
+  background: var(--portfolio-teal);
+  color: #04141A;
+  border-radius: 4px;
+}
+
+/* Pills inherit the surface */
+.md-typeset .portfolio-pill {
+  background: rgba(11, 17, 32, 0.8);
+  border: 1px solid var(--portfolio-line);
+}
+
+/* Portrait frame: match home treatment */
+.md-typeset .portfolio-profile-frame img {
+  border-radius: 4px;
+  filter: saturate(0.92);
+}
+.md-typeset .portfolio-mini-profile img { border-radius: 4px; }

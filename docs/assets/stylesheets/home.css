@@ -166,34 +166,40 @@
 }
 
 .mlh-quicklinks {
-  display: flex; gap: 1.6rem; flex-wrap: wrap;
+  display: flex; gap: 0.7rem; flex-wrap: wrap;
   font-family: var(--mlh-mono); font-size: 0.78rem;
 }
 .md-typeset .ml-home .mlh-quicklinks a {
   color: var(--mlh-muted);
   text-decoration: none;
-  position: relative;
+  border: 1px solid var(--mlh-hairline);
+  border-radius: 4px;
+  padding: 0.5rem 0.95rem;
+  transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
 }
 .md-typeset .ml-home .mlh-quicklinks a::before { content: "./"; color: rgba(148,163,184,0.5); }
 .md-typeset .ml-home .mlh-quicklinks a::after {
-  content: ""; position: absolute; left: 0; bottom: -3px;
-  width: 100%; height: 1px; background: var(--mlh-cyan);
-  transform: scaleX(0); transform-origin: left;
-  transition: transform 0.3s ease;
+  content: " →"; opacity: 0;
+  display: inline-block; width: 0;
+  transition: opacity 0.25s ease;
 }
-.md-typeset .ml-home .mlh-quicklinks a:hover { color: var(--mlh-text); }
-.md-typeset .ml-home .mlh-quicklinks a:hover::after { transform: scaleX(1); }
+.md-typeset .ml-home .mlh-quicklinks a:hover {
+  color: var(--mlh-cyan-bright);
+  border-color: rgba(34,211,238,0.5);
+  background: rgba(34,211,238,0.06);
+}
+.md-typeset .ml-home .mlh-quicklinks a:hover::after { opacity: 1; }
 
 /* ---- signature pipeline ---- */
 .mlh-pipeline { margin: 0; padding: 0 28px; max-width: 1256px; margin-inline: auto; width: 100%; }
 .mlh-pipeline-svg { width: 100%; height: auto; display: block; }
 .mlh-st-label {
-  font-family: var(--mlh-mono); font-size: 13px; font-weight: 700;
-  letter-spacing: 0.14em; text-anchor: middle;
+  font-family: var(--mlh-mono); font-size: 19px; font-weight: 700;
+  letter-spacing: 0.12em; text-anchor: middle;
 }
 .mlh-st-sub {
-  font-family: var(--mlh-mono); font-size: 10.5px;
-  fill: var(--mlh-muted); text-anchor: middle; opacity: 0.85;
+  font-family: var(--mlh-mono); font-size: 14px;
+  fill: var(--mlh-muted); text-anchor: middle; opacity: 0.9;
 }
 .mlh-pipe-dash { animation: mlh-flow 1.2s linear infinite; }
 @keyframes mlh-flow { to { stroke-dashoffset: -20; } }
