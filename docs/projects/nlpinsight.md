@@ -8,7 +8,7 @@
 Classify financial text sentiment — and understand why domain-specific pre-training matters more than model size.
 
 <div class="portfolio-actions" markdown="1">
-[Projects overview](overview.md){ .portfolio-button .portfolio-button--primary }
+[Projects overview](../index.md){ .portfolio-button .portfolio-button--primary }
 [BankChurn debugging pattern](bankchurn-debugging.md){ .portfolio-button }
 [Technical evidence](../technical-evidence.md){ .portfolio-button }
 </div>
@@ -198,7 +198,7 @@ should be measured against runtime behavior, not only model score.
 
 - [BankChurn debugging deep dive](bankchurn-debugging.md)
 - [Technical evidence overview](../technical-evidence.md)
-- [Projects overview](overview.md)
+- [Projects overview](../index.md)
 
 ---
 

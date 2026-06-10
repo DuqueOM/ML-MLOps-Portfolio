@@ -2,7 +2,7 @@
 
 <div class="portfolio-hero portfolio-hero--profile" markdown="1">
 <div class="portfolio-hero-copy" markdown="1">
-<span class="portfolio-eyebrow">Candidate profile</span>
+<span class="portfolio-eyebrow">Production ML · MLOps · Applied AI</span>
 
 # From operations to production ML
 
@@ -26,231 +26,254 @@ ownership, trade-offs, documentation or operating under pressure.
 </div>
 
 <div class="portfolio-actions" markdown="1">
-[Contact me](contact.md){ .portfolio-button .portfolio-button--primary }
+[Watch the 3-min demo](https://youtu.be/7dFFqq2ROPw){ .portfolio-button .portfolio-button--primary }
 [Recruiter brief](recruiter-brief.md){ .portfolio-button }
-[Projects](projects/overview.md){ .portfolio-button }
+[Contact](contact.md){ .portfolio-button }
 </div>
 </div>
-<figure class="portfolio-profile-frame">
+<figure class="portfolio-profile-frame portfolio-profile-frame--compact">
 <img src="media/profile/duque-ortega-mutis.webp" alt="Duque Ortega Mutis in a professional portrait">
 </figure>
 </div>
 
-## What I Am Looking For
-
-<div class="portfolio-card-grid" markdown="1">
-<div class="portfolio-card" markdown="1">
-<small>Target level</small>
-<h3>Entry-level / junior</h3>
-<p>I am looking for teams where I can contribute early, learn quickly and grow
-toward production ML work under experienced technical guidance.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Best-fit roles</small>
-<h3>MLOps, ML engineering and applied AI</h3>
-<p>Entry-level / junior MLOps or Production ML, Machine Learning Engineer,
-AI Engineer I, ML Platform or Data Engineering roles with ML workflows.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Operating lens</small>
-<h3>Systems people can trust</h3>
-<p>I care about testing, deployment, monitoring, cost, documentation and the
-failure modes that appear after a model leaves the notebook.</p>
-</div>
-</div>
-
-## Career Timeline
-
-<div class="portfolio-card-grid portfolio-card-grid--compact" markdown="1">
-<div class="portfolio-card" markdown="1">
-<small>2010-2024</small>
-<h3>Business operations</h3>
-<p>Teams, budgets, vendors, customer pressure and process ownership across
-multiple ventures.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>2024-2026</small>
-<h3>Pivot to Data Science and MLOps</h3>
-<p>Applied ML projects, TripleTen training and a production-minded portfolio
-built around services rather than notebooks.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>2026</small>
-<h3>Reusable MLOps template</h3>
-<p>Portfolio lessons packaged into a starter system with serving, CI/CD,
-deployment and operating guardrails.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Now</small>
-<h3>First formal ML/MLOps role</h3>
-<p>Looking for an entry-level / junior role where operational maturity can
-support real engineering growth.</p>
-</div>
-</div>
-
-## Operations Experience In Numbers
-
 <div class="portfolio-stat-strip" markdown="1">
 <div class="portfolio-stat">
-<small>People leadership</small>
-<strong>20 people</strong>
-<span>Teams coordinated under real operating pressure.</span>
+<small>Service modules</small>
+<strong>3 ML systems</strong>
+<span>Churn classification, financial NLP, demand forecasting — one monorepo.</span>
 </div>
 <div class="portfolio-stat">
-<small>Budget ownership</small>
-<strong>$20K USD</strong>
-<span>Operating budgets where cost discipline mattered.</span>
+<small>Validation surface</small>
+<strong>395+ tests</strong>
+<span>Unit, integration, API contract, infra and smoke coverage.</span>
 </div>
 <div class="portfolio-stat">
-<small>Technical coordination</small>
-<strong>8 developers</strong>
-<span>Freelance developers directed across delivery work.</span>
+<small>Deployment evidence</small>
+<strong>GKE + EKS</strong>
+<span>Real multi-cloud runtime windows, screenshots and CLI evidence.</span>
 </div>
 <div class="portfolio-stat">
-<small>Delivery record</small>
-<strong>15+ projects</strong>
-<span>Web projects delivered with about 90% on-time completion.</span>
+<small>Architecture record</small>
+<strong>18 ADRs</strong>
+<span>Decisions with alternatives rejected and revisit triggers.</span>
 </div>
 </div>
 
-## Education And Certifications
+## Three Production Incidents, Diagnosed From First Principles
+
+The fastest way to evaluate this portfolio is through the failures it survived.
+Each incident below was measured, root-caused, fixed and documented — not
+patched by trial and error.
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Serving under load</small>
+<h3>81% error rate → 0%</h3>
+<p>A load test exposed an 81% error rate. Root cause: <code>uvicorn --workers</code>
+inside Kubernetes — shared CPU budget produces thrashing, not parallelism.
+Redesigned the inference path with <code>asyncio</code> + <code>ThreadPoolExecutor</code>
+(GIL analysis documented). Errors dropped to 0% and CPU requests halved
+(2000m → 1000m).</p>
+
+[Read the debugging deep dive](projects/bankchurn-debugging.md){ .portfolio-button }
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Explainability</small>
+<h3>SHAP returning all zeros</h3>
+<p>TreeExplainer is silently incompatible with a <code>StackingClassifier</code>
+ensemble. Evaluated four alternatives before deciding; fixed with
+<code>KernelExplainer</code> computed in the original feature space so
+explanations stay meaningful to the business.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Autoscaling</small>
+<h3>HPA that could never scale down</h3>
+<p>Memory-based HPA plus the fixed RAM footprint of a loaded ML model makes
+scale-down mathematically impossible. Switched to CPU-only HPA: 3 → 1 pods
+in 8 minutes, with the reasoning captured in
+<a href="decisions/001-cpu-only-hpa/">ADR-001</a>.</p>
+</div>
+</div>
+
+## System View
+
+<div class="portfolio-split" markdown="1">
+<div markdown="1">
+
+The strongest signal is the system shape. Each project proves a different ML
+problem, but the portfolio is one end-to-end operating environment: code,
+validation, serving, infrastructure, observability and handoff documentation.
+
+Production ML is rarely just the model. The work is in making the model
+testable, deployable, explainable and safe enough for another person to operate.
+
+</div>
+<div class="portfolio-callout" markdown="1">
+<strong>Reviewer takeaway</strong>
+
+Every claim on this page maps to inspectable evidence: source, tests,
+screenshots, ADRs, deployment notes. Nothing here asks to be taken on faith.
+</div>
+</div>
+
+<div class="portfolio-system-map" markdown="1">
+<div class="portfolio-system-node" markdown="1">
+<small>1. Data and features</small>
+<h3>Leakage-aware inputs</h3>
+<p>Temporal validation, cost-aware thresholds, text preprocessing and PySpark
+ETL appear where the project needs them.</p>
+</div>
+
+<div class="portfolio-system-node" markdown="1">
+<small>2. Model development</small>
+<h3>Metrics with context</h3>
+<p>AUC, accuracy, R², explainability and dataset limitations are documented
+instead of treated as leaderboard one-liners.</p>
+</div>
+
+<div class="portfolio-system-node" markdown="1">
+<small>3. Serving and batch paths</small>
+<h3>APIs beyond notebooks</h3>
+<p>FastAPI, prediction contracts, smoke checks and batch-oriented paths make
+the models callable and reviewable.</p>
+</div>
+
+<div class="portfolio-system-node" markdown="1">
+<small>4. Runtime packaging</small>
+<h3>Docker and Kubernetes</h3>
+<p>Each service has runtime artifacts that can be built, scanned, deployed and
+debugged outside a local notebook.</p>
+</div>
+
+<div class="portfolio-system-node" markdown="1">
+<small>5. Cloud evidence</small>
+<h3>GCP and AWS</h3>
+<p>GKE and EKS deployment windows, Artifact Registry/ECR paths, Terraform,
+storage buckets and deployment screenshots.</p>
+</div>
+
+<div class="portfolio-system-node" markdown="1">
+<small>6. Operations and handoff</small>
+<h3>Monitoring, ADRs and runbooks</h3>
+<p>Prometheus/Grafana, MLflow evidence, troubleshooting notes and architecture
+decisions make the system easier to operate.</p>
+</div>
+</div>
+
+## Service Modules
+
+<div class="portfolio-project-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Banking churn service</small>
+<h3><a href="projects/bankchurn/">BankChurn Predictor</a></h3>
+<div class="portfolio-badge-row" markdown="1">
+<span class="portfolio-badge">AUC 0.87</span>
+<span class="portfolio-badge">90% coverage</span>
+<span class="portfolio-badge">FastAPI · K8s · SHAP</span>
+</div>
+<p>Churn classification with cost-aware threshold tuning (a missed churner
+costs more than a retention offer), SHAP explanations and the serving-path
+hardening documented in the incidents above.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Financial NLP service</small>
+<h3><a href="projects/nlpinsight/">NLPInsight Analyzer</a></h3>
+<div class="portfolio-badge-row" markdown="1">
+<span class="portfolio-badge">80.6% accuracy</span>
+<span class="portfolio-badge">98% coverage</span>
+<span class="portfolio-badge">CPU-friendly serving</span>
+</div>
+<p>Financial sentiment classification with a lightweight production path and a
+documented transformer trade-off: explainable, low-cost inference was chosen
+over a heavier model that would be harder to operate.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Demand forecasting pipeline</small>
+<h3><a href="projects/chicagotaxi/">ChicagoTaxi Pipeline</a></h3>
+<div class="portfolio-badge-row" markdown="1">
+<span class="portfolio-badge">R² 0.96</span>
+<span class="portfolio-badge">6.3M rows</span>
+<span class="portfolio-badge">PySpark · temporal CV</span>
+</div>
+<p>Demand forecasting over 6.3M trips with PySpark ETL, temporal validation
+and a data-leakage correction that survived honest re-evaluation.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Flagship open source</small>
+<h3><a href="template/">ML-MLOps Production Template</a></h3>
+<div class="portfolio-badge-row" markdown="1">
+<span class="portfolio-badge">32 anti-patterns</span>
+<span class="portfolio-badge">SLSA L2 supply chain</span>
+<span class="portfolio-badge">AUTO / CONSULT / STOP</span>
+</div>
+<p>The production lessons from all three services, packaged as a reusable
+system: serving and training templates, GKE+EKS overlays, signed images with
+SBOM attestation, closed-loop monitoring — and a governed AI-assisted
+development layer (rules, skills, audit trail) that keeps agentic coding
+reviewable and bounded.</p>
+</div>
+</div>
+
+## Engineering Decisions Worth Reading
 
 <div class="portfolio-card-grid portfolio-card-grid--compact" markdown="1">
 <div class="portfolio-card" markdown="1">
-<small>Formal ML training</small>
-<h3>Data Science Professional Program — TripleTen</h3>
-<p>Completed in 2026. This is the formal training layer behind the portfolio
-work: applied machine learning, data workflows, evaluation and project delivery.</p>
+<small><a href="decisions/014-single-worker-pod-ml-inference/">ADR-014</a></small>
+<h3>One uvicorn worker per pod</h3>
+<p>Horizontal scale belongs to the HPA, not to in-pod worker processes
+competing for the same CPU budget.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Cloud / platform evidence</small>
-<h3>Hands-on AWS practitioner</h3>
-<p>EKS, ECR, IRSA and Terraform were exercised across the portfolio. Multi-cloud
-parity is documented in <a href="decisions/012-security-scanner-staging-policy/">ADR-012</a>
-and <a href="decisions/013-multicloud-parity-policy/">ADR-013</a>;
-infrastructure code lives in
-<a href="https://github.com/DuqueOM/ML-MLOps-Portfolio/tree/main/infra/terraform">infra/terraform/aws/</a>.</p>
+<small><a href="decisions/015-async-inference-threadpool/">ADR-015</a></small>
+<h3>ThreadPoolExecutor for inference</h3>
+<p>CPU-bound <code>model.predict()</code> in an async endpoint blocks the event
+loop; the executor keeps health probes alive under load.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small><a href="decisions/002-emptydir-model-storage/">ADR-002</a></small>
+<h3>Models out of the image</h3>
+<p>Init container + <code>emptyDir</code> decouples model promotion from image
+rebuilds and keeps images signable and small.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small><a href="decisions/013-multicloud-parity-policy/">ADR-013</a></small>
+<h3>Multi-cloud parity policy</h3>
+<p>GCP-primary with explicit AWS parity rules — what must match, what may
+diverge, and how divergence is documented.</p>
 </div>
 </div>
 
-## What I Can Contribute Early
+[Browse all 18 ADRs](architecture/decisions.md){ .portfolio-button }
+
+## Evidence Index
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<small>ML APIs</small>
-<h3>Serving contracts</h3>
-<p>Build and test FastAPI inference services with clear request/response
-contracts.</p>
+<h3><a href="technical-evidence/">Technical evidence</a></h3>
+<p>Tests, coverage, CI/CD runs, security scanning and quality gates.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Model workflows</small>
-<h3>Experiment and model packaging</h3>
-<p>Track experiments, package models and support model versioning with MLflow.</p>
+<h3><a href="DEPLOYMENT_EVIDENCE/">Deployment evidence</a></h3>
+<p>GKE and EKS windows: screenshots, CLI transcripts, manifests, cost notes.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Deployment support</small>
-<h3>Runtime artifacts</h3>
-<p>Work with Docker, Kubernetes manifests, CI/CD and cloud deployment patterns.</p>
+<h3><a href="about/">About me</a></h3>
+<p>Career path, operations background in numbers, education and how I work.</p>
 </div>
 
-<div class="portfolio-card" markdown="1">
-<small>Data workflows</small>
-<h3>Validation and feature work</h3>
-<p>Support feature engineering, validation, PySpark jobs and leakage checks.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Documentation</small>
-<h3>Readable operating knowledge</h3>
-<p>Write decision records, runbooks and project summaries that help teams review
-and maintain systems.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Reliability mindset</small>
-<h3>Measure before guessing</h3>
-<p>Look for failure modes, monitoring gaps and cost trade-offs before they
-become production problems.</p>
-</div>
-</div>
-
-## How I Work
-
-<div class="portfolio-split" markdown="1">
-<div markdown="1">
-
-I like practical systems, clear ownership and honest measurement. If a model
-metric looks too good, I want to check for leakage. If an API fails under load,
-I want to measure before guessing. If a cloud setup is too expensive for the
-value it provides, I want to document the trade-off.
-
-I am not presenting this portfolio as years of corporate ML experience. I am
-presenting it as evidence of learning velocity, engineering discipline and a
-strong fit for teams that need an entry-level / junior teammate who already thinks about
-reliability and business impact.
-
-</div>
-<div class="portfolio-callout" markdown="1">
-<strong>Simple working principle</strong>
-
-Build the smallest system that proves the operating idea, then make the evidence
-clear enough that another engineer can review it.
-</div>
-</div>
-
-## Current Boundaries
-
-<div class="portfolio-split" markdown="1">
-<div markdown="1">
-
-I try to be precise about what this portfolio proves. It shows controlled
-production-oriented evidence: live deployment windows, load tests, CI/CD,
-Kubernetes artifacts, screenshots, ADRs and incident-style debugging. It does
-not claim years of corporate ML platform ownership or continuous production
-traffic from real users.
-
-That honesty matters to me because I want the first interview to start from the
-right place: formal entry-level / junior scope, strong operating maturity, and a clear path to
-grow inside a real team.
-
-</div>
-<div class="portfolio-callout" markdown="1">
-<strong>Best reading</strong>
-
-Early-career in ML/MLOps employment; mature in ownership, documentation,
-cost-awareness and operational reasoning.
-</div>
-</div>
-
-## Links
-
-<div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <h3><a href="https://github.com/DuqueOM">GitHub profile</a></h3>
-<p>Source code, portfolio repositories and ongoing project work.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<h3><a href="https://linkedin.com/in/duqueom">LinkedIn</a></h3>
-<p>Professional background and contact channel.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Portfolio">Portfolio source code</a></h3>
-<p>The repository behind this GitHub Pages site.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<h3><a href="https://youtu.be/7dFFqq2ROPw">Video demo</a></h3>
-<p>A guided walkthrough of the portfolio and its operating evidence.</p>
+<p>Source for everything on this site, plus the production template repo.</p>
 </div>
 </div>
 

@@ -69,15 +69,14 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Recruiter Brief: recruiter-brief.md
+  - About: about.md
   - Projects:
-      - Overview: projects/overview.md
       - BankChurn Predictor: projects/bankchurn.md
       - NLPInsight Analyzer: projects/nlpinsight.md
       - ChicagoTaxi Pipeline: projects/chicagotaxi.md
       - Production Template: template.md
   - Technical Evidence:
       - Evidence Overview: technical-evidence.md
-      - Portfolio Status: PORTFOLIO_STATUS.md
       - Deep Dive Index: technical-deep-dive.md
   - Contact: contact.md
 

@@ -149,6 +149,11 @@ body:has(.portfolio-page) .md-typeset h3 {
   box-shadow: none;
 }
 
+/* Compact variant — smaller portrait for the merged technical home. */
+.md-typeset .portfolio-profile-frame--compact {
+  width: clamp(11rem, 14vw, 13.5rem);
+}
+
 .md-typeset .portfolio-mini-profile {
   display: grid;
   grid-template-columns: 5.2rem minmax(0, 1fr);

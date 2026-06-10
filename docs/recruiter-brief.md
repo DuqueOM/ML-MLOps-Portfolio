@@ -89,7 +89,7 @@ verification.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Cost judgment</small>
-<h3><a href="../PORTFOLIO_STATUS/">Cloud paused by design</a></h3>
+<h3><a href="../DEPLOYMENT_EVIDENCE/">Cloud paused by design</a></h3>
 <p>The runtime was paused to control cost; the code, evidence and reactivation
 path remain documented.</p>
 </div>

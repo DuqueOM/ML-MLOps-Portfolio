@@ -17,8 +17,8 @@ deep dive only if you want the full technical archive.
 <div class="portfolio-actions" markdown="1">
 [Read incident writeup](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
 [Open deep dive index](technical-deep-dive.md){ .portfolio-button }
-[Check current status](PORTFOLIO_STATUS.md){ .portfolio-button }
-[Review projects](projects/overview.md){ .portfolio-button }
+[Check current status](DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
+[Review projects](index.md){ .portfolio-button }
 </div>
 </div>
 
@@ -171,7 +171,7 @@ behavior.</p>
 <p>Confirm the role fit, current status and what the portfolio is meant to show.</p>
 
 [Recruiter brief](recruiter-brief.md){ .portfolio-button }
-[Portfolio status](PORTFOLIO_STATUS.md){ .portfolio-button }
+[Portfolio status](DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -180,7 +180,7 @@ behavior.</p>
 <p>Understand the three services, the reusable template and the strongest
 technical signals without reading the whole archive.</p>
 
-[Projects overview](projects/overview.md){ .portfolio-button }
+[Home — projects and incidents](index.md){ .portfolio-button }
 [Production template](template.md){ .portfolio-button }
 </div>
 
@@ -215,7 +215,7 @@ and <code>ThreadPoolExecutor</code>.</p>
 <p>The portfolio preserves deployment proof while pausing live clusters when
 the monthly cost is not justified for a public showcase.</p>
 
-[Portfolio status](PORTFOLIO_STATUS.md){ .portfolio-button }
+[Portfolio status](DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -257,8 +257,8 @@ the system would be operated, not only trained.</p>
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<h3><a href="../projects/overview/">Projects overview</a></h3>
-<p>The three ML systems and their main results.</p>
+<h3><a href="../">Projects home</a></h3>
+<p>The three ML systems, the production incidents and their main results.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -279,7 +279,7 @@ and API references.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<h3><a href="../PORTFOLIO_STATUS/">Portfolio status</a></h3>
+<h3><a href="../DEPLOYMENT_EVIDENCE/">Portfolio status</a></h3>
 <p>What is active now, what is paused, and how to reactivate a live demo.</p>
 </div>
 </div>
