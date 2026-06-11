@@ -86,10 +86,7 @@ nav:
       - NLPInsight Analyzer: projects/nlpinsight.md
       - ChicagoTaxi Pipeline: projects/chicagotaxi.md
       - Production Template: template.md
-  - Technical Evidence:
-      - Evidence Overview: technical-evidence.md
-      - Deep Dive Index: technical-deep-dive.md
-  - Recruiter Brief: recruiter-brief.md
+  - Recruiter-Brief: recruiter-brief.md
   - About: about.md
   - Contact: contact.md
 

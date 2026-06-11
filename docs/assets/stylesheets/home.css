@@ -115,6 +115,25 @@
 .mlh-section-note { margin-top: 0.8rem; font-size: 0.95rem; }
 .mlh-kicker--amber { color: var(--mlh-amber); }
 
+/* Major section titles — Portfolio / Template are the two projects,
+   so their names carry display weight instead of hiding in a kicker. */
+.md-typeset .ml-home .mlh-sec-title {
+  font-size: clamp(2rem, 4.2vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.5rem;
+}
+.mlh-sec-sub {
+  font-family: var(--mlh-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mlh-cyan);
+  margin: 0 0 1.1rem;
+}
+.mlh-sec-sub::before { content: "▸ "; }
+.mlh-sec-sub--amber { color: var(--mlh-amber); }
+
 /* ============ HERO ============ */
 .mlh-hero {
   padding: 5.5rem 0 4.5rem;
@@ -208,6 +227,22 @@
 }
 .md-typeset .ml-home .mlh-quicklinks a:hover::after { opacity: 1; }
 
+/* Featured video chip — primary, sits left of the service buttons */
+.md-typeset .ml-home .mlh-quicklinks a.mlh-ql-video {
+  background: var(--mlh-cyan);
+  border-color: var(--mlh-cyan);
+  color: #04141A;
+  font-weight: 700;
+  box-shadow: 0 0 22px rgba(34,211,238,0.22);
+}
+.md-typeset .ml-home .mlh-quicklinks a.mlh-ql-video:hover {
+  background: var(--mlh-cyan-bright);
+  border-color: var(--mlh-cyan-bright);
+  color: #04141A;
+}
+.mlh-ql-video svg { width: 14px; height: 14px; vertical-align: -2px; margin-right: 0.4rem; }
+.md-typeset .ml-home .mlh-quicklinks a.mlh-ql-video::after { content: none; }
+
 /* ---- signature pipeline ---- */
 /* width must beat Material's `.md-typeset figure { width: fit-content }` */
 .md-typeset .ml-home .mlh-pipeline {
@@ -246,8 +281,11 @@
 }
 
 /* ============ STATS ============ */
-.mlh-stats { border-top: 1px solid var(--mlh-hairline); }
 .mlh-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); }
+.mlh-stats-row--embed {
+  border-top: 1px solid var(--mlh-hairline);
+  margin-top: 2.6rem;
+}
 .mlh-stat {
   padding: 2.4rem 1.6rem;
   border-left: 1px solid var(--mlh-hairline);
@@ -352,7 +390,18 @@
   color: var(--mlh-text); font-variant-numeric: tabular-nums;
 }
 .mlh-green { color: var(--mlh-green); }
+.mlh-case-project {
+  font-family: var(--mlh-mono);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mlh-text);
+  margin: 0 0 0.6rem;
+}
+.mlh-case-project::before { content: "▸ "; color: var(--mlh-cyan); }
 .md-typeset .ml-home .mlh-case-body h3 { font-size: clamp(1.15rem, 1.9vw, 1.45rem); font-weight: 600; margin-bottom: 1rem; }
+.mlh-case-links { display: flex; gap: 1.8rem; flex-wrap: wrap; }
 .md-typeset .ml-home .mlh-case-body h3 a { color: var(--mlh-text); text-decoration: none; }
 .md-typeset .ml-home .mlh-case-body h3 a:hover { color: var(--mlh-cyan-bright); }
 .mlh-case-body p { font-size: 1.02rem; margin: 0 0 1.6rem; max-width: 640px; }
@@ -478,6 +527,12 @@
   border-color: rgba(34,211,238,0.5);
   background: rgba(34,211,238,0.06);
 }
+.mlh-contact-links a svg {
+  width: 14px; height: 14px;
+  vertical-align: -2px; margin-right: 0.45rem;
+  color: var(--mlh-cyan);
+}
+.md-typeset .ml-home .mlh-contact-links a:hover svg { color: var(--mlh-cyan-bright); }
 .mlh-contact-meta {
   font-family: var(--mlh-mono); font-size: 0.7rem;
   letter-spacing: 0.14em; text-transform: uppercase;

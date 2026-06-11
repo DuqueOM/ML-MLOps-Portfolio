@@ -37,45 +37,45 @@ ownership, trade-offs, documentation or operating under pressure.
 Fourteen years of context, two years of code.
 
 <ol class="pf-timeline">
-  <li>
-    <span class="pf-tl-dot pf-tl-dot--amber"></span>
-    <span class="pf-tl-year">2010</span>
-    <div>
-      <h3>Operations leadership</h3>
-      <p>Fourteen years coordinating teams of 5–10 (peak 20), budgets up to
-      $20K USD, vendors, customer pressure and process failures. The origin of
-      the cost discipline and the documentation habit.</p>
-    </div>
-  </li>
-  <li>
-    <span class="pf-tl-dot"></span>
-    <span class="pf-tl-year">2024</span>
-    <div>
-      <h3>The deliberate pivot</h3>
-      <p>Full-time retraining into data science and machine learning —
-      TripleTen Data Science program.</p>
-    </div>
-  </li>
-  <li>
-    <span class="pf-tl-dot pf-tl-dot--cyan"></span>
-    <span class="pf-tl-year">2025</span>
-    <div>
-      <h3>Three services, three incidents</h3>
-      <p>BankChurn, NLPInsight and ChicagoTaxi built, tested (395+) and deployed
-      to GKE + EKS. The serving failure, the SHAP zeros and the impossible HPA
-      scale-down — measured, root-caused, documented.</p>
-    </div>
-  </li>
-  <li>
-    <span class="pf-tl-dot pf-tl-dot--green"></span>
-    <span class="pf-tl-year">2026</span>
-    <div>
-      <h3>Template, governance, certification</h3>
-      <p>TripleTen DS certificate. Open-source production template with governed
-      AI-assisted development. Preparing GCP Associate Cloud Engineer and
-      AWS ML Engineer Associate.</p>
-    </div>
-  </li>
+<li>
+<span class="pf-tl-dot pf-tl-dot--amber"></span>
+<span class="pf-tl-year">2010</span>
+<div>
+<h3>Operations leadership</h3>
+<p>Fourteen years coordinating teams of 5–10 (peak 20), budgets up to
+$20K USD, vendors, customer pressure and process failures. The origin of
+the cost discipline and the documentation habit.</p>
+</div>
+</li>
+<li>
+<span class="pf-tl-dot"></span>
+<span class="pf-tl-year">2024</span>
+<div>
+<h3>The deliberate pivot</h3>
+<p>Full-time retraining into data science and machine learning —
+TripleTen Data Science program.</p>
+</div>
+</li>
+<li>
+<span class="pf-tl-dot pf-tl-dot--cyan"></span>
+<span class="pf-tl-year">2025</span>
+<div>
+<h3>Three services, three incidents</h3>
+<p>BankChurn, NLPInsight and ChicagoTaxi built, tested (395+) and deployed
+to GKE + EKS. The serving failure, the SHAP zeros and the impossible HPA
+scale-down — measured, root-caused, documented.</p>
+</div>
+</li>
+<li>
+<span class="pf-tl-dot pf-tl-dot--green"></span>
+<span class="pf-tl-year">2026</span>
+<div>
+<h3>Template, governance, certification</h3>
+<p>TripleTen DS certificate. Open-source production template with governed
+AI-assisted development. Preparing GCP Associate Cloud Engineer and
+AWS ML Engineer Associate.</p>
+</div>
+</li>
 </ol>
 
 ## Operations Experience In Numbers

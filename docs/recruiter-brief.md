@@ -10,12 +10,6 @@
 Junior ML Engineer · production-leaning Data Scientist · MLOps —
 Mexico City hybrid or remote (LATAM / US / EU). Available in 2 weeks.
 The evidence is one click away.
-
-<div class="portfolio-actions" markdown="1">
-[:fontawesome-brands-youtube: 3-min video](https://youtu.be/7dFFqq2ROPw){ .portfolio-button .portfolio-button--primary }
-[:fontawesome-solid-envelope: Contact](contact.md){ .portfolio-button }
-[:fontawesome-brands-linkedin: LinkedIn](https://linkedin.com/in/duqueom){ .portfolio-button }
-</div>
 </div>
 
 ## Quick Screening Snapshot
@@ -235,11 +229,17 @@ proof I want to add.</p>
 ## Useful Links
 
 <div class="portfolio-actions" markdown="1">
+[:fontawesome-brands-youtube: 3-min video](https://youtu.be/7dFFqq2ROPw){ .portfolio-button .portfolio-button--primary }
+[:fontawesome-brands-linkedin: LinkedIn](https://linkedin.com/in/duqueom){ .portfolio-button }
+[:fontawesome-brands-github: GitHub](https://github.com/DuqueOM){ .portfolio-button }
+[:fontawesome-solid-envelope: Contact](contact.md){ .portfolio-button }
+</div>
+
+<div class="portfolio-actions" markdown="1">
 [:fontawesome-solid-house: Home](index.md){ .portfolio-button }
 [:fontawesome-solid-diagram-project: Projects](projects/index.md){ .portfolio-button }
 [:fontawesome-solid-cubes: Production Template](template.md){ .portfolio-button }
 [:fontawesome-solid-flask: Technical Evidence](technical-evidence.md){ .portfolio-button }
-[:fontawesome-solid-envelope: Contact](contact.md){ .portfolio-button }
 </div>
 
 </div>

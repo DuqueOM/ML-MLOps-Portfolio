@@ -1299,6 +1299,34 @@ body:has(.portfolio-page) .md-container {
 .md-typeset .portfolio-button:hover .twemoji { color: var(--portfolio-blue); }
 .md-typeset .portfolio-button--primary:hover .twemoji { color: #04141A; }
 
+/* =========================================================
+   Banner removal — inner tabs open like the home hero: plain
+   editorial intro, no panel, no frame. The legacy slate rule
+   (higher specificity) was reviving the box; both are killed.
+   ========================================================= */
+.md-typeset .portfolio-hero,
+[data-md-color-scheme="slate"] .md-typeset .portfolio-hero {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  padding: 2.2rem 0 1.2rem;
+  margin: 0 0 1rem;
+}
+.md-typeset .portfolio-hero::before { display: none; }
+
+/* Tab rail: visible separation between items (multi-word names
+   were blending together) */
+.md-tabs__item { display: inline-flex; align-items: center; }
+.md-tabs__item:not(:first-child)::before {
+  content: "/";
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.6rem;
+  color: rgba(148, 163, 184, 0.3);
+  margin-right: 0.9rem;
+}
+
 /* Project badges: subtle hover for engagement
    ------------------------------------------------------- */
 .md-typeset .portfolio-badge {
