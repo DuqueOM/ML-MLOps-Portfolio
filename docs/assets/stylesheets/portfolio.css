@@ -31,16 +31,25 @@ html { font-size: 112.5%; }
 }
 
 /* Navigation lives in the top tabs on every page — the left sidebar
-   is gone site-wide (doc pages keep their table-of-contents). */
-.md-sidebar--primary { display: none; }
+   is gone on DESKTOP ONLY. Below Material's 76.25em breakpoint the
+   primary sidebar IS the mobile drawer (hamburger menu): hiding it
+   there leaves the overlay with no menu. */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary { display: none; }
+}
 
 body:has(.portfolio-page) .md-main__inner.md-grid {
   max-width: min(92rem, calc(100vw - 2rem));
 }
 
-body:has(.portfolio-page) .md-sidebar--secondary,
-body:has(.portfolio-page) .md-sidebar--primary {
+body:has(.portfolio-page) .md-sidebar--secondary {
   display: none;
+}
+/* primary hidden on desktop only — on mobile it is the drawer menu */
+@media screen and (min-width: 76.25em) {
+  body:has(.portfolio-page) .md-sidebar--primary {
+    display: none;
+  }
 }
 
 body:has(.portfolio-page) .md-content,
