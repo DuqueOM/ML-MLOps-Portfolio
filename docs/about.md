@@ -22,7 +22,7 @@ ownership, trade-offs, documentation or operating under pressure.
 
 </div>
 <div class="portfolio-callout" markdown="1">
-<strong>How to read my seniority</strong>
+<span class="portfolio-eyebrow">How to read my seniority</span>
 
 Entry-level / junior in formal ML/MLOps employment. Experienced in ownership, pressure,
 cost-awareness and making systems easier for other people to operate.
