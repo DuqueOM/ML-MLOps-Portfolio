@@ -83,6 +83,36 @@
     }
   });
 
+  /* ---- scroll-driven horizontal case scroller ---- */
+  var hs = root.querySelector("[data-hscroll]");
+  if (hs && !reduced && window.matchMedia("(min-width: 901px)").matches) {
+    var hsSticky = hs.querySelector(".mlh-hscroll-sticky");
+    var hsTrack = hs.querySelector(".mlh-hscroll-track");
+    var hsWork = hs.closest(".mlh-work");
+    hs.classList.add("is-on");
+    if (hsWork) hsWork.classList.add("mlh-work--h");
+    var hsMax = 0;
+    function hsUpdate() {
+      var top = hs.getBoundingClientRect().top;
+      var range = hs.offsetHeight - window.innerHeight;
+      var p = range > 0 ? Math.min(1, Math.max(0, -top / range)) : 0;
+      hsTrack.style.transform = "translate3d(" + (-p * hsMax).toFixed(1) + "px,0,0)";
+    }
+    function hsMeasure() {
+      hsMax = Math.max(0, hsTrack.scrollWidth - hsSticky.clientWidth);
+      hs.style.height = (window.innerHeight + hsMax) + "px";
+      hsUpdate();
+    }
+    var hsTick = false;
+    window.addEventListener("scroll", function () {
+      if (!hsTick) { requestAnimationFrame(function () { hsUpdate(); hsTick = false; }); hsTick = true; }
+    }, { passive: true });
+    window.addEventListener("resize", hsMeasure);
+    /* re-measure after fonts/layout settle */
+    window.addEventListener("load", hsMeasure);
+    hsMeasure();
+  }
+
   /* ---- magnetic buttons (subtle: max 6px) ---- */
   if (finePointer && !reduced) {
     root.querySelectorAll("[data-magnetic]").forEach(function (el) {

@@ -20,9 +20,19 @@
   --portfolio-rose: #FB7185;
 }
 
+/* Global scale: Material defaults to a 125% root font-size, which reads
+   oversized next to normal sites. 112.5% (18px rem) shrinks every
+   rem-based size ~10% organically; body copy is re-balanced below. */
+html { font-size: 112.5%; }
+.md-typeset { font-size: 0.88rem; }
+
 .md-grid {
   max-width: 78rem;
 }
+
+/* Navigation lives in the top tabs on every page — the left sidebar
+   is gone site-wide (doc pages keep their table-of-contents). */
+.md-sidebar--primary { display: none; }
 
 body:has(.portfolio-page) .md-main__inner.md-grid {
   max-width: min(92rem, calc(100vw - 2rem));
@@ -1325,6 +1335,76 @@ body:has(.portfolio-page) .md-container {
   font-size: 0.6rem;
   color: rgba(148, 163, 184, 0.3);
   margin-right: 0.9rem;
+}
+
+/* Doc pages (ADRs, deployment evidence) inherit the editorial skin:
+   ruled dark tables with mono headers instead of default doc tables. */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--portfolio-line);
+  border-radius: 4px;
+  font-size: 0.76rem;
+  background: transparent;
+}
+.md-typeset table:not([class]) th {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--portfolio-teal);
+  background: rgba(11, 17, 32, 0.85);
+}
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--portfolio-line);
+}
+
+/* Every section heading carries the terminal prompt — the same mark
+   the home kickers use, so all tabs speak one language. */
+.md-typeset h2::before {
+  content: "▸ ";
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.62em;
+  color: var(--portfolio-teal);
+  vertical-align: 0.18em;
+  margin-right: 0.15rem;
+}
+/* home sections already carry the prompt in their kickers */
+.md-typeset .ml-home h2::before { content: none; }
+
+/* About hero: lead paragraph + offset-framed portrait (home language) */
+.md-typeset .portfolio-hero--profile p:first-of-type {
+  font-size: 1rem;
+  color: var(--portfolio-ink);
+  line-height: 1.6;
+}
+.md-typeset .portfolio-profile-frame { position: relative; }
+.md-typeset .portfolio-profile-frame::after {
+  content: "";
+  position: absolute;
+  inset: 12px -12px -12px 12px;
+  border: 1px solid var(--portfolio-line);
+  border-radius: 4px;
+  z-index: -1;
+}
+
+/* Reveals slide in horizontally — ledger rows enter from the left,
+   echoing the home case scroller's motion axis. */
+@media (prefers-reduced-motion: no-preference) {
+  .md-typeset .portfolio-card.js-reveal,
+  .md-typeset .portfolio-status-card.js-reveal,
+  .md-typeset .portfolio-step.js-reveal,
+  .md-typeset .portfolio-faq-item.js-reveal,
+  .md-typeset .portfolio-stat.js-reveal,
+  .md-typeset .portfolio-system-node.js-reveal {
+    transform: translateX(-18px);
+  }
+  .md-typeset .portfolio-card.js-reveal.is-in,
+  .md-typeset .portfolio-status-card.js-reveal.is-in,
+  .md-typeset .portfolio-step.js-reveal.is-in,
+  .md-typeset .portfolio-faq-item.js-reveal.is-in,
+  .md-typeset .portfolio-stat.js-reveal.is-in,
+  .md-typeset .portfolio-system-node.js-reveal.is-in {
+    transform: none;
+  }
 }
 
 /* Project badges: subtle hover for engagement

@@ -111,14 +111,14 @@
 
 .mlh-section { border-top: 1px solid var(--mlh-hairline); padding: 5.5rem 0; }
 .mlh-section-head { max-width: 680px; margin-bottom: 3.2rem; }
-.md-typeset .mlh-section-head h2 { font-size: clamp(1.45rem, 2.6vw, 1.95rem); font-weight: 600; }
+.md-typeset .mlh-section-head h2 { font-size: clamp(1.3rem, 2.1vw, 1.65rem); font-weight: 600; }
 .mlh-section-note { margin-top: 0.8rem; font-size: 0.95rem; }
 .mlh-kicker--amber { color: var(--mlh-amber); }
 
 /* Major section titles — Portfolio / Template are the two projects,
    so their names carry display weight instead of hiding in a kicker. */
 .md-typeset .ml-home .mlh-sec-title {
-  font-size: clamp(2rem, 4.2vw, 3rem);
+  font-size: clamp(1.7rem, 3.3vw, 2.5rem);
   font-weight: 700;
   letter-spacing: -0.025em;
   margin: 0 0 0.5rem;
@@ -162,7 +162,7 @@
   margin: 0 0 1.6rem;
 }
 .md-typeset .ml-home .mlh-display {
-  font-size: clamp(2rem, 4.4vw, 3.4rem);
+  font-size: clamp(1.8rem, 3.6vw, 2.9rem);
   font-weight: 700;
   line-height: 1.06;
   letter-spacing: -0.025em;
@@ -294,7 +294,7 @@
 .mlh-stat:first-child { border-left: none; padding-left: 0; }
 .mlh-stat-num {
   font-family: var(--mlh-display);
-  font-size: clamp(1.7rem, 2.8vw, 2.5rem);
+  font-size: clamp(1.5rem, 2.3vw, 2.1rem);
   font-weight: 700; line-height: 1;
   font-variant-numeric: tabular-nums;
 }
@@ -400,7 +400,7 @@
   margin: 0 0 0.6rem;
 }
 .mlh-case-project::before { content: "▸ "; color: var(--mlh-cyan); }
-.md-typeset .ml-home .mlh-case-body h3 { font-size: clamp(1.15rem, 1.9vw, 1.45rem); font-weight: 600; margin-bottom: 1rem; }
+.md-typeset .ml-home .mlh-case-body h3 { font-size: clamp(1.05rem, 1.6vw, 1.3rem); font-weight: 600; margin-bottom: 1rem; }
 .mlh-case-links { display: flex; gap: 1.8rem; flex-wrap: wrap; }
 .md-typeset .ml-home .mlh-case-body h3 a { color: var(--mlh-text); text-decoration: none; }
 .md-typeset .ml-home .mlh-case-body h3 a:hover { color: var(--mlh-cyan-bright); }
@@ -493,7 +493,7 @@
 /* ============ CONTACT ============ */
 .mlh-contact { padding-bottom: 9rem; }
 .md-typeset .ml-home .mlh-contact-display {
-  font-size: clamp(1.5rem, 3.2vw, 2.4rem);
+  font-size: clamp(1.35rem, 2.7vw, 2rem);
   font-weight: 600; line-height: 1.14;
   margin-bottom: 2.4rem;
 }
@@ -537,6 +537,38 @@
   font-family: var(--mlh-mono); font-size: 0.7rem;
   letter-spacing: 0.14em; text-transform: uppercase;
   color: rgba(148,163,184,0.7); margin: 0;
+}
+
+/* ============ HORIZONTAL CASE SCROLLER ============ */
+/* Default (mobile / reduced motion / no JS): the cases stack
+   vertically exactly as before. home.js adds .is-on on desktop,
+   turning vertical scroll into a horizontal slide of the panels. */
+.mlh-hscroll-hint { display: none; color: var(--mlh-cyan); }
+.mlh-work--h .mlh-hscroll-hint { display: inline; }
+.mlh-hscroll-track { max-width: 1200px; margin: 0 auto; padding: 0 28px; }
+
+.mlh-hscroll.is-on .mlh-hscroll-sticky {
+  position: sticky; top: 0; height: 100svh;
+  display: flex; align-items: center;
+  overflow: hidden;
+}
+.mlh-hscroll.is-on .mlh-hscroll-track {
+  display: flex; gap: 3rem; align-items: stretch;
+  max-width: none; margin: 0;
+  padding: 0 max(28px, calc((100vw - 1200px) / 2));
+  will-change: transform;
+}
+.mlh-hscroll.is-on .mlh-case {
+  flex: 0 0 auto;
+  width: min(860px, 74vw);
+  border: 1px solid var(--mlh-hairline);
+  border-radius: 6px;
+  background: rgba(11, 17, 32, 0.5);
+  padding: 2.2rem 2.4rem;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+}
+@media (hover: hover) {
+  .mlh-hscroll.is-on .mlh-case:hover { transform: none; border-color: rgba(34,211,238,0.35); }
 }
 
 /* ============ MOTION ============ */
