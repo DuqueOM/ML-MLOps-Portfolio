@@ -21,17 +21,17 @@ model scores. I am early-career in formal ML employment, but I am not new to
 ownership, trade-offs, documentation or operating under pressure.
 
 </div>
+<figure class="portfolio-profile-frame portfolio-profile-frame--compact">
+<img src="../media/profile/duque-ortega-mutis.webp" alt="Duque Ortega Mutis in a professional portrait">
+</figure>
+</div>
+
+</div>
 <div class="portfolio-callout" markdown="1">
 <span class="portfolio-eyebrow">How to read my seniority</span>
 
 Entry-level / junior in formal ML/MLOps employment. Experienced in ownership, pressure,
 cost-awareness and making systems easier for other people to operate.
-</div>
-
-</div>
-<figure class="portfolio-profile-frame portfolio-profile-frame--compact">
-<img src="../media/profile/duque-ortega-mutis.webp" alt="Duque Ortega Mutis in a professional portrait">
-</figure>
 </div>
 
 ## The Route
