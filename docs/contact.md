@@ -51,50 +51,21 @@ discipline.</p>
 </div>
 </div>
 
-## Contact Links
+## Contact Channels
 
-<div class="portfolio-card-grid" markdown="1">
-<div class="portfolio-card" markdown="1">
-<small>Email</small>
-<h3><a href="mailto:DuqueOrtegaMutis@gmail.com">DuqueOrtegaMutis@gmail.com</a></h3>
-<p>Best direct channel for recruiting or project conversations.</p>
+<div class="portfolio-actions" markdown="1">
+[:fontawesome-solid-envelope: DuqueOrtegaMutis@gmail.com](mailto:DuqueOrtegaMutis@gmail.com){ .portfolio-button .portfolio-button--primary }
+[:fontawesome-brands-linkedin: LinkedIn](https://linkedin.com/in/duqueom){ .portfolio-button }
+[:fontawesome-brands-github: GitHub](https://github.com/DuqueOM){ .portfolio-button }
 </div>
 
-<div class="portfolio-card" markdown="1">
-<small>LinkedIn</small>
-<h3><a href="https://linkedin.com/in/duqueom">linkedin.com/in/duqueom</a></h3>
-<p>Professional background and connection requests.</p>
-</div>
+## Evidence Links
 
-<div class="portfolio-card" markdown="1">
-<small>GitHub</small>
-<h3><a href="https://github.com/DuqueOM">github.com/DuqueOM</a></h3>
-<p>Repositories, source code and portfolio work.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Portfolio repo</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Portfolio">ML-MLOps-Portfolio</a></h3>
-<p>The source behind this GitHub Pages site.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Template repo</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template">Production Template</a></h3>
-<p>The reusable MLOps template extracted from this portfolio.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Video</small>
-<h3><a href="https://youtu.be/7dFFqq2ROPw">YouTube demo</a></h3>
-<p>A guided walkthrough of the project evidence.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Recruiter view</small>
-<h3><a href="../recruiter-brief/">Recruiter brief</a></h3>
-<p>A short screening page with target roles, fit and first-90-days contribution.</p>
-</div>
+<div class="portfolio-actions" markdown="1">
+[:fontawesome-brands-youtube: 3-min video demo](https://youtu.be/7dFFqq2ROPw){ .portfolio-button }
+[:fontawesome-brands-github: Portfolio repo](https://github.com/DuqueOM/ML-MLOps-Portfolio){ .portfolio-button }
+[:fontawesome-brands-github: Template repo](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button }
+[:fontawesome-solid-file-lines: Recruiter brief](recruiter-brief.md){ .portfolio-button }
 </div>
 
 ## Short Recruiter Summary

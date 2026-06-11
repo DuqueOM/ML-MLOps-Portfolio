@@ -41,6 +41,17 @@ scaling, and CPU-bound inference moved to
 <p><strong>Result:</strong> error rate dropped to 0% in validation and the CPU
 request was reduced by roughly 50%.</p>
 
+<svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="Serving architecture after the fix: client to FastAPI single worker, inference offloaded to a thread pool, model behind it">
+<g class="mlh-d-node"><rect x="2" y="32" width="86" height="32" rx="3"/><text x="45" y="52">client</text></g>
+<path d="M88 48 H128" class="mlh-d-edge"/>
+<g class="mlh-d-node mlh-d-accent"><rect x="128" y="32" width="150" height="32" rx="3"/><text x="203" y="52">fastapi · 1 worker</text></g>
+<path d="M278 48 H318" class="mlh-d-edge"/>
+<g class="mlh-d-node"><rect x="318" y="32" width="120" height="32" rx="3"/><text x="378" y="52">threadpool</text></g>
+<path d="M438 48 H478" class="mlh-d-edge"/>
+<g class="mlh-d-node"><rect x="478" y="32" width="80" height="32" rx="3"/><text x="518" y="52">model</text></g>
+<text x="203" y="86" class="mlh-d-note">event loop stays free — probes alive under load</text>
+</svg>
+
 [Read the full incident writeup](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
 </div>
 

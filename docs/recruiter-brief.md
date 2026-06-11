@@ -3,27 +3,18 @@
 <div class="portfolio-page" markdown="1">
 
 <div class="portfolio-hero" markdown="1">
-<span class="portfolio-eyebrow">Recruiter-friendly screening view</span>
+<span class="portfolio-eyebrow">Recruiter screening view · 90 seconds</span>
 
 # ML engineer who builds systems that survive production
 
-3 minutes of evidence: three services deployed on GKE + EKS, three incidents
-measured and root-caused, and an open-source production template that packaged
-the lessons. Early-career in formal ML employment — that is stated once and
-not repeated.
+Junior ML Engineer · production-leaning Data Scientist · MLOps —
+Mexico City hybrid or remote (LATAM / US / EU). Available in 2 weeks.
+The evidence is one click away.
 
-Before tech, I spent 14 years running operations — teams, budgets, vendors,
-delivery under pressure. That is where the cost discipline, documentation habit
-and ownership come from. The engineering is the recent chapter; the production
-thinking has been there since before the first model.
-
-<div class="portfolio-actions portfolio-actions--anchors" markdown="1">
-[Snapshot](#quick-screening-snapshot){ .portfolio-button .portfolio-button--primary }
-[Proof Points](#key-proof-points){ .portfolio-button }
-[Roles](#best-fit-roles){ .portfolio-button }
-[Background](#why-the-background-matters){ .portfolio-button }
-[Difference](#what-makes-me-different){ .portfolio-button }
-[90 Days](#first-90-days-contribution){ .portfolio-button }
+<div class="portfolio-actions" markdown="1">
+[:fontawesome-brands-youtube: 3-min video](https://youtu.be/7dFFqq2ROPw){ .portfolio-button .portfolio-button--primary }
+[:fontawesome-solid-envelope: Contact](contact.md){ .portfolio-button }
+[:fontawesome-brands-linkedin: LinkedIn](https://linkedin.com/in/duqueom){ .portfolio-button }
 </div>
 </div>
 
@@ -60,44 +51,6 @@ infrastructure code.</p>
 </div>
 </div>
 
-<div class="portfolio-callout" markdown="1">
-<strong>Level:</strong> Early-career in formal ML/MLOps employment. The scope,
-compensation band and code-review dynamic of a junior role are the right fit.
-The operations maturity is a contribution, not a claim of seniority.
-</div>
-
-## Key Proof Points
-
-<div class="portfolio-card-grid portfolio-card-grid--compact" markdown="1">
-<div class="portfolio-card" markdown="1">
-<small>Incident: serving</small>
-<h3><a href="../projects/bankchurn-debugging/">81% errors → 0%</a></h3>
-<p>Load test exposed a Kubernetes serving failure. Root cause: uvicorn worker
-contention. Fixed with asyncio + ThreadPoolExecutor. CPU request halved.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Incident: explainability</small>
-<h3>SHAP returning all zeros</h3>
-<p>TreeExplainer silently incompatible with a StackingClassifier ensemble.
-Evaluated four alternatives; fixed with KernelExplainer in original feature space.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Incident: autoscaling</small>
-<h3>HPA that could never scale down</h3>
-<p>Memory-based HPA plus fixed ML model footprint makes scale-down mathematically
-impossible. Switched to CPU-only HPA: 3 → 1 pods in 8 minutes.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Reusable system</small>
-<h3><a href="../template/">Production template</a></h3>
-<p>32 anti-patterns, 28 ADRs, SLSA L2 supply chain, governed AI-assisted
-development — all packaged as reusable defaults for the next ML service.</p>
-</div>
-</div>
-
 ## Best-Fit Roles
 
 <div class="portfolio-card-grid" markdown="1">
@@ -127,30 +80,6 @@ PySpark, validation, feature engineering, cloud storage.</p>
 <h3>MLOps Engineer</h3>
 <p>Serving, CI/CD, monitoring, MLflow hygiene, deployment artifacts and
 reliability improvements for ML systems in production.</p>
-</div>
-</div>
-
-## Why The Background Matters
-
-<div class="portfolio-split" markdown="1">
-<div markdown="1">
-
-Most ML portfolios show model scores. This one shows what happens after the
-model works: APIs, tests, deployment artifacts, incidents diagnosed from first
-principles, monitoring, cost decisions and documentation another person can
-review.
-
-The 14 years in operations are the source of the cost discipline, the
-documentation habit and the bias toward ownership. The engineering is the
-recent chapter — and three deployed services, three root-caused incidents and
-one extracted production template are the proof.
-
-</div>
-<div class="portfolio-callout" markdown="1">
-<strong>One sentence on level</strong>
-
-Early-career in formal ML/MLOps employment. The right seat is junior — that is
-the honest scope, the right compensation band and where the learning happens.
 </div>
 </div>
 
@@ -239,38 +168,6 @@ understand the story.</p>
 </div>
 </div>
 
-## Suggested Screening Questions
-
-<div class="portfolio-card-grid" markdown="1">
-<div class="portfolio-card" markdown="1">
-<small>Debugging</small>
-<h3>Ask about the 81% API error rate</h3>
-<p>The important signal is the diagnosis process: how I moved from symptoms to
-root cause, fixed the serving path and verified the result.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Product thinking</small>
-<h3>Ask why I built the template</h3>
-<p>The template shows how I converted repeated portfolio lessons into reusable
-guardrails for future ML services.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Cost judgment</small>
-<h3>Ask about GCP vs AWS trade-offs</h3>
-<p>The cloud comparison is useful because it connects technical deployment
-evidence with operating cost and scope control.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Self-awareness</small>
-<h3>Ask what I would improve next</h3>
-<p>This opens the most honest conversation: where the portfolio is strong,
-where it is still controlled evidence, and how I would evolve it on a team.</p>
-</div>
-</div>
-
 ## What I Am Building Next
 
 <div class="portfolio-card-grid" markdown="1">
@@ -337,26 +234,12 @@ proof I want to add.</p>
 
 ## Useful Links
 
-<div class="portfolio-card-grid" markdown="1">
-<div class="portfolio-card" markdown="1">
-<h3><a href="../">Home</a></h3>
-<p>Personal-professional story, target roles and working style.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<h3><a href="../template/">Production Template</a></h3>
-<p>The reusable MLOps project that best summarizes the portfolio.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<h3><a href="../technical-evidence/">Technical Evidence</a></h3>
-<p>Deeper proof for technical hiring managers.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<h3><a href="../contact/">Contact</a></h3>
-<p>Email, LinkedIn, GitHub, video demo and repository links.</p>
-</div>
+<div class="portfolio-actions" markdown="1">
+[:fontawesome-solid-house: Home](index.md){ .portfolio-button }
+[:fontawesome-solid-diagram-project: Projects](projects/index.md){ .portfolio-button }
+[:fontawesome-solid-cubes: Production Template](template.md){ .portfolio-button }
+[:fontawesome-solid-flask: Technical Evidence](technical-evidence.md){ .portfolio-button }
+[:fontawesome-solid-envelope: Contact](contact.md){ .portfolio-button }
 </div>
 
 </div>
