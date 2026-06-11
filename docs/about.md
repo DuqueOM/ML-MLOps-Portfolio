@@ -27,7 +27,6 @@ ownership, trade-offs, documentation or operating under pressure.
 Entry-level / junior in formal ML/MLOps employment. Experienced in ownership, pressure,
 cost-awareness and making systems easier for other people to operate.
 </div>
-</div>
 
 </div>
 <figure class="portfolio-profile-frame portfolio-profile-frame--compact">
