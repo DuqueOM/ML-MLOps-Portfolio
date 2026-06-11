@@ -13,7 +13,7 @@ into the detailed docs only when useful.
 
 <div class="portfolio-actions" markdown="1">
 [Back to evidence overview](technical-evidence.md){ .portfolio-button .portfolio-button--primary }
-[Current portfolio status](PORTFOLIO_STATUS.md){ .portfolio-button }
+[Current portfolio status](DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
 </div>
 </div>
 

@@ -1,55 +1,105 @@
 ---
-description: Retrain an ML model — data validation, training, evaluation against baseline, MLflow registration, deployment prep
+description: Model retraining workflow — triggered by drift alert or manual request
 ---
 
-## Model Retraining Workflow
+# /retrain Workflow
 
-1. Ask the user which service to retrain: BankChurn, NLPInsight, or ChicagoTaxi
+## 1. Identify the Service
 
+Determine which service needs retraining and why:
+- Drift alert: check PSI scores in Prometheus
+- Metric degradation: check rolling metrics in Grafana
+- Manual request: document reason
+
+## 2. Download Fresh Data
+
+```bash
+gsutil cp gs://${DATA_BUCKET}/${SERVICE}/production_data_latest.csv data/raw/
+```
 // turbo
-2. Validate training data integrity:
-   ```bash
-   python -c "
-   import pandas as pd
-   df = pd.read_csv('data/train.csv')
-   print(f'Shape: {df.shape}')
-   print(f'Nulls: {df.isnull().sum().sum()}')
-   print(f'Duplicates: {df.duplicated().sum()}')
-   "
-   ```
 
-3. Run the training script:
-   ```bash
-   python scripts/train_production_models.py --service <service-name>
-   ```
+## 3. Validate Data
 
-4. Evaluate against baseline metrics (invoke the `model-retrain` skill for thresholds):
-   - BankChurn: AUC ≥ 0.85, F1 ≥ 0.60, no regression >2%
-   - NLPInsight: Accuracy ≥ 0.95, F1-weighted ≥ 0.95
-   - ChicagoTaxi: R² ≥ 0.75, RMSE ≤ $7,500
+```bash
+python -c "
+from src.${SERVICE_SLUG}.schemas import ServiceInputSchema
+import pandas as pd
+df = pd.read_csv('data/raw/production_data_latest.csv')
+ServiceInputSchema.validate(df)
+print(f'OK: {len(df)} rows')
+"
+```
 
-5. If metrics pass, register in MLflow:
-   ```bash
-   python scripts/register_model.py --service <service-name> --version v${VERSION}
-   ```
+## 4. Execute Training
 
-6. Upload model artifact to GCS:
-   ```bash
-   gsutil cp models/<service>/model.joblib \
-     gs://ml-portfolio-duque-om-202602-ml-models-production/<service>/v${VERSION}/
-   ```
+```bash
+python src/${SERVICE_SLUG}/training/train.py \
+  --data data/raw/production_data_latest.csv \
+  --experiment "${SERVICE}-retrain-$(date +%Y%m%d)" \
+  --optuna-trials 50
+```
 
-7. Update the ConfigMap with new model version:
-   ```bash
-   kubectl edit configmap <service>-config
-   ```
+## 5. Evaluate Quality Gates
 
-8. Deploy using the `/release` workflow or manual `kubectl apply -k`
+Run quality gate checks. **ALL must pass — no exceptions**:
 
-// turbo
-9. Run load test to verify inference latency:
-   ```bash
-   python scripts/load_test_services.py --service <service-name> --users 10 --duration 30
-   ```
+| Gate | Condition | Typical Threshold |
+|------|-----------|------------------|
+| Primary metric | `new_auc >= MIN_THRESHOLD` | ROC-AUC >= 0.80 |
+| No regression | `new_auc >= prod_auc * 0.95` | < 5% drop |
+| Fairness | `DIR >= 0.80` per protected attribute | Four-fifths rule |
+| Latency | `new_p95 <= prod_p95 * 1.20` | No more than 20% slower |
+| Leakage check | `auc < 0.99` | Suspiciously high = investigate |
 
-10. If any step fails, document the failure reason and keep current production model active
+```bash
+# Verify quality gates programmatically
+python -c "
+import joblib, pandas as pd
+from sklearn.metrics import roc_auc_score
+
+pipe = joblib.load('models/model.joblib')
+X_test = pd.read_csv('data/test_features.csv')
+y_test = pd.read_csv('data/test_labels.csv').squeeze()
+y_prob = pipe.predict_proba(X_test)[:, 1]
+auc = roc_auc_score(y_test, y_prob)
+print(f'ROC-AUC: {auc:.4f}')
+assert auc >= 0.80, f'FAIL: {auc:.4f} < 0.80'
+assert auc < 0.99, f'LEAKAGE?: {auc:.4f} suspiciously high'
+print('All gates passed')
+"
+```
+
+## 6a. If ALL PASS — Promote
+
+```bash
+# Promote in MLflow
+python scripts/promote_model.py --service ${SERVICE} --version ${NEW_VERSION}
+
+# Upload model
+gsutil cp models/model.joblib gs://${MODEL_BUCKET}/${SERVICE}/model.joblib
+aws s3 cp models/model.joblib s3://${MODEL_BUCKET}/${SERVICE}/model.joblib
+
+# Rolling restart
+kubectl rollout restart deployment/${SERVICE}-predictor -n ${NAMESPACE}
+```
+
+## 6b. If ANY FAIL — Do Not Promote
+
+```bash
+gh issue create \
+  --title "Retraining quality gate failure: ${SERVICE}" \
+  --body "Failed gates: ${FAILED_GATES}" \
+  --label "ml-retraining,quality-gate-failure"
+```
+
+## 7. Update Reference Data
+
+```bash
+python src/${SERVICE_SLUG}/monitoring/drift_detection.py --update-reference
+```
+
+## 8. Verify Deployment
+
+- Check pods restarted and healthy
+- Verify new model_version in `/metrics`
+- Run `/drift-check` post-deploy to establish new baseline

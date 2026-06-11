@@ -1,51 +1,108 @@
 ---
 trigger: glob
-globs: "**/*.tf,**/*.tfvars"
+globs: ["**/*.tf", "**/*.tfvars"]
+description: Terraform IaC patterns for multi-cloud ML infrastructure
 ---
 
-# Terraform Conventions
+# Terraform Rules
 
-## File Structure (split-file layout per cloud)
-- versions.tf — terraform block, required_providers, backend config
-- main.tf — provider config, secrets lookup (locals)
-- variables.tf — all input variables with description + type
-- network.tf — VPC, subnets, private service connection
-- compute.tf — GKE/EKS cluster + node pool
-- storage.tf — GCS/S3 buckets (models, datasets, mlflow)
-- database.tf — Cloud SQL / RDS for MLflow
-- registry.tf — Artifact Registry / ECR repositories
-- iam.tf — service accounts, Workload Identity / IRSA bindings (GCP only)
-- route53.tf — DNS + ACM certificate (AWS only)
-- outputs.tf — all output values
+## Remote State (MANDATORY)
 
-## Variables
-- ALL variables MUST have `description` and `type`
-- Use compatible release pinning (~=) for provider versions
-- Sensitive variables must be marked `sensitive = true`
-- Default values only when there is a safe, obvious default
+NEVER commit `terraform.tfstate` to the repository. Always use remote backends:
 
-## Resource Tagging (required on all resources)
+- **GCP**: `backend "gcs" { bucket = "...-terraform-state" }`
+- **AWS**: `backend "s3" { bucket = "...-terraform-state", dynamodb_table = "...-lock" }`
+
+## Secrets Management
+
+- NEVER put secrets in `.tfvars` or committed files
+- Use `google_secret_manager_secret` (GCP) or `aws_secretsmanager_secret` (AWS)
+- Reference secrets via data sources or environment variables
+
+## Variable Conventions
+
+Every variable MUST have:
 ```hcl
-labels = {
-  project     = "ml-portfolio"
-  environment = var.environment
-  managed-by  = "terraform"
-  service     = var.service_name
+variable "machine_type" {
+  description = "GKE node pool machine type"
+  type        = string
+  default     = "e2-medium"
 }
 ```
 
-## State Management
-- Remote state in GCS (GCP) or S3 (AWS) with state locking
-- Never commit .tfstate files to Git
-- Use workspaces or directory-based environments (dev/staging/prod)
+## Environment Separation
 
-## Security
-- NEVER hardcode credentials, tokens, or secrets in .tf files
-- Use Workload Identity (GCP) or IRSA (AWS) for service authentication
-- Service accounts with minimal required permissions (least privilege)
+- `staging.tfvars` — smaller instances, preemptible/spot nodes, 1 replica
+- `terraform.tfvars` (production) — on-demand nodes, autoscaling, HA configuration
+- Same modules, different scale parameters
 
-## Workflow
-1. `terraform fmt` before commit
-2. `terraform validate` in CI
-3. `terraform plan` reviewed before apply
-4. `terraform apply` only from CI/CD or with explicit approval
+## File Organization
+
+```
+infra/terraform/
+├── gcp/
+│   ├── main.tf          # Provider, backend
+│   ├── compute.tf       # GKE cluster, node pools
+│   ├── storage.tf       # GCS buckets, Artifact Registry
+│   ├── database.tf      # Cloud SQL
+│   ├── network.tf       # VPC, subnets, firewall
+│   ├── iam.tf           # Service accounts, Workload Identity
+│   ├── secrets.tf       # Secret Manager
+│   ├── outputs.tf       # Cluster endpoint, registry URL
+│   ├── variables.tf     # All variables
+│   ├── terraform.tfvars # Production values
+│   └── staging.tfvars   # Staging values
+└── aws/
+    ├── main.tf          # Provider, backend
+    ├── compute.tf       # EKS cluster, node groups
+    ├── storage.tf       # S3 buckets, ECR
+    ├── database.tf      # RDS PostgreSQL
+    ├── network.tf       # VPC, subnets, security groups
+    ├── iam.tf           # IRSA, OIDC provider
+    ├── secrets.tf       # Secrets Manager
+    ├── outputs.tf
+    ├── variables.tf
+    ├── terraform.tfvars
+    └── staging.tfvars
+```
+
+## Security Baseline (NON-NEGOTIABLE)
+
+- KMS encryption on all storage (S3: `aws:kms`, GCS: CMEK where applicable)
+- Public access blocked on all buckets
+- Access logging to dedicated bucket (not self-referential)
+- Versioning enabled on data and model buckets
+- IAM least privilege (read-only for serving, read-write for MLflow)
+- Network policies in K8s
+- Private nodes in GKE
+- Database: SSL required, IAM auth enabled
+
+## Security Scanning
+
+- `tfsec` for static analysis of Terraform configurations
+- `checkov` for compliance checks
+- Both run in CI (`ci-infra.yml`) on every change to `infra/`
+
+## Budget Alerts
+
+Always include budget alerting:
+```hcl
+resource "google_billing_budget" "ml_budget" {
+  amount { specified_amount { units = var.monthly_budget } }
+  threshold_rules { threshold_percent = 0.5 }
+  threshold_rules { threshold_percent = 0.9 }
+}
+```
+
+## Lifecycle Rules
+
+```hcl
+lifecycle_rule {
+  condition { age = var.archive_after_days }
+  action    { type = "SetStorageClass", storage_class = "NEARLINE" }
+}
+lifecycle_rule {
+  condition { age = var.delete_after_days }
+  action    { type = "Delete" }
+}
+```

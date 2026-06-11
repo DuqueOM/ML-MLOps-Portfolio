@@ -1,42 +1,75 @@
 ---
 trigger: glob
-globs: "**/Dockerfile*,**/docker-compose*.yml,**/docker-compose*.yaml"
+globs: ["**/Dockerfile*", "docker-compose*.yml", "docker-compose*.yaml"]
+description: Docker patterns for ML services — multi-stage builds, no embedded models
 ---
 
-# Docker Conventions
+# Docker Rules
 
-## Dockerfile Structure
-- Multi-stage builds: builder stage (install deps) → production stage (copy artifacts)
-- Base image: `python:3.11-slim` for ML services
-- Non-root USER in production stage
-- HEALTHCHECK with curl to /health endpoint
-- COPY requirements first (layer caching), then app code
-- No COPY of secrets, .env files, or model artifacts into image
+## Dockerfile Template
 
-## Build Patterns
-- Pin base image tags (never use `latest`)
-- Use `.dockerignore` to exclude: `.git/`, `__pycache__/`, `*.pyc`, `models/`, `.env`
-- Set `PYTHONDONTWRITEBYTECODE=1` and `PYTHONUNBUFFERED=1`
-- Install only production dependencies (no dev/test packages)
+```dockerfile
+FROM python:3.11-slim AS base
 
-## Model Loading
-- Models downloaded at runtime from GCS/S3 via init container or startup script
-- Never bake model artifacts into Docker images (ADR-002)
-- Use emptyDir volume mount for model storage in K8s pods
+WORKDIR /app
 
-## Security
-- Run as non-root user (UID 1000)
-- No `--privileged` flag
-- Scan images with `trivy` or `grype` in CI
-- Use `COPY --chown=appuser:appuser` instead of chmod after copy
+# System dependencies (if needed)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-## docker-compose (Development Only)
-- Used for local development and integration testing
-- Expose ports only on 127.0.0.1 for local services
-- Use named volumes for persistent data (models, databases)
-- Include health checks matching K8s liveness probes
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-## Registry
-- GCP: `us-central1-docker.pkg.dev/ml-portfolio-duque-om-202602/ml-portfolio-images/`
-- AWS: `<account-id>.dkr.ecr.us-east-1.amazonaws.com/`
-- Tag format: `<service-name>:v<semver>` (e.g., `bankchurn-predictor:v3.0.0`)
+COPY app/ app/
+COPY src/ src/
+
+# Non-root user
+RUN useradd -m -u 1000 appuser
+USER appuser
+
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Single worker — K8s HPA manages scale
+CMD ["uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8000"]
+```
+
+## Rules
+
+### NEVER include in Docker image:
+- Model artifacts (`models/`) — downloaded via init container
+- Raw data (`data/raw/`) — stored in GCS/S3
+- Test files (`tests/`) — not needed in production
+- `.git/` directory
+- Secrets or credentials
+
+### ALWAYS include:
+- `.dockerignore` excluding: `models/`, `data/raw/`, `*.pyc`, `__pycache__`, `tests/`, `.git/`
+- `HEALTHCHECK` instruction
+- Non-root `USER`
+- `--no-cache-dir` on pip install
+- Single `CMD` with uvicorn (no `--workers`)
+
+### Image Tagging:
+- Tags are IMMUTABLE — never overwrite an existing tag
+- Use semantic versioning: `v1.2.3`
+- Always tag with git commit SHA as well: `sha-abc1234`
+
+### Multi-stage builds (when needed):
+```dockerfile
+FROM python:3.11-slim AS builder
+COPY requirements.txt .
+RUN pip install --no-cache-dir --target=/deps -r requirements.txt
+
+FROM python:3.11-slim AS runtime
+COPY --from=builder /deps /usr/local/lib/python3.11/site-packages
+COPY app/ app/
+COPY src/ src/
+```
+
+### Security:
+- Scan with `trivy` in CI before pushing
+- Pin base image to specific digest when possible
+- No `apt-get install` without `--no-install-recommends`
+- Remove build tools in same RUN layer if used

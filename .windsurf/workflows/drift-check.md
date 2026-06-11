@@ -1,47 +1,76 @@
 ---
-description: Run PSI-based drift detection on ML models, analyze results, and trigger retraining if needed
+description: Run PSI drift analysis for one or all services
 ---
 
-## Drift Check Workflow
+# /drift-check Workflow
 
-1. Ask the user which service to check (or all 3)
+## 1. Select Target
 
+Choose which service(s) to check:
+- Single service: `${SERVICE}`
+- All services: iterate over project services
+
+## 2. Download Current Production Data
+
+```bash
+gsutil cp gs://${DATA_BUCKET}/${SERVICE}/production_data_latest.csv data/production/
+```
 // turbo
-2. Verify drift detection infrastructure is running:
-   ```bash
-   kubectl get cronjob drift-detection
-   kubectl get jobs -l app=drift-detection --sort-by=.metadata.creationTimestamp | tail -5
-   ```
 
-3. Trigger a manual drift check if needed:
+## 3. Run Drift Detection
+
+```bash
+python src/${SERVICE_SLUG}/monitoring/drift_detection.py \
+  --reference data/reference/${SERVICE_SLUG}_reference.csv \
+  --current data/production/production_data_latest.csv \
+  --output drift_report_$(date +%Y%m%d).json
+```
+
+## 4. Review PSI Scores
+
+For each feature, check against thresholds:
+```
+PSI < 0.10:  ✅ No drift
+0.10 ≤ PSI < 0.20: ⚠️ Warning — monitor
+PSI ≥ 0.20:  🚨 Alert — action required
+```
+
+## 5. Push Metrics to Prometheus
+
+```bash
+python src/${SERVICE_SLUG}/monitoring/drift_detection.py --push-metrics
+```
 // turbo
-   ```bash
-   kubectl create job drift-check-manual --from=cronjob/drift-detection
-   ```
 
-4. Wait for completion and collect results:
-   ```bash
-   kubectl wait --for=condition=complete job/drift-check-manual --timeout=300s
-   kubectl logs job/drift-check-manual
-   ```
+## 6. Decision Tree
 
-5. Analyze PSI values per feature (invoke `drift-detection` skill for thresholds):
-   - PSI < 0.1 → **STABLE** — no action
-   - 0.1 ≤ PSI < 0.25 → **WATCH** — monitor next 7 days
-   - PSI ≥ 0.25 → **RETRAIN** — trigger retraining
+```
+IF any critical feature PSI ≥ alert threshold:
+  → Trigger /retrain workflow
+  → Create GitHub Issue
 
-6. If drift detected, investigate root cause:
-   - Seasonal change? → Adjust thresholds
-   - Data pipeline bug? → Fix upstream
-   - Population shift? → Retrain with new data
+IF any feature PSI ≥ warning threshold:
+  → Log in drift tracking
+  → Schedule review in 1 week
 
-7. If retraining needed, use `/retrain` workflow
+IF all features PSI < warning:
+  → No action needed
+  → Log successful check
+```
 
-8. Query Prometheus for drift metrics history:
-   ```bash
-   curl -s "http://localhost:9090/api/v1/query_range?query=bankchurn_drift_psi&start=$(date -d '7 days ago' +%s)&end=$(date +%s)&step=86400"
-   ```
+## 7. Verify Heartbeat
 
-9. Generate drift report summary with findings and recommended actions
+Confirm the drift detection timestamp was updated:
+```bash
+curl 'http://prometheus:9090/api/v1/query?query=drift_detection_last_run_timestamp'
+```
 
-10. If no drift detected, log the clean check result for audit trail
+Should be within the last few minutes. If stale, the CronJob may be broken.
+
+## 8. Document Results
+
+Update the drift tracking log with:
+- Date of check
+- Per-feature PSI scores
+- Decision taken (no action / monitor / retrain)
+- Any notable patterns or trends

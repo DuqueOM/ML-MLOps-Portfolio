@@ -1,49 +1,97 @@
 ---
-description: Run Locust load tests against ML services and analyze latency, throughput, and error rates
+description: Run Locust load tests against ML services to validate SLAs
 ---
 
-## Load Test Workflow
+# /load-test Workflow
 
-1. Ask the user which service(s) to test (or all 3)
+## 1. Select Target
 
-// turbo
-2. Verify the target service is running and healthy:
-   ```bash
-   curl -s http://localhost:8000/health | jq .
-   ```
+Determine which service and environment to test:
+- Service: ${SERVICE}
+- Cloud: GCP / AWS / both
+- Users: start with 10, ramp to 100
 
-3. Run Locust load test:
-   ```bash
-   python scripts/load_test_services.py \
-     --service <service-name> \
-     --users 10 \
-     --spawn-rate 2 \
-     --duration 60
-   ```
+## 2. Configure Locust
 
-4. Collect and analyze results:
-   - **Throughput**: requests per second (target: >5 RPS per pod)
-   - **Latency**: p50, p95, p99 (target: p95 <500ms)
-   - **Error rate**: percentage of failed requests (target: 0%)
-   - **CPU usage**: `kubectl top pods -l app=<service>`
+Verify `scripts/load_test_services.py` has the correct endpoints and payloads for the target service.
 
-5. Compare against baseline performance:
-   | Service | Baseline avg | Baseline p95 | Baseline RPS |
-   |---------|-------------|-------------|-------------|
-   | BankChurn | 130ms | 240ms | 6.58 |
-   | NLPInsight | 87ms | 220ms | 7.32 |
-   | ChicagoTaxi | 103ms | 150ms | 7.05 |
+Before starting load, verify the FastAPI contract with the same auth
+posture production clients use:
 
-6. If performance regressed >20%, investigate:
-   - Check model size changes
-   - Check ThreadPoolExecutor config (should be 4 workers)
-   - Check CPU limits in K8s deployment
-   - Check if uvicorn workers >1 (must be 1, ADR-014)
+```bash
+curl -f http://${ENDPOINT}/health
+curl -f http://${ENDPOINT}/ready
+curl -X POST http://${ENDPOINT}/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entity_id": "load-smoke-001",
+    "slice_values": {"smoke": "load"},
+    "feature_a": 42.0,
+    "feature_b": 50000.0,
+    "feature_c": "category_A"
+  }'
+curl -s http://${ENDPOINT}/metrics | grep "_requests_total"
+```
 
-7. Generate summary report with findings and recommendations
+If the service has customized `app/schemas.py`, replace the smoke
+payload with a schema-valid example from the service README before
+running Locust. Do not load-test a payload that returns 422.
 
-// turbo
-8. If testing in K8s, verify HPA behavior during load:
-   ```bash
-   kubectl get hpa -w
-   ```
+## 3. Run Load Test (GCP)
+
+```bash
+locust -f scripts/load_test_services.py \
+  --host http://${GCP_ENDPOINT} \
+  --users 100 \
+  --spawn-rate 10 \
+  --run-time 2m \
+  --headless \
+  --csv results/locust_gcp_${SERVICE}
+```
+
+## 4. Run Load Test (AWS)
+
+```bash
+locust -f scripts/load_test_services.py \
+  --host http://${AWS_ENDPOINT} \
+  --users 100 \
+  --spawn-rate 10 \
+  --run-time 2m \
+  --headless \
+  --csv results/locust_aws_${SERVICE}
+```
+
+## 5. Analyze Results
+
+Check SLA compliance:
+```
+- Error rate: must be < 1% under 100 concurrent users
+- P50 latency: must be < ${P50_SLA}ms
+- P95 latency: must be < ${P95_SLA}ms
+- P99 latency: document (informational)
+```
+
+## 6. Compare Clouds
+
+| Metric | GCP | AWS | SLA |
+|--------|-----|-----|-----|
+| P50 (idle) | ___ms | ___ms | <${P50_SLA}ms |
+| P95 (idle) | ___ms | ___ms | <${P95_SLA}ms |
+| P50 (100u) | ___ms | ___ms | <${P50_LOAD_SLA}ms |
+| Error rate | ___% | ___% | <1% |
+
+## 7. Document Results
+
+Update service README and relevant ADR with measured values, including:
+- Date of measurement
+- Instance types used
+- Number of replicas during test
+- HPA behavior observed
+
+## 8. Action Items
+
+If SLA violated:
+- Check HPA scaling behavior
+- Review ThreadPoolExecutor worker count
+- Consider resource limit adjustments
+- Document in ADR with cost analysis

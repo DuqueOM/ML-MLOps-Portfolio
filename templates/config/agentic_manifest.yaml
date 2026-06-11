@@ -1,0 +1,455 @@
+# =============================================================================
+# Agentic Manifest — ADR-023 §agentic-manifest.
+# =============================================================================
+# READ-ONLY INDEX. This file drives thin adapter rendering; it never copies canonical bodies.
+#   - `scripts/validate_agentic_manifest.py --strict` validates coherence:
+#       * every `authority:` anchor resolves to a heading in AGENTS.md
+#         or an existing ADR;
+#       * every skill/workflow/rule listed here exists at its declared
+#         path (currently .windsurf/ is authoritative);
+#       * every surface declared in `surfaces:` has the consumer files
+#         listed under its entry (cursor has 14 rule files, claude has
+#         12 command files, etc.);
+#       * no `escalation_override` de-escalates a mode.
+#
+# Adapter files are rendered by `scripts/sync_agentic_adapters.py`.
+# The rendered files are pointers only; `.windsurf/` remains canonical.
+#
+# Invariant I-1 (ADR-023 §3): every policy claim here carries an
+# `authority:` reference to AGENTS.md#<section> or an ADR file path.
+# =============================================================================
+version: 1
+
+# -----------------------------------------------------------------------------
+# Canonical authority chain. The validator resolves these on load.
+# -----------------------------------------------------------------------------
+canonical:
+  behavior_protocol:
+    path: "AGENTS.md"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  invariants:
+    path: "AGENTS.md"
+    authority: "AGENTS.md#Critical Patterns \u2014 DO NOT VIOLATE"
+  permissions_matrix:
+    path: "AGENTS.md"
+    authority: "AGENTS.md#Agent Permissions Matrix"
+  dynamic_risk:
+    path: "templates/common_utils/risk_context.py"
+    authority: "docs/decisions/ADR-010-dynamic-behavior-protocol.md"
+  ci_autofix_policy:
+    path: "templates/config/ci_autofix_policy.yaml"
+    authority: "docs/decisions/ADR-019-agentic-ci-self-healing.md"
+  model_routing_policy:
+    path: "templates/config/model_routing_policy.yaml"
+    authority: "docs/decisions/ADR-014-gap-remediation-plan.md"
+  memory_plane:
+    path: "ops/audit.jsonl"
+    authority: "docs/decisions/ADR-018-operational-memory-plane.md"
+  context_layer:
+    company_template: "templates/config/company_context.example.yaml"
+    project_template: "templates/config/project_context.example.yaml"
+    schema: "templates/config/context.schema.json"
+    authority: "docs/decisions/ADR-023-agentic-portability-and-context.md"
+
+# -----------------------------------------------------------------------------
+# Agents — one entry per role defined in AGENTS.md §Agent Architecture.
+# The manifest does not redefine responsibilities; it indexes them.
+# -----------------------------------------------------------------------------
+agents:
+  - id: "Agent-Orchestrator"
+    layer: 1
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-EDAProfiler"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-DataValidator"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-MLTrainer"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-APIBuilder"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-DockerBuilder"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-K8sBuilder"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-TerraformBuilder"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-CICDBuilder"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-SecurityAuditor"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-MonitoringSetup"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-DriftSetup"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-DocumentationAI"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-TestGenerator"
+    layer: 2
+    phase: "build"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-DriftMonitor"
+    layer: 3
+    phase: "operate"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-RetrainingAgent"
+    layer: 3
+    phase: "operate"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-CostAuditor"
+    layer: 3
+    phase: "operate"
+    authority: "AGENTS.md#Agent Architecture"
+  - id: "Agent-DocUpdater"
+    layer: 3
+    phase: "operate"
+    authority: "AGENTS.md#Agent Architecture"
+
+# -----------------------------------------------------------------------------
+# Rules — canonical source is .windsurf/rules/. Other surfaces adapt.
+# The validator asserts EACH canonical rule exists at `source:` and
+# that every surface claiming the rule has a corresponding adapter file.
+# -----------------------------------------------------------------------------
+rules:
+  - id: "01-mlops-conventions"
+    source: ".windsurf/rules/01-mlops-conventions.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "02-kubernetes"
+    source: ".windsurf/rules/02-kubernetes.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "03-terraform"
+    source: ".windsurf/rules/03-terraform.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "04a-python-serving"
+    source: ".windsurf/rules/04a-python-serving.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "04b-python-training"
+    source: ".windsurf/rules/04b-python-training.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "05-github-actions"
+    source: ".windsurf/rules/05-github-actions.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "06-documentation"
+    source: ".windsurf/rules/06-documentation.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "07-docker"
+    source: ".windsurf/rules/07-docker.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "08-data-validation"
+    source: ".windsurf/rules/08-data-validation.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "09-monitoring"
+    source: ".windsurf/rules/09-monitoring.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "10-examples"
+    source: ".windsurf/rules/10-examples.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "11-data-eda"
+    source: ".windsurf/rules/11-data-eda.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "12-security-secrets"
+    source: ".windsurf/rules/12-security-secrets.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "13-closed-loop-monitoring"
+    source: ".windsurf/rules/13-closed-loop-monitoring.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+  - id: "14-api-contracts"
+    source: ".windsurf/rules/14-api-contracts.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+
+# -----------------------------------------------------------------------------
+# Skills — canonical source is .windsurf/skills/. The authoritative set
+# lives in the directory with a SKILL.md inside each skill folder.
+# -----------------------------------------------------------------------------
+skills:
+  - id: "batch-inference"
+    source: ".windsurf/skills/batch-inference/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "concept-drift-analysis"
+    source: ".windsurf/skills/concept-drift-analysis/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "cost-audit"
+    source: ".windsurf/skills/cost-audit/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "debug-ml-inference"
+    source: ".windsurf/skills/debug-ml-inference/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "deploy-aws"
+    source: ".windsurf/skills/deploy-aws/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "CONSULT"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "deploy-gke"
+    source: ".windsurf/skills/deploy-gke/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "CONSULT"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "drift-detection"
+    source: ".windsurf/skills/drift-detection/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "eda-analysis"
+    source: ".windsurf/skills/eda-analysis/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "model-retrain"
+    source: ".windsurf/skills/model-retrain/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "CONSULT"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "new-service"
+    source: ".windsurf/skills/new-service/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "performance-degradation-rca"
+    source: ".windsurf/skills/performance-degradation-rca/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "release-checklist"
+    source: ".windsurf/skills/release-checklist/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "CONSULT"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "rollback"
+    source: ".windsurf/skills/rollback/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "STOP"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "rule-audit"
+    source: ".windsurf/skills/rule-audit/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "secret-breach-response"
+    source: ".windsurf/skills/secret-breach-response/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "STOP"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "security-audit"
+    source: ".windsurf/skills/security-audit/SKILL.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+
+# -----------------------------------------------------------------------------
+# Workflows — slash-invokable procedures. Canonical in .windsurf/workflows/.
+# Cursor + Claude surfaces carry adapter files under `commands/`.
+# -----------------------------------------------------------------------------
+workflows:
+  - id: "cost-review"
+    source: ".windsurf/workflows/cost-review.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "drift-check"
+    source: ".windsurf/workflows/drift-check.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "eda"
+    source: ".windsurf/workflows/eda.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "incident"
+    source: ".windsurf/workflows/incident.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "CONSULT"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "load-test"
+    source: ".windsurf/workflows/load-test.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "new-adr"
+    source: ".windsurf/workflows/new-adr.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "new-service"
+    source: ".windsurf/workflows/new-service.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "performance-review"
+    source: ".windsurf/workflows/performance-review.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "AUTO"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "release"
+    source: ".windsurf/workflows/release.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "CONSULT"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "retrain"
+    source: ".windsurf/workflows/retrain.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "CONSULT"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "rollback"
+    source: ".windsurf/workflows/rollback.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "STOP"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+  - id: "secret-breach"
+    source: ".windsurf/workflows/secret-breach.md"
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    mode: "STOP"
+    authority: "AGENTS.md#Agent Behavior Protocol"
+
+# -----------------------------------------------------------------------------
+# Surfaces — where each surface's files live. The validator counts adapters.
+# -----------------------------------------------------------------------------
+surfaces:
+  windsurf:
+    status: "authoritative"
+    roots:
+      rules: ".windsurf/rules"
+      skills: ".windsurf/skills"
+      workflows: ".windsurf/workflows"
+    context_pointer: ".windsurf_context.md"
+  cursor:
+    status: "adapter"
+    roots:
+      rules: ".cursor/rules"
+      commands: ".cursor/commands"
+      skills: ".cursor/skills"
+      skills_index: ".cursor/skills/INDEX.md"
+    context_pointer: ".cursor_context.md"
+  claude:
+    status: "adapter"
+    roots:
+      rules: ".claude/rules"
+      commands: ".claude/commands"
+      skills: ".claude/skills"
+      skills_index: ".claude/skills/INDEX.md"
+    context_pointer: ".claude_context.md"
+  codex:
+    status: "adapter"
+    # Codex consumes the full canonical set through generated pointer
+    # files. Live MCP config remains adopter-owned and gitignored.
+    roots:
+      readme: ".codex/README.md"
+      rules: ".codex/rules"
+      skills: ".codex/skills"
+      workflows: ".codex/workflows"
+      automations: ".codex/automations"
+      mcp_example: ".codex/mcp.example.json"
+    context_pointer: ".codex_context.md"
+
+# -----------------------------------------------------------------------------
+# Integration hints — where other machinery reads the context layer.
+# Only informative; the runtime code owns its own defaults.
+# -----------------------------------------------------------------------------
+context_consumers:
+  - module: "templates/common_utils/risk_context.py"
+    reads:
+      - "company.risk_appetite"
+      - "company.monthly_budget_usd"
+      - "company.on_hours_utc"
+      - "project.criticality"
+      - "project.agentic_policy.escalation_overrides"
+    authority: "docs/decisions/ADR-010-dynamic-behavior-protocol.md"
+
+# -----------------------------------------------------------------------------
+# Reports v1 (ADR-023 F6) — typed report contract for the four canonical
+# producer workflows. Every entry references its producer + consumer so
+# the cross-surface picture is auditable from the manifest alone.
+# -----------------------------------------------------------------------------
+reports:
+  schema: "templates/config/report_schema.json"
+  library: "templates/common_utils/reports.py"
+  cli: "scripts/generate_report.py"
+  storage_root: "ops/reports/"
+  authority: "docs/decisions/ADR-023-agentic-portability-and-context.md"
+  types:
+    - id: "release"
+      producer: "release-checklist"
+      consumers: ["github_actions", "humans"]
+      mode: "CONSULT"
+    - id: "drift"
+      producer: "drift-detection"
+      consumers: ["model-retrain", "humans"]
+      mode: "AUTO"
+    - id: "training"
+      producer: "model-retrain"
+      consumers: ["release-checklist", "humans"]
+      mode: "AUTO"
+    - id: "incident"
+      producer: "incident"
+      consumers: ["humans", "post-mortem"]
+      mode: "CONSULT"
+
+# -----------------------------------------------------------------------------
+# Companions (ADR-023 F7 / F8 / F9) — docs-only integration patterns.
+#
+# A companion is NOT a new surface and does NOT introduce skills or workflows.
+# It is a documented wiring pattern that lets an existing surface
+# (or a managed-agent platform like Vertex AI / AgentCore) consume the
+# canonical agentic stack defined above.
+#
+# Contract test: `templates/service/tests/test_companions_contract.py`.
+# -----------------------------------------------------------------------------
+companions:
+  - id: "runtime-monitoring"
+    feature: "F7"
+    kind: "consumption-pattern"
+    doc: "docs/agentic/runtime-monitoring-companion.md"
+    requires_mcps: ["prometheus", "github", "kubectl"]
+    write_capable: false
+    surfaces: ["windsurf", "cursor", "claude", "codex"]
+    authority: "docs/decisions/ADR-023-agentic-portability-and-context.md"
+    status: "shipped"
+  - id: "gcp-gemini-enterprise"
+    feature: "F8"
+    kind: "cloud-companion"
+    doc: "docs/agentic/cloud-companions.md"
+    provider: "gcp"
+    write_capable: false
+    surfaces_native: []
+    authority: "docs/decisions/ADR-023-agentic-portability-and-context.md"
+    status: "shipped (docs-only)"
+  - id: "aws-bedrock-agentcore"
+    feature: "F9"
+    kind: "cloud-companion"
+    doc: "docs/agentic/cloud-companions.md"
+    provider: "aws"
+    write_capable: false
+    surfaces_native: []
+    authority: "docs/decisions/ADR-023-agentic-portability-and-context.md"
+    status: "shipped (docs-only)"

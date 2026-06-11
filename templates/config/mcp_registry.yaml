@@ -1,0 +1,202 @@
+# =============================================================================
+# MCP Portability Registry — ADR-023 F4.
+# =============================================================================
+# Capability-centric registry of the MCP (Model Context Protocol) servers
+# consumed by this template's skills and workflows. ONE source of truth
+# across every agent surface (Windsurf, Cursor, Claude, Codex, and any
+# future surface).
+#
+# Invariant I-3 (ADR-023 §3) — MCP install is NEVER automatic.
+#   scripts/mcp_doctor.py validates configuration and renders docs;
+#   it NEVER invokes an installer, writes to a credential store, or
+#   configures access to production. Install matrix below is
+#   informational for humans, not executable intent.
+#
+# What this file is:
+#   - A capability-centric list: each MCP documents what it lets the
+#     agent DO, which skills/workflows depend on it, and which
+#     surfaces support which install mode.
+#   - The authoritative cross-surface mapping consumed by
+#     `.windsurf/`, `.cursor/`, `.claude/`, `.codex/` MCP example
+#     configs. Those config files are RENDERED by humans reading
+#     this registry — no silent generator in v1.
+#
+# What this file is NOT:
+#   - A credential store. Real API keys, PATs, or service tokens live
+#     in the adopter's Secret Manager (per D-18).
+#   - A runtime config. Surfaces read their own `mcp_config.json` or
+#     `.codex/mcp.json`; this registry documents what SHOULD be there.
+#   - An installer manifest. `make mcp-check` / `make mcp-doctor` are
+#     diagnostic, never installing.
+# =============================================================================
+version: 1
+
+# -----------------------------------------------------------------------------
+# MCPs — capability-first listing. Each entry:
+#   id: stable identifier used across surfaces
+#   purpose: one-line description of what the agent gains
+#   risk_mode: AUTO | CONSULT | STOP — when the MCP's typical
+#              operation crosses that threshold
+#   required_for: list of skill/workflow ids that need this MCP to
+#                 execute (vs. merely help)
+#   install_mode: matrix per surface (see §Surfaces below)
+# -----------------------------------------------------------------------------
+mcps:
+  github:
+    purpose: "Read PRs, CI logs, issues, release evidence, status checks"
+    risk_mode: "AUTO"
+    authority: "AGENTS.md#MCP Integrations"
+    required_for:
+      - "release-checklist"
+      - "security-audit"
+      - "rule-audit"
+    recommended_for: []    # CI self-healing (ADR-019) is a workflow concept,
+                           # not a manifest-listed skill yet; keep empty.
+    install_mode:
+      windsurf: "documented"
+      cursor: "documented"
+      claude: "documented"
+      codex: "user_confirmed"
+    notes: >
+      Streamable HTTP via api.githubcopilot.com/mcp/ with a GitHub PAT.
+      PAT MUST have the narrowest scope that works for the adopter's
+      use case. For read-only CI + PR access `repo:read` + `workflow:read`
+      is sufficient. Never grant `admin:org` to an agent MCP.
+
+  kubectl:
+    purpose: "Run read-only kubectl get/describe/logs against the cluster"
+    risk_mode: "CONSULT"
+    authority: "AGENTS.md#MCP Integrations"
+    required_for:
+      - "debug-ml-inference"
+      - "incident"
+      - "rollback"
+    recommended_for:
+      - "deploy-gke"
+      - "deploy-aws"
+    install_mode:
+      windsurf: "documented"
+      cursor: "documented"
+      claude: "documented"
+      codex: "user_confirmed"
+    notes: >
+      Use the `--read-only` flag of kubectl-mcp-server in every
+      surface's config. Write operations (apply/delete/patch) are
+      STOP per the permissions matrix — they belong to GitHub Actions
+      flows, not to an agent's local shell.
+
+  terraform:
+    purpose: "Registry lookup, provider/module metadata, plan validation"
+    risk_mode: "AUTO"
+    authority: "AGENTS.md#MCP Integrations"
+    required_for:
+      - "release-checklist"
+      - "cost-audit"
+    recommended_for: []
+    install_mode:
+      windsurf: "documented"
+      cursor: "documented"
+      claude: "documented"
+      codex: "user_confirmed"
+    notes: >
+      Terraform plan is AUTO; apply is STOP in staging/prod per
+      ADR-015. The MCP is the registry/validate layer; it never
+      applies.
+
+  prometheus:
+    purpose: "Query live metrics for dynamic risk context + drift analysis"
+    risk_mode: "AUTO"
+    authority: "AGENTS.md#MCP Integrations"
+    required_for:
+      - "drift-detection"
+      - "performance-degradation-rca"
+      - "incident"
+      - "performance-review"
+    recommended_for:
+      - "concept-drift-analysis"
+    install_mode:
+      windsurf: "documented"
+      cursor: "documented"
+      claude: "documented"
+      codex: "user_confirmed"
+    notes: >
+      Feeds `common_utils/risk_context.py` when available — the
+      dynamic behavior protocol (ADR-010) reads incident_active,
+      drift_severe, error_budget_exhausted, recent_rollback from
+      the live metrics store. When Prometheus MCP is absent, the
+      agent falls back to the static AGENTS.md mapping and emits
+      `risk_signals: UNAVAILABLE`.
+
+  playwright:
+    purpose: "End-to-end browser smoke-tests + scripted login flows"
+    risk_mode: "AUTO"
+    authority: "AGENTS.md#MCP Integrations"
+    required_for: []
+    recommended_for:
+      - "release-checklist"
+    install_mode:
+      windsurf: "documented"
+      cursor: "documented"
+      claude: "documented"
+      codex: "optional"
+    notes: >
+      Optional. Useful when the service has a web UI component;
+      most ML inference services do not. Scaffolder does not
+      include playwright by default.
+
+# -----------------------------------------------------------------------------
+# Install-mode semantics.
+#   documented     - surface's docs describe setup; adopter runs it manually.
+#                    Never an installer step run by the agent.
+#   user_confirmed - surface supports a per-request confirmation dialog
+#                    before invoking the MCP. Agent may NOT skip the prompt.
+#   optional       - surface works without the MCP; feature degrades.
+#   planned        - surface does not support this MCP yet; track-only.
+#
+# Three modes that are DELIBERATELY ABSENT:
+#   automatic   - an agent invoking `pip install` / `npm install` / `docker
+#                 pull` without human approval. Violates I-3.
+#   silent      - any installer that does not produce an audit entry.
+#   credentialed - any MCP that receives tokens from the registry itself.
+#                  Tokens live in Secret Manager (D-18).
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Surfaces — describes WHERE each surface reads its MCP config. The
+# registry does NOT generate these files; the docs in
+# docs/agentic/mcp-portability.md explain the manual-render pattern.
+# -----------------------------------------------------------------------------
+surfaces:
+  windsurf:
+    config_path: "~/.codeium/windsurf/mcp_config.json"
+    example_in_repo: null   # Windsurf reads from user-home only
+    status: "authoritative"
+  cursor:
+    config_path: "~/.cursor/mcp.json"
+    example_in_repo: null   # Cursor's per-repo config is adopter-owned
+    status: "adapter"
+  claude:
+    config_path: "~/.claude.json"
+    example_in_repo: null
+    status: "adapter"
+  codex:
+    config_path: ".codex/mcp.json"    # repo-local, gitignored in live form
+    example_in_repo: ".codex/mcp.example.json"  # committed reference
+    status: "adapter"
+
+# -----------------------------------------------------------------------------
+# Diagnostic commands — the ONLY template-provided MCP tooling.
+# -----------------------------------------------------------------------------
+diagnostics:
+  - id: "mcp-check"
+    command: "make mcp-check"
+    description: "Read-only validation that every skill's required_for MCP exists in this registry and that every install_mode entry names a known surface."
+    risk: "AUTO"
+  - id: "mcp-doctor"
+    command: "make mcp-doctor"
+    description: "Full report: missing configs per surface, orphaned required_for entries, skill coverage, install-mode matrix."
+    risk: "AUTO"
+  - id: "mcp-render-docs"
+    command: "python3 scripts/mcp_doctor.py --mode render-docs"
+    description: "Regenerate docs/agentic/mcp-portability.md tables from this registry. Writes the docs file only; NEVER writes an MCP config."
+    risk: "AUTO"

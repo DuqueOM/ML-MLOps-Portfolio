@@ -1,59 +1,57 @@
 ---
-description: Create a new Architecture Decision Record following the project ADR format
+description: Create a new Architecture Decision Record with proper structure and numbering
 ---
 
-## New ADR Workflow
+# /new-adr Workflow
 
-1. Ask the user for:
-   - Short title for the decision (e.g., "CPU-only HPA for ML pods")
-   - Context: What problem or question prompted this decision?
+## 1. Determine ADR Number
 
+```bash
+ls docs/decisions/ | sort -n | tail -1
+```
 // turbo
-2. Determine the next ADR number:
-   ```bash
-   ls docs/decisions/ | grep -E '^[0-9]+' | sort -n | tail -1
-   ```
 
-3. Create the ADR file at `docs/decisions/NNN-short-description.md` with this structure:
+Next number = last + 1, zero-padded to 3 digits.
 
-   ```markdown
-   # ADR-NNN: <Title>
+## 2. Create ADR File
 
-   ## Status
-   Accepted | Proposed | Deprecated | Superseded by ADR-XXX
+Use template at `templates/docs/decisions/adr-template.md`:
 
-   ## Context
-   What is the issue that we're seeing that is motivating this decision?
-   Include metrics, incidents, or constraints that make this relevant.
+```bash
+export ADR_NUM="NNN"
+export ADR_SLUG="short-decision-name"
+cp templates/docs/decisions/adr-template.md docs/decisions/${ADR_NUM}-${ADR_SLUG}.md
+```
 
-   ## Decision
-   What is the change that we're proposing and/or doing?
-   Be specific — include configuration values, code patterns, tool choices.
+## 3. Fill in Sections
 
-   ## Consequences
+Required sections:
+1. **Title**: `ADR-${ADR_NUM}: ${TITLE}`
+2. **Status**: Proposed (will change to Accepted after review)
+3. **Date**: Today's date (YYYY-MM-DD)
+4. **Context**: What problem are we solving? What constraints exist?
+5. **Options Considered**: Table with at least 2 options, Pros/Cons each
+6. **Decision**: What we decided
+7. **Rationale**: Why this option over alternatives
+8. **Consequences**: Positive (what we gain) and Negative (what we trade off)
+9. **Revisit When**: Conditions that would invalidate this decision
 
-   ### Positive
-   - What becomes easier or better?
+## 4. Validation Checklist
 
-   ### Negative
-   - What becomes harder or worse?
-   - What trade-offs are we accepting?
+- [ ] Context explains the problem clearly for someone unfamiliar
+- [ ] At least 2 options considered with honest pros/cons
+- [ ] Decision is clear and actionable
+- [ ] Rationale explains WHY, not just WHAT
+- [ ] Consequences include both positive and negative
+- [ ] Revisit When has concrete, measurable conditions
+- [ ] Uses real measured data where applicable (not estimates)
 
-   ### Neutral
-   - What other effects does this have?
+## 5. Cross-Reference
 
-   ## Alternatives Considered
-   | Alternative | Pros | Cons | Why Rejected |
-   |-------------|------|------|-------------|
-   | Option A | ... | ... | ... |
-   | Option B | ... | ... | ... |
+- If the ADR relates to a specific service, reference it in the service README
+- If the ADR introduces a new invariant, update `AGENTS.md`
+- If the ADR changes a K8s pattern, update the relevant rule in `.windsurf/rules/`
 
-   ## References
-   - Links to related ADRs, documentation, benchmarks
-   ```
+## 6. Review
 
-4. Update `docs/decisions/README.md` index table with the new ADR
-
-5. If the ADR relates to code changes, add a reference comment or link in the relevant source files
-
-6. Commit with message: `docs: add ADR-NNN <short-title>`
+Request review from a peer or lead engineer. ADR moves from Proposed → Accepted after review.

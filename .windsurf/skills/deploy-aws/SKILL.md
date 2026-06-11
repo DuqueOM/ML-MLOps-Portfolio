@@ -1,88 +1,150 @@
 ---
 name: deploy-aws
-description: Guides deployment of ML services to Amazon EKS with IRSA authentication, Kustomize overlays, ECR image management, smoke tests, and rollback procedures.
+description: Deploy ML service to EKS with Kustomize overlays and IRSA
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash(docker:*)
+  - Bash(aws:*)
+  - Bash(kubectl:*)
+  - Bash(kustomize:*)
+  - Bash(curl:*)
+when_to_use: >
+  Use when deploying a service to AWS EKS cluster.
+  Examples: 'deploy to EKS', 'push to AWS production', 'EKS deployment'
+argument-hint: "<service-name> <version-tag> [environment]"
+arguments:
+  - service-name
+  - version-tag
+  - environment
+authorization_mode:
+  dev: AUTO
+  staging: CONSULT
+  prod: STOP
 ---
 
-## Pre-Deployment Checklist
+# Deploy to EKS
 
-1. **Verify CI status**: All checks on `main` branch must be green
-2. **Verify cluster context**: `kubectl config current-context` must show EKS cluster
-3. **Verify Docker images**: Images tagged and pushed to ECR
-4. **Verify model artifacts**: Models uploaded to S3 bucket
-5. **Verify IRSA**: ServiceAccount annotations match IAM role ARN
+## Authorization Protocol
 
-## Deployment Steps
+This skill enforces the Agent Behavior Protocol (AGENTS.md).
 
-### 1. Authenticate and Set Context
+| Env | Mode | What the agent does |
+|-----|------|---------------------|
+| `dev` | AUTO | Execute all steps |
+| `staging` | CONSULT | Show diff + image tag + namespace, wait for approval before `kubectl apply` |
+| `prod` | **STOP** | Never apply directly. Require merge to `main` + GitHub Environment `production` approval |
+
+On `prod` invocation, emit:
+```
+[AGENT MODE: STOP]
+Operation: Direct kubectl apply to EKS production
+Reason: Prod deploys flow through GitHub Actions with required_reviewers (ADR-002)
+```
+and halt.
+
+## Pre-Flight Checklist
+
+- [ ] Verify context: `kubectl config current-context` must be EKS cluster
+- [ ] Docker image built and pushed to ECR
+- [ ] Kustomize overlay patched with correct image tag
+- [ ] Terraform applied for any new infrastructure
+- [ ] Model artifact uploaded to S3
+- [ ] All tests passing in CI
+
+## Step 1: Verify Cluster Context
+
 ```bash
-aws eks update-kubeconfig \
-  --region us-east-1 \
-  --name ml-portfolio-eks-production \
-  --alias eks-ml-portfolio
-
 kubectl config current-context
-# Expected: eks-ml-portfolio
+# Expected: arn:aws:eks:{REGION}:{ACCOUNT}:cluster/{CLUSTER_NAME}
 ```
 
-### 2. Verify IRSA Configuration
+Switch context:
 ```bash
-kubectl get sa -n default -o yaml | grep eks.amazonaws.com/role-arn
-# Must show the correct IAM role ARN for S3 model access
+aws eks update-kubeconfig --name {CLUSTER} --region {REGION}
 ```
 
-### 3. Update Image Tags
-Edit `k8s/overlays/aws/` patches to reference ECR image URIs:
-```
-<account-id>.dkr.ecr.us-east-1.amazonaws.com/bankchurn-predictor:v${VERSION}
-<account-id>.dkr.ecr.us-east-1.amazonaws.com/nlpinsight-analyzer:v${VERSION}
-<account-id>.dkr.ecr.us-east-1.amazonaws.com/chicagotaxi-demand:v${VERSION}
-```
+## Step 2: Build and Push Image
 
-### 4. Dry Run
 ```bash
-kubectl apply -k k8s/overlays/aws/ --dry-run=client
+export VERSION=v{X.Y.Z}
+export SHA=$(git rev-parse --short HEAD)
+export REGISTRY={ACCOUNT}.dkr.ecr.{REGION}.amazonaws.com/{REPO}
+
+# Authenticate to ECR
+aws ecr get-login-password --region {REGION} | docker login --username AWS --password-stdin ${REGISTRY}
+
+docker build -t ${REGISTRY}/{service}:${VERSION} -t ${REGISTRY}/{service}:sha-${SHA} .
+docker push ${REGISTRY}/{service}:${VERSION}
+docker push ${REGISTRY}/{service}:sha-${SHA}
 ```
 
-### 5. Apply
+## Step 3: Update Kustomize Overlay
+
+```yaml
+# k8s/overlays/aws-{env}/kustomization.yaml  (env = dev | staging | production)
+images:
+  - name: {service}-predictor
+    newName: {ACCOUNT}.dkr.ecr.{REGION}.amazonaws.com/{REPO}/{service}
+    newTag: {VERSION}
+```
+
+## Step 4: Apply Manifests
+
 ```bash
-kubectl apply -k k8s/overlays/aws/
+# Apply the overlay matching the target environment.
+# Production deploys are gated by the dev → staging → prod chain (ADR-011);
+# manual application here is for dev iteration or emergency only.
+kubectl apply -k k8s/overlays/aws-{env}/    # env = dev | staging | production
+kubectl rollout status deployment/{service}-predictor -n {namespace} --timeout=300s
 ```
 
-### 6. Watch Rollout
+## Step 5: Smoke Test
+
 ```bash
-kubectl rollout status deployment/bankchurn-predictor -w
-kubectl rollout status deployment/nlpinsight-analyzer -w
-kubectl rollout status deployment/chicagotaxi-demand -w
+export SVC_URL=$(kubectl get svc {service}-service -n {namespace} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+
+curl -f http://${SVC_URL}/health
+curl -f http://${SVC_URL}/ready
+
+# Test prediction with a schema-valid scaffold payload. Add
+# `-H "X-API-Key: ${API_KEY}"` when API_AUTH_ENABLED=true.
+curl -X POST http://${SVC_URL}/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entity_id": "deploy-smoke-001",
+    "slice_values": {"smoke": "aws"},
+    "feature_a": 42.0,
+    "feature_b": 50000.0,
+    "feature_c": "category_A"
+  }'
+
+# Metrics scrape smoke
+curl -s http://${SVC_URL}/metrics | grep "_requests_total"
 ```
 
-### 7. Smoke Tests
+## Step 6: Verify IRSA
+
 ```bash
-# Get NodePort or LoadBalancer IP
-kubectl get svc
-./scripts/smoke_test.sh --target eks
+# Check SA annotation
+kubectl get serviceaccount {service}-sa -n {namespace} -o yaml | grep "eks.amazonaws.com/role-arn"
+
+# Test S3 access from pod
+kubectl exec -it {pod} -n {namespace} -- aws s3 ls s3://{model-bucket}/
 ```
 
-### 8. Verify HPA
+## IRSA Troubleshooting
+
+If S3 access fails:
+1. Verify OIDC provider: `aws eks describe-cluster --name {CLUSTER} --query "cluster.identity.oidc"`
+2. Verify trust policy on the IAM role allows the service account
+3. Verify the role has S3 read permissions on the model bucket
+4. Restart the pod (IRSA tokens are injected at pod creation)
+
+## Rollback
+
 ```bash
-kubectl get hpa
-# CPU-only metrics (ADR-001), no memory metrics
+kubectl rollout undo deployment/{service}-predictor -n {namespace}
+kubectl rollout status deployment/{service}-predictor -n {namespace}
 ```
-
-## EKS-Specific Considerations
-
-| Aspect | GKE | EKS | ADR |
-|--------|-----|-----|-----|
-| Auth to storage | Workload Identity → GCS | IRSA → S3 | — |
-| Image registry | Artifact Registry | ECR | — |
-| Node type | e2-medium (shared) | t3.medium (burst) | ADR-016 |
-| Load balancer | GKE Ingress | Classic ELB / NodePort | — |
-| Cost | ~$24/mo | ~$145/mo | ADR-016 |
-
-## Rollback Procedure
-
-See `checklist.md` in this skill directory for the full rollback and IRSA troubleshooting.
-
-## Cross-References
-- For GKE deployment: invoke `deploy-gke` skill
-- For performance comparison: see ADR-016 (GCP/AWS parity)
-- For release process: use `/release` workflow

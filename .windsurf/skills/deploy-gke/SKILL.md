@@ -1,66 +1,150 @@
 ---
 name: deploy-gke
-description: Guides deployment of ML services to Google Kubernetes Engine (GKE) with safety checks, Kustomize overlays, smoke tests, and rollback procedures.
+description: Deploy ML service to GKE with Kustomize overlays and Workload Identity
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash(docker:*)
+  - Bash(gcloud:*)
+  - Bash(gsutil:*)
+  - Bash(kubectl:*)
+  - Bash(kustomize:*)
+  - Bash(curl:*)
+when_to_use: >
+  Use when deploying a service to GCP GKE cluster.
+  Examples: 'deploy bankchurn to GKE', 'push to GCP production', 'GKE deployment'
+argument-hint: "<service-name> <version-tag> [environment]"
+arguments:
+  - service-name
+  - version-tag
+  - environment
+authorization_mode:
+  dev: AUTO        # reversible, sandbox
+  staging: CONSULT # show diff, wait for approval
+  prod: STOP       # require PR + Platform Engineer approval via GitHub Environment
 ---
 
-## Pre-Deployment Checklist
+# Deploy to GKE
 
-1. **Verify CI status**: All checks on `main` branch must be green
-2. **Verify cluster context**: `kubectl config current-context` must show GKE cluster
-3. **Verify Docker images**: Images tagged and pushed to Artifact Registry
-4. **Verify model artifacts**: Models uploaded to GCS bucket
+## Authorization Protocol
 
-## Deployment Steps
+This skill enforces the Agent Behavior Protocol (AGENTS.md). Actions per environment:
 
-### 1. Authenticate and Set Context
+| Env | Mode | What the agent does |
+|-----|------|---------------------|
+| `dev` | AUTO | Execute all steps without asking |
+| `staging` | CONSULT | Show the full plan (image tag, diff, namespace) and wait for a human "proceed" before `kubectl apply` |
+| `prod` | **STOP** | Do NOT apply. Instruct the user to merge an approved PR and let GitHub Actions with `environment: production` (required_reviewers) perform the deploy |
+
+If you are in `prod` mode and the human insists, output:
+```
+[AGENT MODE: STOP]
+Operation: Direct kubectl apply to production cluster
+Reason: Prod deploys require the governed path (see ADR-002)
+Waiting for: Merge to main + GitHub Environment approval
+```
+Then halt.
+
+## Pre-Flight Checklist
+
+- [ ] Verify context: `kubectl config current-context` must be GKE cluster
+- [ ] Docker image built and pushed to Artifact Registry
+- [ ] Kustomize overlay patched with correct image tag
+- [ ] Terraform applied for any new infrastructure
+- [ ] Model artifact uploaded to GCS
+- [ ] All tests passing in CI
+
+## Step 1: Verify Cluster Context
+
 ```bash
-gcloud container clusters get-credentials ml-portfolio-gke-production \
-  --region us-central1 \
-  --project ml-portfolio-duque-om-202602
-
 kubectl config current-context
-# Expected: gke_ml-portfolio-duque-om-202602_us-central1_ml-portfolio-gke-production
+# Expected: gke_{PROJECT_ID}_{REGION}_{CLUSTER_NAME}
 ```
 
-### 2. Update Image Tags
-Edit `k8s/base/` deployment manifests to reference new image tags:
-- `bankchurn-predictor-deployment.yaml`
-- `nlpinsight-analyzer-deployment.yaml`
-- `chicagotaxi-demand-deployment.yaml`
-
-### 3. Dry Run
+NEVER proceed if context is wrong. Switch with:
 ```bash
-kubectl apply -k k8s/overlays/gcp/ --dry-run=client
+gcloud container clusters get-credentials {CLUSTER} --region {REGION} --project {PROJECT}
 ```
 
-### 4. Apply
+## Step 2: Build and Push Image
+
 ```bash
-kubectl apply -k k8s/overlays/gcp/
+# Tag with version and SHA
+export VERSION=v{X.Y.Z}
+export SHA=$(git rev-parse --short HEAD)
+export REGISTRY={REGION}-docker.pkg.dev/{PROJECT_ID}/{REPO}
+
+docker build -t ${REGISTRY}/{service}:${VERSION} -t ${REGISTRY}/{service}:sha-${SHA} .
+docker push ${REGISTRY}/{service}:${VERSION}
+docker push ${REGISTRY}/{service}:sha-${SHA}
 ```
 
-### 5. Watch Rollout
+## Step 3: Update Kustomize Overlay
+
 ```bash
-kubectl rollout status deployment/bankchurn-predictor -w
-kubectl rollout status deployment/nlpinsight-analyzer -w
-kubectl rollout status deployment/chicagotaxi-demand -w
+# k8s/overlays/gcp-{env}/kustomization.yaml  (env = dev | staging | production)
+images:
+  - name: {service}-predictor
+    newName: {REGION}-docker.pkg.dev/{PROJECT_ID}/{REPO}/{service}
+    newTag: {VERSION}
 ```
 
-### 6. Smoke Tests
+## Step 4: Apply Manifests
+
 ```bash
-./scripts/smoke_test.sh
+# Apply the overlay matching the target environment.
+# Production deploys are gated by the dev → staging → prod chain (ADR-011);
+# manual application here is for dev iteration or emergency only.
+kubectl apply -k k8s/overlays/gcp-{env}/    # env = dev | staging | production
+kubectl rollout status deployment/{service}-predictor -n {namespace} --timeout=300s
 ```
 
-### 7. Verify HPA
+## Step 5: Smoke Test
+
 ```bash
-kubectl get hpa
-# All HPAs should show TARGETS with CPU metrics (no memory)
+# Get service URL
+export SVC_URL=$(kubectl get ingress -n {namespace} -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}')
+
+# Health check
+curl -f http://${SVC_URL}/health
+curl -f http://${SVC_URL}/ready
+
+# Test prediction with a schema-valid scaffold payload. Add
+# `-H "X-API-Key: ${API_KEY}"` when API_AUTH_ENABLED=true.
+curl -X POST http://${SVC_URL}/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entity_id": "deploy-smoke-001",
+    "slice_values": {"smoke": "gke"},
+    "feature_a": 42.0,
+    "feature_b": 50000.0,
+    "feature_c": "category_A"
+  }'
+
+# Metrics scrape smoke
+curl -s http://${SVC_URL}/metrics | grep "_requests_total"
 ```
 
-## Rollback Procedure
+## Step 6: Verify Monitoring
 
-See `checklist.md` in this skill directory for the full rollback procedure.
+- [ ] Prometheus scraping `/metrics` from new pods
+- [ ] Grafana dashboard showing new version
+- [ ] No alert firing in AlertManager
 
-## Key Reminders
-- Single-worker uvicorn only (ADR-014)
-- CPU-only HPA (ADR-001)
-- Workload Identity for GCS access (no service account keys)
+## Rollback (if needed)
+
+```bash
+kubectl rollout undo deployment/{service}-predictor -n {namespace}
+kubectl rollout status deployment/{service}-predictor -n {namespace}
+```
+
+## Workload Identity Verification
+
+```bash
+# Verify SA annotation
+kubectl get serviceaccount {service}-sa -n {namespace} -o yaml | grep "iam.gke.io"
+
+# Test GCS access from pod
+kubectl exec -it {pod} -n {namespace} -- gsutil ls gs://{model-bucket}/
+```

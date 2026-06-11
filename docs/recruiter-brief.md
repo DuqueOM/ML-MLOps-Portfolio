@@ -235,11 +235,4 @@ proof I want to add.</p>
 [:fontawesome-solid-envelope: Contact](contact.md){ .portfolio-button }
 </div>
 
-<div class="portfolio-actions" markdown="1">
-[:fontawesome-solid-house: Home](index.md){ .portfolio-button }
-[:fontawesome-solid-diagram-project: Projects](projects/index.md){ .portfolio-button }
-[:fontawesome-solid-cubes: Production Template](template.md){ .portfolio-button }
-[:fontawesome-solid-flask: Technical Evidence](technical-evidence.md){ .portfolio-button }
-</div>
-
 </div>
