@@ -20,12 +20,15 @@ That is why this portfolio is built around production habits rather than only
 model scores. I am early-career in formal ML employment, but I am not new to
 ownership, trade-offs, documentation or operating under pressure.
 
-<div class="portfolio-quote-card portfolio-quote-card--inline" markdown="1">
-<small>How to read my seniority</small>
-
-> Entry-level / junior in formal ML/MLOps employment. Experienced in ownership, pressure,
-> cost-awareness and making systems easier for other people to operate.
 </div>
+<div class="portfolio-callout" markdown="1">
+<strong>How to read my seniority</strong>
+
+Entry-level / junior in formal ML/MLOps employment. Experienced in ownership, pressure,
+cost-awareness and making systems easier for other people to operate.
+</div>
+</div>
+
 </div>
 <figure class="portfolio-profile-frame portfolio-profile-frame--compact">
 <img src="../media/profile/duque-ortega-mutis.webp" alt="Duque Ortega Mutis in a professional portrait">
