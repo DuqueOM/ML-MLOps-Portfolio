@@ -161,8 +161,8 @@ Workload Identity / IRSA).</p>
 ## Links
 
 <div class="portfolio-actions" markdown="1">
-[:fontawesome-brands-github: GitHub](https://github.com/DuqueOM){ .portfolio-button }
-[:fontawesome-brands-linkedin: LinkedIn](https://linkedin.com/in/duqueom){ .portfolio-button }
+[:fontawesome-brands-github: ](https://github.com/DuqueOM){ .portfolio-button }
+[:fontawesome-brands-linkedin: ](https://linkedin.com/in/duqueom){ .portfolio-button }
 [:fontawesome-brands-youtube: Video demo](https://youtu.be/7dFFqq2ROPw){ .portfolio-button }
 [:fontawesome-solid-file-lines: Recruiter brief](recruiter-brief.md){ .portfolio-button }
 [:fontawesome-solid-envelope: Contact](contact.md){ .portfolio-button .portfolio-button--primary }

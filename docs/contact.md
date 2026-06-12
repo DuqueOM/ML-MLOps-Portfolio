@@ -44,7 +44,7 @@ way to reach me is email. I reply within 24 hours.
 ## Other Channels
 
 <div class="portfolio-actions" markdown="1">
-[:fontawesome-brands-github: GitHub](https://github.com/DuqueOM){ .portfolio-button }
+[:fontawesome-brands-github: ](https://github.com/DuqueOM){ .portfolio-button }
 [:fontawesome-brands-youtube: 3-min video demo](https://youtu.be/7dFFqq2ROPw){ .portfolio-button }
 [:fontawesome-solid-file-lines: Recruiter brief](recruiter-brief.md){ .portfolio-button }
 </div>
