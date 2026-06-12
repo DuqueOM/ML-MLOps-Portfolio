@@ -146,11 +146,12 @@ not listed from a tutorial, but from working code with tests, incidents and ADRs
 
 <div class="pf-toolbox" markdown="1">
 
-<div class="pf-toolbox-row" markdown="1">
-<div class="pf-toolbox-label" markdown="1">
-<small>ml engineering</small>
-Model training, evaluation and explainability. The same pipeline that surfaces SHAP values in original feature space and blocks promotion when fairness gates fail.
+<div class="pf-toolbox-card pf-toolbox-card--ml" markdown="1">
+<div class="pf-toolbox-head" markdown="1">
+<small>01 · ml engineering</small>
+<strong>8 capabilities</strong>
 </div>
+<p>Model training, evaluation and explainability — including original-space SHAP and promotion gates.</p>
 <div class="pf-toolbox-chips" markdown="1">
 <span class="pf-chip">Python 3.11+</span>
 <span class="pf-chip">scikit-learn</span>
@@ -163,11 +164,12 @@ Model training, evaluation and explainability. The same pipeline that surfaces S
 </div>
 </div>
 
-<div class="pf-toolbox-row" markdown="1">
-<div class="pf-toolbox-label" markdown="1">
-<small>mlops · serving</small>
-The async inference path, the single-worker constraint, the metrics that feed HPA — and the CI/CD that gates every promotion.
+<div class="pf-toolbox-card pf-toolbox-card--ops" markdown="1">
+<div class="pf-toolbox-head" markdown="1">
+<small>02 · mlops · serving</small>
+<strong>9 capabilities</strong>
 </div>
+<p>Async inference, single-worker serving, metrics-driven scaling and CI/CD gates for promotion.</p>
 <div class="pf-toolbox-chips" markdown="1">
 <span class="pf-chip">FastAPI</span>
 <span class="pf-chip">asyncio + ThreadPoolExecutor</span>
@@ -181,11 +183,12 @@ The async inference path, the single-worker constraint, the metrics that feed HP
 </div>
 </div>
 
-<div class="pf-toolbox-row" markdown="1">
-<div class="pf-toolbox-label" markdown="1">
-<small>cloud · infrastructure</small>
-Both cloud paths built and documented in the same monorepo, with no hardcoded credentials anywhere — only IRSA and Workload Identity.
+<div class="pf-toolbox-card pf-toolbox-card--cloud" markdown="1">
+<div class="pf-toolbox-head" markdown="1">
+<small>03 · cloud · infrastructure</small>
+<strong>2 clouds</strong>
 </div>
+<p>GKE and EKS paths built in the same monorepo, with delegated credentials only — Workload Identity and IRSA.</p>
 <div class="pf-toolbox-chips" markdown="1">
 <span class="pf-chip pf-chip--cloud">GCP — GKE</span>
 <span class="pf-chip pf-chip--cloud">Workload Identity</span>
@@ -198,11 +201,12 @@ Both cloud paths built and documented in the same monorepo, with no hardcoded cr
 </div>
 </div>
 
-<div class="pf-toolbox-row" markdown="1">
-<div class="pf-toolbox-label" markdown="1">
-<small>data</small>
-Data pipelines built for honesty: strict temporal splits, leakage gates that block training when future data leaks into features, and drift scoring that triggers retraining.
+<div class="pf-toolbox-card pf-toolbox-card--data" markdown="1">
+<div class="pf-toolbox-head" markdown="1">
+<small>04 · data</small>
+<strong>6 capabilities</strong>
 </div>
+<p>Data workflows built for honest evaluation: temporal validation, leakage gates and drift signals.</p>
 <div class="pf-toolbox-chips" markdown="1">
 <span class="pf-chip">PySpark</span>
 <span class="pf-chip">Pandas</span>

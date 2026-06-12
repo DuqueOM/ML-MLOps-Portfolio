@@ -1328,36 +1328,71 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
   opacity: 1;
 }
 
-/* Toolbox section (About) — rows with chips, different from home capability grid */
+/* Toolbox section (About) — capability cards, different from home capability grid */
 .pf-toolbox {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  margin: 2rem 0 2.4rem;
-  border-top: 1px solid var(--portfolio-line);
-}
-.pf-toolbox-row {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  gap: 1.6rem 2.4rem;
-  padding: 1.6rem 0;
-  border-bottom: 1px solid var(--portfolio-line);
-  align-items: start;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 2rem 0 2.4rem;
 }
-.pf-toolbox-label small {
-  display: block;
+.pf-toolbox-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 250px;
+  padding: 1.25rem;
+  border: 1px solid var(--portfolio-line);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(34, 211, 238, 0.075), transparent 42%),
+    var(--portfolio-panel);
+}
+.pf-toolbox-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--portfolio-teal);
+}
+.pf-toolbox-card--ops::before { background: var(--portfolio-green); }
+.pf-toolbox-card--cloud::before { background: var(--portfolio-amber); }
+.pf-toolbox-card--data::before { background: var(--portfolio-blue); }
+.pf-toolbox-card::after {
+  content: "";
+  position: absolute;
+  right: -44px;
+  top: -44px;
+  width: 140px;
+  height: 140px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.08);
+  pointer-events: none;
+}
+.pf-toolbox-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+.pf-toolbox-head small {
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 0.72rem;
   letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--portfolio-teal);
-  margin-bottom: 0.45rem;
 }
-.pf-toolbox-label p,
-.md-typeset .pf-toolbox-label p {
-  font-size: 0.83rem;
+.pf-toolbox-head strong {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--portfolio-muted);
-  margin: 0;
+  white-space: nowrap;
+}
+.md-typeset .pf-toolbox-card p {
+  font-size: 0.84rem;
+  color: var(--portfolio-muted);
+  margin: 0 0 1.05rem;
   line-height: 1.55;
 }
 .pf-toolbox-chips {
@@ -1370,22 +1405,24 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 0.74rem;
   letter-spacing: 0.04em;
-  padding: 0.28rem 0.65rem;
+  padding: 0.36rem 0.7rem;
   border: 1px solid var(--portfolio-line);
-  border-radius: 3px;
+  border-radius: 999px;
   color: var(--portfolio-ink);
-  background: transparent;
+  background: rgba(148, 163, 184, 0.045);
   white-space: nowrap;
 }
 .pf-chip--cloud {
   border-color: rgba(34, 211, 238, 0.3);
   color: var(--portfolio-teal);
+  background: rgba(34, 211, 238, 0.06);
 }
 @media (max-width: 720px) {
-  .pf-toolbox-row {
+  .pf-toolbox {
     grid-template-columns: 1fr;
-    gap: 0.9rem;
-    padding: 1.2rem 0;
+  }
+  .pf-toolbox-card {
+    min-height: 0;
   }
 }
 
