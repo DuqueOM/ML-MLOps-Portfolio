@@ -1337,7 +1337,6 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
 }
 .pf-toolbox-card {
   position: relative;
-  overflow: hidden;
   min-height: 250px;
   padding: 1.25rem;
   border: 1px solid var(--portfolio-line);
@@ -1513,12 +1512,14 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
   font-size: 0;        /* hides the trailing space in the markdown link */
   line-height: 1;
 }
-.md-typeset .portfolio-button.portfolio-button--icon .twemoji {
+.md-typeset .portfolio-button.portfolio-button--icon .twemoji,
+.md-typeset .portfolio-button.portfolio-button--icon .twemoji svg {
   display: inline-block;
-  width: 1rem;
-  height: 1rem;
+  width: 16px;
+  height: 16px;
   margin: 0;
   vertical-align: 0;
+  flex-shrink: 0;
 }
 
 /* =========================================================

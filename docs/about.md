@@ -146,13 +146,13 @@ not listed from a tutorial, but from working code with tests, incidents and ADRs
 
 <div class="pf-toolbox" markdown="1">
 
-<div class="pf-toolbox-card pf-toolbox-card--ml" markdown="1">
-<div class="pf-toolbox-head" markdown="1">
+<div class="pf-toolbox-card pf-toolbox-card--ml">
+<div class="pf-toolbox-head">
 <small>01 · ml engineering</small>
 <strong>8 capabilities</strong>
 </div>
 <p>Model training, evaluation and explainability — including original-space SHAP and promotion gates.</p>
-<div class="pf-toolbox-chips" markdown="1">
+<div class="pf-toolbox-chips">
 <span class="pf-chip">Python 3.11+</span>
 <span class="pf-chip">scikit-learn</span>
 <span class="pf-chip">XGBoost</span>
@@ -164,13 +164,13 @@ not listed from a tutorial, but from working code with tests, incidents and ADRs
 </div>
 </div>
 
-<div class="pf-toolbox-card pf-toolbox-card--ops" markdown="1">
-<div class="pf-toolbox-head" markdown="1">
+<div class="pf-toolbox-card pf-toolbox-card--ops">
+<div class="pf-toolbox-head">
 <small>02 · mlops · serving</small>
 <strong>9 capabilities</strong>
 </div>
 <p>Async inference, single-worker serving, metrics-driven scaling and CI/CD gates for promotion.</p>
-<div class="pf-toolbox-chips" markdown="1">
+<div class="pf-toolbox-chips">
 <span class="pf-chip">FastAPI</span>
 <span class="pf-chip">asyncio + ThreadPoolExecutor</span>
 <span class="pf-chip">Docker</span>
@@ -183,13 +183,13 @@ not listed from a tutorial, but from working code with tests, incidents and ADRs
 </div>
 </div>
 
-<div class="pf-toolbox-card pf-toolbox-card--cloud" markdown="1">
-<div class="pf-toolbox-head" markdown="1">
+<div class="pf-toolbox-card pf-toolbox-card--cloud">
+<div class="pf-toolbox-head">
 <small>03 · cloud · infrastructure</small>
 <strong>2 clouds</strong>
 </div>
 <p>GKE and EKS paths built in the same monorepo, with delegated credentials only — Workload Identity and IRSA.</p>
-<div class="pf-toolbox-chips" markdown="1">
+<div class="pf-toolbox-chips">
 <span class="pf-chip pf-chip--cloud">GCP — GKE</span>
 <span class="pf-chip pf-chip--cloud">Workload Identity</span>
 <span class="pf-chip pf-chip--cloud">AWS — EKS</span>
@@ -201,13 +201,13 @@ not listed from a tutorial, but from working code with tests, incidents and ADRs
 </div>
 </div>
 
-<div class="pf-toolbox-card pf-toolbox-card--data" markdown="1">
-<div class="pf-toolbox-head" markdown="1">
+<div class="pf-toolbox-card pf-toolbox-card--data">
+<div class="pf-toolbox-head">
 <small>04 · data</small>
 <strong>6 capabilities</strong>
 </div>
 <p>Data workflows built for honest evaluation: temporal validation, leakage gates and drift signals.</p>
-<div class="pf-toolbox-chips" markdown="1">
+<div class="pf-toolbox-chips">
 <span class="pf-chip">PySpark</span>
 <span class="pf-chip">Pandas</span>
 <span class="pf-chip">Temporal cross-validation</span>
