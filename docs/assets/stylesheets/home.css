@@ -547,24 +547,34 @@
 .mlh-work--h .mlh-hscroll-hint { display: inline; }
 .mlh-hscroll-track { max-width: 1200px; margin: 0 auto; padding: 0 28px; }
 
+/* GSAP pins the outer .mlh-hscroll; the inner viewport is a plain
+   full-height flex (no sticky needed — the vanilla fallback re-adds it). */
 .mlh-hscroll.is-on .mlh-hscroll-sticky {
-  position: sticky; top: 0; height: 100svh;
+  height: 100svh;
   display: flex; align-items: center;
   overflow: hidden;
 }
+.mlh-hscroll.is-on.mlh-hscroll--vanilla .mlh-hscroll-sticky {
+  position: sticky; top: 0;
+}
 .mlh-hscroll.is-on .mlh-hscroll-track {
-  display: flex; gap: 3rem; align-items: stretch;
+  display: flex; gap: 4vw; align-items: center;
   max-width: none; margin: 0;
-  padding: 0 max(28px, calc((100vw - 1200px) / 2));
+  padding: 0 max(28px, calc((100vw - 1160px) / 2));
   will-change: transform;
 }
+/* Full-screen feature card: near one viewport width, cinematic */
 .mlh-hscroll.is-on .mlh-case {
   flex: 0 0 auto;
-  width: min(860px, 74vw);
+  width: min(1100px, 86vw);
+  min-height: 62svh;
+  align-content: center;
   border: 1px solid var(--mlh-hairline);
-  border-radius: 6px;
-  background: rgba(11, 17, 32, 0.5);
-  padding: 2.2rem 2.4rem;
+  border-radius: 8px;
+  background:
+    radial-gradient(640px 300px at 12% 0%, rgba(34, 211, 238, 0.05), transparent 60%),
+    rgba(11, 17, 32, 0.55);
+  padding: 3rem 3.2rem;
   grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
 }
 @media (hover: hover) {

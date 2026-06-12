@@ -83,14 +83,63 @@
     }
   });
 
-  /* ---- scroll-driven horizontal case scroller ---- */
+  /* ---- pinned horizontal case rail (GSAP ScrollTrigger; vanilla fallback) ----
+     Desktop only: the section pins to the viewport and vertical scroll
+     scrubs the three feature panels horizontally, snapping per panel.
+     Mobile / reduced-motion / no-JS: panels stack vertically untouched. */
   var hs = root.querySelector("[data-hscroll]");
-  if (hs && !reduced && window.matchMedia("(min-width: 901px)").matches) {
+
+  function hsActivate(hsEl) {
+    hsEl.classList.add("is-on");
+    var w = hsEl.closest(".mlh-work");
+    if (w) w.classList.add("mlh-work--h");
+    return function () {
+      hsEl.classList.remove("is-on", "mlh-hscroll--vanilla");
+      if (w) w.classList.remove("mlh-work--h");
+    };
+  }
+
+  if (hs && !reduced && window.gsap && window.ScrollTrigger) {
+    window.gsap.registerPlugin(window.ScrollTrigger);
+    var mm = window.gsap.matchMedia();
+    mm.add("(min-width: 901px)", function () {
+      var deactivate = hsActivate(hs);
+      var track = hs.querySelector(".mlh-hscroll-track");
+      var panels = track.querySelectorAll(".mlh-case").length;
+      var getMax = function () {
+        return Math.max(0, track.scrollWidth - hs.clientWidth);
+      };
+      window.gsap.to(track, {
+        x: function () { return -getMax(); },
+        ease: "none",
+        scrollTrigger: {
+          trigger: hs,
+          pin: true,
+          scrub: 1,
+          anticipatePin: 1,
+          start: "top top",
+          end: function () { return "+=" + getMax(); },
+          invalidateOnRefresh: true,
+          snap: panels > 1 ? {
+            snapTo: 1 / (panels - 1),
+            duration: { min: 0.2, max: 0.55 },
+            ease: "power1.inOut"
+          } : false
+        }
+      });
+      /* fonts settle after load — recompute distances */
+      window.addEventListener("load", function () { window.ScrollTrigger.refresh(); });
+      return function () {
+        deactivate();
+        window.gsap.set(track, { clearProps: "all" });
+      };
+    });
+  } else if (hs && !reduced && window.matchMedia("(min-width: 901px)").matches) {
+    /* vanilla fallback (CDN blocked): sticky viewport + manual scrub */
+    hs.classList.add("mlh-hscroll--vanilla");
+    hsActivate(hs);
     var hsSticky = hs.querySelector(".mlh-hscroll-sticky");
     var hsTrack = hs.querySelector(".mlh-hscroll-track");
-    var hsWork = hs.closest(".mlh-work");
-    hs.classList.add("is-on");
-    if (hsWork) hsWork.classList.add("mlh-work--h");
     var hsMax = 0;
     function hsUpdate() {
       var top = hs.getBoundingClientRect().top;
@@ -108,7 +157,6 @@
       if (!hsTick) { requestAnimationFrame(function () { hsUpdate(); hsTick = false; }); hsTick = true; }
     }, { passive: true });
     window.addEventListener("resize", hsMeasure);
-    /* re-measure after fonts/layout settle */
     window.addEventListener("load", hsMeasure);
     hsMeasure();
   }

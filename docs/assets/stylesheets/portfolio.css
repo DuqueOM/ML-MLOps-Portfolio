@@ -1201,6 +1201,79 @@ html {
     padding-right: 1.2rem;
   }
 }
+
+/* =========================================================
+   Doc pages (DEPLOYMENT_EVIDENCE, ADRs, guides…) — full skin.
+   These pages have no .portfolio-page wrapper; they were still
+   wearing Material defaults next to the editorial tabs.
+   ========================================================= */
+
+/* Reading measure: centered column instead of edge-to-edge text */
+body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
+  max-width: 47rem;
+  margin-inline: auto;
+}
+
+/* Right ToC rail: mono index with a cyan position marker */
+.md-nav--secondary { border-left: 1px solid var(--portfolio-line); }
+.md-nav--secondary .md-nav__title {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--portfolio-teal);
+  background: transparent;
+  box-shadow: none;
+}
+.md-nav--secondary .md-nav__link {
+  font-size: 0.66rem;
+  color: var(--portfolio-muted);
+}
+.md-nav--secondary .md-nav__link:hover { color: var(--portfolio-ink); }
+.md-nav--secondary .md-nav__link--active,
+.md-nav--secondary .md-nav__link--active:hover {
+  color: var(--portfolio-teal);
+}
+
+/* Admonitions: keyline bands, not floating boxes */
+.md-typeset .admonition,
+.md-typeset details {
+  background: rgba(11, 17, 32, 0.55);
+  border: 0;
+  border-left: 2px solid var(--portfolio-teal);
+  border-radius: 0 4px 4px 0;
+  box-shadow: none;
+  font-size: 0.74rem;
+}
+.md-typeset .admonition-title,
+.md-typeset summary {
+  background: rgba(34, 211, 238, 0.06);
+  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-weight: 600;
+}
+.md-typeset .admonition.warning,
+.md-typeset .admonition.caution { border-left-color: var(--portfolio-amber); }
+.md-typeset .admonition.warning .admonition-title,
+.md-typeset .admonition.caution .admonition-title { background: rgba(251, 191, 36, 0.07); }
+.md-typeset .admonition.danger,
+.md-typeset .admonition.failure { border-left-color: var(--portfolio-rose); }
+.md-typeset .admonition.success,
+.md-typeset .admonition.check { border-left-color: var(--portfolio-green); }
+
+/* Quotes and rules follow the hairline language */
+.md-typeset blockquote {
+  border-left: 2px solid var(--portfolio-amber);
+  color: var(--portfolio-muted);
+}
+.md-typeset hr { border-bottom: 1px solid var(--portfolio-line); }
+
+/* Code blocks: surface tint + hairline frame */
+.md-typeset pre > code {
+  border: 1px solid var(--portfolio-line);
+  border-radius: 4px;
+}
+
 @media (pointer: coarse), (prefers-reduced-motion: reduce) {
   .pf-glow { display: none; }
 }
@@ -1331,6 +1404,31 @@ html {
 .md-typeset .portfolio-button--primary .twemoji { color: #04141A; }
 .md-typeset .portfolio-button:hover .twemoji { color: var(--portfolio-blue); }
 .md-typeset .portfolio-button--primary:hover .twemoji { color: #04141A; }
+
+/* =========================================================
+   Mobile readability (About y compañía) — MUST stay at the
+   end of this file: it overrides component rules above.
+   The old 34ch caps squeezed hero text against the left edge.
+   ========================================================= */
+@media (max-width: 760px) {
+  .md-typeset .portfolio-hero p,
+  .md-typeset .portfolio-hero-copy {
+    max-width: 100%;
+  }
+  .md-typeset .pf-timeline li {
+    padding-left: 2.2rem;
+    gap: 0.2rem;
+  }
+  .md-typeset .pf-timeline p { max-width: 100%; }
+  /* doubled class beats the de-box layer regardless of file position */
+  .md-typeset .portfolio-stat.portfolio-stat {
+    border-left: 0;
+    padding-left: 0;
+    border-top: 1px solid var(--portfolio-line);
+    padding-top: 0.8rem;
+  }
+  .md-typeset .portfolio-stat.portfolio-stat:first-child { border-top: 0; padding-top: 0; }
+}
 
 /* =========================================================
    Banner removal — inner tabs open like the home hero: plain
