@@ -16,9 +16,9 @@ way to reach me is email. I reply within 24 hours.
 [:fontawesome-brands-linkedin: Message me on LinkedIn](https://linkedin.com/in/duqueom){ .portfolio-button }
 </div>
 
-<p class="portfolio-section-lead">DuqueOrtegaMutis@gmail.com — the button above
-opens a pre-filled draft; replace the brackets and send.</p>
 </div>
+
+<p class="portfolio-section-lead" style="margin:0.6rem 0 1.4rem;">DuqueOrtegaMutis@gmail.com — the button above opens a pre-filled draft; replace the brackets and send.</p>
 
 ## Availability
 
