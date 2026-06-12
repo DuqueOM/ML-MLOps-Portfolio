@@ -43,6 +43,10 @@ strongest 10-minute read.
 </div>
 </div>
 
+<div class="portfolio-media portfolio-media--demo" markdown="1">
+<img src="../media/gifs/portfolio-demo.gif" alt="Portfolio deployment walkthrough — full build, test and serve cycle" loading="lazy">
+</div>
+
 The three services inside the portfolio — each with its own deep-dive page:
 
 <div class="portfolio-card-grid" markdown="1">
