@@ -181,7 +181,116 @@
 
     <div class="mlh-hscroll" data-hscroll>
       <div class="mlh-hscroll-sticky">
-        <div class="mlh-hscroll-track" data-project-rail></div>
+        <div class="mlh-hscroll-track" data-project-rail data-rendered="true">
+
+      <!-- CASE: BANKCHURN -->
+      <article class="mlh-case" data-reveal>
+        <div class="mlh-case-meta">
+          <p class="mlh-case-tag mlh-tag-cyan">incident // serving</p>
+          <dl class="mlh-case-metrics">
+            <div><dt>errors under load</dt><dd>81% → <b class="mlh-green">0%</b></dd></div>
+            <div><dt>cpu request</dt><dd>2000m → 1000m</dd></div>
+            <div><dt>model</dt><dd>AUC 0.87 · 90% cov</dd></div>
+          </dl>
+        </div>
+        <div class="mlh-case-body">
+          <p class="mlh-case-project">BankChurn Predictor</p>
+          <h3><a href="{{ 'projects/bankchurn-debugging/' | url }}">81% of requests failing. The model was fine.</a></h3>
+          <p>
+            A load test exposed an 81% error rate on the BankChurn API. Root cause:
+            <code>uvicorn --workers</code> inside Kubernetes — multiple workers competing
+            for one shared CPU budget produce thrashing, not parallelism. Redesigned the
+            inference path with asyncio plus a ThreadPoolExecutor (GIL analysis documented),
+            errors dropped to zero and the CPU request was halved.
+          </p>
+          <svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="Serving architecture: client to FastAPI single worker, inference offloaded to thread pool, model and SHAP">
+            <g class="mlh-d-node"><rect x="2" y="32" width="86" height="32" rx="3"/><text x="45" y="52">client</text></g>
+            <path d="M88 48 H128" class="mlh-d-edge"/>
+            <g class="mlh-d-node mlh-d-accent"><rect x="128" y="32" width="150" height="32" rx="3"/><text x="203" y="52">fastapi · 1 worker</text></g>
+            <path d="M278 48 H318" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="318" y="32" width="120" height="32" rx="3"/><text x="378" y="52">threadpool</text></g>
+            <path d="M438 48 H478" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="478" y="32" width="80" height="32" rx="3"/><text x="518" y="52">model</text></g>
+            <text x="203" y="86" class="mlh-d-note">event loop stays free — probes alive under load</text>
+          </svg>
+          <div class="mlh-case-links">
+            <a class="mlh-case-link" href="{{ 'projects/bankchurn/' | url }}">See the BankChurn Predictor service</a>
+            <a class="mlh-case-link" href="{{ 'projects/bankchurn-debugging/' | url }}">Read the debugging deep dive</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- CASE: NLPINSIGHT -->
+      <article class="mlh-case" data-reveal>
+        <div class="mlh-case-meta">
+          <p class="mlh-case-tag mlh-tag-cyan">trade-off // nlp serving</p>
+          <dl class="mlh-case-metrics">
+            <div><dt>accuracy</dt><dd>80.6%</dd></div>
+            <div><dt>coverage</dt><dd>98%</dd></div>
+            <div><dt>inference</dt><dd>CPU-only · low cost</dd></div>
+          </dl>
+        </div>
+        <div class="mlh-case-body">
+          <p class="mlh-case-project">NLPInsight Analyzer</p>
+          <h3><a href="{{ 'projects/nlpinsight/' | url }}">The heavier model we chose not to ship</a></h3>
+          <p>
+            Financial sentiment classification where the production question mattered more
+            than the leaderboard: a transformer would score higher and cost more to operate,
+            explain and debug. NLPInsight ships a lightweight, explainable path — and documents
+            the rejected alternative as an engineering decision, not an omission.
+          </p>
+          <svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="NLP architecture: text to TF-IDF linear model to API; transformer path documented but not shipped">
+            <g class="mlh-d-node"><rect x="2" y="14" width="86" height="32" rx="3"/><text x="45" y="34">text</text></g>
+            <path d="M88 30 H128" class="mlh-d-edge"/>
+            <g class="mlh-d-node mlh-d-accent"><rect x="128" y="14" width="160" height="32" rx="3"/><text x="208" y="34">tf-idf + linear</text></g>
+            <path d="M288 30 H328" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="328" y="14" width="80" height="32" rx="3"/><text x="368" y="34">api</text></g>
+            <g class="mlh-d-node mlh-d-ghost"><rect x="128" y="58" width="160" height="30" rx="3"/><text x="208" y="77">transformer</text></g>
+            <text x="438" y="77" class="mlh-d-note">documented, not shipped — operability won</text>
+          </svg>
+          <div class="mlh-case-links">
+            <a class="mlh-case-link" href="{{ 'projects/nlpinsight/' | url }}">See the NLPInsight Analyzer service</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- CASE: CHICAGOTAXI -->
+      <article class="mlh-case" data-reveal>
+        <div class="mlh-case-meta">
+          <p class="mlh-case-tag mlh-tag-cyan">leakage // forecasting</p>
+          <dl class="mlh-case-metrics">
+            <div><dt>r²</dt><dd>0.96 — honest</dd></div>
+            <div><dt>volume</dt><dd>6.3M trips</dd></div>
+            <div><dt>etl</dt><dd>PySpark · temporal CV</dd></div>
+          </dl>
+        </div>
+        <div class="mlh-case-body">
+          <p class="mlh-case-project">ChicagoTaxi Pipeline</p>
+          <h3><a href="{{ 'projects/chicagotaxi/' | url }}">A score too good to be true — until it was</a></h3>
+          <p>
+            Demand forecasting over 6.3M Chicago taxi trips. The first model looked perfect
+            because a feature was leaking the future into training. Removed the leak, rebuilt
+            validation as strictly temporal, and the R² of 0.96 that survived honest
+            re-evaluation is the one published.
+          </p>
+          <svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="Forecasting pipeline: 6.3M trips through PySpark ETL and temporal cross-validation to forecast; leaky feature removed">
+            <g class="mlh-d-node"><rect x="2" y="32" width="100" height="32" rx="3"/><text x="52" y="52">6.3M trips</text></g>
+            <path d="M102 48 H142" class="mlh-d-edge"/>
+            <g class="mlh-d-node mlh-d-accent"><rect x="142" y="32" width="120" height="32" rx="3"/><text x="202" y="52">pyspark etl</text></g>
+            <path d="M262 48 H302" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="302" y="32" width="130" height="32" rx="3"/><text x="367" y="52">temporal cv</text></g>
+            <path d="M432 48 H472" class="mlh-d-edge"/>
+            <g class="mlh-d-node"><rect x="472" y="32" width="86" height="32" rx="3"/><text x="515" y="52">forecast</text></g>
+            <text x="202" y="86" class="mlh-d-note mlh-d-warn">leaky feature → removed before metrics</text>
+          </svg>
+          <div class="mlh-case-links">
+            <a class="mlh-case-link" href="{{ 'projects/chicagotaxi/' | url }}">See the ChicagoTaxi Pipeline service</a>
+          </div>
+        </div>
+      </article>
+
+        </div>
+
       </div>
     </div>
   </section>

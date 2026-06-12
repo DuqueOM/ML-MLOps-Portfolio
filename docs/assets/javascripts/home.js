@@ -139,6 +139,10 @@
   function renderProjectRail() {
     var rail = root.querySelector("[data-project-rail]");
     if (!rail || rail.dataset.rendered === "true") return;
+    if (rail.children.length > 0) {
+      rail.dataset.rendered = "true";
+      return;
+    }
     rail.innerHTML = projectCases.map(function (item) {
       var metrics = item.metrics.map(function (metric) {
         return "<div><dt>" + metric[0] + "</dt><dd>" + metric[1] + "</dd></div>";
