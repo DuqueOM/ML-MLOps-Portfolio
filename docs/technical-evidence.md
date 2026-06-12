@@ -18,94 +18,6 @@ deep dive only if you want the full technical archive.
 [Read incident writeup](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
 [Open deep dive index](technical-deep-dive.md){ .portfolio-button }
 [Check current status](DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
-[Review projects](index.md){ .portfolio-button }
-</div>
-</div>
-
-## Production Incidents
-
-<div class="portfolio-card-grid" markdown="1">
-<div class="portfolio-card" markdown="1">
-<small>Serving concurrency</small>
-<h3>81% API errors -> 0%</h3>
-<p><strong>Symptom:</strong> Locust exposed an 81% error rate under concurrent
-prediction traffic.</p>
-<p><strong>Hypothesis:</strong> it first looked like a scaling or CPU allocation
-problem.</p>
-<p><strong>Diagnosis:</strong> <code>uvicorn --workers N</code> under
-Kubernetes created contention inside a shared pod CPU budget, while synchronous
-ML inference blocked the FastAPI event loop.</p>
-<p><strong>Fix:</strong> one worker per pod, Kubernetes HPA for horizontal
-scaling, and CPU-bound inference moved to
-<code>asyncio.run_in_executor()</code> with <code>ThreadPoolExecutor</code>.</p>
-<p><strong>Result:</strong> error rate dropped to 0% in validation and the CPU
-request was reduced by roughly 50%.</p>
-
-<svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="Serving architecture after the fix: client to FastAPI single worker, inference offloaded to a thread pool, model behind it">
-<g class="mlh-d-node"><rect x="2" y="32" width="86" height="32" rx="3"/><text x="45" y="52">client</text></g>
-<path d="M88 48 H128" class="mlh-d-edge"/>
-<g class="mlh-d-node mlh-d-accent"><rect x="128" y="32" width="150" height="32" rx="3"/><text x="203" y="52">fastapi · 1 worker</text></g>
-<path d="M278 48 H318" class="mlh-d-edge"/>
-<g class="mlh-d-node"><rect x="318" y="32" width="120" height="32" rx="3"/><text x="378" y="52">threadpool</text></g>
-<path d="M438 48 H478" class="mlh-d-edge"/>
-<g class="mlh-d-node"><rect x="478" y="32" width="80" height="32" rx="3"/><text x="518" y="52">model</text></g>
-<text x="203" y="86" class="mlh-d-note">event loop stays free — probes alive under load</text>
-</svg>
-
-[Read the full incident writeup](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Explainability</small>
-<h3>All-zero SHAP outputs</h3>
-<p><strong>Symptom:</strong> SHAP explanations returned unusable all-zero
-contributions.</p>
-<p><strong>Diagnosis:</strong> the BankChurn StackingClassifier pipeline was not
-compatible with the initial TreeExplainer path.</p>
-<p><strong>Fix:</strong> use KernelExplainer through a predict-proba wrapper in
-the original feature space, so explanations match the served model contract.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Autoscaling</small>
-<h3>HPA scale-down fixed</h3>
-<p><strong>Symptom:</strong> pods stayed overprovisioned after traffic dropped.</p>
-<p><strong>Diagnosis:</strong> memory was a misleading HPA signal because ML pods
-keep a fixed model memory footprint even when request volume falls.</p>
-<p><strong>Fix:</strong> remove memory-based scaling and use CPU-only HPA,
-reducing replicas from 3 to 1 in 8 minutes.</p>
-</div>
-</div>
-
-## Quick Technical Signal
-
-<div class="portfolio-card-grid" markdown="1">
-<div class="portfolio-card" markdown="1">
-<small>System scope</small>
-<h3>Three ML services beyond notebooks</h3>
-<p>Churn prediction, financial sentiment analysis and taxi demand forecasting
-with APIs, tests, packaging and documentation.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>MLOps fundamentals</small>
-<h3>Serving, tracking and deployment paths</h3>
-<p>FastAPI, Docker, Kubernetes manifests, MLflow patterns, CI/CD workflows and
-cloud deployment evidence.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Reliability habits</small>
-<h3>Measured failures, not just demos</h3>
-<p>Load-test debugging, SHAP troubleshooting, HPA correction, leakage checks and
-architecture decisions with trade-offs.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Business judgment</small>
-<h3>Cost and scope are documented</h3>
-<p>The portfolio separates active assets from paused cloud runtime and explains
-cost-control decisions honestly.</p>
 </div>
 </div>
 
@@ -173,38 +85,6 @@ behavior.</p>
 </div>
 </div>
 
-## Choose A Review Path
-
-<div class="portfolio-card-grid" markdown="1">
-<div class="portfolio-card" markdown="1">
-<small>3-minute review</small>
-<h3>Recruiter or first screen</h3>
-<p>Confirm the role fit, current status and what the portfolio is meant to show.</p>
-
-[Recruiter brief](recruiter-brief.md){ .portfolio-button }
-[Portfolio status](DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>10-minute review</small>
-<h3>Hiring manager overview</h3>
-<p>Understand the three services, the reusable template and the strongest
-technical signals without reading the whole archive.</p>
-
-[Home — projects and incidents](index.md){ .portfolio-button }
-[Production template](template.md){ .portfolio-button }
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>30-minute review</small>
-<h3>Technical deep dive</h3>
-<p>Open architecture, deployment, operations, model and API documentation in a
-grouped index instead of a long sidebar.</p>
-
-[Deep dive index](technical-deep-dive.md){ .portfolio-button }
-</div>
-</div>
-
 ## Key Engineering Decisions
 
 <div class="portfolio-card-grid" markdown="1">
@@ -239,60 +119,62 @@ rules and reviewable workflows.</p>
 </div>
 </div>
 
-## Evidence Highlights
+<style>
+#pf-lightbox {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  justify-content: center;
+  align-items: center;
+  cursor: zoom-out;
+  padding: 2rem;
+}
+#pf-lightbox.active { display: flex; }
+#pf-lightbox img {
+  max-width: 95vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+#pf-lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.8;
+}
+#pf-lightbox-close:hover { opacity: 1; }
+.portfolio-evidence-image { cursor: zoom-in; transition: opacity 0.2s; }
+.portfolio-evidence-image:hover { opacity: 0.85; }
+</style>
 
-<div class="portfolio-card-grid" markdown="1">
-<div class="portfolio-card" markdown="1">
-<small>Serving</small>
-<h3>FastAPI inference paths</h3>
-<p>Health checks, metrics endpoints, Swagger docs, Docker builds and API smoke
-tests make models callable and reviewable.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Cloud</small>
-<h3>GKE and EKS evidence</h3>
-<p>Kubernetes manifests, Terraform examples, screenshots and CLI evidence
-preserve the deployment story while runtime is paused for cost.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Operations</small>
-<h3>Monitoring and runbooks</h3>
-<p>Prometheus, Grafana, MLflow, load tests and troubleshooting notes show how
-the system would be operated, not only trained.</p>
-</div>
-</div>
-
-## Deep Archive
-
-<div class="portfolio-card-grid" markdown="1">
-<div class="portfolio-card" markdown="1">
-<h3><a href="../">Projects home</a></h3>
-<p>The three ML systems, the production incidents and their main results.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<h3><a href="../projects/bankchurn-debugging/">BankChurn debugging deep dive</a></h3>
-<p>The full failure story: symptoms, hypotheses, root cause, fix, validation
-and template lesson.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<h3><a href="../template/">Production template</a></h3>
-<p>The reusable MLOps project extracted from portfolio lessons.</p>
+<div id="pf-lightbox" onclick="this.classList.remove('active')">
+  <span id="pf-lightbox-close">&times;</span>
+  <img id="pf-lightbox-img" src="" alt="">
 </div>
 
-<div class="portfolio-card" markdown="1">
-<h3><a href="../technical-deep-dive/">Deep dive index</a></h3>
-<p>Grouped technical archive for architecture, deployment, operations, models
-and API references.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<h3><a href="../DEPLOYMENT_EVIDENCE/">Portfolio status</a></h3>
-<p>What is active now, what is paused, and how to reactivate a live demo.</p>
-</div>
-</div>
+<script>
+(function() {
+  const lb = document.getElementById('pf-lightbox');
+  const lbImg = document.getElementById('pf-lightbox-img');
+  document.querySelectorAll('.portfolio-evidence-image').forEach(function(img) {
+    img.addEventListener('click', function(e) {
+      e.preventDefault();
+      lbImg.src = img.src;
+      lbImg.alt = img.alt;
+      lb.classList.add('active');
+    });
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') lb.classList.remove('active');
+  });
+})();
+</script>
 
 </div>
