@@ -101,6 +101,7 @@ portfolio lives in one place:
 [:fontawesome-solid-cloud: Deployment evidence](../DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
 [:fontawesome-solid-diagram-project: Architecture decisions](../architecture/decisions.md){ .portfolio-button }
 [:fontawesome-brands-github: Template repository](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button }
+[:fontawesome-solid-circle-check: Check current status](DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
 </div>
 
 ## The Production Template
