@@ -542,6 +542,19 @@
   color: var(--mlh-cyan);
 }
 .md-typeset .ml-home .mlh-contact-links a:hover svg { color: var(--mlh-cyan-bright); }
+.md-typeset .ml-home .mlh-contact-links a.mlh-contact-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+}
+.md-typeset .ml-home .mlh-contact-links a.mlh-contact-icon svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 0;
+}
 .mlh-contact-meta {
   font-family: var(--mlh-mono); font-size: 0.7rem;
   letter-spacing: 0.14em; text-transform: uppercase;

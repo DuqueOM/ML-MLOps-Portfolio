@@ -1405,6 +1405,19 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
 .md-typeset .portfolio-button:hover .twemoji { color: var(--portfolio-blue); }
 .md-typeset .portfolio-button--primary:hover .twemoji { color: #04141A; }
 
+/* Icon-only buttons */
+.md-typeset .portfolio-button.portfolio-button--icon {
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  justify-content: center;
+}
+.md-typeset .portfolio-button.portfolio-button--icon .twemoji {
+  margin-right: 0;
+  width: 20px;
+  height: 20px;
+}
+
 /* =========================================================
    Mobile readability (About y compañía) — MUST stay at the
    end of this file: it overrides component rules above.

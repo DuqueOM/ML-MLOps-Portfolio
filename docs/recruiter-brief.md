@@ -230,9 +230,9 @@ proof I want to add.</p>
 
 <div class="portfolio-actions" markdown="1">
 [:fontawesome-brands-youtube: Video Demo](https://youtu.be/7dFFqq2ROPw){ .portfolio-button .portfolio-button--primary }
-[:fontawesome-brands-linkedin: ](https://linkedin.com/in/duqueom){ .portfolio-button }
-[:fontawesome-brands-github: ](https://github.com/DuqueOM){ .portfolio-button }
-[:fontawesome-solid-envelope: ](contact.md){ .portfolio-button }
+[:fontawesome-brands-linkedin: ](https://linkedin.com/in/duqueom){ .portfolio-button .portfolio-button--icon }
+[:fontawesome-brands-github: ](https://github.com/DuqueOM){ .portfolio-button .portfolio-button--icon }
+[:fontawesome-solid-envelope: ](contact.md){ .portfolio-button .portfolio-button--icon }
 </div>
 
 </div>
