@@ -202,8 +202,9 @@
 }
 
 .mlh-quicklinks {
-  display: flex; gap: 0.55rem; flex-wrap: wrap;
-  font-family: var(--mlh-mono); font-size: 0.75rem;
+  display: flex; gap: 0.7rem; flex-wrap: wrap;
+  font-family: var(--mlh-mono); font-size: 0.82rem;
+  letter-spacing: 0.08em;
   margin-top: 1.2rem;
 }
 .md-typeset .ml-home .mlh-quicklinks a {
@@ -211,7 +212,7 @@
   text-decoration: none;
   border: 1px solid var(--mlh-hairline);
   border-radius: 4px;
-  padding: 0.35rem 0.75rem;
+  padding: 0.85rem 1.7rem;
   transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
 }
 .md-typeset .ml-home .mlh-quicklinks a::after {
