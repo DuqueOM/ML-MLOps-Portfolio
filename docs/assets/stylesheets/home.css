@@ -200,6 +200,14 @@
   background: var(--mlh-cyan-bright);
   border-color: var(--mlh-cyan-bright);
 }
+.md-typeset .ml-home .mlh-btn--icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  padding: 0;
+}
 
 .mlh-quicklinks {
   display: flex; gap: 0.7rem; flex-wrap: wrap;
