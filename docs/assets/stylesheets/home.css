@@ -172,7 +172,7 @@
   color: var(--mlh-cyan-bright);
   text-shadow: 0 0 32px rgba(110, 231, 255, 0.35);
 }
-.mlh-sub { max-width: 600px; font-size: 0.98rem; margin: 0 0 2rem; }
+.mlh-sub { max-width: 640px; font-size: 0.98rem; margin: 0 0 2rem; }
 
 .mlh-cta { display: flex; gap: 0.9rem; flex-wrap: wrap; width: 100%; align-items: center; }
 .md-typeset .ml-home .mlh-btn {
