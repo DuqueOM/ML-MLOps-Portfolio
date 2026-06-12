@@ -240,6 +240,7 @@
   color: #04141A;
 }
 .mlh-ql-video svg { width: 14px; height: 14px; vertical-align: -2px; margin-right: 0.4rem; }
+.md-typeset .ml-home .mlh-quicklinks svg { max-width: 14px; max-height: 14px; }
 .md-typeset .ml-home .mlh-quicklinks a.mlh-ql-video::after { content: none; }
 
 /* ---- signature pipeline ---- */
