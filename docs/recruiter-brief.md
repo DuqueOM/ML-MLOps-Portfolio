@@ -229,10 +229,10 @@ proof I want to add.</p>
 ## Useful Links
 
 <div class="portfolio-actions" markdown="1">
-[:fontawesome-brands-youtube: Video Demo](https://youtu.be/7dFFqq2ROPw){ .portfolio-button .portfolio-button--primary }
 [:fontawesome-brands-linkedin: ](https://linkedin.com/in/duqueom){ .portfolio-button .portfolio-button--icon }
 [:fontawesome-brands-github: ](https://github.com/DuqueOM){ .portfolio-button .portfolio-button--icon }
 [:fontawesome-solid-envelope: ](contact.md){ .portfolio-button .portfolio-button--icon }
+[:fontawesome-brands-youtube: Video Demo](https://youtu.be/7dFFqq2ROPw){ .portfolio-button .portfolio-button--primary }
 </div>
 
 </div>

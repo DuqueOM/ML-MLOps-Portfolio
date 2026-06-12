@@ -171,7 +171,10 @@
     };
   }
 
-  if (hs && !reduced && window.gsap && window.ScrollTrigger) {
+  /* The rail runs even under prefers-reduced-motion: the scrub maps 1:1
+     to the user's own scroll gesture (no autonomous motion). Reduced
+     motion only drops the smoothing lag and the auto-snap. */
+  if (hs && window.gsap && window.ScrollTrigger) {
     window.gsap.registerPlugin(window.ScrollTrigger);
     var mm = window.gsap.matchMedia();
     mm.add("(min-width: 901px)", function () {
@@ -188,12 +191,12 @@
         scrollTrigger: {
           trigger: hs,
           pin: true,
-          scrub: 1,
+          scrub: reduced ? true : 1,
           anticipatePin: 1,
           start: "top top",
           end: function () { return "+=" + Math.max(window.innerHeight, getMax()); },
           invalidateOnRefresh: true,
-          snap: panels > 1 ? {
+          snap: (!reduced && panels > 1) ? {
             snapTo: 1 / (panels - 1),
             duration: { min: 0.2, max: 0.55 },
             ease: "power1.inOut"
@@ -210,7 +213,7 @@
         window.gsap.set(track, { clearProps: "all" });
       };
     });
-  } else if (hs && !reduced && window.matchMedia("(min-width: 901px)").matches) {
+  } else if (hs && window.matchMedia("(min-width: 901px)").matches) {
     /* vanilla fallback (CDN blocked): sticky viewport + manual scrub */
     hs.classList.add("mlh-hscroll--vanilla");
     hsActivate(hs);
