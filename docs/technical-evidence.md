@@ -17,7 +17,6 @@ deep dive only if you want the full technical archive.
 <div class="portfolio-actions" markdown="1">
 [Read incident writeup](projects/bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
 [Open deep dive index](technical-deep-dive.md){ .portfolio-button }
-[Check current status](DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
 </div>
 </div>
 
