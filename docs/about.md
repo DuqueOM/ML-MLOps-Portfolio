@@ -38,6 +38,9 @@ cost-awareness and making systems easier for other people to operate.
 
 Fourteen years of context, two years of code.
 
+<div class="portfolio-split" markdown="1">
+<div markdown="1">
+
 <ol class="pf-timeline">
 <li>
 <span class="pf-tl-dot pf-tl-dot--green"></span>
@@ -80,7 +83,10 @@ the cost discipline and the documentation habit.</p>
 </li>
 </ol>
 
-## Operations Experience In Numbers
+</div>
+<div markdown="1">
+
+### Operations Experience In Numbers
 
 <div class="portfolio-stat-strip" markdown="1">
 <div class="portfolio-stat">
@@ -102,6 +108,9 @@ the cost discipline and the documentation habit.</p>
 <small>Delivery record</small>
 <strong>15+ projects</strong>
 <span>Web projects delivered with about 90% on-time completion.</span>
+</div>
+</div>
+
 </div>
 </div>
 
