@@ -97,11 +97,11 @@ All the infrastructure, testing, security and monitoring proof behind the
 portfolio lives in one place:
 
 <div class="portfolio-actions" markdown="1">
-[:fontawesome-solid-flask: Technical Evidence](../technical-evidence.md){ .portfolio-button .portfolio-button--primary }
-[:fontawesome-solid-cloud: Deployment evidence](../DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
-[:fontawesome-solid-circle-check: Check current status](../DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
-[:fontawesome-solid-diagram-project: Architecture decisions](../architecture/decisions.md){ .portfolio-button }
-[:fontawesome-brands-github: Template repository](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button }
+[:fontawesome-solid-flask: Evidence](../technical-evidence.md){ .portfolio-button .portfolio-button--primary }
+[:fontawesome-solid-cloud: Deployment](../DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
+[:fontawesome-solid-circle-check: Status](../DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
+[:fontawesome-solid-diagram-project: ADRs](../architecture/decisions.md){ .portfolio-button }
+[:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button }
 </div>
 
 ## The Production Template
@@ -136,7 +136,7 @@ I can turn that experience into a system other teams can adopt.
 
 <div class="portfolio-actions" markdown="1">
 [Open the Production Template](../template.md){ .portfolio-button .portfolio-button--primary }
-[:fontawesome-brands-github: Template repository](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button }
+[:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button }
 </div>
 
 </div>
