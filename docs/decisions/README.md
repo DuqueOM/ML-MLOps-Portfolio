@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Architectural Decision Records (ADRs)
 
 > Structured documentation of every significant technical decision in the ML-MLOps Portfolio, including context, alternatives evaluated, trade-offs accepted, and conditions for revisiting.
@@ -85,3 +87,5 @@ Every ADR follows a consistent structure:
 - **Platform/DevOps Engineers**: Start with ADR-001 (HPA), ADR-014 (single-worker), ADR-002 (model storage), ADR-008 (canary).
 - **Security Engineers**: ADR-012 (scanner policy), ADR-005 (dependency pinning).
 - **Hiring Managers (platform focus)**: ADR-017 (custom vs managed platforms) — demonstrates ability to articulate build-vs-buy trade-offs.
+
+</div>

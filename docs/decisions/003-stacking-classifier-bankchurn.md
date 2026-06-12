@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-003: StackingClassifier for BankChurn Churn Prediction
 
 - **Status**: Accepted
@@ -91,3 +93,5 @@ The 0.01 AUC improvement over single LightGBM is modest. In a production system 
 - [ADR-010: SHAP KernelExplainer](010-shap-kernelexplainer-bankchurn.md) — SHAP compatibility consequence
 - [ADR-015: Async Inference](015-async-inference-threadpool.md) — inference performance consequence
 - [Wolpert, D.H. (1992). Stacked Generalization. Neural Networks, 5(2), 241-259](https://doi.org/10.1016/S0893-6080(05)80023-1)
+
+</div>

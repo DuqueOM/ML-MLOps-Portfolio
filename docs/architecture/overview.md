@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # System Architecture Overview
 
 ## Components
@@ -48,3 +50,5 @@
 ---
 
 *Last Updated: April 2026 — v3.6.0*
+
+</div>

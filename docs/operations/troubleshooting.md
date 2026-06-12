@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Troubleshooting Guide
 
 ## Quick Diagnostics
@@ -44,3 +46,5 @@ kubectl rollout undo deployment/<svc>         # Rollback
 ---
 
 *Last Updated: March 2026*
+
+</div>

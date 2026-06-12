@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Development Setup
 
 Complete guide for setting up a local development environment.
@@ -91,3 +93,5 @@ docker compose -f docker-compose.demo.yml up -d --build
 ---
 
 **Last Updated**: April 2026 — v3.6.0
+
+</div>

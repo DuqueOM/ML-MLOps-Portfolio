@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Multi-Cloud Deployment Evidence
 
 > Production deployment of 3 ML services on **Google Cloud Platform (GKE)** and **Amazon Web Services (EKS)**.
@@ -491,3 +493,5 @@ kubectl get svc -n ingress-nginx ingress-nginx-controller
 ---
 
 **Last Updated**: 2026-03-14 (v3.5.3 — AWS Classic ELB LoadBalancer, load + stress tests verified on both clouds via real Ingress, multi-cloud parity confirmed: 0% failure rate, BankChurn p50 identical at 110ms)
+
+</div>

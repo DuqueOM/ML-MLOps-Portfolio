@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Multi-Cloud Deployment Comparison: GCP (GKE) vs AWS (EKS)
 
 > Production metrics captured March 13, 2026. Both clouds running identical Kubernetes manifests via Kustomize overlays.
@@ -196,3 +198,5 @@ python scripts/sagemaker/deploy_endpoint.py delete    # Stop charges
 python scripts/vertex_ai/deploy_endpoint.py           # Deploy + test
 python scripts/vertex_ai/deploy_endpoint.py delete     # Stop charges
 ```
+
+</div>

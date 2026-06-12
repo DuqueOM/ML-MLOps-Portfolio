@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-013: Multi-Cloud Parity Policy (GKE vs EKS)
 
 - **Status**: Accepted
@@ -49,3 +51,5 @@ The autoscaler operates **independently per cloud** based on:
 - Node count differences are expected and not a parity violation
 - Ingress type difference is documented as a temporary AWS account limitation
 - All ML-critical paths (predict, explain, health, metrics) work identically on both clouds
+
+</div>

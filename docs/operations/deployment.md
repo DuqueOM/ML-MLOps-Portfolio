@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Deployment Guide
 
 ## Local (Docker Compose)
@@ -87,3 +89,5 @@ kubectl get hpa -n ml-portfolio                                 # HPA status
 ---
 
 *Last Updated: April 2026 — v3.6.0*
+
+</div>

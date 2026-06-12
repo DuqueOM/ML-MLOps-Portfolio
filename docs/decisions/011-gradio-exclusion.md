@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-011: Gradio Demo — Not Deployed to Production
 
 - **Status**: Accepted
@@ -64,3 +66,5 @@ Deploying Gradio alongside FastAPI conflates two concerns: **ML serving** (FastA
 ## Principle
 
 > **Every component in the cluster must justify its resource cost and operational burden.** A demo UI that duplicates Swagger UI functionality does not meet this bar. The portfolio's value comes from the MLOps infrastructure (CI/CD, monitoring, auto-scaling, canary deployments), not from a prototype UI.
+
+</div>

@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-005: Compatible Release Pinning (~=) for Python Dependencies
 
 - **Status**: Accepted
@@ -122,3 +124,5 @@ Applied consistently across all services:
 - [PEP 440 — Compatible Release Clause](https://peps.python.org/pep-0440/#compatible-release)
 - [NumPy 2.0 Migration Guide](https://numpy.org/doc/stable/numpy_2_0_migration_guide.html)
 - [sklearn Model Persistence](https://scikit-learn.org/stable/model_persistence.html)
+
+</div>

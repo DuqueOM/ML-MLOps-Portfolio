@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-015: Async Inference via ThreadPoolExecutor for CPU-Bound ML Models
 
 - **Status**: Accepted
@@ -171,3 +173,5 @@ NLPInsight and ChicagoTaxi remain unchanged (1 worker, no thread pool needed —
 ### Future Considerations
 - If BankChurn latency under GCP load needs further improvement, consider increasing `max_workers` to 6-8 or upgrading to compute-optimized nodes (c2/c2d)
 - Monitor thread pool saturation via Prometheus metrics if available
+
+</div>

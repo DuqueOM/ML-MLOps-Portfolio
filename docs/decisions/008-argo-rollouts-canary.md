@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-008: Canary Deployments with Argo Rollouts
 
 - **Status**: Accepted — Manifests validated, deployment script ready, pending production execution
@@ -139,3 +141,5 @@ kubectl argo rollouts get rollout bankchurn-predictor -n ml-portfolio --watch
 # Deploy all services
 ./scripts/deploy-canary.sh all v3.2.0
 ```
+
+</div>

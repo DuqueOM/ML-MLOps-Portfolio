@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-001: CPU-Only HPA for ML Inference Services
 
 - **Status**: Accepted
@@ -89,3 +91,5 @@ After removing the memory metric:
 - [ADR-014: Single-Worker Pod Pattern](014-single-worker-pod-ml-inference.md) — refined HPA thresholds
 - [Kubernetes HPA Algorithm](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#algorithm-details)
 - [Multi-Cloud Comparison — Resource Usage](../MULTI_CLOUD_COMPARISON.md)
+
+</div>

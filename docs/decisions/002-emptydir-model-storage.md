@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-002: emptyDir + Init Container for Model Storage in Kubernetes
 
 - **Status**: Accepted
@@ -100,3 +102,5 @@ In production ML, **model release cadence ≠ code release cadence**. Models may
 - [ADR-006: Drift-Triggered Retraining](006-drift-triggered-retraining.md) — model update trigger
 - [Kubernetes Init Containers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/)
 - [GCS FUSE CSI Driver](https://cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/cloud-storage-fuse-csi-driver)
+
+</div>

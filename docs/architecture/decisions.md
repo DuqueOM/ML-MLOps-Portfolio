@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Architectural Decision Records
 
 **17 documented decisions** covering every non-trivial choice in this portfolio. These are not explanations of what was built — they are records of what was evaluated, what was rejected, and why.
@@ -101,3 +103,5 @@ Each ADR follows a consistent structure:
 ---
 
 *This page is part of the [ML-MLOps Portfolio](https://github.com/DuqueOM/ML-MLOps-Portfolio). See also: [Engineering Highlights](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/ENGINEERING_HIGHLIGHTS.md) for a quick reference of incidents and trade-offs.*
+
+</div>

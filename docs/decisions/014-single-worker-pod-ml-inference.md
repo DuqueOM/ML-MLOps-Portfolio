@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-014: Single-Worker Pod Pattern for ML Inference Under Kubernetes
 
 - **Status**: Accepted (updated by ADR-015 — BankChurn exception removed)
@@ -164,3 +166,5 @@ FastAPI is already async; uvicorn's single-process event loop handles concurrent
 
 ### 4. Background thread pools for inference
 Run model inference in `asyncio.run_in_executor()` with a `ThreadPoolExecutor`. **Implemented in ADR-015**: unblocks the event loop and enables full concurrency within a single pod. Removed the need for the BankChurn 2-worker exception.
+
+</div>

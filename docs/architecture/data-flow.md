@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Data Flow
 
 Data pipeline architecture from ingestion to serving across all projects.
@@ -46,3 +48,5 @@ dvc pull                       # Pull on another machine
 ---
 
 *Last Updated: April 2026 — v3.6.0*
+
+</div>

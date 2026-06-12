@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-017: Custom FastAPI + K8s vs Managed ML Platforms (SageMaker / Vertex AI)
 
 ## Status
@@ -108,3 +110,5 @@ This "multi-paradigm" approach demonstrates:
 - [SageMaker sklearn container](https://github.com/aws/sagemaker-scikit-learn-container)
 - [Vertex AI prediction](https://cloud.google.com/vertex-ai/docs/predictions/overview)
 - [MLOps Community Survey 2025](https://mlops.community/surveys/)
+
+</div>

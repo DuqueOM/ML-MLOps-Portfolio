@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-012: Security Scanner Findings — Staging vs Production Policy
 
 - **Status**: Accepted
@@ -101,3 +103,5 @@ flow_log_cloudwatch_log_group_kms_id = aws_kms_key.vpc_logs.arn
 - [tfsec ignore syntax](https://aquasecurity.github.io/tfsec/latest/guides/configuration/ignores/)
 - [AWS Well-Architected: Security Pillar](https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/)
 - [GCP Security Best Practices](https://cloud.google.com/security/best-practices)
+
+</div>

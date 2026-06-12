@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-004: OpenTelemetry with Graceful No-Op Fallback
 
 - **Status**: Accepted
@@ -123,3 +125,5 @@ env:
 - [CNCF Observability Landscape](https://landscape.cncf.io/card-mode?category=observability-and-analysis)
 - `common_utils/telemetry.py` — implementation
 - `common_utils/__init__.py` — v1.2.0 with telemetry exports
+
+</div>

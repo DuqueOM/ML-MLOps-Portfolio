@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Reproducibility Guide
 
 ## Environment
@@ -66,3 +68,5 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 ---
 
 *Last Updated: April 2026 — v3.6.0*
+
+</div>

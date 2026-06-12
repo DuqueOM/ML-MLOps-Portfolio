@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Related Projects
 
 ## ML-MLOps Production Template
@@ -114,3 +116,5 @@ ML-MLOps-Portfolio (this repo)
 
 The template is the **codified knowledge** from this portfolio — the portfolio
 is the **evidence** that the template's patterns work in practice.
+
+</div>

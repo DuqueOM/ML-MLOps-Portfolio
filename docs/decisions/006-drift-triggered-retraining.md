@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-006: Drift-Triggered Retraining Architecture
 
 - **Status**: Accepted — Stub implemented, full orchestration deferred
@@ -143,3 +145,5 @@ The interfaces between components (Evidently → webhook, MLflow registry → de
 - [K8s CronJob manifest](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/k8s/base/drift-retraining-cronjob.yaml)
 - [Prometheus alert rules](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/infra/prometheus-rules.yaml)
 - [Evidently drift configuration](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/BankChurn-Predictor/configs/config.yaml)
+
+</div>

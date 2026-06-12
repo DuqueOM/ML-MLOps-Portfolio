@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-016: GCP vs AWS Performance Parity — Cost vs Performance Trade-off
 
 - **Status**: Accepted
@@ -129,3 +131,5 @@ No code changes required. Document the performance difference in:
 - [Multi-Cloud Comparison](../MULTI_CLOUD_COMPARISON.md)
 - [GCP Machine Types Pricing](https://cloud.google.com/compute/vm-instance-pricing)
 - [AWS EC2 Instance Types](https://aws.amazon.com/ec2/instance-types/)
+
+</div>

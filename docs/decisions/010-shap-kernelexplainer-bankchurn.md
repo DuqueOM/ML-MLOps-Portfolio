@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-010: SHAP KernelExplainer for BankChurn StackingClassifier
 
 - **Status**: Accepted
@@ -163,3 +165,5 @@ INFO: Model loaded successfully
 - Model changes to a single tree ensemble (XGBoost/LightGBM) → switch to TreeExplainer (<50ms)
 - Throughput requirement for explanations exceeds 10 RPS → move to async architecture
 - `shap` 0.47+ adds native StackingClassifier support → re-evaluate TreeExplainer
+
+</div>

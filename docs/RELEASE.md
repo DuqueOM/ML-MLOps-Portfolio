@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Release Management
 
 ## Versioning
@@ -53,3 +55,5 @@ Images pushed to GCP Artifact Registry:
 ---
 
 *Last Updated: April 2026 — v3.6.0*
+
+</div>

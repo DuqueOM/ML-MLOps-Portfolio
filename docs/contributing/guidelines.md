@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Contributing to ML/MLOps Portfolio
 
 Thank you for your interest in contributing to this portfolio! This project demonstrates end-to-end MLOps practices across 3 deployed ML services.
@@ -138,3 +140,5 @@ By contributing, you agree that your contributions will be licensed under the MI
 ---
 
 **Last Updated**: April 2026 — v3.6.0
+
+</div>

@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-018: Portfolio Maintenance Mode
 
 ## Status
@@ -121,3 +123,5 @@ Reactivation checklist is in `PORTFOLIO_STATUS.md §5`.
 - `.github/workflows/drift-detection.yml` — contains the corrected alert condition
 - `.github/workflows/ci-mlops.yml` — contains `ignore-unfixed: true`
 - CHANGELOG v3.6.1 entry (to be written on next release)
+
+</div>

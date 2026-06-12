@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Managed ML Platforms — SageMaker (AWS) & Vertex AI (GCP)
 
 > **Multi-paradigm portfolio**: Custom FastAPI + Kubernetes as the primary serving architecture,
@@ -456,3 +458,5 @@ job = aiplatform.ModelDeploymentMonitoringJob.create(
 | `docs/decisions/017-custom-vs-managed-ml-platforms.md` | ADR with full comparison |
 | `docs/MANAGED_ML_GUIDE.md` | This guide |
 | `docs/MULTI_CLOUD_COMPARISON.md` | Cross-cloud comparison including managed platforms |
+
+</div>

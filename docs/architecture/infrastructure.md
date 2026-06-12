@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Infrastructure
 
 Terraform-managed, multi-cloud (GCP + AWS) infrastructure for the ML-MLOps Portfolio.
@@ -178,3 +180,5 @@ The Terraform configuration includes **security hardening** that goes beyond wha
 ---
 
 *Last Updated: April 2026 — v3.6.0 (both clouds live with LoadBalancer Ingress)*
+
+</div>

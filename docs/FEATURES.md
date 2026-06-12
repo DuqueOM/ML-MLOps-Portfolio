@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Features
 
 ## Performance (v3.6.0, April 2026)
@@ -75,3 +77,5 @@
 ---
 
 *Last Updated: April 2026 — v3.6.0*
+
+</div>

@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-007: Feature Store — Deferred with Design Document
 
 - **Status**: Accepted — Intentionally deferred
@@ -113,3 +115,5 @@ If BankChurn were extended to use behavioral data (the missing feature set that 
 - [ADR-003: StackingClassifier for BankChurn](003-stacking-classifier-bankchurn.md)
 - [Feast documentation](https://docs.feast.dev/)
 - [Feature Store Patterns — Chip Huyen, Designing ML Systems (2022), Chapter 5]
+
+</div>

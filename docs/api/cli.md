@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # CLI Reference
 
 Each project provides a CLI for training and evaluation.
@@ -37,3 +39,5 @@ python -m nlpinsight.cli predict --text "Strong quarterly earnings"
 ---
 
 *Last Updated: March 2026*
+
+</div>

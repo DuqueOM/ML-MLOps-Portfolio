@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Load Test Results — Production Performance Benchmarks
 
 > **Date**: 2026-03-18 | **Tool**: [Locust](https://locust.io/) | **Infrastructure**: GKE (GCP) + EKS (AWS)
@@ -114,3 +116,5 @@ BankChurn's `StackingClassifier` (5 base learners + meta-learner) is inherently 
 | ChicagoTaxi | 1 | 750m | 60% | N/A |
 
 See [ADR-014](decisions/014-single-worker-pod-ml-inference.md) for the single-worker pod pattern rationale.
+
+</div>

@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Monitoring Guide
 
 Prometheus + Grafana + MLflow + Evidently monitoring stack deployed on GKE + EKS (both clouds).
@@ -113,3 +115,5 @@ locust -f tests/load/locustfile.py --headless     # Load tests
 ---
 
 *Last Updated: April 2026 — v3.6.0*
+
+</div>

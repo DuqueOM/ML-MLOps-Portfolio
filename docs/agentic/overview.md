@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Agentic Development Configuration
 
 **Last Updated**: April 2026 | **Portfolio Version**: 3.6.0
@@ -157,3 +159,4 @@ The `.windsurf/` configuration is itself a demonstration of the engineering phil
 ---
 
 *Part of the [ML-MLOps Portfolio](https://github.com/DuqueOM/ML-MLOps-Portfolio) — April 2026 — v3.6.0*
+</div>

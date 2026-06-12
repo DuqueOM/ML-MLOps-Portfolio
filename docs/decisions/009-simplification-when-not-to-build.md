@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # ADR-009: Simplification — Knowing When Not to Build
 
 - **Status**: Accepted
@@ -60,3 +62,5 @@ For a portfolio, some components exist to demonstrate capability rather than sol
 - **Positive**: Data leakage fix improves technical credibility
 - **Positive**: Infrastructure components are justified with explicit rationale
 - **Negative**: None identified — no functionality was lost
+
+</div>

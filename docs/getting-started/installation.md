@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Installation Guide
 
 Detailed installation instructions for development and production environments.
@@ -61,3 +63,5 @@ See [Troubleshooting Guide](../operations/troubleshooting.md) for common issues.
 ---
 
 **Last Updated**: April 2026 — v3.6.0
+
+</div>

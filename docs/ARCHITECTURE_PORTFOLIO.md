@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Portfolio Architecture
 
 **3 ML projects deployed end-to-end** — trained, containerized, served on GKE + EKS, monitored via Prometheus + Grafana.
@@ -124,3 +126,5 @@ graph TB
 ---
 
 *Last Updated: April 2026 — Portfolio v3.6.0 (GKE + EKS deployed, NLB)*
+
+</div>

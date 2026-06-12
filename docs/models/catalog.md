@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Model Catalog
 
 **Production Model Registry** — All models tracked via MLflow (v3.0.0, Python 3.11.14, sklearn 1.8.0)
@@ -71,3 +73,5 @@ Automated via K8s CronJob → GitHub Actions `workflow_dispatch`.
 ---
 
 *Last Updated: April 2026 — v3.6.0*
+
+</div>

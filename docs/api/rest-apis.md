@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # REST API Reference
 
 All services expose FastAPI with automatic Swagger UI at `/docs`, Prometheus metrics at `/metrics`, and health checks at `/health`.
@@ -88,3 +90,5 @@ curl "http://localhost:8004/demand?area=8&hour=14&limit=5"
 ---
 
 *Last Updated: April 2026 — v3.6.0*
+
+</div>

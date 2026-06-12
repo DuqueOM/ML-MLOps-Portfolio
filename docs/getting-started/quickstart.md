@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # Quick Start
 
 Get the full ML/MLOps stack running in 5 minutes.
@@ -56,3 +58,5 @@ docker compose -f docker-compose.demo.yml down
 ---
 
 *Last Updated: March 2026*
+
+</div>

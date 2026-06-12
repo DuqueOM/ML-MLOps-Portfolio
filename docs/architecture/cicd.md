@@ -1,3 +1,5 @@
+<div class="portfolio-page" markdown="1">
+
 # CI/CD Pipeline
 
 GitHub Actions workflows for testing, building, and deploying across GCP and AWS.
@@ -85,3 +87,5 @@ pytest tests/ -v --cov        # Tests + coverage
 ---
 
 *Last Updated: April 2026 — v3.6.0*
+
+</div>
