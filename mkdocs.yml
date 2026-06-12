@@ -32,11 +32,13 @@ theme:
   icon:
     repo: fontawesome/brands/github
 
+# The ?v= query busts GitHub Pages / browser caches when assets change.
+# Bump the date suffix on every visual release.
 extra_css:
-  - assets/stylesheets/portfolio.css
+  - assets/stylesheets/portfolio.css?v=20260612a
 
 extra_javascript:
-  - assets/javascripts/portfolio.js
+  - assets/javascripts/portfolio.js?v=20260612a
 
 plugins:
   - search
