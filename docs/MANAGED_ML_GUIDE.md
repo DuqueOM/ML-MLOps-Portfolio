@@ -7,24 +7,24 @@
 ## Architecture: Three Paradigms, One Portfolio
 
 ```
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│                           ML-MLOps-Portfolio                                     │
-│                                                                                  │
-│  ┌──────────────────────┐  ┌──────────────────────┐  ┌────────────────────────┐ │
-│  │  1. Custom FastAPI    │  │  2. AWS SageMaker    │  │  3. GCP Vertex AI     │ │
-│  │  on K8s (GKE + EKS)  │  │  Managed Endpoint    │  │  Managed Endpoint     │ │
-│  │  ── PRIMARY ──        │  │  ── COMPLEMENT ──    │  │  ── COMPLEMENT ──     │ │
-│  │                       │  │                      │  │                       │ │
-│  │  ✅ SHAP middleware   │  │  ✅ Built-in scaling │  │  ✅ Built-in scaling  │ │
-│  │  ✅ Prometheus        │  │  ✅ CloudWatch       │  │  ✅ Cloud Monitoring  │ │
-│  │  ✅ Multi-cloud       │  │  ✅ Model Monitor    │  │  ✅ Model Monitoring  │ │
-│  │  ✅ Full control      │  │  ✅ 5-min deploy     │  │  ✅ 5-min deploy     │ │
-│  │  ❌ More maintenance  │  │  ❌ AWS-only         │  │  ❌ GCP-only         │ │
-│  └──────────────────────┘  └──────────────────────┘  └────────────────────────┘ │
-│                                                                                  │
-│  "I can build custom infrastructure AND use managed platforms —                  │
-│   the right choice depends on team context, not personal preference."            │
-└──────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────────┐
+│                           ML-MLOps-Portfolio                                      │
+│                                                                                   │
+│  ┌──────────────────────┐  ┌───────────────────────┐  ┌────────────────────────┐  │
+│  │  1. Custom FastAPI   │  │  2. AWS SageMaker     │  │  3. GCP Vertex AI      │  │
+│  │  on K8s (GKE + EKS)  │  │  Managed Endpoint     │  │  Managed Endpoint      │  │
+│  │  ── PRIMARY ──       │  │  ── COMPLEMENT ──     │  │  ── COMPLEMENT ──      │  │
+│  │                      │  │                       │  │                        │  │
+│  │  ✅ SHAP middleware  │  │  ✅ Built-in scaling │  │  ✅ Built-in scaling   │  │
+│  │  ✅ Prometheus       │  │  ✅ CloudWatch       │  │  ✅ Cloud Monitoring   │  │
+│  │  ✅ Multi-cloud      │  │  ✅ Model Monitor    │  │  ✅ Model Monitoring   │  │
+│  │  ✅ Full control     │  │  ✅ 5-min deploy     │  │  ✅ 5-min deploy       │  │
+│  │  ❌ More maintenance │  │  ❌ AWS-only         │  │  ❌ GCP-only           │  │
+│  └──────────────────────┘  └───────────────────────┘  └────────────────────────┘  │
+│                                                                                   │
+│  "I can build custom infrastructure AND use managed platforms —                   │
+│   the right choice depends on team context, not personal preference."             │
+└───────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---

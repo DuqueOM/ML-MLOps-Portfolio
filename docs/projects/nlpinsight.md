@@ -8,8 +8,6 @@
 Classify financial text sentiment — and understand why domain-specific pre-training matters more than model size.
 
 <div class="portfolio-actions" markdown="1">
-[Projects overview](../index.md){ .portfolio-button .portfolio-button--primary }
-[BankChurn debugging pattern](bankchurn-debugging.md){ .portfolio-button }
 [Technical evidence](../technical-evidence.md){ .portfolio-button }
 </div>
 </div>

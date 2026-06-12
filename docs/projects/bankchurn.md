@@ -9,7 +9,6 @@ Predict which bank customers are likely to leave — and quantify the cost of ge
 
 <div class="portfolio-actions" markdown="1">
 [Debugging deep dive](bankchurn-debugging.md){ .portfolio-button .portfolio-button--primary }
-[Projects overview](../index.md){ .portfolio-button }
 [Technical evidence](../technical-evidence.md){ .portfolio-button }
 </div>
 </div>
