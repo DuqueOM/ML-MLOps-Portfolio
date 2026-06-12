@@ -545,40 +545,80 @@
    turning vertical scroll into a horizontal slide of the panels. */
 .mlh-hscroll-hint { display: none; color: var(--mlh-cyan); }
 .mlh-work--h .mlh-hscroll-hint { display: inline; }
-.mlh-hscroll-track { max-width: 1200px; margin: 0 auto; padding: 0 28px; }
+.mlh-hscroll {
+  position: relative;
+}
+.mlh-hscroll-track {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
 
 /* GSAP pins the outer .mlh-hscroll; the inner viewport is a plain
    full-height flex (no sticky needed — the vanilla fallback re-adds it). */
 .mlh-hscroll.is-on .mlh-hscroll-sticky {
   height: 100svh;
-  display: flex; align-items: center;
+  display: flex;
+  align-items: center;
   overflow: hidden;
 }
 .mlh-hscroll.is-on.mlh-hscroll--vanilla .mlh-hscroll-sticky {
   position: sticky; top: 0;
 }
 .mlh-hscroll.is-on .mlh-hscroll-track {
-  display: flex; gap: 4vw; align-items: center;
-  max-width: none; margin: 0;
-  padding: 0 max(28px, calc((100vw - 1160px) / 2));
+  display: flex;
+  gap: 4vw;
+  align-items: center;
+  max-width: none;
+  margin: 0;
+  padding: 0 4vw;
+  scroll-snap-type: x mandatory;
   will-change: transform;
 }
 /* Full-screen feature card: near one viewport width, cinematic */
 .mlh-hscroll.is-on .mlh-case {
   flex: 0 0 auto;
-  width: min(1100px, 86vw);
-  min-height: 62svh;
+  width: 92vw;
+  min-height: min(72svh, 720px);
   align-content: center;
+  scroll-snap-align: center;
   border: 1px solid var(--mlh-hairline);
   border-radius: 8px;
   background:
     radial-gradient(640px 300px at 12% 0%, rgba(34, 211, 238, 0.05), transparent 60%),
     rgba(11, 17, 32, 0.55);
-  padding: 3rem 3.2rem;
+  padding: clamp(1.8rem, 4vw, 3.2rem);
   grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+}
+.mlh-hscroll.is-on .mlh-case:focus-within {
+  border-color: rgba(110, 231, 255, 0.65);
+  box-shadow: 0 0 0 1px rgba(110, 231, 255, 0.12), 0 0 42px rgba(34, 211, 238, 0.08);
 }
 @media (hover: hover) {
   .mlh-hscroll.is-on .mlh-case:hover { transform: none; border-color: rgba(34,211,238,0.35); }
+}
+@media (max-width: 900px) {
+  .mlh-hscroll,
+  .mlh-hscroll.is-on .mlh-hscroll-sticky {
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+  .mlh-hscroll-track,
+  .mlh-hscroll.is-on .mlh-hscroll-track {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    transform: none !important;
+    scroll-snap-type: none;
+  }
+  .mlh-hscroll.is-on .mlh-case {
+    width: auto;
+    min-height: 0;
+    padding: 1.4rem 1rem;
+  }
 }
 
 /* ============ MOTION ============ */

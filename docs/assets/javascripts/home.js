@@ -83,12 +83,80 @@
     }
   });
 
-  /* ---- pinned horizontal case rail (GSAP ScrollTrigger; vanilla fallback) ----
-     Desktop only: the section pins to the viewport and vertical scroll
-     scrubs the three feature panels horizontally, snapping per panel.
-     Mobile / reduced-motion / no-JS: panels stack vertically untouched. */
-  var hs = root.querySelector("[data-hscroll]");
+  /* ---- pinned horizontal case rail (GSAP ScrollTrigger; static fallback) ---- */
+  var projectCases = [
+    {
+      tag: "incident // serving",
+      project: "BankChurn Predictor",
+      href: "projects/bankchurn-debugging/",
+      title: "81% of requests failing. The model was fine.",
+      description: "A load test exposed an 81% error rate on the BankChurn API. Root cause: uvicorn --workers inside Kubernetes — multiple workers competing for one shared CPU budget produce thrashing, not parallelism. Redesigned the inference path with asyncio plus a ThreadPoolExecutor (GIL analysis documented), errors dropped to zero and the CPU request was halved.",
+      metrics: [
+        ["errors under load", "81% → 0%"],
+        ["cpu request", "2000m → 1000m"],
+        ["model", "AUC 0.87 · 90% cov"]
+      ],
+      diagram: '<svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="Serving architecture: client to FastAPI single worker, inference offloaded to thread pool, model and SHAP"><g class="mlh-d-node"><rect x="2" y="32" width="86" height="32" rx="3"/><text x="45" y="52">client</text></g><path d="M88 48 H128" class="mlh-d-edge"/><g class="mlh-d-node mlh-d-accent"><rect x="128" y="32" width="150" height="32" rx="3"/><text x="203" y="52">fastapi · 1 worker</text></g><path d="M278 48 H318" class="mlh-d-edge"/><g class="mlh-d-node"><rect x="318" y="32" width="120" height="32" rx="3"/><text x="378" y="52">threadpool</text></g><path d="M438 48 H478" class="mlh-d-edge"/><g class="mlh-d-node"><rect x="478" y="32" width="80" height="32" rx="3"/><text x="518" y="52">model</text></g><text x="203" y="86" class="mlh-d-note">event loop stays free — probes alive under load</text></svg>',
+      links: [
+        ["See the BankChurn Predictor service", "projects/bankchurn/"],
+        ["Read the debugging deep dive", "projects/bankchurn-debugging/"]
+      ]
+    },
+    {
+      tag: "trade-off // nlp serving",
+      project: "NLPInsight Analyzer",
+      href: "projects/nlpinsight/",
+      title: "The heavier model we chose not to ship",
+      description: "Financial sentiment classification where the production question mattered more than the leaderboard: a transformer would score higher and cost more to operate, explain and debug. NLPInsight ships a lightweight, explainable path — and documents the rejected alternative as an engineering decision, not an omission.",
+      metrics: [
+        ["accuracy", "80.6%"],
+        ["coverage", "98%"],
+        ["inference", "CPU-only · low cost"]
+      ],
+      diagram: '<svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="NLP architecture: text to TF-IDF linear model to API; transformer path documented but not shipped"><g class="mlh-d-node"><rect x="2" y="14" width="86" height="32" rx="3"/><text x="45" y="34">text</text></g><path d="M88 30 H128" class="mlh-d-edge"/><g class="mlh-d-node mlh-d-accent"><rect x="128" y="14" width="160" height="32" rx="3"/><text x="208" y="34">tf-idf + linear</text></g><path d="M288 30 H328" class="mlh-d-edge"/><g class="mlh-d-node"><rect x="328" y="14" width="80" height="32" rx="3"/><text x="368" y="34">api</text></g><g class="mlh-d-node mlh-d-ghost"><rect x="128" y="58" width="160" height="30" rx="3"/><text x="208" y="77">transformer</text></g><text x="438" y="77" class="mlh-d-note">documented, not shipped — operability won</text></svg>',
+      links: [
+        ["See the NLPInsight Analyzer service", "projects/nlpinsight/"]
+      ]
+    },
+    {
+      tag: "leakage // forecasting",
+      project: "ChicagoTaxi Pipeline",
+      href: "projects/chicagotaxi/",
+      title: "A score too good to be true — until it was",
+      description: "Demand forecasting over 6.3M Chicago taxi trips. The first model looked perfect because a feature was leaking the future into training. Removed the leak, rebuilt validation as strictly temporal, and the R² of 0.96 that survived honest re-evaluation is the one published.",
+      metrics: [
+        ["r²", "0.96 — honest"],
+        ["volume", "6.3M trips"],
+        ["etl", "PySpark · temporal CV"]
+      ],
+      diagram: '<svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="Forecasting pipeline: 6.3M trips through PySpark ETL and temporal cross-validation to forecast; leaky feature removed"><g class="mlh-d-node"><rect x="2" y="32" width="100" height="32" rx="3"/><text x="52" y="52">6.3M trips</text></g><path d="M102 48 H142" class="mlh-d-edge"/><g class="mlh-d-node mlh-d-accent"><rect x="142" y="32" width="120" height="32" rx="3"/><text x="202" y="52">pyspark etl</text></g><path d="M262 48 H302" class="mlh-d-edge"/><g class="mlh-d-node"><rect x="302" y="32" width="130" height="32" rx="3"/><text x="367" y="52">temporal cv</text></g><path d="M432 48 H472" class="mlh-d-edge"/><g class="mlh-d-node"><rect x="472" y="32" width="86" height="32" rx="3"/><text x="515" y="52">forecast</text></g><text x="202" y="86" class="mlh-d-note mlh-d-warn">leaky feature → removed before metrics</text></svg>',
+      links: [
+        ["See the ChicagoTaxi Pipeline service", "projects/chicagotaxi/"]
+      ]
+    }
+  ];
 
+  function renderProjectRail() {
+    var rail = root.querySelector("[data-project-rail]");
+    if (!rail || rail.dataset.rendered === "true") return;
+    rail.innerHTML = projectCases.map(function (item) {
+      var metrics = item.metrics.map(function (metric) {
+        return "<div><dt>" + metric[0] + "</dt><dd>" + metric[1] + "</dd></div>";
+      }).join("");
+      var links = item.links.map(function (link) {
+        return '<a class="mlh-case-link" href="' + link[1] + '">' + link[0] + "</a>";
+      }).join("");
+      return '<article class="mlh-case" tabindex="-1">' +
+        '<div class="mlh-case-meta"><p class="mlh-case-tag mlh-tag-cyan">' + item.tag + '</p><dl class="mlh-case-metrics">' + metrics + '</dl></div>' +
+        '<div class="mlh-case-body"><p class="mlh-case-project">' + item.project + '</p><h3><a href="' + item.href + '">' + item.title + '</a></h3><p>' + item.description + '</p>' + item.diagram + '<div class="mlh-case-links">' + links + '</div></div>' +
+        '</article>';
+    }).join("");
+    rail.dataset.rendered = "true";
+  }
+
+  renderProjectRail();
+
+  var hs = root.querySelector("[data-hscroll]");
   function hsActivate(hsEl) {
     hsEl.classList.add("is-on");
     var w = hsEl.closest(".mlh-work");
@@ -105,11 +173,12 @@
     mm.add("(min-width: 901px)", function () {
       var deactivate = hsActivate(hs);
       var track = hs.querySelector(".mlh-hscroll-track");
+      var sticky = hs.querySelector(".mlh-hscroll-sticky");
       var panels = track.querySelectorAll(".mlh-case").length;
       var getMax = function () {
-        return Math.max(0, track.scrollWidth - hs.clientWidth);
+        return Math.max(0, track.scrollWidth - sticky.clientWidth);
       };
-      window.gsap.to(track, {
+      var tween = window.gsap.to(track, {
         x: function () { return -getMax(); },
         ease: "none",
         scrollTrigger: {
@@ -118,7 +187,7 @@
           scrub: 1,
           anticipatePin: 1,
           start: "top top",
-          end: function () { return "+=" + getMax(); },
+          end: function () { return "+=" + Math.max(window.innerHeight, getMax()); },
           invalidateOnRefresh: true,
           snap: panels > 1 ? {
             snapTo: 1 / (panels - 1),
@@ -129,7 +198,10 @@
       });
       /* fonts settle after load — recompute distances */
       window.addEventListener("load", function () { window.ScrollTrigger.refresh(); });
+      requestAnimationFrame(function () { window.ScrollTrigger.refresh(); });
       return function () {
+        if (tween.scrollTrigger) tween.scrollTrigger.kill();
+        tween.kill();
         deactivate();
         window.gsap.set(track, { clearProps: "all" });
       };
