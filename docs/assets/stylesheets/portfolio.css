@@ -1328,6 +1328,67 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
   opacity: 1;
 }
 
+/* Toolbox section (About) — rows with chips, different from home capability grid */
+.pf-toolbox {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 2rem 0 2.4rem;
+  border-top: 1px solid var(--portfolio-line);
+}
+.pf-toolbox-row {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 1.6rem 2.4rem;
+  padding: 1.6rem 0;
+  border-bottom: 1px solid var(--portfolio-line);
+  align-items: start;
+}
+.pf-toolbox-label small {
+  display: block;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--portfolio-teal);
+  margin-bottom: 0.45rem;
+}
+.pf-toolbox-label p,
+.md-typeset .pf-toolbox-label p {
+  font-size: 0.83rem;
+  color: var(--portfolio-muted);
+  margin: 0;
+  line-height: 1.55;
+}
+.pf-toolbox-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  padding-top: 0.15rem;
+}
+.pf-chip {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  padding: 0.28rem 0.65rem;
+  border: 1px solid var(--portfolio-line);
+  border-radius: 3px;
+  color: var(--portfolio-ink);
+  background: transparent;
+  white-space: nowrap;
+}
+.pf-chip--cloud {
+  border-color: rgba(34, 211, 238, 0.3);
+  color: var(--portfolio-teal);
+}
+@media (max-width: 720px) {
+  .pf-toolbox-row {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+    padding: 1.2rem 0;
+  }
+}
+
 /* Vertical timeline (About) — same language as the old home route */
 .md-typeset .pf-timeline {
   list-style: none;

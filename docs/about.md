@@ -139,6 +139,82 @@ evidence clear enough that another engineer can review it.
 </div>
 </div>
 
+## The Toolbox
+
+Every tool below was used in at least one of the three production services —
+not listed from a tutorial, but from working code with tests, incidents and ADRs.
+
+<div class="pf-toolbox" markdown="1">
+
+<div class="pf-toolbox-row" markdown="1">
+<div class="pf-toolbox-label" markdown="1">
+<small>ml engineering</small>
+Model training, evaluation and explainability. The same pipeline that surfaces SHAP values in original feature space and blocks promotion when fairness gates fail.
+</div>
+<div class="pf-toolbox-chips" markdown="1">
+<span class="pf-chip">Python 3.11+</span>
+<span class="pf-chip">scikit-learn</span>
+<span class="pf-chip">XGBoost</span>
+<span class="pf-chip">LightGBM</span>
+<span class="pf-chip">SHAP explainability</span>
+<span class="pf-chip">Optuna tuning</span>
+<span class="pf-chip">Pandera validation</span>
+<span class="pf-chip">Disparate impact gating</span>
+</div>
+</div>
+
+<div class="pf-toolbox-row" markdown="1">
+<div class="pf-toolbox-label" markdown="1">
+<small>mlops · serving</small>
+The async inference path, the single-worker constraint, the metrics that feed HPA — and the CI/CD that gates every promotion.
+</div>
+<div class="pf-toolbox-chips" markdown="1">
+<span class="pf-chip">FastAPI</span>
+<span class="pf-chip">asyncio + ThreadPoolExecutor</span>
+<span class="pf-chip">Docker</span>
+<span class="pf-chip">Kubernetes · HPA</span>
+<span class="pf-chip">MLflow</span>
+<span class="pf-chip">GitHub Actions CI/CD</span>
+<span class="pf-chip">Prometheus</span>
+<span class="pf-chip">Grafana</span>
+<span class="pf-chip">DVC</span>
+</div>
+</div>
+
+<div class="pf-toolbox-row" markdown="1">
+<div class="pf-toolbox-label" markdown="1">
+<small>cloud · infrastructure</small>
+Both cloud paths built and documented in the same monorepo, with no hardcoded credentials anywhere — only IRSA and Workload Identity.
+</div>
+<div class="pf-toolbox-chips" markdown="1">
+<span class="pf-chip pf-chip--cloud">GCP — GKE</span>
+<span class="pf-chip pf-chip--cloud">Workload Identity</span>
+<span class="pf-chip pf-chip--cloud">AWS — EKS</span>
+<span class="pf-chip pf-chip--cloud">IRSA</span>
+<span class="pf-chip">Terraform</span>
+<span class="pf-chip">Kustomize overlays</span>
+<span class="pf-chip">Cosign</span>
+<span class="pf-chip">SBOM</span>
+</div>
+</div>
+
+<div class="pf-toolbox-row" markdown="1">
+<div class="pf-toolbox-label" markdown="1">
+<small>data</small>
+Data pipelines built for honesty: strict temporal splits, leakage gates that block training when future data leaks into features, and drift scoring that triggers retraining.
+</div>
+<div class="pf-toolbox-chips" markdown="1">
+<span class="pf-chip">PySpark</span>
+<span class="pf-chip">Pandas</span>
+<span class="pf-chip">Temporal cross-validation</span>
+<span class="pf-chip">PSI drift</span>
+<span class="pf-chip">Evidently</span>
+<span class="pf-chip">Leakage gates</span>
+</div>
+</div>
+
+</div>
+
 ## Education And Certifications
 
 <div class="portfolio-card-grid portfolio-card-grid--compact" markdown="1">
