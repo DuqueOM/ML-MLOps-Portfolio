@@ -109,7 +109,7 @@
 }
 .mlh-kicker::before { content: "▸ "; }
 
-.mlh-section { border-top: 1px solid var(--mlh-hairline); padding: 3.2rem 0; }
+.mlh-section { border-top: 1px solid var(--mlh-hairline); padding: 2.4rem 0; }
 .mlh-section-head { max-width: 680px; margin-bottom: 2rem; }
 .md-typeset .mlh-section-head h2 { font-size: clamp(1.3rem, 2.1vw, 1.65rem); font-weight: 600; }
 .mlh-section-note { margin-top: 0.8rem; font-size: 0.95rem; }
@@ -136,7 +136,7 @@
 
 /* ============ HERO ============ */
 .mlh-hero {
-  padding: 3.5rem 0 2.8rem;
+  padding: 3.5rem 0 1.5rem;
   min-height: calc(86svh - 6rem);
   display: flex;
   align-items: center;
