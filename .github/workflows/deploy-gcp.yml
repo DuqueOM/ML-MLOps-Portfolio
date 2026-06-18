@@ -48,6 +48,7 @@ jobs:
       nlpinsight: ${{ steps.filter.outputs.nlpinsight }}
       chicagotaxi: ${{ steps.filter.outputs.chicagotaxi }}
       k8s: ${{ steps.filter.outputs.k8s }}
+      has_creds: ${{ steps.creds.outputs.has_creds }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v4
@@ -62,6 +63,19 @@ jobs:
               - 'ChicagoTaxi-Demand-Pipeline/**'
             k8s:
               - 'k8s/**'
+      # Gate downstream jobs on GCP credentials being configured. The `secrets`
+      # context cannot be used in job-level `if:`, so we surface it as an output.
+      - name: Check for GCP credentials
+        id: creds
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          if [ -n "$GCP_SA_KEY" ]; then
+            echo "has_creds=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_creds=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::GCP credentials not configured — skipping GKE build & deploy."
+          fi
 
   # ---------------------------------------------------------------------------
   # Build & Push Docker images to Artifact Registry
@@ -85,10 +99,11 @@ jobs:
             image: chicagotaxi
             manifest: k8s/chicagotaxi-deployment.yaml
     if: >
-      needs.detect-changes.outputs.bankchurn == 'true' ||
-      needs.detect-changes.outputs.nlpinsight == 'true' ||
-      needs.detect-changes.outputs.chicagotaxi == 'true' ||
-      github.event_name == 'workflow_dispatch'
+      needs.detect-changes.outputs.has_creds == 'true' &&
+      (needs.detect-changes.outputs.bankchurn == 'true' ||
+       needs.detect-changes.outputs.nlpinsight == 'true' ||
+       needs.detect-changes.outputs.chicagotaxi == 'true' ||
+       github.event_name == 'workflow_dispatch')
     permissions:
       contents: read
       id-token: write
@@ -129,9 +144,9 @@ jobs:
   # Deploy to GKE
   # ---------------------------------------------------------------------------
   deploy:
-    needs: build-push
+    needs: [detect-changes, build-push]
     runs-on: ubuntu-latest
-    if: always() && !cancelled() && !contains(needs.*.result, 'failure')
+    if: always() && !cancelled() && !contains(needs.*.result, 'failure') && needs.detect-changes.outputs.has_creds == 'true'
     environment:
       name: ${{ github.event.inputs.environment || 'production' }}-gcp
       url: https://ml.duqueom.com

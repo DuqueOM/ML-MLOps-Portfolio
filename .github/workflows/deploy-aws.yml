@@ -48,6 +48,7 @@ jobs:
       nlpinsight: ${{ steps.filter.outputs.nlpinsight }}
       chicagotaxi: ${{ steps.filter.outputs.chicagotaxi }}
       k8s: ${{ steps.filter.outputs.k8s }}
+      has_creds: ${{ steps.creds.outputs.has_creds }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v4
@@ -62,6 +63,19 @@ jobs:
               - 'ChicagoTaxi-Demand-Pipeline/**'
             k8s:
               - 'k8s/overlays/aws/**'
+      # Gate downstream jobs on AWS credentials being configured. The `secrets`
+      # context cannot be used in job-level `if:`, so we surface it as an output.
+      - name: Check for AWS credentials
+        id: creds
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        run: |
+          if [ -n "$AWS_ACCESS_KEY_ID" ]; then
+            echo "has_creds=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_creds=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::AWS credentials not configured — skipping EKS build & deploy."
+          fi
 
   # ---------------------------------------------------------------------------
   # Build & Push Docker images to ECR
@@ -85,10 +99,11 @@ jobs:
             image: ml-portfolio/chicagotaxi
             manifest: k8s/overlays/aws/chicagotaxi-deployment-aws.yaml
     if: >
-      needs.detect-changes.outputs.bankchurn == 'true' ||
-      needs.detect-changes.outputs.nlpinsight == 'true' ||
-      needs.detect-changes.outputs.chicagotaxi == 'true' ||
-      github.event_name == 'workflow_dispatch'
+      needs.detect-changes.outputs.has_creds == 'true' &&
+      (needs.detect-changes.outputs.bankchurn == 'true' ||
+       needs.detect-changes.outputs.nlpinsight == 'true' ||
+       needs.detect-changes.outputs.chicagotaxi == 'true' ||
+       github.event_name == 'workflow_dispatch')
     permissions:
       contents: read
       id-token: write
@@ -132,9 +147,9 @@ jobs:
   # Deploy to EKS
   # ---------------------------------------------------------------------------
   deploy:
-    needs: build-push
+    needs: [detect-changes, build-push]
     runs-on: ubuntu-latest
-    if: always() && !cancelled() && !contains(needs.*.result, 'failure')
+    if: always() && !cancelled() && !contains(needs.*.result, 'failure') && needs.detect-changes.outputs.has_creds == 'true'
     environment:
       name: ${{ github.event.inputs.environment || 'production' }}-aws
       url: https://ml-aws.duqueom.com
