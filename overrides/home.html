@@ -344,6 +344,57 @@
     </div>
   </section>
 
+  <!-- ============ AGENT PLATFORM (chapter 3) ============ -->
+  <section class="mlh-section" id="agent-platform">
+    <div class="mlh-wrap">
+      <div class="mlh-section-head mlh-section-head--major" data-reveal>
+        <h2 class="mlh-sec-title">Agent platform</h2>
+        <p class="mlh-sec-sub">chapter three · the philosophy generalizes</p>
+        <p class="mlh-section-note">The newest chapter takes the template's
+        governance — eval-gated autonomy, policy-as-data, no fine-tuning until a
+        written gate fires — and proves it generalizes to a new domain:
+        <strong>local, multi-tier LLM agents</strong>. A sibling repo with an
+        explicit contract, not a copy. <em>Active build.</em></p>
+      </div>
+
+      <figure class="mlh-template-diagram" data-reveal role="img"
+              aria-label="agent-local loop: route, plan, tools, reflect, critic, policy gate, finalize">
+        <svg viewBox="0 0 1200 150" xmlns="http://www.w3.org/2000/svg" focusable="false">
+          <g class="mlh-d-node"><rect x="20" y="40" width="150" height="44" rx="4"/><text x="95" y="67">route</text></g>
+          <path d="M170 62 H206" class="mlh-d-edge"/>
+          <g class="mlh-d-node"><rect x="206" y="40" width="150" height="44" rx="4"/><text x="281" y="67">plan</text></g>
+          <path d="M356 62 H392" class="mlh-d-edge"/>
+          <g class="mlh-d-node"><rect x="392" y="40" width="150" height="44" rx="4"/><text x="467" y="67">tools</text></g>
+          <path d="M542 62 H578" class="mlh-d-edge"/>
+          <g class="mlh-d-node"><rect x="578" y="40" width="150" height="44" rx="4"/><text x="653" y="67">critic</text></g>
+          <path d="M728 62 H764" class="mlh-d-edge"/>
+          <g class="mlh-d-node mlh-d-amber"><rect x="764" y="40" width="190" height="44" rx="4"/><text x="859" y="67">policy gate</text></g>
+          <path d="M954 62 H990" class="mlh-d-edge"/>
+          <g class="mlh-d-node"><rect x="990" y="40" width="180" height="44" rx="4"/><text x="1080" y="67">finalize</text></g>
+          <text x="467" y="112" class="mlh-d-note">app executes, never the model</text>
+          <text x="859" y="112" class="mlh-d-note mlh-d-warn">deterministic · no answer bypasses it</text>
+        </svg>
+      </figure>
+
+      <ul class="mlh-template-points" data-reveal>
+        <li><b>Reusable core</b><span>a new domain is a thin use-case, never a fork</span></li>
+        <li><b>Grammar-constrained routing</b><span>tier-0 router, 20/20 gate</span></li>
+        <li><b>Policy-as-data</b><span>versioned YAML + decision_id</span></li>
+        <li><b>Local-first</b><span>llama.cpp tiers; cloud only as budgeted overflow</span></li>
+        <li><b>Sibling of the template</b><span>reuses its IaC, runs its day-2 lanes</span></li>
+        <li><b>Live status</b><span>tracked by checklist on the Projects page</span></li>
+      </ul>
+
+      <div class="mlh-cta" data-reveal>
+        <a class="mlh-btn mlh-btn--primary" href="{{ 'projects/#chapter-3-agent-local-the-llm-plane' | url }}" data-magnetic>See the build status</a>
+        <a class="mlh-btn" href="https://github.com/DuqueOM/agent-local" data-magnetic>
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" style="vertical-align:-3px;margin-right:0.35rem;"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.17c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.77 1.05.77 2.13v3.16c0 .3.21.67.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+          agent-local
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ CAPABILITIES ============ -->
   <section class="mlh-section mlh-caps">
     <div class="mlh-wrap">
