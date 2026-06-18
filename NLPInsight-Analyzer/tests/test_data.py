@@ -73,37 +73,19 @@ class TestSplitDataset:
 
 
 class TestTextDataset:
-    def test_dataset_length(self, sample_texts, sample_labels):
-        try:
-            from transformers import AutoTokenizer
-        except ImportError:
-            pytest.skip("transformers not installed")
-
-        tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
-        ds = TextDataset(sample_texts, sample_labels, tokenizer, max_length=64)
+    def test_dataset_length(self, sample_texts, sample_labels, fake_tokenizer):
+        ds = TextDataset(sample_texts, sample_labels, fake_tokenizer, max_length=64)
         assert len(ds) == len(sample_texts)
 
-    def test_dataset_item_keys(self, sample_texts, sample_labels):
-        try:
-            from transformers import AutoTokenizer
-        except ImportError:
-            pytest.skip("transformers not installed")
-
-        tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
-        ds = TextDataset(sample_texts, sample_labels, tokenizer, max_length=64)
+    def test_dataset_item_keys(self, sample_texts, sample_labels, fake_tokenizer):
+        ds = TextDataset(sample_texts, sample_labels, fake_tokenizer, max_length=64)
         item = ds[0]
         assert "input_ids" in item
         assert "attention_mask" in item
         assert "labels" in item
 
-    def test_dataset_item_shapes(self, sample_texts, sample_labels):
-        try:
-            from transformers import AutoTokenizer
-        except ImportError:
-            pytest.skip("transformers not installed")
-
-        tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
-        ds = TextDataset(sample_texts, sample_labels, tokenizer, max_length=64)
+    def test_dataset_item_shapes(self, sample_texts, sample_labels, fake_tokenizer):
+        ds = TextDataset(sample_texts, sample_labels, fake_tokenizer, max_length=64)
         item = ds[0]
         assert item["input_ids"].shape[0] == 64
         assert item["attention_mask"].shape[0] == 64
