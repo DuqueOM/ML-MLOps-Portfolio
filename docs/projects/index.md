@@ -3,21 +3,33 @@
 <div class="portfolio-page" markdown="1">
 
 <div class="portfolio-hero" markdown="1">
-<span class="portfolio-eyebrow">Two projects · one system of evidence</span>
+<span class="portfolio-eyebrow">One evolution · three chapters</span>
 
-# A portfolio of services, and the template it produced
+# From services, to a template, to an agent platform
 
-Everything here is two projects. The **ML-MLOps Portfolio** — one monorepo with
-three production services. And the **Production Template** — the open-source
-system that packaged what those services taught.
+This is not a pile of projects — it is one line of work that compounds.
+Three production ML services taught the lessons; a **governed template**
+encoded them; and **`agent-local`** proves the same governance philosophy
+generalizes to a new domain — local LLM agents. Each chapter is the
+foundation of the next.
 
 <div class="portfolio-actions" markdown="1">
-[Portfolio](#the-ml-mlops-portfolio){ .portfolio-button .portfolio-button--primary }
-[Template](#the-production-template){ .portfolio-button }
+[Ch.1 · Portfolio](#chapter-1-the-ml-mlops-portfolio){ .portfolio-button .portfolio-button--primary }
+[Ch.2 · Template](#chapter-2-the-production-template){ .portfolio-button }
+[Ch.3 · Agent platform](#chapter-3-agent-local-the-llm-plane){ .portfolio-button }
 </div>
 </div>
 
-## The ML-MLOps Portfolio
+<div class="portfolio-callout" markdown="1">
+<strong>Why three repos, not one</strong>
+
+Separate repositories with an explicit, bidirectional contract — not a
+monorepo. Each has its own lifecycle, audience and release line; `agent-local`
+reuses the template's IaC when it needs cloud, and the template documents it as
+a sibling. Knowing where to draw that boundary is the point.
+</div>
+
+## Chapter 1 · The ML-MLOps Portfolio
 
 <div class="portfolio-split" markdown="1">
 <div markdown="1">
@@ -104,7 +116,7 @@ portfolio lives in one place:
 [:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button }
 </div>
 
-## The Production Template
+## Chapter 2 · The Production Template
 
 <div class="portfolio-split" markdown="1">
 <div markdown="1">
@@ -137,6 +149,90 @@ I can turn that experience into a system other teams can adopt.
 <div class="portfolio-actions" markdown="1">
 [Open the Production Template](../template.md){ .portfolio-button .portfolio-button--primary }
 [:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button }
+</div>
+
+## Chapter 3 · agent-local — the LLM plane
+
+<div class="portfolio-split" markdown="1">
+<div markdown="1">
+
+The third chapter takes the template's governance philosophy — `AUTO / CONSULT
+/ STOP`, eval-gated autonomy, policy-as-data, no fine-tuning until a written
+gate fires — and **generalizes it to a new domain**: local, multi-tier LLM
+agents. The hard-won logic (grammar-constrained routing, an adaptive reasoning
+loop, objective escalation, a deterministic policy gate) lives in a reusable
+`core/`; a new domain is a thin `usecases/<name>/` folder, never a fork.
+
+The shipped example use-case is a WhatsApp store assistant — but the point is
+the platform, not the store. It is a **sibling** of the template, not a copy:
+it reuses the template's Terraform and Kustomize when it needs cloud, and runs
+the template's day-2 maintenance lanes on its local model tiers.
+
+</div>
+<div class="portfolio-callout" markdown="1">
+<strong>The signal</strong>
+
+Chapters 1–2 show I can build and systematize ML. Chapter 3 shows the system
+<em>composes</em> — the same governance generalizes to a domain it was never
+written for. That is the jump from "builds things" to "designs platforms".
+</div>
+</div>
+
+This is an **active build**. Rather than rewrite this page each week, the
+status below tracks against the published plan
+([`ACTION_PLAN_LLM_AGENT.md`](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md))
+— ✅ done · 🔨 in progress · ⏳ gated/next.
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>✅ Phase 0–1 · foundation</small>
+<h3>Runtime, router & policy gate</h3>
+<ul>
+<li>✅ llama.cpp bench + tier contract (E4B router gate <strong>20/20</strong>)</li>
+<li>✅ grammar-constrained routing with confidence</li>
+<li>✅ reusable <code>core/</code> + thin <code>usecases/</code> (ADR-001)</li>
+<li>✅ deterministic policy gate; all tools read-only</li>
+</ul>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>✅ Phase 2 · controller & verifier</small>
+<h3>Governed execution</h3>
+<ul>
+<li>✅ ExecutiveController + per-tier circuit breaker</li>
+<li>✅ policies as versioned YAML + <code>decision_id</code></li>
+<li>✅ cross-tier verifier + bounded self-consistency</li>
+<li>✅ the 10 evaluation sets + offline gate</li>
+</ul>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>🔨 Phase 3 · observability</small>
+<h3>Telemetry & learning loop</h3>
+<ul>
+<li>✅ decision telemetry contract + PII redaction</li>
+<li>✅ shadow sampling</li>
+<li>🔨 retrieval growth loop (alias mining from logs)</li>
+<li>🔨 golden set + replay against real traffic</li>
+</ul>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>⏳ Phase 4 · gated / next</small>
+<h3>Scale & adapt</h3>
+<ul>
+<li>⏳ SQLite queue + sagas (durable multi-day flows)</li>
+<li>⏳ live WhatsApp webhook + cloud overflow path</li>
+<li>⏳ comparative experiment vs portfolio datasets</li>
+<li>⏳ QLoRA / DPO — only when the written gate fires</li>
+</ul>
+</div>
+</div>
+
+<div class="portfolio-actions" markdown="1">
+[:fontawesome-brands-github: agent-local repository](https://github.com/DuqueOM/agent-local){ .portfolio-button .portfolio-button--primary }
+[:fontawesome-solid-diagram-project: The shared plan](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md){ .portfolio-button }
+[:fontawesome-solid-scale-balanced: Why a platform, not a template (ADR-001)](https://github.com/DuqueOM/agent-local/blob/main/docs/decisions/ADR-001-reusable-platform-not-template.md){ .portfolio-button }
 </div>
 
 </div>
