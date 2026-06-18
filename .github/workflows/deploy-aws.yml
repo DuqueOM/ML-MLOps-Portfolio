@@ -149,7 +149,7 @@ jobs:
   deploy:
     needs: [detect-changes, build-push]
     runs-on: ubuntu-latest
-    if: always() && !cancelled() && !contains(needs.*.result, 'failure') && needs.detect-changes.outputs.has_creds == 'true'
+    if: always() && !cancelled() && needs.build-push.result == 'success' && needs.detect-changes.outputs.has_creds == 'true'
     environment:
       name: ${{ github.event.inputs.environment || 'production' }}-aws
       url: https://ml-aws.duqueom.com
