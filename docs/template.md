@@ -12,9 +12,11 @@ is the strongest artifact in this portfolio. It packages the production lessons
 from the monorepo into a starter system for ML services: FastAPI serving,
 training/serving parity, CI/CD, Docker, Kubernetes, Terraform examples,
 observability hooks, runbooks and an explicit agentic governance model. The
-template also encodes 32 anti-patterns with corrective actions, SLSA L2
-supply-chain security practices and closed-loop monitoring with statistical
-promotion gates.
+template also encodes 35 anti-patterns with corrective actions, SLSA L2
+supply-chain security practices, closed-loop monitoring with statistical
+promotion gates, and a self-auditing documentation-coherence system that
+keeps its own version, ADR count and governance surface honest across every
+document — a gate, not a suggestion.
 
 <div class="portfolio-actions" markdown="1">
 [Open the template repo](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button .portfolio-button--primary }
@@ -36,8 +38,8 @@ promotion gates.
 </div>
 <div class="portfolio-stat">
 <small>Failure modes</small>
-<strong>32 anti-patterns</strong>
-<span>Corrective actions for serving, HPA, SHAP, IAM, CI/CD and deployment risks.</span>
+<strong>35 anti-patterns</strong>
+<span>Corrective actions for serving, HPA, SHAP, IAM, CI/CD, scaffolding and adoption risks.</span>
 </div>
 <div class="portfolio-stat">
 <small>Supply chain</small>
@@ -85,13 +87,13 @@ deployment artifacts and reviewable AI-assisted workflows.</p>
 
 <div class="portfolio-actions" markdown="1">
 [Service Dockerfile](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/service/Dockerfile){ .portfolio-button .portfolio-button--primary }
-[K8s deployment](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/k8s/base/deployment.yaml){ .portfolio-button }
-[CI template](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/cicd/ci.yml){ .portfolio-button }
-[Deploy GCP](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/cicd/deploy-gcp.yml){ .portfolio-button }
+[K8s deployment](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/service/k8s/base/deployment.yaml){ .portfolio-button }
+[CI template](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/service/.github/workflows/ci.yml){ .portfolio-button }
+[Deploy GCP](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/service/.github/workflows/deploy-gcp.yml){ .portfolio-button }
 [Agent manifest](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/config/agentic_manifest.yaml){ .portfolio-button }
-[Agent rules](https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/.windsurf/rules){ .portfolio-button }
-[Agent skills](https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/.windsurf/skills){ .portfolio-button }
-[Agent workflows](https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/.windsurf/workflows){ .portfolio-button }
+[Agent rules](https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/rules){ .portfolio-button }
+[Agent skills](https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/skills){ .portfolio-button }
+[Agent workflows](https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/workflows){ .portfolio-button }
 </div>
 
 ## Why This Is More Than A Template
@@ -200,27 +202,30 @@ explicit test commands so agent-assisted work remains auditable.</p>
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<small>Rules</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/.windsurf/rules">Context-aware engineering constraints</a></h3>
+<small>Rules (17)</small>
+<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/rules">Context-aware engineering constraints</a></h3>
 <p>Rules cover Python serving, training, Kubernetes, Terraform, Docker,
-GitHub Actions, monitoring, data validation, security, API contracts and
-documentation. The goal is to make failure modes harder to reintroduce.</p>
+GitHub Actions, monitoring, data validation, security, API contracts,
+Copier template lifecycle and documentation coherence. The goal is to make
+failure modes harder to reintroduce.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Skills</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/.windsurf/skills">Reusable MLOps procedures</a></h3>
+<small>Skills (20)</small>
+<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/skills">Reusable MLOps procedures</a></h3>
 <p>Skills include new service creation, EDA, deploy to GKE/EKS, drift checks,
-model retraining, release checklist, rollback, cost audit, security audit and
-incident response.</p>
+model retraining, release checklist, rollback, cost audit, security audit,
+incident response, stack-profile switching, adopter onboarding and
+documentation-coherence enforcement.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Workflows</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/.windsurf/workflows">Slash-command operating paths</a></h3>
+<small>Workflows (16)</small>
+<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/workflows">Slash-command operating paths</a></h3>
 <p>Workflows such as <code>/new-service</code>, <code>/incident</code>,
 <code>/release</code>, <code>/drift-check</code>, <code>/retrain</code>,
-<code>/rollback</code> and <code>/secret-breach</code> turn repeatable MLOps
+<code>/rollback</code>, <code>/secret-breach</code>, <code>/stack-switch</code>,
+<code>/onboard</code> and <code>/doc-coherence</code> turn repeatable MLOps
 work into auditable steps.</p>
 </div>
 </div>
@@ -269,6 +274,82 @@ artifacts through runtime storage patterns such as init containers.</p>
 <p><strong>Corrective action:</strong> use Workload Identity on GCP and IRSA on
 AWS, with CI/deploy/runtime identities separated by purpose.</p>
 </div>
+
+<div class="portfolio-card" markdown="1">
+<small>Adoption safety</small>
+<h3>No cloud credentials in a "local" stack profile</h3>
+<p><strong>Corrective action:</strong> a <code>local</code> profile must
+structurally refuse cloud credentials, Kubernetes and Docker — enforced by
+a contract test and a runtime guard in <code>make deploy</code>, not just
+a naming convention.</p>
+</div>
+</div>
+
+## Adoption Engineering &amp; Self-Auditing Documentation
+
+<div class="portfolio-split" markdown="1">
+<div markdown="1">
+
+Governance only counts if adopting the template is actually easy. A later
+pass ([<code>v0.19.0</code>–<code>v0.20.0</code>](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/CHANGELOG.md))
+rebuilt the scaffolding path on [Copier](https://copier.readthedocs.io/)
+(so <code>copier update</code> can pull template improvements into an
+already-adopted service), added local-first stack profiles so a reviewer
+can evaluate the whole train → serve → drift loop without provisioning a
+cluster, and mapped the production layout to the Cookiecutter Data
+Science vocabulary for practitioners coming from a notebook-first
+background.
+
+The differentiated piece is the last one: a **documentation coherence
+system** that treats "the docs agree with reality" as a CI-enforced
+contract, not a hope.
+
+</div>
+<div class="portfolio-callout" markdown="1">
+<strong>Technical reviewer signal</strong>
+
+An independent audit of this exact work found and fixed a real bug before
+release: an onboarding flow was validating its output against the wrong
+JSON schema and would have failed on first use. The fix, and four other
+real defects, are documented in the release notes instead of quietly
+folded in — that disclosure habit is the same one the template asks of
+its adopters.
+</div>
+</div>
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Scaffolding</small>
+<h3>Copier, not <code>cp</code> + <code>sed</code></h3>
+<p>A custom Jinja delimiter (<code>{@ @}</code>) avoids collisions with the
+literal <code>${{ }}</code> GitHub Actions syntax the template ships. Two
+anti-patterns (D-33, D-34) keep the scaffolder from regressing to manual
+substitution.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Local-first profiles</small>
+<h3><code>local</code> / <code>staging</code> / <code>prod</code></h3>
+<p>Chosen at scaffold time; <code>local</code> runs the full loop with zero
+cloud dependencies. Switching profiles is a reviewable, CONSULT-mode
+operation, never a silent edit.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Recognizable layout</small>
+<h3>A generated CCDS mapping</h3>
+<p>A documentation-only view translates the production directory layout
+into Cookiecutter Data Science vocabulary — no directories renamed, no
+production path touched.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Self-auditing docs</small>
+<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/decisions/ADR-031-documentation-coherence-system.md">A CI gate for the docs themselves</a></h3>
+<p>One deterministic script enforces a single source of truth for release
+version, anti-pattern count, agentic-surface counts and ADR numbering
+across every document — a gate, not a suggestion.</p>
+</div>
 </div>
 
 ## Multi-IDE Governance
@@ -276,16 +357,18 @@ AWS, with CI/deploy/runtime identities separated by purpose.</p>
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Canonical source</small>
-<h3>Windsurf as the body store</h3>
-<p>The rules, skills and workflows live in the canonical <code>.windsurf/</code>
-tree so the operating model has one source of truth.</p>
+<h3>A vendor-neutral body store</h3>
+<p>Rules, skills and workflows live once in <code>agentic/</code> — not named
+after any single IDE, so a tool rebrand (this happened once already) can
+never strand the source of truth again.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Portable adapters</small>
-<h3>Codex, Cursor and Claude pointers</h3>
-<p>Adapter directories are discovery layers. They point back to the canonical
-rules instead of becoming separate, drifting copies of the same policy.</p>
+<h3>Devin, Cursor, Claude Code and Codex</h3>
+<p>Devin ingests full bodies, so <code>.devin/</code> is a generated
+byte-for-byte mirror. Cursor, Claude Code and Codex read pointer files.
+Both kinds are regenerated by one script and never hand-edited.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
