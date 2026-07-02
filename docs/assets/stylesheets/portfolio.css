@@ -2120,6 +2120,11 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
   .md-typeset .portfolio-step,
   .md-typeset .portfolio-faq-item {
     border-radius: 0 0 8px 8px;
+    /* inset gutter for the glass panel: padding + equal negative margin
+       keeps the text exactly on the grid at rest, but the hover panel
+       extends past the text instead of hugging its edge */
+    padding: 1.3rem 1.15rem 1.25rem !important;
+    margin-inline: -1.15rem;
     transition: background 220ms ease, border-color 220ms ease,
                 transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
                 box-shadow 220ms ease;
@@ -2212,6 +2217,8 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
   margin: 0;
 }
 .md-typeset .pf-contact-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -2224,6 +2231,19 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
   transition: border-color 0.25s ease, background 0.25s ease,
               transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
 }
+/* same sheen sweep as every other button on the site */
+.md-typeset .pf-contact-card::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -70%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(110, 231, 255, 0.16), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.55s ease;
+  pointer-events: none;
+}
+.md-typeset .pf-contact-card:hover::after { left: 125%; }
 @media (hover: hover) and (pointer: fine) {
   .md-typeset .pf-contact-card:hover {
     transform: translateY(-2px);
@@ -2278,7 +2298,10 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
 .md-typeset .portfolio-hero canvas[data-neural-scene].pf-scene-page {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  /* below ALL page content — images, gifs and panels included — while
+     staying above the page background (negative z inside .md-container's
+     stacking context) */
+  z-index: -1;
 }
 /* hero must not clip the now-fixed canvas */
 .md-typeset .portfolio-hero:has(canvas[data-neural-scene]) {
@@ -2351,4 +2374,20 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
   margin-top: 2.6rem;
   margin-bottom: 1.1rem;
   letter-spacing: -0.015em;
+}
+
+/* audit: hero h1 carries more display presence (was timid for a
+   landing element), leads hold a readable measure, eyebrows get
+   consistent tracking + separation from the headline */
+.md-typeset .portfolio-hero h1 {
+  font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+  line-height: 1.1;
+}
+.md-typeset .portfolio-section-lead { max-width: 62ch; }
+.md-typeset .portfolio-hero p { max-width: 68ch; }
+.md-typeset .portfolio-hero--center p { max-width: 62ch; }
+.md-typeset .portfolio-eyebrow {
+  letter-spacing: 0.2em;
+  margin-bottom: 0.9rem;
+  display: inline-block;
 }

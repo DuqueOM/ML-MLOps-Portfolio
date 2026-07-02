@@ -268,9 +268,10 @@
       p.dz = Math.sin(ph) * Math.sin(th) * rr;
     });
 
-    /* portfolio pages: promote the hero canvas to a fixed full-viewport
-       layer so the figure travels behind the content while reading */
-    var fullPage = !!canvas.closest(".portfolio-page");
+    /* portfolio pages AND the home hero: promote the canvas to a fixed
+       full-viewport layer so the figure travels behind the content
+       while reading, dissolving into particles as scroll deepens */
+    var fullPage = !!(canvas.closest(".portfolio-page") || canvas.closest(".ml-home"));
     if (fullPage) canvas.classList.add("pf-scene-page");
 
     var ctx = canvas.getContext("2d");

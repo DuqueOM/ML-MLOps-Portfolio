@@ -213,6 +213,11 @@
   z-index: 0;
   pointer-events: none;
 }
+/* scene canvas promoted to full-viewport travel mode (neural-scene.js) */
+.mlh-hero > .mlh-neural.pf-scene-page {
+  position: fixed;
+  inset: 0;
+}
 .mlh-hero-grid {
   position: relative;
   z-index: 1;
