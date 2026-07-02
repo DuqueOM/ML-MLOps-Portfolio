@@ -12,7 +12,7 @@ is the strongest artifact in this portfolio. It packages the production lessons
 from the monorepo into a starter system for ML services: FastAPI serving,
 training/serving parity, CI/CD, Docker, Kubernetes, Terraform examples,
 observability hooks, runbooks and an explicit agentic governance model. The
-template also encodes 35 anti-patterns with corrective actions, SLSA L2
+template also encodes 36 anti-patterns with corrective actions, SLSA L2
 supply-chain security practices, closed-loop monitoring with statistical
 promotion gates, and a self-auditing documentation-coherence system that
 keeps its own version, ADR count and governance surface honest across every
@@ -38,7 +38,7 @@ document — a gate, not a suggestion.
 </div>
 <div class="portfolio-stat">
 <small>Failure modes</small>
-<strong>35 anti-patterns</strong>
+<strong>36 anti-patterns</strong>
 <span>Corrective actions for serving, HPA, SHAP, IAM, CI/CD, scaffolding and adoption risks.</span>
 </div>
 <div class="portfolio-stat">
@@ -211,22 +211,22 @@ failure modes harder to reintroduce.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Skills (20)</small>
+<small>Skills (21)</small>
 <h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/skills">Reusable MLOps procedures</a></h3>
 <p>Skills include new service creation, EDA, deploy to GKE/EKS, drift checks,
 model retraining, release checklist, rollback, cost audit, security audit,
-incident response, stack-profile switching, adopter onboarding and
-documentation-coherence enforcement.</p>
+incident response, stack-profile switching, adopter onboarding,
+documentation-coherence enforcement and CI-green verification.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Workflows (16)</small>
+<small>Workflows (17)</small>
 <h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/workflows">Slash-command operating paths</a></h3>
 <p>Workflows such as <code>/new-service</code>, <code>/incident</code>,
 <code>/release</code>, <code>/drift-check</code>, <code>/retrain</code>,
 <code>/rollback</code>, <code>/secret-breach</code>, <code>/stack-switch</code>,
-<code>/onboard</code> and <code>/doc-coherence</code> turn repeatable MLOps
-work into auditable steps.</p>
+<code>/onboard</code>, <code>/doc-coherence</code> and <code>/ci-green</code>
+turn repeatable MLOps work into auditable steps.</p>
 </div>
 </div>
 
@@ -282,6 +282,14 @@ AWS, with CI/deploy/runtime identities separated by purpose.</p>
 structurally refuse cloud credentials, Kubernetes and Docker — enforced by
 a contract test and a runtime guard in <code>make deploy</code>, not just
 a naming convention.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Release safety</small>
+<h3>No promoting or deploying on red/missing CI</h3>
+<p><strong>Corrective action:</strong> a read-only skill verifies CI status
+before release or a staging/prod deploy; overriding a red or missing signal
+requires explicit human approval and an audit-trail entry (D-36).</p>
 </div>
 </div>
 
@@ -349,6 +357,64 @@ production path touched.</p>
 <p>One deterministic script enforces a single source of truth for release
 version, anti-pattern count, agentic-surface counts and ADR numbering
 across every document — a gate, not a suggestion.</p>
+</div>
+</div>
+
+## Enterprise Governance &amp; Compliance Posture
+
+<div class="portfolio-split" markdown="1">
+<div markdown="1">
+
+A later benchmarking pass compared the template against NIST AI RMF, ISO/IEC
+42001, the EU AI Act and frontier open-source scaffolds — not against the
+author's other repos. The finding: the template already produces the
+evidence these frameworks ask for (quality gates, fairness thresholds, an
+audit trail, human-in-the-loop approval). What it lacked was the map
+connecting that evidence to each framework's own vocabulary.
+
+</div>
+<div class="portfolio-callout" markdown="1">
+<strong>The discipline that matters most</strong>
+
+The compliance document is explicit about what it is <em>not</em>: not a
+certification, not a substitute for legal review, not a claim that any
+template can be "AI Act compliant" — only a deployed, operated system can
+be evaluated. Declining to over-claim is itself the signal.
+</div>
+</div>
+
+<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card" markdown="1">
+<small>Compliance mapping</small>
+<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/COMPLIANCE_MAPPING.md">NIST AI RMF · ISO/IEC 42001 · EU AI Act</a></h3>
+<p>Traces artifacts the template already produces — quality gates, the
+fairness DIR floor, the audit trail, AUTO/CONSULT/STOP human oversight — to
+each framework's own control questions. Descriptive, never certifying.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Supply chain</small>
+<h3>SHA-pinned CI + OpenSSF Scorecard</h3>
+<p>Every GitHub Action across every workflow is pinned by commit SHA, not a
+mutable tag. A dedicated Scorecard workflow scores the repo against
+OpenSSF's supply-chain criteria on every push.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Agentic governance pattern</small>
+<h3>Read is AUTO, override is STOP</h3>
+<p>The newest gate (D-36) separates "check whether CI is green" (always
+allowed, read-only) from "proceed despite red or missing CI" (an explicit
+human STOP-class approval, logged to the audit trail) — wired as a hard
+precondition into release and staging/prod deploy.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Portability</small>
+<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/ADOPTION.md">Escape hatches, not lock-in</a></h3>
+<p>A documented swap matrix for cloud, experiment tracking, serving backend,
+IaC engine and scaffolding tool — so "agnostic to technologies" is a
+verifiable claim, not a slogan.</p>
 </div>
 </div>
 

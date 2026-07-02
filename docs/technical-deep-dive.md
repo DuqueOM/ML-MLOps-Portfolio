@@ -159,7 +159,7 @@ period.</p>
 <div class="portfolio-card" markdown="1">
 <small>Related work</small>
 <h3><a href="../related-projects/">Related projects</a></h3>
-<p>How the production template connects to this portfolio.</p>
+<p>How the production template and agent-local connect to this portfolio.</p>
 </div>
 </div>
 

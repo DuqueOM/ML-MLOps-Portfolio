@@ -131,7 +131,7 @@ Inside the box: a FastAPI serving scaffold with the single-worker +
 ThreadPoolExecutor pattern, training pipelines with quality gates (metric,
 fairness, leakage), 6 env×cloud Kustomize overlays for GCP and AWS,
 Terraform modules, CI/CD that signs images and attests SBOMs (SLSA L2),
-closed-loop drift monitoring, 35 documented anti-patterns and 39 ADRs.
+closed-loop drift monitoring, 36 documented anti-patterns and 38 ADRs.
 
 Its differentiator is the **governed AI-assisted development layer**:
 behavior rules, skills, workflows and an audit trail that keep agentic
@@ -201,8 +201,8 @@ status below tracks against the published plan
 <ul>
 <li>✅ ExecutiveController + per-tier circuit breaker</li>
 <li>✅ policies as versioned YAML + <code>decision_id</code></li>
-<li>✅ cross-tier verifier + bounded self-consistency</li>
-<li>✅ the 10 evaluation sets + offline gate</li>
+<li>✅ cross-tier verifier + bounded self-consistency, reflection notes isolated from evidence (ADR-009)</li>
+<li>✅ 11 evaluation sets (incl. adversarial injection) + offline gate</li>
 </ul>
 </div>
 
@@ -233,6 +233,7 @@ status below tracks against the published plan
 [:fontawesome-brands-github: agent-local repository](https://github.com/DuqueOM/agent-local){ .portfolio-button .portfolio-button--primary }
 [:fontawesome-solid-diagram-project: The shared plan](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md){ .portfolio-button }
 [:fontawesome-solid-scale-balanced: Why a platform, not a template (ADR-001)](https://github.com/DuqueOM/agent-local/blob/main/docs/decisions/ADR-001-reusable-platform-not-template.md){ .portfolio-button }
+[:fontawesome-solid-shield-halved: Why not MCP/A2A (ADR-010)](https://github.com/DuqueOM/agent-local/blob/main/docs/decisions/ADR-010-mcp-a2a-interop-rejected.md){ .portfolio-button }
 </div>
 
 </div>
