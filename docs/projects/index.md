@@ -131,7 +131,7 @@ Inside the box: a FastAPI serving scaffold with the single-worker +
 ThreadPoolExecutor pattern, training pipelines with quality gates (metric,
 fairness, leakage), 6 env×cloud Kustomize overlays for GCP and AWS,
 Terraform modules, CI/CD that signs images and attests SBOMs (SLSA L2),
-closed-loop drift monitoring, 35 documented anti-patterns and 27 ADRs.
+closed-loop drift monitoring, 35 documented anti-patterns and 39 ADRs.
 
 Its differentiator is the **governed AI-assisted development layer**:
 behavior rules, skills, workflows and an audit trail that keep agentic
