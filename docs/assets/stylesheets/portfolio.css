@@ -2266,3 +2266,89 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
 .md-typeset .portfolio-hero--center h1 { margin-inline: auto; }
 .md-typeset .portfolio-hero--center p { margin-inline: auto; }
 .md-typeset .portfolio-hero--center .portfolio-actions { justify-content: center; }
+
+/* =========================================================
+   2026-07 review round 2 — scene canvas full-page mode,
+   unified cursor glow, breathing room + contrast audit.
+   ========================================================= */
+
+/* scene canvas promoted by neural-scene.js: fixed behind the whole
+   page so the figure travels and dissolves as the visitor reads.
+   Wins over the absolute in-hero positioning defined above. */
+.md-typeset .portfolio-hero canvas[data-neural-scene].pf-scene-page {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+/* hero must not clip the now-fixed canvas */
+.md-typeset .portfolio-hero:has(canvas[data-neural-scene]) {
+  overflow: visible;
+  min-height: clamp(13rem, 26vh, 18rem);
+}
+
+/* cursor glow — same dual-layer, same soft intensity as home so the
+   light feels like ONE system across every tab */
+.pf-glow {
+  width: 0;
+  height: 0;
+  background: none;
+}
+.pf-glow::before,
+.pf-glow::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+}
+.pf-glow::before {
+  width: 980px; height: 980px;
+  background: radial-gradient(circle, rgba(167,139,250,0.055), rgba(167,139,250,0.02) 42%, transparent 68%);
+  animation: pf-glow-breathe 7s ease-in-out infinite;
+}
+.pf-glow::after {
+  width: 460px; height: 460px;
+  background: radial-gradient(circle, rgba(34,211,238,0.08), rgba(34,211,238,0.025) 45%, transparent 70%);
+  animation: pf-glow-breathe 4.6s ease-in-out infinite reverse;
+}
+@keyframes pf-glow-breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -52%) scale(1.12); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pf-glow::before, .pf-glow::after { animation: none; }
+}
+
+/* breathing room: availability ledger + callout were cramped */
+.md-typeset .portfolio-availability { margin: 1.6rem 0 2.8rem; }
+.md-typeset .portfolio-availability-row {
+  padding: 1.05rem 0;
+  gap: 1.5rem;
+}
+.md-typeset .portfolio-availability-row strong { line-height: 1.55; }
+.md-typeset .portfolio-callout {
+  margin-top: 2.8rem;
+  padding-top: 1.4rem;
+  padding-bottom: 1.4rem;
+  line-height: 1.7;
+}
+.md-typeset .portfolio-callout strong { display: block; margin-bottom: 0.5rem; }
+
+/* contrast audit: body copy sat too close to the background now that
+   figures animate behind it — lift secondary text one step and give
+   hero copy a soft ink halo so it stays legible over the canvas */
+[data-md-color-scheme="slate"] {
+  --portfolio-muted: #A3B2C7;
+}
+.md-typeset .portfolio-hero p {
+  color: #C4CFDE;
+}
+.md-typeset .portfolio-hero > :not(canvas) {
+  text-shadow: 0 1px 14px rgba(5, 8, 22, 0.85), 0 0 34px rgba(5, 8, 22, 0.6);
+}
+
+/* type rhythm: section headings breathe before their content */
+.md-typeset .portfolio-page h2 {
+  margin-top: 2.6rem;
+  margin-bottom: 1.1rem;
+  letter-spacing: -0.015em;
+}

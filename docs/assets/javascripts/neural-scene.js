@@ -2,19 +2,18 @@
    NEURAL SCENE — themed 3D constellations, scroll + mouse driven.
    Companion to neural-field.js (the abstract clustered background):
    where the field is ambience, a scene is a *figure* — a recognizable
-   shape drawn in the same visual language (glowing nodes, capped
-   edges, semantic color, breathing) that rotates and zooms with the
-   user's scroll and tilts gently toward the cursor, anime.js-style.
+   shape drawn in the neural visual language (glowing nodes, edges,
+   semantic color, breathing) that rotates and zooms with the user's
+   scroll and tilts gently toward the cursor, anime.js-style.
 
-   Shapes: brain (home hero), helm (Projects — Kubernetes), cube
-   (Template — containers/lattice), globe (About — remote/worldwide),
-   chart (Recruiter brief — evidence/metrics), signal (Contact —
-   concentric broadcast rings). Mount via:
-     <canvas data-neural-scene="brain" aria-hidden="true"></canvas>
-   Technical guides keep only the passive neural-field ambient layer.
-
-   Vanilla Canvas2D, no dependencies. Reduced motion => one static
-   frame, no animation loop. Coarse pointers => fewer points, no tilt.
+   v2 (user review round): shapes are normalized to one consistent
+   footprint, edges are STRUCTURAL (rings, spokes, lattices — built
+   by each generator) instead of nearest-neighbor mush, figures are
+   bigger, and on portfolio pages the canvas is fixed full-viewport:
+   the figure travels behind the content as you scroll, slowly
+   dissolving into a particle cloud — assembly at the top, dispersion
+   as you read. Home keeps its hero-scoped brain (the hero already
+   has its own scroll choreography).
    ============================================================ */
 (function () {
   "use strict";
@@ -37,14 +36,28 @@
 
   function rand(a, b) { return a + Math.random() * (b - a); }
 
-  /* ---- shape generators: arrays of {x,y,z,color} in unit space ---- */
+  /* ---- shape generators ----------------------------------------
+     Each returns { pts, edges } — pts in unit space, edges as index
+     pairs describing the shape's real structure (rim segments,
+     spokes, lattices), so a helm reads as a wheel, not a flower. */
 
-  function shapeBrain(n) {
-    var pts = [];
+  function ring(pts, edges, n, fn, color, close) {
+    var start = pts.length;
+    for (var i = 0; i < n; i++) {
+      var p = fn(i / n);
+      p.color = p.color || color;
+      pts.push(p);
+      if (i > 0) edges.push([start + i - 1, start + i]);
+    }
+    if (close !== false) edges.push([start + n - 1, start]);
+    return start;
+  }
+
+  function shapeBrain() {
+    var pts = [], n = 165;
     for (var i = 0; i < n; i++) {
       var r01 = Math.random();
       if (r01 < 0.82) {
-        /* two wrinkled lobes */
         var side = Math.random() < 0.5 ? -1 : 1;
         var th = rand(0, TAU), ph = Math.acos(rand(-1, 1));
         var wr = 1 + 0.09 * Math.sin(6 * th + 2 * ph) * Math.sin(4 * ph);
@@ -55,7 +68,6 @@
           color: Math.random() < 0.55 ? "cyan" : (Math.random() < 0.6 ? "violet" : "bright")
         });
       } else if (r01 < 0.95) {
-        /* cerebellum */
         var th2 = rand(0, TAU), ph2 = Math.acos(rand(-1, 1));
         pts.push({
           x: Math.sin(ph2) * Math.cos(th2) * 0.18,
@@ -64,122 +76,147 @@
           color: "green"
         });
       } else {
-        /* brainstem */
         var s = Math.random();
         pts.push({ x: rand(-0.03, 0.03), y: 0.34 + s * 0.16, z: -0.06 - s * 0.06, color: "amber" });
       }
     }
-    return pts;
+    return { pts: pts, edges: null, maxDist: 0.21, tiltX: 0.22 }; /* organic: k-nearest */
   }
 
-  function shapeHelm(n) {
-    var pts = [];
-    var outer = Math.round(n * 0.42), hub = Math.round(n * 0.16);
-    for (var i = 0; i < outer; i++) {
-      var a = (i / outer) * TAU;
-      pts.push({ x: Math.cos(a) * 0.56, y: Math.sin(a) * 0.56, z: rand(-0.05, 0.05),
-                 color: Math.random() < 0.7 ? "cyan" : "bright" });
-    }
-    for (var j = 0; j < hub; j++) {
-      var b = (j / hub) * TAU;
-      pts.push({ x: Math.cos(b) * 0.16, y: Math.sin(b) * 0.16, z: rand(-0.04, 0.04), color: "green" });
-    }
-    var rest = n - outer - hub, perSpoke = Math.max(2, Math.floor(rest / 7));
+  function shapeHelm() {
+    var pts = [], edges = [];
+    /* double outer rim */
+    var rimA = ring(pts, edges, 28, function (f) {
+      return { x: Math.cos(f * TAU) * 0.56, y: Math.sin(f * TAU) * 0.56, z: 0.02 };
+    }, "cyan");
+    var rimB = ring(pts, edges, 28, function (f) {
+      return { x: Math.cos(f * TAU) * 0.64, y: Math.sin(f * TAU) * 0.64, z: -0.02 };
+    }, "bright");
+    /* rungs between the two rims every 4th node */
+    for (var i = 0; i < 28; i += 4) edges.push([rimA + i, rimB + i]);
+    /* hub */
+    var hub = ring(pts, edges, 10, function (f) {
+      return { x: Math.cos(f * TAU) * 0.14, y: Math.sin(f * TAU) * 0.14, z: 0.04 };
+    }, "green");
+    /* 7 straight spokes: hub -> inner rim, with handle knobs past the outer rim */
     for (var s = 0; s < 7; s++) {
-      var sa = (s / 7) * TAU;
-      for (var k = 1; k <= perSpoke; k++) {
-        var f = 0.16 + (k / (perSpoke + 1)) * 0.40;
-        pts.push({ x: Math.cos(sa) * f, y: Math.sin(sa) * f, z: rand(-0.03, 0.03),
-                   color: k === perSpoke ? "bright" : "cyan" });
+      var a = (s / 7) * TAU;
+      var prev = hub + Math.round((s / 7) * 10) % 10;
+      for (var k = 1; k <= 3; k++) {
+        var f = 0.14 + (k / 3) * 0.42;
+        pts.push({ x: Math.cos(a) * f, y: Math.sin(a) * f, z: 0.02, color: "cyan" });
+        edges.push([prev, pts.length - 1]);
+        prev = pts.length - 1;
       }
+      /* knob outside the rim — the classic helm handle */
+      pts.push({ x: Math.cos(a) * 0.74, y: Math.sin(a) * 0.74, z: 0, color: "amber" });
+      edges.push([prev, pts.length - 1]);
     }
-    return pts;
+    return { pts: pts, edges: edges, tiltX: 0.42 };
   }
 
-  function shapeCube(n) {
-    var pts = [];
-    var g = 3, sp = 0.36;
+  function shapeCube() {
+    var pts = [], edges = [];
+    var g = 3, sp = 0.38;
+    var idx = function (x, y, z) { return x * g * g + y * g + z; };
     for (var x = 0; x < g; x++) for (var y = 0; y < g; y++) for (var z = 0; z < g; z++) {
-      var corner = (x % 2 === 0 && y % 2 === 0 && z % 2 === 0);
+      var corner = (x !== 1 && y !== 1 && z !== 1);
       pts.push({
-        x: (x - 1) * sp + rand(-0.015, 0.015),
-        y: (y - 1) * sp + rand(-0.015, 0.015),
-        z: (z - 1) * sp + rand(-0.015, 0.015),
+        x: (x - 1) * sp, y: (y - 1) * sp, z: (z - 1) * sp,
         color: corner ? "amber" : (Math.random() < 0.7 ? "cyan" : "green")
       });
     }
-    /* orbiting satellites — pods around the cluster */
-    for (var i = pts.length; i < n; i++) {
-      var th = rand(0, TAU);
-      pts.push({ x: Math.cos(th) * 0.62, y: rand(-0.3, 0.3), z: Math.sin(th) * 0.62, color: "violet" });
+    /* orthogonal lattice edges — reads as a container stack */
+    for (var a = 0; a < g; a++) for (var b = 0; b < g; b++) for (var c = 0; c < g - 1; c++) {
+      edges.push([idx(a, b, c), idx(a, b, c + 1)]);
+      edges.push([idx(a, c, b), idx(a, c + 1, b)]);
+      edges.push([idx(c, a, b), idx(c + 1, a, b)]);
     }
-    return pts;
+    /* orbiting pods */
+    var ringStart = ring(pts, edges, 14, function (f) {
+      return { x: Math.cos(f * TAU) * 0.82, y: Math.sin(f * TAU * 2) * 0.1, z: Math.sin(f * TAU) * 0.82 };
+    }, "violet");
+    return { pts: pts, edges: edges, tiltX: 0.42, ringStart: ringStart };
   }
 
-  function shapeGlobe(n) {
-    var pts = [];
-    for (var i = 0; i < n; i++) {
-      var band = Math.random();
-      var lat = band < 0.75 ? (Math.floor(rand(0, 5)) - 2) * 0.5 + rand(-0.06, 0.06) : rand(-1.2, 1.2);
-      var lon = rand(0, TAU);
-      var cr = Math.cos(lat) * 0.52;
-      pts.push({
-        x: Math.cos(lon) * cr, y: Math.sin(lat) * 0.52, z: Math.sin(lon) * cr,
-        color: Math.random() < 0.6 ? "cyan" : (Math.random() < 0.5 ? "violet" : "green")
-      });
+  function shapeGlobe() {
+    var pts = [], edges = [];
+    var lats = [-0.9, -0.45, 0, 0.45, 0.9];
+    lats.forEach(function (la) {
+      var r = Math.cos(la) * 0.58, y = Math.sin(la) * 0.58;
+      var count = Math.max(8, Math.round(24 * Math.cos(la)));
+      ring(pts, edges, count, function (f) {
+        return { x: Math.cos(f * TAU) * r, y: y, z: Math.sin(f * TAU) * r };
+      }, "cyan");
+    });
+    /* two meridians */
+    [0, Math.PI / 2].forEach(function (lon) {
+      ring(pts, edges, 20, function (f) {
+        var la = f * TAU;
+        return {
+          x: Math.cos(lon) * Math.cos(la) * 0.58,
+          y: Math.sin(la) * 0.58,
+          z: Math.sin(lon) * Math.cos(la) * 0.58,
+          color: "violet"
+        };
+      }, "violet");
+    });
+    /* a few green "presence" markers */
+    for (var i = 0; i < 8; i++) {
+      var la2 = rand(-1, 1), lo2 = rand(0, TAU);
+      pts.push({ x: Math.cos(lo2) * Math.cos(la2) * 0.6, y: Math.sin(la2) * 0.6,
+                 z: Math.sin(lo2) * Math.cos(la2) * 0.6, color: "green" });
     }
-    return pts;
+    return { pts: pts, edges: edges, tiltX: 0.3 };
   }
 
-  function shapeChart(n) {
-    var pts = [];
-    var bars = [0.30, 0.52, 0.42, 0.68, 0.58, 0.82];
-    var perBar = Math.floor((n * 0.7) / bars.length);
+  function shapeChart() {
+    var pts = [], edges = [];
+    var bars = [0.34, 0.55, 0.45, 0.72, 0.62, 0.9];
+    var tops = [];
+    /* baseline */
+    var base = ring(pts, edges, bars.length, function (f) {
+      return { x: -0.58 + f * 1.4, y: 0.5, z: 0 };
+    }, "violet", false);
     bars.forEach(function (hgt, bi) {
-      var bx = -0.55 + bi * 0.22;
-      for (var k = 0; k < perBar; k++) {
-        var f = k / perBar;
-        pts.push({
-          x: bx + rand(-0.02, 0.02), y: 0.42 - f * hgt, z: rand(-0.04, 0.04),
-          color: f > 0.85 ? (bi >= 4 ? "green" : "amber") : "cyan"
-        });
+      var bx = -0.58 + (bi / bars.length) * 1.4;
+      var prev = base + bi;
+      var steps = 3 + Math.round(hgt * 4);
+      for (var k = 1; k <= steps; k++) {
+        pts.push({ x: bx, y: 0.5 - (k / steps) * hgt, z: 0,
+                   color: k === steps ? (bi >= 4 ? "green" : "amber") : "cyan" });
+        edges.push([prev, pts.length - 1]);
+        prev = pts.length - 1;
       }
+      tops.push(prev);
     });
-    while (pts.length < n) {
-      pts.push({ x: rand(-0.6, 0.6), y: 0.44, z: rand(-0.25, 0.25), color: "violet" });
-    }
-    return pts;
+    /* trend line across the bar tops — the rising metric */
+    for (var t = 0; t < tops.length - 1; t++) edges.push([tops[t], tops[t + 1]]);
+    return { pts: pts, edges: edges, tiltX: 0.16 };
   }
 
-  function shapeSignal(n) {
-    var pts = [];
-    var rings = [0.18, 0.34, 0.52];
-    var perRing = Math.floor((n * 0.8) / rings.length);
-    rings.forEach(function (rr, ri) {
-      for (var i = 0; i < perRing; i++) {
-        var a = (i / perRing) * TAU;
-        pts.push({ x: Math.cos(a) * rr, y: rand(-0.03, 0.03) + ri * 0.02, z: Math.sin(a) * rr,
-                   color: ri === 0 ? "green" : "cyan" });
-      }
+  function shapeSignal() {
+    var pts = [], edges = [];
+    [0.2, 0.38, 0.56].forEach(function (rr, ri) {
+      ring(pts, edges, 12 + ri * 8, function (f) {
+        return { x: Math.cos(f * TAU) * rr, y: -0.05 + ri * 0.03, z: Math.sin(f * TAU) * rr };
+      }, ri === 0 ? "green" : "cyan");
     });
-    while (pts.length < n) {
-      var f = Math.random();
-      pts.push({ x: rand(-0.02, 0.02), y: -f * 0.42, z: rand(-0.02, 0.02), color: "bright" });
+    /* beacon mast */
+    var prev = null;
+    for (var i = 0; i <= 5; i++) {
+      pts.push({ x: 0, y: -0.05 - (i / 5) * 0.5, z: 0, color: "bright" });
+      if (prev !== null) edges.push([prev, pts.length - 1]);
+      prev = pts.length - 1;
     }
-    return pts;
+    return { pts: pts, edges: edges, tiltX: 0.5 };
   }
 
-  var SHAPES = {
-    brain: { gen: shapeBrain, count: 170, maxDist: 0.21, tiltX: 0.22 },
-    helm: { gen: shapeHelm, count: 120, maxDist: 0.19, tiltX: 0.16 },
-    cube: { gen: shapeCube, count: 44, maxDist: 0.42, tiltX: 0.35 },
-    globe: { gen: shapeGlobe, count: 130, maxDist: 0.20, tiltX: 0.24 },
-    chart: { gen: shapeChart, count: 120, maxDist: 0.18, tiltX: 0.30 },
-    signal: { gen: shapeSignal, count: 110, maxDist: 0.22, tiltX: 0.55 }
-  };
+  var SHAPES = { brain: shapeBrain, helm: shapeHelm, cube: shapeCube,
+                 globe: shapeGlobe, chart: shapeChart, signal: shapeSignal };
 
-  /* k-nearest edges, capped degree 3 */
-  function buildEdges(pts, maxDist) {
+  /* nearest-neighbor edges, only for organic shapes (brain) */
+  function knnEdges(pts, maxDist) {
     var edges = [];
     var deg = pts.map(function () { return 0; });
     pts.forEach(function (a, i) {
@@ -193,29 +230,56 @@
       });
       near.sort(function (p, q) { return p[0] - q[0]; });
       for (var k = 0; k < Math.min(2, near.length) && deg[i] < 3; k++) {
-        var j2 = near[k][1];
-        edges.push([i, j2]);
-        deg[i]++; deg[j2]++;
+        edges.push([i, near[k][1]]);
+        deg[i]++; deg[near[k][1]]++;
       }
     });
     return edges;
   }
 
+  /* normalize every shape to the same footprint so tabs feel equal */
+  function normalize(pts) {
+    var maxR = 0;
+    pts.forEach(function (p) {
+      var r = Math.sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
+      if (r > maxR) maxR = r;
+    });
+    var s = maxR > 0 ? 0.62 / maxR : 1;
+    pts.forEach(function (p) { p.x *= s; p.y *= s; p.z *= s; });
+  }
+
   function mount(canvas, shapeName) {
-    var spec = SHAPES[shapeName];
-    if (!spec) return;
-    var count = COARSE ? Math.round(spec.count * 0.55) : spec.count;
-    var pts = spec.gen(count);
+    var gen = SHAPES[shapeName];
+    if (!gen) return;
+    var shape = gen();
+    var pts = shape.pts;
+    normalize(pts);
+    /* mobile thinning only for organic shapes (edges built after the
+       filter) — structural shapes keep their exact edge indices */
+    if (COARSE && !shape.edges) pts = pts.filter(function (_, i) { return i % 3 !== 2; });
+    var edges = shape.edges || knnEdges(pts, shape.maxDist || 0.2);
     pts.forEach(function (p) {
       p.phase = rand(0, TAU);
       p.period = rand(2800, 6400);
+      /* dispersion target for the full-page scroll morph */
+      var th = rand(0, TAU), ph = Math.acos(rand(-1, 1)), rr = rand(0.7, 1.25);
+      p.dx = Math.sin(ph) * Math.cos(th) * rr;
+      p.dy = Math.cos(ph) * rr;
+      p.dz = Math.sin(ph) * Math.sin(th) * rr;
     });
-    var edges = buildEdges(pts, spec.maxDist);
+
+    /* portfolio pages: promote the hero canvas to a fixed full-viewport
+       layer so the figure travels behind the content while reading */
+    var fullPage = !!canvas.closest(".portfolio-page");
+    if (fullPage) canvas.classList.add("pf-scene-page");
+
     var ctx = canvas.getContext("2d");
     var w = 0, h = 0;
 
     function resize() {
-      var rect = canvas.getBoundingClientRect();
+      var rect = fullPage
+        ? { width: window.innerWidth, height: window.innerHeight }
+        : canvas.getBoundingClientRect();
       w = Math.max(1, rect.width);
       h = Math.max(1, rect.height);
       canvas.width = w * DPR;
@@ -230,7 +294,6 @@
       clearTimeout(rt); rt = setTimeout(resize, 160);
     });
 
-    /* camera state: scroll drives rotation + zoom, mouse adds tilt */
     var mx = 0, my = 0, mxT = 0, myT = 0;
     if (FINE && !COARSE && !REDUCED) {
       window.addEventListener("mousemove", function (e) {
@@ -240,12 +303,17 @@
     }
 
     function scrollProgress() {
+      if (fullPage) {
+        var doc = document.documentElement;
+        var max = doc.scrollHeight - doc.clientHeight;
+        return max > 0 ? Math.min(1, Math.max(0, doc.scrollTop / max)) : 0;
+      }
       var rect = canvas.getBoundingClientRect();
       var vh = window.innerHeight || 1;
-      /* 0 when the canvas top enters the viewport bottom, 1 when its
-         bottom leaves the top — a full travel across the screen */
       return Math.min(1, Math.max(0, (vh - rect.top) / (vh + rect.height)));
     }
+
+    function ease(x) { return x * x * (3 - 2 * x); }
 
     var proj = { f: 2.4 };
     function render(t) {
@@ -254,47 +322,56 @@
       var drift = REDUCED ? 0 : t * 0.00006;
       mx += (mxT - mx) * 0.05;
       my += (myT - my) * 0.05;
-      var rotY = drift + sp * 2.4 + mx * 0.35;
-      var rotX = spec.tiltX + Math.sin(sp * Math.PI) * 0.12 + my * 0.18;
-      var zoom = 1.06 - Math.abs(sp - 0.5) * 0.3;
-      /* wide hero canvases: min(w,h) alone reads too small — let the
-         figure claim real presence without overflowing the height */
-      var size = Math.min(w * 0.46, h * 1.15) * zoom;
-      var cx = w * 0.5, cy = h * 0.52;
+      /* dispersion morph: only on full-page scenes — the figure holds
+         through the hero, then dissolves into a drifting cloud */
+      var morph = fullPage ? ease(Math.min(1, Math.max(0, (sp - 0.16) / 0.55))) : 0;
+      var rotY = drift + sp * (fullPage ? 3.2 : 2.4) + mx * 0.35;
+      var rotX = shape.tiltX + Math.sin(sp * Math.PI) * 0.12 + my * 0.18;
+      var zoom = fullPage
+        ? 1 + morph * 0.7
+        : 1.06 - Math.abs(sp - 0.5) * 0.3;
+      var size = (fullPage ? Math.min(w, h) * 0.62 : Math.min(w * 0.52, h * 1.3)) * zoom;
+      var cx = fullPage ? w * (0.72 - morph * 0.22) : w * 0.5;
+      var cy = fullPage ? h * (0.42 + morph * 0.12) : h * 0.52;
       var cosY = Math.cos(rotY), sinY = Math.sin(rotY);
       var cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+      var fadeE = 1 - morph * 0.85; /* edges dissolve first */
+      var fadeN = 1 - morph * 0.35;
 
-      /* project all points */
       for (var i = 0; i < pts.length; i++) {
         var p = pts[i];
-        var x1 = p.x * cosY + p.z * sinY;
-        var z1 = -p.x * sinY + p.z * cosY;
-        var y1 = p.y * cosX - z1 * sinX;
-        var z2 = p.y * sinX + z1 * cosX;
+        var ox = p.x + (p.dx - p.x) * morph;
+        var oy = p.y + (p.dy - p.y) * morph;
+        var oz = p.z + (p.dz - p.z) * morph;
+        var x1 = ox * cosY + oz * sinY;
+        var z1 = -ox * sinY + oz * cosY;
+        var y1 = oy * cosX - z1 * sinX;
+        var z2 = oy * sinX + z1 * cosX;
         var per = proj.f / (proj.f + z2);
         p.sx = cx + x1 * size * per;
         p.sy = cy + y1 * size * per;
         p.sper = per;
       }
 
-      /* edges */
-      for (var e = 0; e < edges.length; e++) {
-        var a = pts[edges[e][0]], b = pts[edges[e][1]];
-        var ea = 0.2 * ((a.sper + b.sper) / 2);
-        ctx.strokeStyle = "rgba(" + COLORS[a.color] + "," + ea.toFixed(3) + ")";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(a.sx, a.sy);
-        ctx.lineTo(b.sx, b.sy);
-        ctx.stroke();
+      if (fadeE > 0.02) {
+        for (var e = 0; e < edges.length; e++) {
+          var a = pts[edges[e][0]], b = pts[edges[e][1]];
+          if (!a || !b) continue;
+          var ea = 0.22 * ((a.sper + b.sper) / 2) * fadeE;
+          ctx.strokeStyle = "rgba(" + COLORS[a.color] + "," + ea.toFixed(3) + ")";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.sx, a.sy);
+          ctx.lineTo(b.sx, b.sy);
+          ctx.stroke();
+        }
       }
 
-      /* nodes: halo + core, breathing, nearer = bigger + brighter */
       for (var k = 0; k < pts.length; k++) {
         var q = pts[k];
         var br = REDUCED ? 0.75 : (Math.sin(t / q.period * TAU + q.phase) + 1) / 2;
-        var alpha = Math.min(1, (0.28 + 0.5 * br) * q.sper);
-        var r = (1.1 + 1.5 * br) * q.sper;
+        var alpha = Math.min(1, (0.3 + 0.5 * br) * q.sper * fadeN);
+        var r = (1.2 + 1.6 * br) * q.sper;
         var rgb = COLORS[q.color];
         ctx.fillStyle = "rgba(" + rgb + "," + (alpha * 0.15).toFixed(3) + ")";
         ctx.beginPath();

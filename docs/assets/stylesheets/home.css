@@ -15,7 +15,7 @@
   --mlh-amber: #FBBF24;
   --mlh-green: #34D399;
   --mlh-text: #F8FAFC;
-  --mlh-muted: #94A3B8;
+  --mlh-muted: #A3B2C7;
   --mlh-display: "Space Grotesk", "Inter", sans-serif;
   --mlh-body: "Inter", system-ui, sans-serif;
   --mlh-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -86,12 +86,12 @@
 }
 .mlh-glow::before {
   width: 980px; height: 980px;
-  background: radial-gradient(circle, rgba(167,139,250,0.11), rgba(167,139,250,0.04) 42%, transparent 68%);
+  background: radial-gradient(circle, rgba(167,139,250,0.055), rgba(167,139,250,0.02) 42%, transparent 68%);
   animation: mlh-glow-breathe 7s ease-in-out infinite;
 }
 .mlh-glow::after {
   width: 460px; height: 460px;
-  background: radial-gradient(circle, rgba(34,211,238,0.17), rgba(34,211,238,0.05) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(34,211,238,0.08), rgba(34,211,238,0.025) 45%, transparent 70%);
   animation: mlh-glow-breathe 4.6s ease-in-out infinite reverse;
 }
 @keyframes mlh-glow-breathe {
@@ -216,6 +216,8 @@
 .mlh-hero-grid {
   position: relative;
   z-index: 1;
+  /* soft ink halo — keeps copy legible over the animated brain */
+  text-shadow: 0 1px 14px rgba(5, 8, 22, 0.85), 0 0 34px rgba(5, 8, 22, 0.6);
   display: grid;
   grid-template-columns: minmax(0, 1fr) 280px;
   gap: 4rem;
@@ -308,6 +310,7 @@
 }
 /* sheen sweep — same light pass the CTA buttons get */
 .md-typeset .ml-home .mlh-quicklinks a::before,
+.md-typeset .ml-home .mlh-contact-links a::before,
 .md-typeset .ml-home .mlh-btn::before {
   content: "";
   position: absolute;
@@ -320,8 +323,17 @@
   pointer-events: none;
 }
 .md-typeset .ml-home .mlh-quicklinks a:hover::before,
+.md-typeset .ml-home .mlh-contact-links a:hover::before,
 .md-typeset .ml-home .mlh-btn:hover::before { left: 125%; }
 .md-typeset .ml-home .mlh-btn { position: relative; overflow: hidden; }
+.md-typeset .ml-home .mlh-contact-links a {
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+}
+.md-typeset .ml-home .mlh-contact-links a:hover {
+  box-shadow: 0 0 18px rgba(34,211,238,0.14);
+}
 .md-typeset .ml-home .mlh-quicklinks a:hover {
   box-shadow: 0 0 18px rgba(34,211,238,0.14);
 }
