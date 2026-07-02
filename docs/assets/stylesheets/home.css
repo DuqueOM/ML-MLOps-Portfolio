@@ -64,21 +64,75 @@
 
 .mlh-wrap { max-width: 1200px; margin: 0 auto; padding: 0 28px; }
 
-/* cursor glow (desktop only, driven by home.js) */
+/* cursor glow (desktop only, driven by home.js) — dual-layer aurora:
+   a wide violet halo breathing slowly under a tighter cyan core that
+   breathes in counter-phase, so the light feels alive rather than a
+   flat spotlight. The JS moves this 0×0 anchor; both layers center
+   on it via translate(-50%,-50%). */
 .mlh-glow {
   position: fixed; z-index: 0;
-  width: 560px; height: 560px;
+  width: 0; height: 0;
   left: 0; top: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(34,211,238,0.07), transparent 65%);
   pointer-events: none;
-  transform: translate(-50%, -50%);
   opacity: 0;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.8s ease;
+}
+.mlh-glow::before,
+.mlh-glow::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+}
+.mlh-glow::before {
+  width: 980px; height: 980px;
+  background: radial-gradient(circle, rgba(167,139,250,0.11), rgba(167,139,250,0.04) 42%, transparent 68%);
+  animation: mlh-glow-breathe 7s ease-in-out infinite;
+}
+.mlh-glow::after {
+  width: 460px; height: 460px;
+  background: radial-gradient(circle, rgba(34,211,238,0.17), rgba(34,211,238,0.05) 45%, transparent 70%);
+  animation: mlh-glow-breathe 4.6s ease-in-out infinite reverse;
+}
+@keyframes mlh-glow-breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -52%) scale(1.12); }
 }
 .ml-home.mlh-glow-on .mlh-glow { opacity: 1; }
 @media (pointer: coarse), (prefers-reduced-motion: reduce) {
   .mlh-glow { display: none; }
+}
+
+/* aurora blobs — two slow-drifting light fields behind everything,
+   the Nexaverse-style ambient depth layer */
+.ml-home > .mlh-aurora {
+  position: absolute; inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.mlh-aurora::before,
+.mlh-aurora::after {
+  content: "";
+  position: absolute;
+  width: 62vw; height: 62vw;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+}
+.mlh-aurora::before {
+  left: -16vw; top: -22vw;
+  background: radial-gradient(circle, rgba(34,211,238,0.13), transparent 62%);
+  animation: mlh-aurora-a 26s ease-in-out infinite alternate;
+}
+.mlh-aurora::after {
+  right: -20vw; top: 26vh;
+  background: radial-gradient(circle, rgba(124,58,237,0.12), transparent 62%);
+  animation: mlh-aurora-b 34s ease-in-out infinite alternate;
+}
+@keyframes mlh-aurora-a { to { transform: translate(9vw, 7vh) scale(1.18); } }
+@keyframes mlh-aurora-b { to { transform: translate(-7vw, -9vh) scale(1.22); } }
+@media (prefers-reduced-motion: reduce) {
+  .mlh-aurora::before, .mlh-aurora::after { animation: none; }
 }
 
 /* ---- shared type ---- */
@@ -116,12 +170,19 @@
 .mlh-kicker--amber { color: var(--mlh-amber); }
 
 /* Major section titles — Portfolio / Template are the two projects,
-   so their names carry display weight instead of hiding in a kicker. */
+   so their names carry display weight instead of hiding in a kicker.
+   The white→cyan gradient is the Nexaverse-style display treatment. */
 .md-typeset .ml-home .mlh-sec-title {
   font-size: clamp(1.7rem, 3.3vw, 2.5rem);
   font-weight: 700;
   letter-spacing: -0.025em;
   margin: 0 0 0.5rem;
+  background: linear-gradient(92deg, var(--mlh-text) 45%, var(--mlh-cyan-bright));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--mlh-text); /* fallback if clip unsupported */
+  width: fit-content;
 }
 .mlh-sec-sub {
   font-family: var(--mlh-mono);
@@ -234,12 +295,35 @@
   margin-top: 1.2rem;
 }
 .md-typeset .ml-home .mlh-quicklinks a {
+  position: relative;
+  overflow: hidden;
   color: var(--mlh-muted);
   text-decoration: none;
   border: 1px solid var(--mlh-hairline);
   border-radius: 4px;
   padding: 0.85rem 1.7rem;
-  transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+  transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease,
+              transform 0.2s ease, box-shadow 0.25s ease;
+  will-change: transform;
+}
+/* sheen sweep — same light pass the CTA buttons get */
+.md-typeset .ml-home .mlh-quicklinks a::before,
+.md-typeset .ml-home .mlh-btn::before {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -70%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(110,231,255,0.20), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.55s ease;
+  pointer-events: none;
+}
+.md-typeset .ml-home .mlh-quicklinks a:hover::before,
+.md-typeset .ml-home .mlh-btn:hover::before { left: 125%; }
+.md-typeset .ml-home .mlh-btn { position: relative; overflow: hidden; }
+.md-typeset .ml-home .mlh-quicklinks a:hover {
+  box-shadow: 0 0 18px rgba(34,211,238,0.14);
 }
 .md-typeset .ml-home .mlh-quicklinks a::after {
   content: " →"; opacity: 0;
@@ -645,6 +729,16 @@
   box-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
   transform: scale(1.3);
 }
+.mlh-hscroll-count {
+  font-family: var(--mlh-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  color: var(--mlh-muted);
+  margin-left: 0.9rem;
+  align-self: center;
+  font-variant-numeric: tabular-nums;
+}
+.mlh-hscroll-count b { color: var(--mlh-cyan-bright); font-weight: 600; }
 @media (max-width: 900px) {
   .mlh-hscroll-progress { display: none !important; }
 }
@@ -678,6 +772,8 @@
 /* Full-screen feature card: near one viewport width, cinematic */
 .mlh-hscroll.is-on .mlh-case {
   flex: 0 0 auto;
+  position: relative;
+  overflow: hidden;
   width: 92vw;
   min-height: min(72svh, 720px);
   align-content: center;
@@ -686,10 +782,32 @@
   border-radius: 8px;
   background:
     radial-gradient(640px 300px at 12% 0%, rgba(34, 211, 238, 0.05), transparent 60%),
-    rgba(11, 17, 32, 0.55);
+    rgba(11, 17, 32, 0.62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   padding: clamp(1.8rem, 4vw, 3.2rem);
   grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
 }
+/* ghost index numeral — parallax-shifted per scroll frame via --hs-num-x
+   (set by home.js), moving slower than the card = visible depth */
+.mlh-hscroll.is-on .mlh-case::before {
+  position: absolute;
+  right: clamp(1rem, 4vw, 3rem);
+  top: 50%;
+  z-index: 0;
+  font-family: var(--mlh-display);
+  font-size: clamp(7rem, 18vw, 15rem);
+  font-weight: 700;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(110, 231, 255, 0.14);
+  transform: translateY(-50%) translateX(var(--hs-num-x, 0px));
+  pointer-events: none;
+}
+.mlh-hscroll.is-on .mlh-case:nth-child(1)::before { content: "01"; }
+.mlh-hscroll.is-on .mlh-case:nth-child(2)::before { content: "02"; }
+.mlh-hscroll.is-on .mlh-case:nth-child(3)::before { content: "03"; }
+.mlh-hscroll.is-on .mlh-case > * { position: relative; z-index: 1; }
 /* the JS-driven carousel depth (scale/opacity per scroll frame) needs
    to track the already-smoothed GSAP scrub 1:1 — the base .mlh-case
    transform transition would otherwise add a second, fighting lag. */

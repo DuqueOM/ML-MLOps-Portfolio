@@ -3,7 +3,7 @@
 <div class="portfolio-page portfolio-template" markdown="1">
 
 <div class="portfolio-hero" markdown="1">
-<canvas data-neural-field="editorial" aria-hidden="true"></canvas>
+<canvas data-neural-scene="cube" aria-hidden="true"></canvas>
 <span class="portfolio-eyebrow">Production template and agentic operating model</span>
 
 # A reusable ML service template with governed AI-assisted engineering

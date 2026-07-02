@@ -175,13 +175,18 @@
      neural-field parallax — shared by both the GSAP path and the
      vanilla fallback so the two stay in visual parity. */
   var hsRailCanvas = hs && hs.querySelector(".mlh-neural--rail");
-  var hsProgressDots = hs ? hs.querySelectorAll("[data-hscroll-progress] span") : [];
+  var hsProgressDots = hs ? hs.querySelectorAll("[data-hscroll-progress] > span:not(.mlh-hscroll-count)") : [];
+  var hsCount = hs && hs.querySelector("[data-hscroll-count]");
   function hsApplyProgress(track, sticky, progress) {
+    var activeIdx = 0;
     if (hsProgressDots.length) {
-      var activeIdx = Math.round(progress * (hsProgressDots.length - 1));
+      activeIdx = Math.round(progress * (hsProgressDots.length - 1));
       hsProgressDots.forEach(function (dot, i) {
         dot.classList.toggle("is-active", i === activeIdx);
       });
+      if (hsCount) {
+        hsCount.innerHTML = "<b>0" + (activeIdx + 1) + "</b> / 0" + hsProgressDots.length;
+      }
     }
     if (!reduced) {
       var panels = track.querySelectorAll(".mlh-case");
@@ -191,9 +196,12 @@
         var half = stickyRect.width / 2 || 1;
         panels.forEach(function (panel) {
           var r = panel.getBoundingClientRect();
-          var dNorm = Math.min(1, Math.abs((r.left + r.width / 2) - centerX) / half);
-          panel.style.transform = "scale(" + (1 - dNorm * 0.06).toFixed(3) + ")";
-          panel.style.opacity = (1 - dNorm * 0.3).toFixed(3);
+          var dSigned = ((r.left + r.width / 2) - centerX) / half;
+          var dNorm = Math.min(1, Math.abs(dSigned));
+          panel.style.transform = "scale(" + (1 - dNorm * 0.13).toFixed(3) + ")";
+          panel.style.opacity = (1 - dNorm * 0.55).toFixed(3);
+          /* ghost numeral drifts against the travel direction — inner parallax */
+          panel.style.setProperty("--hs-num-x", (dSigned * -90).toFixed(1) + "px");
         });
       }
     }
@@ -290,6 +298,28 @@
         el.style.transform = "";
       });
     });
+  }
+
+  /* ---- hero copy scroll parallax: text drifts up and fades slightly
+     as the hero scrolls out, in counter-motion to the brain scene ---- */
+  if (!reduced) {
+    var heroGrid = root.querySelector(".mlh-hero-grid");
+    var heroEl = root.querySelector(".mlh-hero");
+    if (heroGrid && heroEl) {
+      var heroTick = false;
+      function heroParallax() {
+        heroTick = false;
+        var y = window.scrollY || 0;
+        var hh = heroEl.offsetHeight || 1;
+        if (y > hh * 1.2) return;
+        var p = Math.min(1, y / hh);
+        heroGrid.style.transform = "translateY(" + (p * 46).toFixed(1) + "px)";
+        heroGrid.style.opacity = (1 - p * 0.55).toFixed(3);
+      }
+      window.addEventListener("scroll", function () {
+        if (!heroTick) { heroTick = true; requestAnimationFrame(heroParallax); }
+      }, { passive: true });
+    }
   }
 
   /* ---- cursor glow (lerped follow) ---- */

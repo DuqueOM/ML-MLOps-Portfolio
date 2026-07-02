@@ -3,7 +3,7 @@
 <div class="portfolio-page" markdown="1">
 
 <div class="portfolio-hero" markdown="1">
-<canvas data-neural-field="editorial" aria-hidden="true"></canvas>
+<canvas data-neural-scene="chart" aria-hidden="true"></canvas>
 <span class="portfolio-eyebrow">Recruiter screening view · 90 seconds</span>
 
 # ML engineer who builds systems that survive production

@@ -35,11 +35,12 @@ theme:
 # The ?v= query busts GitHub Pages / browser caches when assets change.
 # Bump the date suffix on every visual release.
 extra_css:
-  - assets/stylesheets/portfolio.css?v=20260702a
+  - assets/stylesheets/portfolio.css?v=20260702b
 
 extra_javascript:
-  - assets/javascripts/neural-field.js?v=20260702a
-  - assets/javascripts/portfolio.js?v=20260702a
+  - assets/javascripts/neural-field.js?v=20260702b
+  - assets/javascripts/neural-scene.js?v=20260702b
+  - assets/javascripts/portfolio.js?v=20260702b
 
 plugins:
   - search

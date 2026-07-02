@@ -87,4 +87,32 @@
       if (!raf) raf = requestAnimationFrame(tick);
     }, { passive: true });
   }
+
+  /* ---- aurora background (pure CSS animation, injected once) ---- */
+  var aurora = document.createElement("div");
+  aurora.className = "pf-aurora";
+  aurora.setAttribute("aria-hidden", "true");
+  document.body.appendChild(aurora);
+
+  /* ---- contact message composer: assembles a mailto: draft from the
+     styled fields — static site, no backend, nothing is sent by us;
+     the visitor's own mail client opens with everything pre-filled */
+  var composer = page.querySelector("[data-contact-composer]");
+  if (composer) {
+    composer.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var get = function (name) {
+        var el = composer.querySelector('[name="' + name + '"]');
+        return el ? el.value.trim() : "";
+      };
+      var name = get("name"), from = get("from"),
+          subject = get("subject") || "Opportunity — via portfolio",
+          message = get("message");
+      var body = message +
+        (name || from ? "\n\n—\n" + name + (from ? " · " + from : "") : "");
+      window.location.href = "mailto:DuqueOrtegaMutis@gmail.com" +
+        "?subject=" + encodeURIComponent(subject) +
+        "&body=" + encodeURIComponent(body);
+    });
+  }
 })();

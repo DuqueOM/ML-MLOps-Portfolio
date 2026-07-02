@@ -3,7 +3,7 @@
 <div class="portfolio-page" markdown="1">
 
 <div class="portfolio-hero" markdown="1">
-<canvas data-neural-field="editorial" aria-hidden="true"></canvas>
+<canvas data-neural-scene="helm" aria-hidden="true"></canvas>
 <span class="portfolio-eyebrow">One evolution · three chapters</span>
 
 # From services, to a template, to an agent platform
