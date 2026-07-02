@@ -171,6 +171,37 @@
     };
   }
 
+  /* progress dots + carousel depth (scale/opacity on neighbor cards) +
+     neural-field parallax — shared by both the GSAP path and the
+     vanilla fallback so the two stay in visual parity. */
+  var hsRailCanvas = hs && hs.querySelector(".mlh-neural--rail");
+  var hsProgressDots = hs ? hs.querySelectorAll("[data-hscroll-progress] span") : [];
+  function hsApplyProgress(track, sticky, progress) {
+    if (hsProgressDots.length) {
+      var activeIdx = Math.round(progress * (hsProgressDots.length - 1));
+      hsProgressDots.forEach(function (dot, i) {
+        dot.classList.toggle("is-active", i === activeIdx);
+      });
+    }
+    if (!reduced) {
+      var panels = track.querySelectorAll(".mlh-case");
+      if (panels.length > 1) {
+        var stickyRect = sticky.getBoundingClientRect();
+        var centerX = stickyRect.left + stickyRect.width / 2;
+        var half = stickyRect.width / 2 || 1;
+        panels.forEach(function (panel) {
+          var r = panel.getBoundingClientRect();
+          var dNorm = Math.min(1, Math.abs((r.left + r.width / 2) - centerX) / half);
+          panel.style.transform = "scale(" + (1 - dNorm * 0.06).toFixed(3) + ")";
+          panel.style.opacity = (1 - dNorm * 0.3).toFixed(3);
+        });
+      }
+    }
+    if (hsRailCanvas && window.mlhNeuralSetParallax) {
+      window.mlhNeuralSetParallax(hsRailCanvas, progress * 2 - 1);
+    }
+  }
+
   /* The rail runs even under prefers-reduced-motion: the scrub maps 1:1
      to the user's own scroll gesture (no autonomous motion). Reduced
      motion only drops the smoothing lag and the auto-snap. */
@@ -196,6 +227,7 @@
           start: "top top",
           end: function () { return "+=" + Math.max(window.innerHeight, getMax()); },
           invalidateOnRefresh: true,
+          onUpdate: function (self) { hsApplyProgress(track, sticky, self.progress); },
           snap: (!reduced && panels > 1) ? {
             snapTo: 1 / (panels - 1),
             duration: { min: 0.2, max: 0.55 },
@@ -211,6 +243,10 @@
         tween.kill();
         deactivate();
         window.gsap.set(track, { clearProps: "all" });
+        track.querySelectorAll(".mlh-case").forEach(function (panel) {
+          panel.style.transform = "";
+          panel.style.opacity = "";
+        });
       };
     });
   } else if (hs && window.matchMedia("(min-width: 901px)").matches) {
@@ -225,6 +261,7 @@
       var range = hs.offsetHeight - window.innerHeight;
       var p = range > 0 ? Math.min(1, Math.max(0, -top / range)) : 0;
       hsTrack.style.transform = "translate3d(" + (-p * hsMax).toFixed(1) + "px,0,0)";
+      hsApplyProgress(hsTrack, hsSticky, p);
     }
     function hsMeasure() {
       hsMax = Math.max(0, hsTrack.scrollWidth - hsSticky.clientWidth);

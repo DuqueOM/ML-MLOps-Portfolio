@@ -2,7 +2,7 @@
 
 {% block extrahead %}
   {{ super() }}
-  <link rel="stylesheet" href="{{ 'assets/stylesheets/home.css' | url }}?v=20260612a">
+  <link rel="stylesheet" href="{{ 'assets/stylesheets/home.css' | url }}?v=20260702a">
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
   <meta property="og:title" content="Duque Ortega Mutis — Building ML systems that survive production">
@@ -18,6 +18,7 @@
 
   <!-- ============ HERO ============ -->
   <header class="mlh-hero">
+    <canvas class="mlh-neural" data-neural-field="hero" aria-hidden="true"></canvas>
     <div class="mlh-wrap mlh-hero-grid">
       <div class="mlh-hero-copy">
         <p class="mlh-eyebrow mlh-stagger">Duque Ortega Mutis · Mexico City · open to junior ML / MLOps roles</p>
@@ -173,12 +174,16 @@
         <p class="mlh-kicker">The work</p>
         <h2>Projects, problems, solutions</h2>
         <p class="mlh-section-note">Each service, the production problem it hit, and the
-        fix — measured, root-caused and documented. <span class="mlh-hscroll-hint">Keep
-        scrolling — the cases slide through.</span></p>
+        fix — measured, root-caused and documented. <span class="mlh-hscroll-hint">
+        <svg class="mlh-hscroll-arrow" viewBox="0 0 24 24" aria-hidden="true" width="14" height="14">
+          <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 12h15m0 0-5-5m5 5-5 5"/>
+        </svg>
+        Keep scrolling — the cases slide through.</span></p>
       </div>
     </div>
 
     <div class="mlh-hscroll" data-hscroll>
+      <canvas class="mlh-neural mlh-neural--rail" data-neural-field="rail" aria-hidden="true"></canvas>
       <div class="mlh-hscroll-sticky">
         <div class="mlh-hscroll-track" data-project-rail data-rendered="true">
 
@@ -288,6 +293,10 @@
         </div>
       </article>
 
+        </div>
+
+        <div class="mlh-hscroll-progress" data-hscroll-progress aria-hidden="true">
+          <span></span><span></span><span></span>
         </div>
 
       </div>
@@ -470,5 +479,5 @@
     </div>
   </section>
 </div>
-<script src="{{ 'assets/javascripts/home.js' | url }}?v=20260612a" defer></script>
+<script src="{{ 'assets/javascripts/home.js' | url }}?v=20260702a" defer></script>
 {% endblock %}

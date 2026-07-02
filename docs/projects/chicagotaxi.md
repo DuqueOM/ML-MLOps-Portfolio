@@ -1,6 +1,7 @@
 <div class="portfolio-page" markdown="1">
 
 <div class="portfolio-hero" markdown="1">
+<canvas data-neural-field="editorial" aria-hidden="true"></canvas>
 <span class="portfolio-eyebrow">Demand forecasting pipeline</span>
 
 # ChicagoTaxi Demand Pipeline

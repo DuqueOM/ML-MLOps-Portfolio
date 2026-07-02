@@ -3,6 +3,7 @@
 <div class="portfolio-page" markdown="1">
 
 <div class="portfolio-hero" markdown="1">
+<canvas data-neural-field="editorial" aria-hidden="true"></canvas>
 <span class="portfolio-eyebrow">Failure story and engineering judgment</span>
 
 # From 81% API errors to a reliable inference path

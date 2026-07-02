@@ -3,6 +3,7 @@
 <div class="portfolio-page" markdown="1">
 
 <div class="portfolio-hero portfolio-hero--profile" markdown="1">
+<canvas data-neural-field="editorial" aria-hidden="true"></canvas>
 <div class="portfolio-hero-copy" markdown="1">
 <span class="portfolio-eyebrow">The person behind the systems</span>
 

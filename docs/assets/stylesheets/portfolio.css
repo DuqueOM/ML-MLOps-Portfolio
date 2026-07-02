@@ -1193,6 +1193,75 @@ html {
   }
 }
 
+/* =========================================================
+   Neural field — the universal ambient network background
+   (docs/assets/javascripts/neural-field.js). One fixed canvas
+   is appended to <body> on every page, incl. pages with neither
+   .portfolio-page nor .ml-home (ADRs, deployment guides). It sits
+   behind all Material chrome and is barely-there by design (see
+   the "ambient" preset — priority 4/5 in the motion hierarchy).
+   ========================================================= */
+.pf-neural-ambient {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+@media screen and (min-width: 76.25em) {
+  .md-container { position: relative; z-index: 1; }
+}
+
+/* Editorial hero — richer, locally-scoped instance (data-neural-field="editorial")
+   sits behind the hero copy, contained within the hero's own border-radius. */
+.md-typeset .portfolio-hero {
+  position: relative;
+  overflow: hidden;
+}
+.md-typeset .portfolio-hero canvas[data-neural-field] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.md-typeset .portfolio-hero > :not(canvas) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Signal divider — a thin animated dash line, the same flowing-dash
+   language as the home hero's pipeline SVG (@keyframes mlh-flow),
+   generalized here as a pure-CSS bottom rule so every editorial page
+   gets it without touching Markdown. */
+.md-typeset .portfolio-hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  z-index: 1;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--portfolio-teal) 0 10px,
+    transparent 10px 22px
+  );
+  opacity: 0.32;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .md-typeset .portfolio-hero::after {
+    background-size: 44px 100%;
+    animation: pf-signal-flow 2.6s linear infinite;
+  }
+}
+@keyframes pf-signal-flow {
+  to { background-position: -44px 0; }
+}
+
 /* Mobile drawer: comfortable inset — items were hugging the screen edge */
 @media screen and (max-width: 76.1875em) {
   .md-nav--primary .md-nav__title,

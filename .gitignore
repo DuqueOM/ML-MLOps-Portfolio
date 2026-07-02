@@ -171,5 +171,8 @@ infra/terraform-outputs.json
 *.tfstate.backup
 docs/VIDEO_SCRIPT_v2.md
 
+# IDE agent configs
+.claude/
+
 # Asciinema recordings (intermediate files, GIFs are the final output)
 *.cast
