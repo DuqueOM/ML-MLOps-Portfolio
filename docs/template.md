@@ -13,7 +13,7 @@ is the strongest artifact in this portfolio. It packages the production lessons
 from the monorepo into a starter system for ML services: FastAPI serving,
 training/serving parity, CI/CD, Docker, Kubernetes, Terraform examples,
 observability hooks, runbooks and an explicit agentic governance model. The
-template also encodes 36 anti-patterns with corrective actions, SLSA L2
+template also encodes 37 anti-patterns with corrective actions, SLSA L2
 supply-chain security practices, closed-loop monitoring with statistical
 promotion gates, and a self-auditing documentation-coherence system that
 keeps its own version, ADR count and governance surface honest across every
@@ -39,7 +39,7 @@ document — a gate, not a suggestion.
 </div>
 <div class="portfolio-stat">
 <small>Failure modes</small>
-<strong>36 anti-patterns</strong>
+<strong>37 anti-patterns</strong>
 <span>Corrective actions for serving, HPA, SHAP, IAM, CI/CD, scaffolding and adoption risks.</span>
 </div>
 <div class="portfolio-stat">
@@ -212,12 +212,14 @@ failure modes harder to reintroduce.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Skills (21)</small>
+<small>Skills (25)</small>
 <h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/skills">Reusable MLOps procedures</a></h3>
 <p>Skills include new service creation, EDA, deploy to GKE/EKS, drift checks,
 model retraining, release checklist, rollback, cost audit, security audit,
 incident response, stack-profile switching, adopter onboarding,
-documentation-coherence enforcement and CI-green verification.</p>
+documentation-coherence enforcement, CI-green verification, dual-axis PR
+review, systematic bug diagnosis, pre-scaffold ML problem spec capture and
+blameless incident postmortems.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -418,6 +420,39 @@ IaC engine and scaffolding tool — so "agnostic to technologies" is a
 verifiable claim, not a slogan.</p>
 </div>
 </div>
+
+## How It Compares
+
+<div class="portfolio-split" markdown="1">
+<div markdown="1">
+
+None of the well-known alternatives occupy quite the same spot. Each is
+genuinely strong at what it optimizes for — the comparison below is about
+fit, not a claim that this template is universally "better."
+
+</div>
+<div class="portfolio-callout" markdown="1">
+<strong>The honest version</strong>
+
+This is a hardening baseline for a small-to-mid ML team that wants
+production defaults without adopting a control-plane. It is not a
+managed pipeline product, not a full MLOps platform, and not a
+drop-in replacement for an already-mature internal platform team.
+</div>
+</div>
+
+| Alternative | Strong at | What this template adds |
+|---|---|---|
+| **Cookiecutter Data Science** | The most recognized project-layout convention; huge familiarity | CCDS gives you a folder shape. It has no serving contract, no CI/CD, no Kubernetes/Terraform, no supply-chain security and no agentic governance — this template maps to CCDS vocabulary for practitioners coming from it (see Adoption Engineering above) rather than competing with it. |
+| **Kubeflow** | Full ML platform: pipelines, serving, multi-tenancy, a real control plane | Kubeflow needs a dedicated operator and real operational investment before the first service ships. This template is a starter a small team can scaffold from cold in minutes, with the option to grow into a platform like Kubeflow later — not a prerequisite for one. |
+| **MLRun / ZenML / Metaflow** | Strong pipeline/DAG orchestration abstractions, good experiment ergonomics | These orchestrate the ML workflow; none of them ship Kubernetes manifests, Terraform, signed-image CI/CD, or an agentic governance layer as part of the same starter — you still assemble the production surface yourself. |
+| **Cloud-native pipelines (Vertex AI Pipelines, SageMaker Pipelines)** | Managed, low operational burden, deep integration with one cloud | Powerful, but cloud-locked — you build *on* the platform, not *with* portable source you own. This template ships working Terraform + Kustomize for both GCP and AWS, so the same service definition targets either. |
+| **Bespoke internal platform-engineering scaffolds** | Tailored exactly to one company's stack; common in mature orgs | Usually unpublished, un-audited by outsiders, and rarely include a first-class agentic governance layer — that concern barely existed when most internal scaffolds were built. This template treats it as a testable, CI-gated contract from the start. |
+
+The throughline across every row: this template is the only common option
+that ships a complete infra-to-serving stack **and** a governed,
+contract-tested agentic development layer as one coherent, adoptable unit
+— not a platform to operate, and not a governance story left to prompting.
 
 ## Multi-IDE Governance
 

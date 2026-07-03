@@ -231,7 +231,8 @@ status below tracks against the published plan
 </div>
 
 <div class="portfolio-actions" markdown="1">
-[:fontawesome-brands-github: agent-local repository](https://github.com/DuqueOM/agent-local){ .portfolio-button .portfolio-button--primary }
+[:fontawesome-solid-diagram-project: Full agent-local page](../agent-local.md){ .portfolio-button .portfolio-button--primary }
+[:fontawesome-brands-github: agent-local repository](https://github.com/DuqueOM/agent-local){ .portfolio-button }
 [:fontawesome-solid-diagram-project: The shared plan](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md){ .portfolio-button }
 [:fontawesome-solid-scale-balanced: Why a platform, not a template (ADR-001)](https://github.com/DuqueOM/agent-local/blob/main/docs/decisions/ADR-001-reusable-platform-not-template.md){ .portfolio-button }
 [:fontawesome-solid-shield-halved: Why not MCP/A2A (ADR-010)](https://github.com/DuqueOM/agent-local/blob/main/docs/decisions/ADR-010-mcp-a2a-interop-rejected.md){ .portfolio-button }

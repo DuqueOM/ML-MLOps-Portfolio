@@ -285,15 +285,23 @@
       h = Math.max(1, rect.height);
       canvas.width = w * DPR;
       canvas.height = h * DPR;
-      canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
+      /* full-page canvases are sized by CSS (100% of a fixed inset:0
+         box) — inline px sizes go stale when the mobile URL bar
+         collapses/expands, leaving the figure offset until the next
+         debounced resize. Only scoped canvases need explicit px. */
+      if (!fullPage) {
+        canvas.style.width = w + "px";
+        canvas.style.height = h + "px";
+      }
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     }
     resize();
     var rt = null;
-    window.addEventListener("resize", function () {
-      clearTimeout(rt); rt = setTimeout(resize, 160);
-    });
+    function queueResize() {
+      clearTimeout(rt); rt = setTimeout(resize, 80);
+    }
+    window.addEventListener("resize", queueResize);
+    if (window.visualViewport) window.visualViewport.addEventListener("resize", queueResize);
 
     var mx = 0, my = 0, mxT = 0, myT = 0;
     if (FINE && !COARSE && !REDUCED) {
@@ -387,10 +395,19 @@
 
     if (REDUCED) { render(0); return; }
 
+    /* perf: hero-scoped scenes stop drawing while out of view.
+       Full-page scenes are fixed to the viewport — always visible. */
+    var inView = true;
+    if (!fullPage && "IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        inView = entries[0].isIntersecting;
+      }, { rootMargin: "12% 0px" }).observe(canvas);
+    }
+
     var raf = null;
     function tick(t) {
       raf = requestAnimationFrame(tick);
-      if (document.hidden) return;
+      if (document.hidden || !inView) return;
       render(t);
     }
     raf = requestAnimationFrame(tick);

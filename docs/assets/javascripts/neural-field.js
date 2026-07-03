@@ -537,10 +537,21 @@
       }
     }
 
+    /* perf: scoped instances (hero/rail/editorial) stop drawing while
+       scrolled out of view — the rAF stays scheduled (cheap no-op) but
+       the canvas work is skipped. The body-level ambient layer is
+       always in view, so it never gets an observer. */
+    var inView = true;
+    if (canvas.parentElement !== document.body && "IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        inView = entries[0].isIntersecting;
+      }, { rootMargin: "12% 0px" }).observe(canvas);
+    }
+
     var raf = null;
     function tick(t) {
       raf = requestAnimationFrame(tick);
-      if (document.hidden) return;
+      if (document.hidden || !inView) return;
       ctx.clearRect(0, 0, w, h);
       field.nodes.forEach(function (node) { place(node, t); });
       placeOrbitals(t);

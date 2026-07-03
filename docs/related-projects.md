@@ -16,7 +16,7 @@ scaffolds (Kubeflow, ZenML, LangGraph) in a later benchmarking pass.
 ### What's in the template (latest, `v0.20.0` and later on `main`)
 
 - **Vendor-neutral agentic canon, 4 IDE surfaces** — rules, skills and
-  workflows live once in `agentic/` (17 rules / 21 skills / 17 workflows)
+  workflows live once in `agentic/` (17 rules / 25 skills / 17 workflows)
   and are regenerated, never hand-edited, into Devin (full-body mirror),
   Cursor, Claude Code and Codex (pointer files). A manifest cross-indexes
   every surface so the mapping is validated, not trusted by memory.
@@ -79,7 +79,7 @@ scaffolds (Kubeflow, ZenML, LangGraph) in a later benchmarking pass.
   validates the full chain in CI: scaffold → build + sign by digest →
   kind cluster + Kyverno admit + smoke → audit trail. Trust anchor
   for every PR.
-- **36 encoded anti-patterns (D-01 → D-36)** — runtime, training,
+- **37 encoded anti-patterns (D-01 → D-37)** — runtime, training,
   EDA, security, closed-loop, lifecycle (warm-up, PDB, PSS), delivery
   (env gates, API contracts, SBOM, digest pin), Copier scaffolding,
   local-first adoption safety, and CI-green release safety.
@@ -101,10 +101,19 @@ scaffolds (Kubeflow, ZenML, LangGraph) in a later benchmarking pass.
 - **Engineering calibration** — every component sized to actual
   requirements, avoiding both under- and over-engineering. ADRs
   document alternatives rejected AND measurable revisit triggers.
+- **External landscape review, decision-annex style (ADR-041)** — five
+  external agent-tooling projects evaluated for what would genuinely
+  strengthen the governance model. Four narrowly-scoped skills adopted
+  (dual-axis PR review, systematic bug diagnosis, pre-scaffold ML
+  problem spec capture, blameless incident postmortems); three full
+  frameworks explicitly rejected with reasons and revisit triggers on
+  record, including a persona/orchestration system that would have
+  violated the template's own engineering-calibration principle.
 
 ## agent-local — the LLM plane
 
-[**github.com/DuqueOM/agent-local** →](https://github.com/DuqueOM/agent-local)
+[**github.com/DuqueOM/agent-local** →](https://github.com/DuqueOM/agent-local) ·
+[**Full dedicated page →**](agent-local.md)
 
 The template's governance philosophy generalized to a new domain: local,
 multi-tier LLM agents. `agent-local` is a **sibling** of the template, not a
@@ -163,7 +172,7 @@ ML-MLOps-Portfolio (this repo)
             │  - Vendor-neutral agentic canon, 4 IDE surfaces
             │    (Devin · Cursor · Claude Code · Codex)
             │  - Behavior Protocol: AUTO / CONSULT / STOP (static + dynamic)
-            │  - 36 anti-patterns D-01 → D-36
+            │  - 37 anti-patterns D-01 → D-37
             │  - Compliance mapping: NIST AI RMF · ISO 42001 · EU AI Act
             │  - CI-Green Verification Gate (D-36) — read is AUTO,
             │    override is STOP

@@ -7,4 +7,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  {# Per-page Open Graph — link previews on LinkedIn/Slack/X show the
+     page's own title + description instead of nothing. The home page
+     is excluded: home.html ships its own richer OG set. #}
+  {# `page` is None for synthetic pages like 404.html — guard everything #}
+  {% if page and not page.is_homepage %}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:title" content="{{ page.title }} — {{ config.site_name }}">
+  <meta property="og:description" content="{{ (page.meta.get('description') if page.meta else none) or config.site_description }}">
+  {% if page.canonical_url %}<meta property="og:url" content="{{ page.canonical_url }}">{% endif %}
+  <meta property="og:image" content="{{ config.site_url }}media/profile/duque-ortega-mutis.webp">
+  <meta name="twitter:card" content="summary">
+  {% endif %}
 {% endblock %}

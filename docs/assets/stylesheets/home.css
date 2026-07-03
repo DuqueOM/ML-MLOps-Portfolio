@@ -778,11 +778,11 @@
 }
 .mlh-hscroll.is-on .mlh-hscroll-track {
   display: flex;
-  gap: 4vw;
+  gap: 2vw; /* neighbors peek in — continuous composition, not islands */
   align-items: center;
   max-width: none;
   margin: 0;
-  padding: 0 4vw;
+  padding: 0 7vw;
   scroll-snap-type: x mandatory;
   will-change: transform;
 }
@@ -791,15 +791,15 @@
   flex: 0 0 auto;
   position: relative;
   overflow: hidden;
-  width: 92vw;
+  width: 86vw;
   min-height: min(72svh, 720px);
   align-content: center;
   scroll-snap-align: center;
-  border: 1px solid var(--mlh-hairline);
-  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 14px;
   background:
-    radial-gradient(640px 300px at 12% 0%, rgba(34, 211, 238, 0.05), transparent 60%),
-    rgba(11, 17, 32, 0.62);
+    radial-gradient(640px 300px at 12% 0%, rgba(34, 211, 238, 0.06), transparent 60%),
+    linear-gradient(120deg, rgba(11, 17, 32, 0.72), rgba(11, 17, 32, 0.4));
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   padding: clamp(1.8rem, 4vw, 3.2rem);
@@ -843,20 +843,34 @@
     display: block;
     overflow: visible;
   }
+  /* mobile: native swipeable carousel instead of a vertical stack —
+     same cases, horizontal scroll-snap, no JS needed */
   .mlh-hscroll-track,
   .mlh-hscroll.is-on .mlh-hscroll-track {
-    display: grid;
-    gap: 1.5rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
+    display: flex;
+    gap: 0.9rem;
+    max-width: none;
+    margin: 0;
+    padding: 0 1rem 0.8rem;
     transform: none !important;
-    scroll-snap-type: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  .mlh-hscroll-track::-webkit-scrollbar { display: none; }
+  .mlh-case,
   .mlh-hscroll.is-on .mlh-case {
-    width: auto;
+    flex: 0 0 86vw;
+    width: 86vw;
     min-height: 0;
-    padding: 1.4rem 1rem;
+    padding: 1.4rem 1.1rem;
+    scroll-snap-align: center;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    border-radius: 12px;
+    background: rgba(11, 17, 32, 0.55);
+    transform: none !important;
+    opacity: 1 !important;
   }
 }
 

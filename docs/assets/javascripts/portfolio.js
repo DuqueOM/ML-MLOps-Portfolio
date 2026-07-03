@@ -55,7 +55,7 @@
 
   /* ---- magnetic buttons (subtle: max 4px) ---- */
   if (finePointer && !reduced) {
-    document.querySelectorAll(".portfolio-button").forEach(function (el) {
+    document.querySelectorAll(".portfolio-button, .pf-contact-card").forEach(function (el) {
       el.addEventListener("mousemove", function (e) {
         var r = el.getBoundingClientRect();
         var dx = (e.clientX - r.left - r.width / 2) / (r.width / 2);

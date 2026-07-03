@@ -238,8 +238,9 @@
           onUpdate: function (self) { hsApplyProgress(track, sticky, self.progress); },
           snap: (!reduced && panels > 1) ? {
             snapTo: 1 / (panels - 1),
-            duration: { min: 0.2, max: 0.55 },
-            ease: "power1.inOut"
+            duration: { min: 0.3, max: 0.8 },
+            delay: 0.1,
+            ease: "power2.out"
           } : false
         }
       });
