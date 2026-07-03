@@ -47,7 +47,7 @@ way to reach me is email. I reply within 24 hours.
 <span><small>Video demo</small><b>3-minute walkthrough</b></span>
 </a>
 
-<a class="pf-contact-card" href="recruiter-brief.md">
+<a class="pf-contact-card" href="../recruiter-brief/">
 <span class="pf-cc-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-5 4h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></span>
 <span><small>Recruiter brief</small><b>90-second screening view</b></span>
 </a>
@@ -82,5 +82,5 @@ Everything worth screening is already public: the projects, the technical
 evidence and the recruiter brief. If you only have three minutes, watch the
 video — then write me.
 </div>
-
+<br>
 </div>

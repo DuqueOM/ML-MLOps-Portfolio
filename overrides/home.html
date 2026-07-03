@@ -2,7 +2,7 @@
 
 {% block extrahead %}
   {{ super() }}
-  <link rel="stylesheet" href="{{ 'assets/stylesheets/home.css' | url }}?v=20260703d">
+  <link rel="stylesheet" href="{{ 'assets/stylesheets/home.css' | url }}?v=20260703e">
   <meta property="og:title" content="Duque Ortega Mutis — Building ML systems that survive production">
   <meta property="og:description" content="Three ML services on GKE + EKS, three production incidents root-caused, one open-source MLOps template. 14 years of operations leadership behind the engineering.">
   <meta property="og:type" content="website">
@@ -217,8 +217,8 @@
             <text x="203" y="86" class="mlh-d-note">event loop stays free — probes alive under load</text>
           </svg>
           <div class="mlh-case-links">
-            <a class="mlh-case-link" href="{{ 'projects/bankchurn/' | url }}">See the BankChurn Predictor service</a>
-            <a class="mlh-case-link" href="{{ 'projects/bankchurn-debugging/' | url }}">Read the debugging deep dive</a>
+            <a class="mlh-case-link" data-magnetic href="{{ 'projects/bankchurn/' | url }}">See the BankChurn Predictor service</a>
+            <a class="mlh-case-link" data-magnetic href="{{ 'projects/bankchurn-debugging/' | url }}">Read the debugging deep dive</a>
           </div>
         </div>
       </article>
@@ -252,7 +252,7 @@
             <text x="438" y="77" class="mlh-d-note">documented, not shipped — operability won</text>
           </svg>
           <div class="mlh-case-links">
-            <a class="mlh-case-link" href="{{ 'projects/nlpinsight/' | url }}">See the NLPInsight Analyzer service</a>
+            <a class="mlh-case-link" data-magnetic href="{{ 'projects/nlpinsight/' | url }}">See the NLPInsight Analyzer service</a>
           </div>
         </div>
       </article>
@@ -287,7 +287,7 @@
             <text x="202" y="86" class="mlh-d-note mlh-d-warn">leaky feature → removed before metrics</text>
           </svg>
           <div class="mlh-case-links">
-            <a class="mlh-case-link" href="{{ 'projects/chicagotaxi/' | url }}">See the ChicagoTaxi Pipeline service</a>
+            <a class="mlh-case-link" data-magnetic href="{{ 'projects/chicagotaxi/' | url }}">See the ChicagoTaxi Pipeline service</a>
           </div>
         </div>
       </article>
@@ -479,5 +479,5 @@
     </div>
   </section>
 </div>
-<script src="{{ 'assets/javascripts/home.js' | url }}?v=20260703d" defer></script>
+<script src="{{ 'assets/javascripts/home.js' | url }}?v=20260703e" defer></script>
 {% endblock %}

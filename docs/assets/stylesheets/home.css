@@ -543,9 +543,39 @@
 }
 .mlh-case--flagship { border-top-width: 2px; border-top-color: rgba(251,191,36,0.45); }
 
+/* case links are real buttons — same border/sheen/hover language as
+   every other button on the site */
 .md-typeset .ml-home .mlh-case-link {
-  font-family: var(--mlh-mono); font-size: 0.8rem;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  font-family: var(--mlh-mono); font-size: 0.78rem;
+  letter-spacing: 0.06em;
   color: var(--mlh-cyan); text-decoration: none;
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  border-radius: 4px;
+  padding: 0.65rem 1.1rem;
+  transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease,
+              transform 0.2s ease, box-shadow 0.25s ease;
+  will-change: transform;
+}
+.md-typeset .ml-home .mlh-case-link::before {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -70%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(110,231,255,0.20), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.55s ease;
+  pointer-events: none;
+}
+.md-typeset .ml-home .mlh-case-link:hover::before { left: 125%; }
+.md-typeset .ml-home .mlh-case-link:hover {
+  color: var(--mlh-cyan-bright);
+  border-color: rgba(110, 231, 255, 0.7);
+  background: rgba(34, 211, 238, 0.07);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.14);
 }
 .md-typeset .ml-home .mlh-case-link::after {
   content: " →"; display: inline-block;
@@ -777,6 +807,9 @@
 .mlh-hscroll.is-on .mlh-hscroll-sticky {
   overflow: hidden;
   padding: 0.6rem 0 2.4rem;
+  /* immersive edge fade — cards materialize into / dissolve out of the frame */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
 }
 .mlh-hscroll.is-on .mlh-hscroll-track {
   display: flex;
@@ -788,6 +821,7 @@
   padding: 0 2vw;
   cursor: grab;
   user-select: none;
+  touch-action: pan-y; /* horizontal drags are ours, vertical scroll stays native */
   will-change: transform;
 }
 .mlh-hscroll.is-on .mlh-hscroll-track:active { cursor: grabbing; }
@@ -855,41 +889,16 @@
   .mlh-hscroll.is-on .mlh-case:hover { transform: none; border-color: rgba(34,211,238,0.35); }
 }
 @media (max-width: 900px) {
-  .mlh-hscroll,
-  .mlh-hscroll.is-on .mlh-hscroll-sticky {
-    height: auto;
-    display: block;
-    overflow: visible;
-  }
-  /* mobile: native swipeable carousel instead of a vertical stack —
-     same cases, horizontal scroll-snap, no JS needed */
-  .mlh-hscroll-track,
-  .mlh-hscroll.is-on .mlh-hscroll-track {
-    display: flex;
-    gap: 0.9rem;
-    max-width: none;
-    margin: 0;
-    padding: 0 1rem 0.8rem;
-    transform: none !important;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .mlh-hscroll-track::-webkit-scrollbar { display: none; }
-  .mlh-case,
+  /* the same JS marquee runs on mobile — auto-drift + touch drag +
+     tap-to-center; cards go near-full-width and single-column */
+  .mlh-hscroll.is-on .mlh-hscroll-sticky { padding: 0.4rem 0 1.8rem; }
   .mlh-hscroll.is-on .mlh-case {
-    flex: 0 0 86vw;
     width: 86vw;
-    min-height: 0;
     padding: 1.4rem 1.1rem;
-    scroll-snap-align: center;
-    border: 1px solid rgba(148, 163, 184, 0.12);
-    border-radius: 12px;
-    background: rgba(11, 17, 32, 0.55);
-    transform: none !important;
-    opacity: 1 !important;
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
   }
+  .mlh-hscroll.is-on .mlh-case::before { font-size: 6rem; right: 0.8rem; }
 }
 
 /* ============ MOTION ============ */

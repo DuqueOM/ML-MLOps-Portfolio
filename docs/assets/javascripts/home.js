@@ -148,7 +148,7 @@
         return "<div><dt>" + metric[0] + "</dt><dd>" + metric[1] + "</dd></div>";
       }).join("");
       var links = item.links.map(function (link) {
-        return '<a class="mlh-case-link" href="' + link[1] + '">' + link[0] + "</a>";
+        return '<a class="mlh-case-link" data-magnetic href="' + link[1] + '">' + link[0] + "</a>";
       }).join("");
       return '<article class="mlh-case" tabindex="-1">' +
         '<div class="mlh-case-meta"><p class="mlh-case-tag mlh-tag-cyan">' + item.tag + '</p><dl class="mlh-case-metrics">' + metrics + '</dl></div>' +
@@ -212,7 +212,7 @@
      prefers-reduced-motion there is no autonomous drift — the rail
      stays static and draggable. Mobile (≤900px) keeps its native
      swipe carousel, pure CSS. */
-  if (hs && window.matchMedia("(min-width: 901px)").matches) {
+  if (hs) {
     hsActivate(hs);
     var hsTrack = hs.querySelector(".mlh-hscroll-track");
     var hsSticky = hs.querySelector(".mlh-hscroll-sticky");
@@ -223,9 +223,9 @@
       p.classList.add("is-in");
       p.removeAttribute("data-reveal");
     });
-    var hsOffset = 0, hsHalf = 0;
-    var hsHold = false, hsVisible = true, hsDragX = null;
-    var HS_DRIFT = reduced ? 0 : 0.5; /* px per frame ≈ 30px/s */
+    var hsOffset = 0, hsHalf = 0, hsGoal = null;
+    var hsVel = null, hsVisible = true, hsDragX = null, hsDragged = 0;
+    var HS_MAX = reduced ? 0 : 0.5; /* px/frame ≈ 30px/s — also the edge-drive cap */
     function hsMeasure() { hsHalf = hsTrack.scrollWidth / 2; }
     window.addEventListener("resize", hsMeasure);
     window.addEventListener("load", hsMeasure);
@@ -236,24 +236,66 @@
         hsVisible = entries[0].isIntersecting;
       }, { rootMargin: "10% 0px" }).observe(hs);
     }
-    hs.addEventListener("mouseenter", function () { hsHold = true; });
-    hs.addEventListener("mouseleave", function () { hsHold = false; });
 
-    /* drag to scrub (mouse); links still click if the pointer didn't move */
+    /* cursor-directed drive (fine pointers): the pointer's distance from
+       the section center sets direction AND speed — still in the middle
+       holds the rail, edges run it at full auto speed either way */
+    if (finePointer) {
+      hs.addEventListener("pointermove", function (e) {
+        if (e.pointerType !== "mouse") return;
+        var r = hs.getBoundingClientRect();
+        var nx = ((e.clientX - r.left) / (r.width || 1)) * 2 - 1;
+        var mag = Math.max(0, Math.abs(nx) - 0.16) / 0.84;
+        hsVel = (nx < 0 ? -1 : 1) * mag * mag * HS_MAX;
+      });
+      hs.addEventListener("mouseleave", function () { hsVel = null; });
+    }
+
+    /* drag to scrub — mouse and touch (track is touch-action: pan-y, so
+       vertical page scroll still works on phones) */
     hsTrack.addEventListener("pointerdown", function (e) {
-      if (e.pointerType === "mouse") hsDragX = e.clientX;
+      hsDragX = e.clientX;
+      hsDragged = 0;
+      hsGoal = null;
     });
     window.addEventListener("pointermove", function (e) {
       if (hsDragX === null) return;
-      hsOffset -= (e.clientX - hsDragX);
+      var dx = e.clientX - hsDragX;
+      hsOffset -= dx;
+      hsDragged += Math.abs(dx);
       hsDragX = e.clientX;
-    });
+    }, { passive: true });
     window.addEventListener("pointerup", function () { hsDragX = null; });
+    /* a real drag must not fire the click actions underneath */
+    hsTrack.addEventListener("click", function (e) {
+      if (hsDragged > 8) {
+        hsDragged = 0;
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      /* click on a card (not on its links) glides it to center */
+      if (e.target.closest("a, button")) return;
+      var card = e.target.closest(".mlh-case");
+      if (!card || hsHalf <= 0) return;
+      var target = card.offsetLeft + card.offsetWidth / 2 - hsSticky.clientWidth / 2;
+      var delta = ((target - hsOffset) % hsHalf + hsHalf) % hsHalf;
+      if (delta > hsHalf / 2) delta -= hsHalf;
+      hsGoal = hsOffset + delta;
+    }, true);
 
     (function hsLoop() {
       requestAnimationFrame(hsLoop);
       if (document.hidden || !hsVisible || hsHalf <= 0) return;
-      if (!hsHold && hsDragX === null) hsOffset += HS_DRIFT;
+      if (hsDragX === null) {
+        if (hsGoal !== null) {
+          var d = hsGoal - hsOffset;
+          if (Math.abs(d) < 0.5) { hsOffset = hsGoal; hsGoal = null; }
+          else hsOffset += d * 0.09;
+        } else {
+          hsOffset += (hsVel === null ? HS_MAX : hsVel);
+        }
+      }
       hsOffset = ((hsOffset % hsHalf) + hsHalf) % hsHalf;
       hsTrack.style.transform = "translate3d(" + (-hsOffset).toFixed(1) + "px,0,0)";
       hsDepth(hsTrack, hsSticky, hsBase, hsOffset, hsHalf);
