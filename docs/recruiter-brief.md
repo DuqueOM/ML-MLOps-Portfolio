@@ -8,7 +8,7 @@
 
 # ML engineer who builds systems that survive production
 
-Junior ML Engineer · production-leaning Data Scientist · MLOps —
+ML Engineer · production-leaning Data Scientist · MLOps —
 Mexico City hybrid or remote (LATAM / US / EU). Available in 2 weeks.
 The evidence is one click away.
 </div>
@@ -18,9 +18,17 @@ The evidence is one click away.
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Target level</small>
-<h3>Entry-level / junior MLOps & Production ML</h3>
-<p>I am looking for a role with room to
-learn, contribute and grow into stronger production ML ownership.</p>
+<table>
+<thead>
+<tr><th>Dimension</th><th>State</th></tr>
+</thead>
+<tbody>
+<tr><td>Individual execution (code, tests, CI/CD, IaC)</td><td>Verifiable, above typical junior level</td></tr>
+<tr><td>Formal ML/MLOps team experience</td><td>None — first search in the area</td></tr>
+<tr><td>Operational criteria under real consequences</td><td>14 years, transferable from operations</td></tr>
+<tr><td>Target role range</td><td>MLOps/Platform Engineer I–II, or roles without ML in the title with focus on infrastructure</td></tr>
+</tbody>
+</table>
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -51,21 +59,21 @@ infrastructure code.</p>
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Primary fit</small>
-<h3>Junior ML Engineer</h3>
+<h3>ML Engineer</h3>
 <p>Applied ML roles where model work needs APIs, testing, deployment and a
 clear handoff into an engineering workflow.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Strong second</small>
-<h3>Junior Data Scientist (production-leaning)</h3>
+<h3>Data Scientist (production-leaning)</h3>
 <p>DS roles where the model is not the end state — serving, monitoring and
 operability matter alongside the modeling work.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Adjacent path</small>
-<h3>Junior Data Engineer (ML workflows)</h3>
+<h3>Data Engineer (ML workflows)</h3>
 <p>Pipeline, batch and data-path roles connected to production ML systems —
 PySpark, validation, feature engineering, cloud storage.</p>
 </div>

@@ -2,7 +2,7 @@
 
 # 🚀 ML/MLOps Portfolio — Production ML Systems
 
-**Human-first portfolio for entry-level MLOps / Production ML roles · 3 ML services · GKE + EKS evidence · 18 ADRs · 395+ tests**
+**Human-first portfolio for MLOps / Production ML roles · 3 ML services · GKE + EKS evidence · 18 ADRs · 395+ tests**
 
 [![CI](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
 [![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)
@@ -76,7 +76,7 @@ The MLOps patterns in this portfolio are available as a reusable, opinionated te
 **[ML-MLOps-Production-Template](https://github.com/DuqueOM/ML-MLOps-Production-Template)** · [related-projects.md](docs/related-projects.md)
 
 **v1.12.0 highlights** — *audit Round-3 close + pre-commit hardened as mandatory first filter*:
-- **32 encoded anti-patterns** (D-01 → D-32) — runtime, data, EDA, security, closed-loop, lifecycle (warm-up, PDB, PSS), delivery (env gates, API contracts, SBOM, digest pin), placeholder hygiene (D-32: kebab-vs-snake path bug)
+- **36 encoded anti-patterns** (D-01 → D-36) — runtime, data, EDA, security, closed-loop, lifecycle (warm-up, PDB, PSS), delivery (env gates, API contracts, SBOM, digest pin), placeholder hygiene (D-32: kebab-vs-snake path bug)
 - **Pre-commit as mandatory first filter** — 14 hooks (black, isort, flake8, mypy, bandit, gitleaks, trailing-whitespace, EOF, YAML, merge-conflict, large-files, validate-agentic, ci-autofix-policy-contract, scaffold-smoke); `default_install_hook_types: [pre-commit, pre-push]` so a single `pre-commit install` covers both stages; `make verify-hooks` audits any time; `scripts/dev-setup.sh` bootstraps idempotently and verifies hooks actually landed in `.git/hooks/`
 - **Closed-loop verification workflow** — `golden-path-extended.yml` re-deploys + posts 100 valid + 5 invalid `/predict` requests + asserts the prediction-log counter increments; new `test_closed_loop_workflow_contract.py` parses both schema and workflow and fails LOUD if they drift (R3 HIGH-1 fix)
 - **GCP ↔ AWS Terraform parity** (v1.11.0) — secrets / logging / KMS at the live layer + bootstrap split + 14 parity contract tests; cluster defaults (private endpoint opt-in, system/workload pool split with taint, deny-default NetworkPolicy)
@@ -98,7 +98,7 @@ The MLOps patterns in this portfolio are available as a reusable, opinionated te
 - **Governed delivery** — dev → staging → prod chain with GitHub Environment Protection, 2 reviewers + 15min soak + tag-only for prod (ADR-011); reusable `deploy-common.yml` single source of truth
 - **DORA metrics** — exporter script aggregates deployment_frequency, lead_time_for_changes, change_failure_rate, mttr from GitHub API + `ops/audit.jsonl`
 - **Incident playbooks** — `/rollback` (STOP-class 7-step), `/secret-breach`, `/incident`, `/drift-check`, `/performance-review` slash commands
-- **19 ADRs** — each records alternatives rejected AND measurable revisit triggers; ADR-015 publishes the productization roadmap (3 phases / 12 PRs); ADR-016 codifies the external-audit R2 remediation backlog; ADR-018/019 ratify the new agent capabilities at policy-only Phase 0
+- **38 ADRs** — each records alternatives rejected AND measurable revisit triggers; ADR-015 publishes the productization roadmap (3 phases / 12 PRs); ADR-016 codifies the external-audit R2 remediation backlog; ADR-018/019 ratify the new agent capabilities at policy-only Phase 0
 
 ---
 

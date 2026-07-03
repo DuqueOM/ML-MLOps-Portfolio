@@ -9,7 +9,7 @@
 # From 81% API errors to a reliable inference path
 
 This is the strongest debugging story in the portfolio because it shows the
-habit I want to bring into an entry-level / junior MLOps team: measure the failure, isolate the
+habit I want to bring into an MLOps team: measure the failure, isolate the
 cause, make the smallest meaningful fix, and turn the lesson into reusable
 engineering guidance.
 

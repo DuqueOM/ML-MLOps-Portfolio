@@ -8,7 +8,7 @@
 
 # Let's talk.
 
-If you are hiring for a junior ML, MLOps or production-leaning data role —
+If you are hiring for an ML, MLOps or production-leaning data role —
 or you just want to discuss one of the systems on this site — the fastest
 way to reach me is email. I reply within 24 hours.
 
@@ -18,7 +18,7 @@ way to reach me is email. I reply within 24 hours.
 <form class="pf-contact-form" data-contact-composer>
   <input type="text" name="name" placeholder="Your name" autocomplete="name">
   <input type="email" name="from" placeholder="Your email" autocomplete="email">
-  <input type="text" name="subject" placeholder="Subject — e.g. Junior MLOps role at …">
+  <input type="text" name="subject" placeholder="Subject — e.g. MLOps role at …">
   <textarea name="message" placeholder="Your message" required></textarea>
   <div class="portfolio-actions" style="margin:0;">
     <button type="submit" class="portfolio-button portfolio-button--primary">Compose email draft</button>

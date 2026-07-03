@@ -18,7 +18,7 @@ deadlines and process failures. That work taught me to value systems that are
 clear, measurable and usable by the next person responsible for them.
 
 That is why this portfolio is built around production habits rather than only
-model scores. I am early-career in formal ML employment, but I am not new to
+model scores. I am seeking my first formal ML/MLOps role, but I am not new to
 ownership, trade-offs, documentation or operating under pressure.
 
 </div>
@@ -31,7 +31,7 @@ ownership, trade-offs, documentation or operating under pressure.
 <div class="portfolio-callout" markdown="1">
 <span class="portfolio-eyebrow">How to read my seniority</span>
 
-Entry-level / junior in formal ML/MLOps employment. Experienced in ownership, pressure,
+First formal ML/MLOps role — experienced in ownership, pressure,
 cost-awareness and making systems easier for other people to operate.
 </div>
 
@@ -238,6 +238,13 @@ multi-cloud evidence already in the portfolio (GKE + EKS, Terraform,
 Workload Identity / IRSA).</p>
 </div>
 </div>
+
+## AI Transparency
+
+This portfolio was written with AI-assisted tooling for drafting and documentation.
+Every architectural decision, trade-off, and debugging conclusion is my own — the
+reasoning trail is in the ADRs and incident writeups, not in the tool that helped
+type them.
 
 ## Links
 
