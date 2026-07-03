@@ -2359,7 +2359,7 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
    review rounds (was cramped, then a touch too airy) */
 .md-typeset .portfolio-availability { margin: 1.3rem 0 2.2rem; }
 .md-typeset .portfolio-availability-row {
-  padding: 0.7rem 0;
+  padding: 0.35rem 0;
   gap: 1.2rem;
 }
 .md-typeset .portfolio-availability-row strong { line-height: 1.45; }

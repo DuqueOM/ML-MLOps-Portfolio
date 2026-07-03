@@ -57,19 +57,19 @@ way to reach me is email. I reply within 24 hours.
 ## Availability
 
 <div class="portfolio-availability" markdown="1">
-<div class="portfolio-availability-row" markdown="1">
+<div class="portfolio-availability-row">
 <span class="portfolio-availability-label">Available to start</span>
 <strong>In 2 weeks</strong>
 </div>
-<div class="portfolio-availability-row" markdown="1">
+<div class="portfolio-availability-row">
 <span class="portfolio-availability-label">Work modes</span>
 <strong>CDMX hybrid · MX remote · LATAM remote for USA/EU companies</strong>
 </div>
-<div class="portfolio-availability-row" markdown="1">
+<div class="portfolio-availability-row">
 <span class="portfolio-availability-label">Languages</span>
 <strong>Spanish (native) · English (professional)</strong>
 </div>
-<div class="portfolio-availability-row" markdown="1">
+<div class="portfolio-availability-row">
 <span class="portfolio-availability-label">Time zone</span>
 <strong>America/Mexico_City (CST) — comfortable with US/EU overlap</strong>
 </div>
