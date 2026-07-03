@@ -890,8 +890,14 @@
 }
 @media (max-width: 900px) {
   /* the same JS marquee runs on mobile — auto-drift + touch drag +
-     tap-to-center; cards go near-full-width and single-column */
-  .mlh-hscroll.is-on .mlh-hscroll-sticky { padding: 0.4rem 0 1.8rem; }
+     tap-to-center; cards go near-full-width and single-column. The
+     edge mask is dropped here: some mobile GPUs rendered it as a hard
+     crop on the card bottoms. */
+  .mlh-hscroll.is-on .mlh-hscroll-sticky {
+    padding: 0.4rem 0 2.6rem;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
   .mlh-hscroll.is-on .mlh-case {
     width: 86vw;
     padding: 1.4rem 1.1rem;

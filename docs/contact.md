@@ -26,7 +26,7 @@ way to reach me is email. I reply within 24 hours.
   <p class="pf-contact-note">▸ opens a pre-filled draft in your own mail client — nothing is sent from this page.</p>
 </form>
 
-<div class="pf-contact-cards" markdown="1">
+<div class="pf-contact-cards">
 <a class="pf-contact-card" href="mailto:DuqueOrtegaMutis@gmail.com">
 <span class="pf-cc-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg></span>
 <span><small>Email</small><b>DuqueOrtegaMutis@gmail.com</b></span>

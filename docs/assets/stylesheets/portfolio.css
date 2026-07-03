@@ -2180,7 +2180,12 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
   flex-direction: column;
   gap: 1rem;
   margin: 0;
+  height: 100%;
 }
+/* the message box absorbs any height difference, so form and channel
+   cards start AND end on the same lines */
+.md-typeset .pf-contact-form textarea { flex: 1 1 auto; }
+.md-typeset .pf-contact-grid > * { margin-top: 0 !important; }
 .md-typeset .pf-contact-form input,
 .md-typeset .pf-contact-form textarea {
   width: 100%;
@@ -2193,7 +2198,7 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
   padding: 0.85rem 1rem;
   transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
-.md-typeset .pf-contact-form textarea { min-height: 9rem; resize: vertical; }
+.md-typeset .pf-contact-form textarea { min-height: 12rem; resize: vertical; }
 .md-typeset .pf-contact-form input::placeholder,
 .md-typeset .pf-contact-form textarea::placeholder { color: var(--portfolio-muted); opacity: 0.75; }
 .md-typeset .pf-contact-form input:focus,
@@ -2580,6 +2585,71 @@ html, body { overflow-x: clip; }
 .md-nav--primary .md-nav__link { transition: color 0.2s ease, padding-left 0.25s ease; }
 .md-nav--primary .md-nav__link:hover { padding-left: 1.6rem; }
 
+/* action rows: markdown wraps the buttons in a <p>, which turned the
+   flex container into "one big flex item" — buttons then crowded with
+   no vertical gap and wrapped at arbitrary points. Dissolving the <p>
+   makes each button a real flex item with true gaps. */
+.md-typeset .portfolio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 0.7rem;
+  align-items: center;
+}
+.md-typeset .portfolio-actions > p { display: contents; }
+.md-typeset .portfolio-actions .portfolio-button {
+  margin: 0;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  /* phones: a too-long label may wrap inside its own button rather
+     than overflow the viewport */
+  .md-typeset .portfolio-actions .portfolio-button { white-space: normal; }
+}
+
+/* marquee prev/next: translucent glass arrows, shared by home + about */
+.pf-marquee-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(11, 17, 32, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #A3B2C7;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+.pf-marquee-nav:hover {
+  color: #6EE7FF;
+  border-color: rgba(34, 211, 238, 0.55);
+  background: rgba(11, 17, 32, 0.75);
+  transform: translateY(-50%) scale(1.08);
+}
+.pf-marquee-nav svg { width: 1rem; height: 1rem; display: block; }
+.pf-marquee-nav--prev { left: 0.6rem; }
+.pf-marquee-nav--next { right: 0.6rem; }
+
+/* responsive right-edge guard: nothing may exceed its container, and
+   grids must be allowed to shrink below their content min-width */
+.md-typeset .portfolio-page img,
+.md-typeset .portfolio-page svg,
+.md-typeset .portfolio-page video { max-width: 100%; height: auto; }
+.md-typeset .portfolio-split > *,
+.md-typeset .pf-contact-grid > *,
+.md-typeset .portfolio-card-grid > *,
+.md-typeset .portfolio-stat-strip > * { min-width: 0; }
+.md-typeset .portfolio-availability-row { grid-template-columns: minmax(7rem, 12rem) minmax(0, 1fr); }
+@media (max-width: 760px) {
+  .md-typeset .portfolio-availability-row { grid-template-columns: 1fr; gap: 0.15rem; }
+}
+
 /* generic infinite marquee (site.js pfMarquee) — About toolbox et al. */
 .pf-marquee-clip {
   overflow: hidden;
@@ -2606,12 +2676,17 @@ html, body { overflow-x: clip; }
 }
 @media (max-width: 700px) {
   .md-typeset .pf-marquee-track > * { width: 78vw; }
+  .pf-marquee-clip {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
 }
 
 /* headerlink "¶": Material was leaving it visible on many headings
    (reveal/transition interplay) — force strict hover/focus-only */
 .md-typeset .headerlink {
   opacity: 0 !important;
+  visibility: hidden !important;
   transition: opacity 0.2s ease;
 }
 .md-typeset h1:hover > .headerlink,
@@ -2622,6 +2697,7 @@ html, body { overflow-x: clip; }
 .md-typeset h6:hover > .headerlink,
 .md-typeset .headerlink:focus-visible {
   opacity: 0.7 !important;
+  visibility: visible !important;
 }
 
 /* scrollbar: match the instrument-panel language (WebKit + Firefox) */

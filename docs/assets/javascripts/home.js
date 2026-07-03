@@ -266,6 +266,21 @@
       hsDragX = e.clientX;
     }, { passive: true });
     window.addEventListener("pointerup", function () { hsDragX = null; });
+    /* touch scrolling fires pointercancel, never pointerup — without
+       this the drag stayed "stuck" and the marquee froze on mobile */
+    window.addEventListener("pointercancel", function () { hsDragX = null; });
+
+    /* wrapped position used for rendering + click math. hsOffset itself
+       stays unbounded: wrapping it every frame while easing toward an
+       out-of-range goal caused the "spins at full speed forever" bug. */
+    function hsWrapped() { return ((hsOffset % hsHalf) + hsHalf) % hsHalf; }
+
+    function hsGlideTo(target) {
+      var delta = ((target - hsWrapped()) % hsHalf + hsHalf) % hsHalf;
+      if (delta > hsHalf / 2) delta -= hsHalf;
+      hsGoal = hsOffset + delta;
+    }
+
     /* a real drag must not fire the click actions underneath */
     hsTrack.addEventListener("click", function (e) {
       if (hsDragged > 8) {
@@ -278,11 +293,25 @@
       if (e.target.closest("a, button")) return;
       var card = e.target.closest(".mlh-case");
       if (!card || hsHalf <= 0) return;
-      var target = card.offsetLeft + card.offsetWidth / 2 - hsSticky.clientWidth / 2;
-      var delta = ((target - hsOffset) % hsHalf + hsHalf) % hsHalf;
-      if (delta > hsHalf / 2) delta -= hsHalf;
-      hsGoal = hsOffset + delta;
+      hsGlideTo(card.offsetLeft + card.offsetWidth / 2 - hsSticky.clientWidth / 2);
     }, true);
+
+    /* translucent prev/next arrows — one card step per press */
+    function hsStep(dir) {
+      var card = hsTrack.querySelector(".mlh-case");
+      if (!card || hsHalf <= 0) return;
+      var gap = parseFloat(getComputedStyle(hsTrack).columnGap) || 0;
+      hsGoal = (hsGoal === null ? hsOffset : hsGoal) + dir * (card.offsetWidth + gap);
+    }
+    [["prev", -1, "M15 18l-6-6 6-6"], ["next", 1, "M9 6l6 6-6 6"]].forEach(function (btn) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "pf-marquee-nav pf-marquee-nav--" + btn[0];
+      b.setAttribute("aria-label", btn[0] === "prev" ? "Previous case" : "Next case");
+      b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="' + btn[2] + '"/></svg>';
+      b.addEventListener("click", function (e) { e.stopPropagation(); hsStep(btn[1]); });
+      hsSticky.appendChild(b);
+    });
 
     (function hsLoop() {
       requestAnimationFrame(hsLoop);
@@ -296,9 +325,8 @@
           hsOffset += (hsVel === null ? HS_MAX : hsVel);
         }
       }
-      hsOffset = ((hsOffset % hsHalf) + hsHalf) % hsHalf;
-      hsTrack.style.transform = "translate3d(" + (-hsOffset).toFixed(1) + "px,0,0)";
-      hsDepth(hsTrack, hsSticky, hsBase, hsOffset, hsHalf);
+      hsTrack.style.transform = "translate3d(" + (-hsWrapped()).toFixed(1) + "px,0,0)";
+      hsDepth(hsTrack, hsSticky, hsBase, hsWrapped(), hsHalf);
     })();
   }
 

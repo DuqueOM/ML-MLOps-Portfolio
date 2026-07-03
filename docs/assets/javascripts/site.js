@@ -92,6 +92,12 @@
       dragX = e.clientX;
     }, { passive: true });
     window.addEventListener("pointerup", function () { dragX = null; });
+    /* touch scrolling fires pointercancel, never pointerup */
+    window.addEventListener("pointercancel", function () { dragX = null; });
+
+    /* offset stays unbounded; only the rendered value wraps — wrapping
+       the live value while easing toward a goal caused runaway spins */
+    function wrapped() { return ((offset % half) + half) % half; }
 
     track.addEventListener("click", function (e) {
       if (dragged > 8) {
@@ -104,10 +110,28 @@
       var card = e.target.closest(".pf-marquee-track > *");
       if (!card || half <= 0) return;
       var target = card.offsetLeft + card.offsetWidth / 2 - clip.clientWidth / 2;
-      var delta = ((target - offset) % half + half) % half;
+      var delta = ((target - wrapped()) % half + half) % half;
       if (delta > half / 2) delta -= half;
       goal = offset + delta;
     }, true);
+
+    /* translucent prev/next arrows — one card step per press */
+    clip.style.position = "relative";
+    [["prev", -1, "M15 18l-6-6 6-6"], ["next", 1, "M9 6l6 6-6 6"]].forEach(function (btn) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "pf-marquee-nav pf-marquee-nav--" + btn[0];
+      b.setAttribute("aria-label", btn[0] === "prev" ? "Previous" : "Next");
+      b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="' + btn[2] + '"/></svg>';
+      b.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var card = track.children[0];
+        if (!card || half <= 0) return;
+        var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+        goal = (goal === null ? offset : goal) + btn[1] * (card.offsetWidth + gap);
+      });
+      clip.appendChild(b);
+    });
 
     (function loop() {
       requestAnimationFrame(loop);
@@ -121,8 +145,7 @@
           offset += (vel === null ? MAX : vel);
         }
       }
-      offset = ((offset % half) + half) % half;
-      track.style.transform = "translate3d(" + (-offset).toFixed(1) + "px,0,0)";
+      track.style.transform = "translate3d(" + (-wrapped()).toFixed(1) + "px,0,0)";
     })();
   }
 
