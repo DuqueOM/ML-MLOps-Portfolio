@@ -296,12 +296,18 @@
       hsGlideTo(card.offsetLeft + card.offsetWidth / 2 - hsSticky.clientWidth / 2);
     }, true);
 
-    /* translucent prev/next arrows — one card step per press */
+    /* translucent prev/next arrows — center the NEXT card, snapping any
+       mid-drift position to the card grid first so one press always
+       lands a card centered (not another half-step position) */
     function hsStep(dir) {
       var card = hsTrack.querySelector(".mlh-case");
       if (!card || hsHalf <= 0) return;
       var gap = parseFloat(getComputedStyle(hsTrack).columnGap) || 0;
-      hsGoal = (hsGoal === null ? hsOffset : hsGoal) + dir * (card.offsetWidth + gap);
+      var step = card.offsetWidth + gap;
+      var base = card.offsetLeft + card.offsetWidth / 2 - hsSticky.clientWidth / 2;
+      var from = hsGoal === null ? hsOffset : hsGoal;
+      var n = Math.round((from - base) / step);
+      hsGoal = base + (n + dir) * step;
     }
     [["prev", -1, "M15 18l-6-6 6-6"], ["next", 1, "M9 6l6 6-6 6"]].forEach(function (btn) {
       var b = document.createElement("button");

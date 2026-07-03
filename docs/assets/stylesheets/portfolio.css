@@ -726,21 +726,40 @@ body:has(.portfolio-page) .md-typeset h3 {
     max-width: 100%;
   }
 
+  /* ONE symmetric gutter, applied once on the content box; every child
+     is width:100% of it, so nothing computes its own 100vw width and
+     nothing can touch the right edge. */
   body:has(.portfolio-page) .md-content,
   body:has(.portfolio-page) .md-content__inner {
     min-width: 0;
     width: 100%;
+    box-sizing: border-box;
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
+    margin: 0;
   }
 
   .md-typeset .portfolio-page {
     overflow-x: clip;
-    width: min(100%, calc(100vw - 1.5rem));
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+  /* neutralize any child that still carries a viewport-width calc */
+  .md-typeset .portfolio-page > *,
+  .md-typeset .portfolio-page .portfolio-hero,
+  .md-typeset .portfolio-page .pf-contact-grid,
+  .md-typeset .portfolio-page .portfolio-availability,
+  .md-typeset .portfolio-page .portfolio-callout {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .md-typeset .portfolio-hero {
-    width: 100%;
-    max-width: calc(100vw - 1.5rem);
-    padding: 1.2rem 1rem;
+    padding: 1.2rem 0;
   }
 
   .md-typeset .portfolio-hero--profile {

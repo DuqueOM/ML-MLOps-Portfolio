@@ -128,7 +128,11 @@
         var card = track.children[0];
         if (!card || half <= 0) return;
         var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-        goal = (goal === null ? offset : goal) + btn[1] * (card.offsetWidth + gap);
+        var step = card.offsetWidth + gap;
+        var base = card.offsetLeft + card.offsetWidth / 2 - clip.clientWidth / 2;
+        var from = goal === null ? offset : goal;
+        var n = Math.round((from - base) / step);
+        goal = base + (n + btn[1]) * step;
       });
       clip.appendChild(b);
     });
