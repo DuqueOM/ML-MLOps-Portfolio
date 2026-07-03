@@ -703,6 +703,9 @@
 .mlh-hscroll {
   position: relative;
 }
+/* tighten the seam between the intro copy and the pinned rail */
+.mlh-work { padding-bottom: 0.8rem; }
+.mlh-work .mlh-section-head { margin-bottom: 0.6rem; }
 .mlh-hscroll > .mlh-neural--rail {
   position: absolute;
   inset: 0;
@@ -792,7 +795,9 @@
   position: relative;
   overflow: hidden;
   width: 86vw;
-  min-height: min(72svh, 720px);
+  /* taller feature card = symmetric trim of the empty bands above and
+     below inside the pinned 100svh viewport */
+  min-height: min(84svh, 860px);
   align-content: center;
   scroll-snap-align: center;
   border: 1px solid rgba(148, 163, 184, 0.1);

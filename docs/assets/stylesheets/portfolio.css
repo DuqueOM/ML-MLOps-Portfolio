@@ -2341,20 +2341,21 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
   .pf-glow::before, .pf-glow::after { animation: none; }
 }
 
-/* breathing room: availability ledger + callout were cramped */
-.md-typeset .portfolio-availability { margin: 1.6rem 0 2.8rem; }
+/* breathing room: availability ledger + callout — tuned after two
+   review rounds (was cramped, then a touch too airy) */
+.md-typeset .portfolio-availability { margin: 1.3rem 0 2.2rem; }
 .md-typeset .portfolio-availability-row {
-  padding: 1.05rem 0;
-  gap: 1.5rem;
+  padding: 0.7rem 0;
+  gap: 1.2rem;
 }
-.md-typeset .portfolio-availability-row strong { line-height: 1.55; }
+.md-typeset .portfolio-availability-row strong { line-height: 1.45; }
 .md-typeset .portfolio-callout {
-  margin-top: 2.8rem;
-  padding-top: 1.4rem;
-  padding-bottom: 1.4rem;
-  line-height: 1.7;
+  margin-top: 2rem;
+  padding-top: 1.1rem;
+  padding-bottom: 1.1rem;
+  line-height: 1.58;
 }
-.md-typeset .portfolio-callout strong { display: block; margin-bottom: 0.5rem; }
+.md-typeset .portfolio-callout strong { display: block; margin-bottom: 0.35rem; }
 
 /* contrast audit: body copy sat too close to the background now that
    figures animate behind it — lift secondary text one step and give
@@ -2564,6 +2565,22 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
 /* drawer: slide-reveal items with a left accent on hover */
 .md-nav--primary .md-nav__link { transition: color 0.2s ease, padding-left 0.25s ease; }
 .md-nav--primary .md-nav__link:hover { padding-left: 1.6rem; }
+
+/* headerlink "¶": Material was leaving it visible on many headings
+   (reveal/transition interplay) — force strict hover/focus-only */
+.md-typeset .headerlink {
+  opacity: 0 !important;
+  transition: opacity 0.2s ease;
+}
+.md-typeset h1:hover > .headerlink,
+.md-typeset h2:hover > .headerlink,
+.md-typeset h3:hover > .headerlink,
+.md-typeset h4:hover > .headerlink,
+.md-typeset h5:hover > .headerlink,
+.md-typeset h6:hover > .headerlink,
+.md-typeset .headerlink:focus-visible {
+  opacity: 0.7 !important;
+}
 
 /* scrollbar: match the instrument-panel language (WebKit + Firefox) */
 html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin; }
