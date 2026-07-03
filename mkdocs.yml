@@ -11,6 +11,7 @@ theme:
   custom_dir: overrides
   language: en
   features:
+    - header.autohide
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
@@ -35,12 +36,12 @@ theme:
 # The ?v= query busts GitHub Pages / browser caches when assets change.
 # Bump the date suffix on every visual release.
 extra_css:
-  - assets/stylesheets/portfolio.css?v=20260702f
+  - assets/stylesheets/portfolio.css?v=20260703a
 
 extra_javascript:
-  - assets/javascripts/neural-field.js?v=20260702f
-  - assets/javascripts/neural-scene.js?v=20260702f
-  - assets/javascripts/portfolio.js?v=20260702f
+  - assets/javascripts/neural-field.js?v=20260703a
+  - assets/javascripts/neural-scene.js?v=20260703a
+  - assets/javascripts/portfolio.js?v=20260703a
 
 plugins:
   - search

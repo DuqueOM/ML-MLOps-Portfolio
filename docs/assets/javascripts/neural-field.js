@@ -64,9 +64,12 @@
     editorial: { clusters: 3, perCluster: [3, 6], layered: true, ordered: false,
                  pulses: "simple", pulseGap: [8000, 12000], maxAlpha: 0.5,
                  coarseScale: 0.55, evolve: true, reactive: true },
-    ambient: { clusters: 3, perCluster: [3, 5], layered: false, ordered: false,
-               pulses: "none", pulseGap: [0, 0], maxAlpha: 0.22,
-               coarseScale: 0, evolve: false, reactive: false }
+    /* user review: the random background nets should read as alive on
+       every page (guides, ADRs, sub-pages) — clusters breathe, edges
+       evolve and occasional pulses fire, coexisting with the 3D scenes */
+    ambient: { clusters: 4, perCluster: [3, 6], layered: true, ordered: false,
+               pulses: "simple", pulseGap: [9000, 15000], maxAlpha: 0.34,
+               coarseScale: 0.5, evolve: true, reactive: false }
   };
 
   function rand(min, max) { return min + Math.random() * (max - min); }

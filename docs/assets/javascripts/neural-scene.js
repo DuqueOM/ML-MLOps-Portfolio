@@ -24,7 +24,10 @@
   var COARSE = window.matchMedia("(pointer: coarse)").matches;
   var FINE = window.matchMedia("(pointer: fine)").matches;
   var TAU = Math.PI * 2;
-  var DPR = Math.min(window.devicePixelRatio || 1, 2);
+  /* mobile GPUs: 2x buffers + full-rate rendering are the jank source
+     in the first seconds — cap resolution and halve the frame rate */
+  var COARSE_EARLY = window.matchMedia("(pointer: coarse)").matches;
+  var DPR = Math.min(window.devicePixelRatio || 1, COARSE_EARLY ? 1.5 : 2);
 
   var COLORS = {
     cyan: "34,211,238",
@@ -268,6 +271,32 @@
       p.dz = Math.sin(ph) * Math.sin(th) * rr;
     });
 
+    /* adjacency + traveling pulses — information visibly moving through
+       the network: a bright signal walks 2-4 hops along real edges,
+       resolving to green as it arrives (same vocabulary as the field) */
+    var adj = {};
+    edges.forEach(function (e) {
+      (adj[e[0]] = adj[e[0]] || []).push(e[1]);
+      (adj[e[1]] = adj[e[1]] || []).push(e[0]);
+    });
+    var pulses = [];
+    var nextPulseAt = performance.now() + rand(900, 1800);
+
+    function spawnPulse(t) {
+      var keys = Object.keys(adj);
+      if (!keys.length) return;
+      var cur = +keys[(Math.random() * keys.length) | 0];
+      var path = [cur];
+      var hops = 2 + ((Math.random() * 3) | 0);
+      for (var i = 0; i < hops; i++) {
+        var nbs = (adj[cur] || []).filter(function (n) { return path.indexOf(n) < 0; });
+        if (!nbs.length) break;
+        cur = nbs[(Math.random() * nbs.length) | 0];
+        path.push(cur);
+      }
+      if (path.length > 1) pulses.push({ path: path, seg: 0, t0: t });
+    }
+
     /* portfolio pages AND the home hero: promote the canvas to a fixed
        full-viewport layer so the figure travels behind the content
        while reading, dissolving into particles as scroll deepens */
@@ -391,6 +420,41 @@
         ctx.arc(q.sx, q.sy, r, 0, TAU);
         ctx.fill();
       }
+
+      /* traveling signals — suppressed once the figure has dispersed */
+      if (!REDUCED && morph < 0.65) {
+        if (t >= nextPulseAt) {
+          nextPulseAt = t + rand(1300, 2600);
+          spawnPulse(t);
+        }
+        var HOP = 520;
+        pulses = pulses.filter(function (p) { return !p.done; });
+        pulses.forEach(function (p) {
+          var a = pts[p.path[p.seg]], b = pts[p.path[p.seg + 1]];
+          if (!a || !b) { p.done = true; return; }
+          var f = Math.min(1, (t - p.t0) / HOP);
+          var x = a.sx + (b.sx - a.sx) * f;
+          var y = a.sy + (b.sy - a.sy) * f;
+          var nearEnd = p.seg >= p.path.length - 2;
+          var col = COLORS[nearEnd ? "green" : "bright"];
+          var pw = (a.sper + b.sper) / 2;
+          ctx.strokeStyle = "rgba(" + col + "," + (0.45 * fadeE).toFixed(3) + ")";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(a.sx, a.sy);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+          ctx.fillStyle = "rgba(" + col + "," + (0.95 * fadeN).toFixed(3) + ")";
+          ctx.beginPath();
+          ctx.arc(x, y, 2.4 * pw + 0.8, 0, TAU);
+          ctx.fill();
+          if (f >= 1) {
+            p.seg++;
+            p.t0 = t;
+            if (p.seg >= p.path.length - 1) p.done = true;
+          }
+        });
+      }
     }
 
     if (REDUCED) { render(0); return; }
@@ -405,11 +469,17 @@
     }
 
     var raf = null;
+    var frame = 0;
     function tick(t) {
       raf = requestAnimationFrame(tick);
       if (document.hidden || !inView) return;
+      /* coarse pointers render at half rate — steadier first seconds
+         on phone/tablet GPUs, imperceptible for this motion speed */
+      if (COARSE && (frame++ % 2)) return;
       render(t);
     }
+    /* paint one frame synchronously so the figure never pops in late */
+    render(performance.now());
     raf = requestAnimationFrame(tick);
     canvas.__neuralScene = { destroy: function () { if (raf) cancelAnimationFrame(raf); } };
   }

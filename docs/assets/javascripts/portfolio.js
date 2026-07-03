@@ -35,7 +35,8 @@
     var targets = page.querySelectorAll(
       ".portfolio-card, .portfolio-stat, .portfolio-system-node, " +
       ".portfolio-step, .portfolio-status-card, .portfolio-callout, " +
-      ".portfolio-quote-card, .portfolio-faq-item, .portfolio-media"
+      ".portfolio-quote-card, .portfolio-faq-item, .portfolio-media, " +
+      ".pf-timeline li"
     );
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
