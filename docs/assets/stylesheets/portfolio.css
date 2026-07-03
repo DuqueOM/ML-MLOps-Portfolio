@@ -2298,6 +2298,10 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
 .md-typeset .portfolio-hero canvas[data-neural-scene].pf-scene-page {
   position: fixed;
   inset: 0;
+  /* 100lvh (large viewport) — immune to the mobile URL bar collapsing
+     and expanding, which was resizing + visually snapping the figure */
+  height: 100lvh;
+  width: 100vw;
   /* below ALL page content — images, gifs and panels included — while
      staying above the page background (negative z inside .md-container's
      stacking context) */

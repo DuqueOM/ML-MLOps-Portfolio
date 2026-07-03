@@ -171,119 +171,93 @@
     };
   }
 
-  /* progress dots + carousel depth (scale/opacity on neighbor cards) +
-     neural-field parallax — shared by both the GSAP path and the
-     vanilla fallback so the two stay in visual parity. */
+  /* depth + progress readout for the marquee: neighbor cards scale and
+     fade by distance from the section center, ghost numerals drift in
+     counter-parallax, dots + counter track whichever case is centered,
+     and the neural rail canvas gets the loop position as parallax. */
   var hsRailCanvas = hs && hs.querySelector(".mlh-neural--rail");
   var hsProgressDots = hs ? hs.querySelectorAll("[data-hscroll-progress] > span:not(.mlh-hscroll-count)") : [];
   var hsCount = hs && hs.querySelector("[data-hscroll-count]");
-  function hsApplyProgress(track, sticky, progress) {
-    var activeIdx = 0;
+  function hsDepth(track, sticky, baseCount, offset, half) {
+    var stickyRect = sticky.getBoundingClientRect();
+    var centerX = stickyRect.left + stickyRect.width / 2;
+    var halfW = stickyRect.width / 2 || 1;
+    var best = 0, bestD = Infinity;
+    track.querySelectorAll(".mlh-case").forEach(function (panel, i) {
+      var r = panel.getBoundingClientRect();
+      var dSigned = ((r.left + r.width / 2) - centerX) / halfW;
+      var dNorm = Math.min(1, Math.abs(dSigned));
+      if (!reduced) {
+        panel.style.transform = "scale(" + (1 - dNorm * 0.09).toFixed(3) + ")";
+        panel.style.opacity = (1 - dNorm * 0.4).toFixed(3);
+        panel.style.setProperty("--hs-num-x", (dSigned * -70).toFixed(1) + "px");
+      }
+      if (dNorm < bestD) { bestD = dNorm; best = i % baseCount; }
+    });
     if (hsProgressDots.length) {
-      activeIdx = Math.round(progress * (hsProgressDots.length - 1));
       hsProgressDots.forEach(function (dot, i) {
-        dot.classList.toggle("is-active", i === activeIdx);
+        dot.classList.toggle("is-active", i === best);
       });
-      if (hsCount) {
-        hsCount.innerHTML = "<b>0" + (activeIdx + 1) + "</b> / 0" + hsProgressDots.length;
-      }
+      if (hsCount) hsCount.innerHTML = "<b>0" + (best + 1) + "</b> / 0" + baseCount;
     }
-    if (!reduced) {
-      var panels = track.querySelectorAll(".mlh-case");
-      if (panels.length > 1) {
-        var stickyRect = sticky.getBoundingClientRect();
-        var centerX = stickyRect.left + stickyRect.width / 2;
-        var half = stickyRect.width / 2 || 1;
-        panels.forEach(function (panel) {
-          var r = panel.getBoundingClientRect();
-          var dSigned = ((r.left + r.width / 2) - centerX) / half;
-          var dNorm = Math.min(1, Math.abs(dSigned));
-          panel.style.transform = "scale(" + (1 - dNorm * 0.13).toFixed(3) + ")";
-          panel.style.opacity = (1 - dNorm * 0.55).toFixed(3);
-          /* ghost numeral drifts against the travel direction — inner parallax */
-          panel.style.setProperty("--hs-num-x", (dSigned * -90).toFixed(1) + "px");
-        });
-      }
-    }
-    if (hsRailCanvas && window.mlhNeuralSetParallax) {
-      window.mlhNeuralSetParallax(hsRailCanvas, progress * 2 - 1);
+    if (hsRailCanvas && window.mlhNeuralSetParallax && half > 0) {
+      window.mlhNeuralSetParallax(hsRailCanvas, ((offset / half) % 1) * 2 - 1);
     }
   }
 
-  /* The rail runs even under prefers-reduced-motion: the scrub maps 1:1
-     to the user's own scroll gesture (no autonomous motion). Reduced
-     motion only drops the smoothing lag and the auto-snap. */
-  if (hs && window.gsap && window.ScrollTrigger) {
-    window.gsap.registerPlugin(window.ScrollTrigger);
-    var mm = window.gsap.matchMedia();
-    mm.add("(min-width: 901px)", function () {
-      var deactivate = hsActivate(hs);
-      var track = hs.querySelector(".mlh-hscroll-track");
-      var sticky = hs.querySelector(".mlh-hscroll-sticky");
-      var panels = track.querySelectorAll(".mlh-case").length;
-      var getMax = function () {
-        return Math.max(0, track.scrollWidth - sticky.clientWidth);
-      };
-      var tween = window.gsap.to(track, {
-        x: function () { return -getMax(); },
-        ease: "none",
-        scrollTrigger: {
-          trigger: hs,
-          pin: true,
-          scrub: reduced ? true : 1,
-          anticipatePin: 1,
-          start: "top top",
-          end: function () { return "+=" + Math.max(window.innerHeight, getMax()); },
-          invalidateOnRefresh: true,
-          onUpdate: function (self) { hsApplyProgress(track, sticky, self.progress); },
-          snap: (!reduced && panels > 1) ? {
-            snapTo: 1 / (panels - 1),
-            duration: { min: 0.3, max: 0.8 },
-            delay: 0.1,
-            ease: "power2.out"
-          } : false
-        }
-      });
-      /* fonts settle after load — recompute distances */
-      window.addEventListener("load", function () { window.ScrollTrigger.refresh(); });
-      requestAnimationFrame(function () { window.ScrollTrigger.refresh(); });
-      return function () {
-        if (tween.scrollTrigger) tween.scrollTrigger.kill();
-        tween.kill();
-        deactivate();
-        window.gsap.set(track, { clearProps: "all" });
-        track.querySelectorAll(".mlh-case").forEach(function (panel) {
-          panel.style.transform = "";
-          panel.style.opacity = "";
-        });
-      };
-    });
-  } else if (hs && window.matchMedia("(min-width: 901px)").matches) {
-    /* vanilla fallback (CDN blocked): sticky viewport + manual scrub */
-    hs.classList.add("mlh-hscroll--vanilla");
+  /* The rail is a self-drifting infinite marquee — it never pins or
+     hijacks the page scroll (user review round 5). The cases drift
+     sideways on their own; hovering holds them, dragging scrubs them,
+     and everything pauses off-screen or when the tab is hidden. Under
+     prefers-reduced-motion there is no autonomous drift — the rail
+     stays static and draggable. Mobile (≤900px) keeps its native
+     swipe carousel, pure CSS. */
+  if (hs && window.matchMedia("(min-width: 901px)").matches) {
     hsActivate(hs);
-    var hsSticky = hs.querySelector(".mlh-hscroll-sticky");
     var hsTrack = hs.querySelector(".mlh-hscroll-track");
-    var hsMax = 0;
-    function hsUpdate() {
-      var top = hs.getBoundingClientRect().top;
-      var range = hs.offsetHeight - window.innerHeight;
-      var p = range > 0 ? Math.min(1, Math.max(0, -top / range)) : 0;
-      hsTrack.style.transform = "translate3d(" + (-p * hsMax).toFixed(1) + "px,0,0)";
-      hsApplyProgress(hsTrack, hsSticky, p);
-    }
-    function hsMeasure() {
-      hsMax = Math.max(0, hsTrack.scrollWidth - hsSticky.clientWidth);
-      hs.style.height = (window.innerHeight + hsMax) + "px";
-      hsUpdate();
-    }
-    var hsTick = false;
-    window.addEventListener("scroll", function () {
-      if (!hsTick) { requestAnimationFrame(function () { hsUpdate(); hsTick = false; }); hsTick = true; }
-    }, { passive: true });
+    var hsSticky = hs.querySelector(".mlh-hscroll-sticky");
+    var hsBase = hsTrack.querySelectorAll(".mlh-case").length;
+    /* duplicate the set once — the second half makes the loop seamless */
+    hsTrack.innerHTML += hsTrack.innerHTML;
+    hsTrack.querySelectorAll(".mlh-case").forEach(function (p) {
+      p.classList.add("is-in");
+      p.removeAttribute("data-reveal");
+    });
+    var hsOffset = 0, hsHalf = 0;
+    var hsHold = false, hsVisible = true, hsDragX = null;
+    var HS_DRIFT = reduced ? 0 : 0.5; /* px per frame ≈ 30px/s */
+    function hsMeasure() { hsHalf = hsTrack.scrollWidth / 2; }
     window.addEventListener("resize", hsMeasure);
     window.addEventListener("load", hsMeasure);
     hsMeasure();
+
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        hsVisible = entries[0].isIntersecting;
+      }, { rootMargin: "10% 0px" }).observe(hs);
+    }
+    hs.addEventListener("mouseenter", function () { hsHold = true; });
+    hs.addEventListener("mouseleave", function () { hsHold = false; });
+
+    /* drag to scrub (mouse); links still click if the pointer didn't move */
+    hsTrack.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "mouse") hsDragX = e.clientX;
+    });
+    window.addEventListener("pointermove", function (e) {
+      if (hsDragX === null) return;
+      hsOffset -= (e.clientX - hsDragX);
+      hsDragX = e.clientX;
+    });
+    window.addEventListener("pointerup", function () { hsDragX = null; });
+
+    (function hsLoop() {
+      requestAnimationFrame(hsLoop);
+      if (document.hidden || !hsVisible || hsHalf <= 0) return;
+      if (!hsHold && hsDragX === null) hsOffset += HS_DRIFT;
+      hsOffset = ((hsOffset % hsHalf) + hsHalf) % hsHalf;
+      hsTrack.style.transform = "translate3d(" + (-hsOffset).toFixed(1) + "px,0,0)";
+      hsDepth(hsTrack, hsSticky, hsBase, hsOffset, hsHalf);
+    })();
   }
 
   /* ---- magnetic buttons (subtle: max 6px) ---- */

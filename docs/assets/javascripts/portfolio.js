@@ -35,8 +35,7 @@
     var targets = page.querySelectorAll(
       ".portfolio-card, .portfolio-stat, .portfolio-system-node, " +
       ".portfolio-step, .portfolio-status-card, .portfolio-callout, " +
-      ".portfolio-quote-card, .portfolio-faq-item, .portfolio-media, " +
-      ".pf-timeline li"
+      ".portfolio-quote-card, .portfolio-faq-item, .portfolio-media"
     );
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
@@ -87,6 +86,28 @@
       glow.classList.add("is-on");
       if (!raf) raf = requestAnimationFrame(tick);
     }, { passive: true });
+  }
+
+  /* ---- "The Route" timeline: dedicated reveal (spine draw, dot ring,
+     year slide — CSS keys off .is-in). Deliberately separate from the
+     generic card reveal so it can't be starved by that selector list,
+     and it never hides the text (only the ornaments animate). ---- */
+  var tlItems = document.querySelectorAll(".pf-timeline li");
+  if (tlItems.length && !reduced && "IntersectionObserver" in window) {
+    var tlio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-in");
+          tlio.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2, rootMargin: "0px 0px -5% 0px" });
+    tlItems.forEach(function (el, i) {
+      el.style.transitionDelay = i * 120 + "ms";
+      tlio.observe(el);
+    });
+  } else {
+    tlItems.forEach(function (el) { el.classList.add("is-in"); });
   }
 
   /* ---- aurora background (pure CSS animation, injected once) ---- */

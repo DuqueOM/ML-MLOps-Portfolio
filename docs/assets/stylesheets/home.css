@@ -213,10 +213,13 @@
   z-index: 0;
   pointer-events: none;
 }
-/* scene canvas promoted to full-viewport travel mode (neural-scene.js) */
+/* scene canvas promoted to full-viewport travel mode (neural-scene.js);
+   100lvh so the mobile URL bar never resizes/snaps the figure */
 .mlh-hero > .mlh-neural.pf-scene-page {
   position: fixed;
   inset: 0;
+  height: 100lvh;
+  width: 100vw;
 }
 .mlh-hero-grid {
   position: relative;
@@ -731,7 +734,7 @@
   display: none;
   position: absolute;
   left: 50%;
-  bottom: clamp(0.8rem, 3vh, 1.6rem);
+  bottom: 0.3rem;
   transform: translateX(-50%);
   z-index: 1;
   gap: 0.6rem;
@@ -768,38 +771,35 @@
   z-index: 1;
 }
 
-/* GSAP pins the outer .mlh-hscroll; the inner viewport is a plain
-   full-height flex (no sticky needed — the vanilla fallback re-adds it). */
+/* Marquee viewport: content-height, clips the drifting track — the
+   section occupies only the space its cards need, so the page flow
+   before/after stays tight (no 100svh takeover). */
 .mlh-hscroll.is-on .mlh-hscroll-sticky {
-  height: 100svh;
-  display: flex;
-  align-items: center;
   overflow: hidden;
-}
-.mlh-hscroll.is-on.mlh-hscroll--vanilla .mlh-hscroll-sticky {
-  position: sticky; top: 0;
+  padding: 0.6rem 0 2.4rem;
 }
 .mlh-hscroll.is-on .mlh-hscroll-track {
   display: flex;
   gap: 2vw; /* neighbors peek in — continuous composition, not islands */
-  align-items: center;
+  align-items: stretch;
+  width: max-content;
   max-width: none;
   margin: 0;
-  padding: 0 7vw;
-  scroll-snap-type: x mandatory;
+  padding: 0 2vw;
+  cursor: grab;
+  user-select: none;
   will-change: transform;
 }
+.mlh-hscroll.is-on .mlh-hscroll-track:active { cursor: grabbing; }
 /* Full-screen feature card: near one viewport width, cinematic */
 .mlh-hscroll.is-on .mlh-case {
   flex: 0 0 auto;
   position: relative;
   overflow: hidden;
-  width: 86vw;
-  /* taller feature card = symmetric trim of the empty bands above and
-     below inside the pinned 100svh viewport */
-  min-height: min(84svh, 860px);
+  /* marquee card: readable measure, wraps its content — no dead bands */
+  width: clamp(540px, 56vw, 840px);
+  min-height: 0;
   align-content: center;
-  scroll-snap-align: center;
   border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 14px;
   background:
@@ -826,10 +826,23 @@
   transform: translateY(-50%) translateX(var(--hs-num-x, 0px));
   pointer-events: none;
 }
-.mlh-hscroll.is-on .mlh-case:nth-child(1)::before { content: "01"; }
-.mlh-hscroll.is-on .mlh-case:nth-child(2)::before { content: "02"; }
-.mlh-hscroll.is-on .mlh-case:nth-child(3)::before { content: "03"; }
+.mlh-hscroll.is-on .mlh-case:nth-child(1)::before,
+.mlh-hscroll.is-on .mlh-case:nth-child(4)::before { content: "01"; }
+.mlh-hscroll.is-on .mlh-case:nth-child(2)::before,
+.mlh-hscroll.is-on .mlh-case:nth-child(5)::before { content: "02"; }
+.mlh-hscroll.is-on .mlh-case:nth-child(3)::before,
+.mlh-hscroll.is-on .mlh-case:nth-child(6)::before { content: "03"; }
 .mlh-hscroll.is-on .mlh-case > * { position: relative; z-index: 1; }
+/* fill the wide canvas: content scales up instead of floating in space */
+.mlh-hscroll.is-on .mlh-case .mlh-diagram { max-width: 700px; }
+.md-typeset .ml-home .mlh-hscroll.is-on .mlh-case-body p {
+  font-size: 1.08rem;
+  max-width: 720px;
+}
+.md-typeset .ml-home .mlh-hscroll.is-on .mlh-case-body h3 {
+  font-size: clamp(1.2rem, 1.9vw, 1.55rem);
+}
+.mlh-hscroll.is-on .mlh-case .mlh-case-metrics { gap: 1.3rem; }
 /* the JS-driven carousel depth (scale/opacity per scroll frame) needs
    to track the already-smoothed GSAP scrub 1:1 — the base .mlh-case
    transform transition would otherwise add a second, fighting lag. */

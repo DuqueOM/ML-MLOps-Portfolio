@@ -307,9 +307,9 @@
     var w = 0, h = 0;
 
     function resize() {
-      var rect = fullPage
-        ? { width: window.innerWidth, height: window.innerHeight }
-        : canvas.getBoundingClientRect();
+      /* always CSS-driven: full-page canvases are 100vw×100lvh fixed,
+         so this stays constant across mobile URL-bar show/hide */
+      var rect = canvas.getBoundingClientRect();
       w = Math.max(1, rect.width);
       h = Math.max(1, rect.height);
       canvas.width = w * DPR;
@@ -411,10 +411,14 @@
         var alpha = Math.min(1, (0.3 + 0.5 * br) * q.sper * fadeN);
         var r = (1.2 + 1.6 * br) * q.sper;
         var rgb = COLORS[q.color];
-        ctx.fillStyle = "rgba(" + rgb + "," + (alpha * 0.15).toFixed(3) + ")";
-        ctx.beginPath();
-        ctx.arc(q.sx, q.sy, r * 2.8, 0, TAU);
-        ctx.fill();
+        /* halo skipped on coarse pointers: halves the fill count so the
+           motion runs at full frame rate on phone GPUs */
+        if (!COARSE) {
+          ctx.fillStyle = "rgba(" + rgb + "," + (alpha * 0.15).toFixed(3) + ")";
+          ctx.beginPath();
+          ctx.arc(q.sx, q.sy, r * 2.8, 0, TAU);
+          ctx.fill();
+        }
         ctx.fillStyle = "rgba(" + rgb + "," + alpha.toFixed(3) + ")";
         ctx.beginPath();
         ctx.arc(q.sx, q.sy, r, 0, TAU);
@@ -469,13 +473,9 @@
     }
 
     var raf = null;
-    var frame = 0;
     function tick(t) {
       raf = requestAnimationFrame(tick);
       if (document.hidden || !inView) return;
-      /* coarse pointers render at half rate — steadier first seconds
-         on phone/tablet GPUs, imperceptible for this motion speed */
-      if (COARSE && (frame++ % 2)) return;
       render(t);
     }
     /* paint one frame synchronously so the figure never pops in late */
