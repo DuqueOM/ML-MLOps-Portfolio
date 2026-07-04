@@ -1194,7 +1194,7 @@ html {
   width: 520px;
   height: 520px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.06), transparent 65%);
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.03), transparent 65%);
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 0;
@@ -2362,12 +2362,12 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
 }
 .pf-glow::before {
   width: 980px; height: 980px;
-  background: radial-gradient(circle, rgba(167,139,250,0.055), rgba(167,139,250,0.02) 42%, transparent 68%);
+  background: radial-gradient(circle, rgba(167,139,250,0.03), rgba(167,139,250,0.01) 42%, transparent 68%);
   animation: pf-glow-breathe 7s ease-in-out infinite;
 }
 .pf-glow::after {
   width: 460px; height: 460px;
-  background: radial-gradient(circle, rgba(34,211,238,0.08), rgba(34,211,238,0.025) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(34,211,238,0.04), rgba(34,211,238,0.012) 45%, transparent 70%);
   animation: pf-glow-breathe 4.6s ease-in-out infinite reverse;
 }
 @keyframes pf-glow-breathe {

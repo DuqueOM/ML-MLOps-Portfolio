@@ -86,12 +86,12 @@
 }
 .mlh-glow::before {
   width: 980px; height: 980px;
-  background: radial-gradient(circle, rgba(167,139,250,0.055), rgba(167,139,250,0.02) 42%, transparent 68%);
+  background: radial-gradient(circle, rgba(167,139,250,0.03), rgba(167,139,250,0.01) 42%, transparent 68%);
   animation: mlh-glow-breathe 7s ease-in-out infinite;
 }
 .mlh-glow::after {
   width: 460px; height: 460px;
-  background: radial-gradient(circle, rgba(34,211,238,0.08), rgba(34,211,238,0.025) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(34,211,238,0.04), rgba(34,211,238,0.012) 45%, transparent 70%);
   animation: mlh-glow-breathe 4.6s ease-in-out infinite reverse;
 }
 @keyframes mlh-glow-breathe {
