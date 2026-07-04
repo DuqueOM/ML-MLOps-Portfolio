@@ -1638,6 +1638,10 @@ body:not(:has(.portfolio-page)):not(:has(.ml-home)) .md-content__inner {
     padding-top: 0.8rem;
   }
   .md-typeset .portfolio-stat.portfolio-stat:first-child { border-top: 0; padding-top: 0; }
+  /* force a single column: auto-fit could still resolve 2 columns on
+     some widths, and any per-row height mismatch between stats read as
+     one card "riding up" over the section above it (reported bug) */
+  .md-typeset .portfolio-stat-strip { grid-template-columns: 1fr !important; }
 }
 
 /* =========================================================
@@ -2699,6 +2703,14 @@ html, body { overflow-x: clip; }
     -webkit-mask-image: none;
     mask-image: none;
   }
+}
+/* de-boxed 2026-refresh cards (hairline-top only) need a self-contained
+   panel once they float individually in a marquee row */
+.md-typeset .pf-marquee-track > .portfolio-card {
+  border: 1px solid var(--portfolio-line) !important;
+  border-radius: 8px !important;
+  background: rgba(11, 17, 32, 0.5) !important;
+  padding: 1.2rem 1.3rem !important;
 }
 
 /* headerlink "¶": Material was leaving it visible on many headings

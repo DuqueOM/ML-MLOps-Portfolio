@@ -255,5 +255,5 @@ type them.
 [:fontawesome-brands-youtube: Video demo](https://youtu.be/7dFFqq2ROPw){ .portfolio-button }
 [:fontawesome-solid-file-lines: Recruiter brief](recruiter-brief.md){ .portfolio-button }
 </div>
-
+<br>
 </div>

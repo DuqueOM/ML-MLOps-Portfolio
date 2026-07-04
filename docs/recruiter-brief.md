@@ -13,44 +13,26 @@ Mexico City hybrid or remote (LATAM / US / EU). Available in 2 weeks.
 The evidence is one click away.
 </div>
 
-## Quick Screening Snapshot
-
-<div class="portfolio-card-grid" markdown="1">
-<div class="portfolio-card" markdown="1">
-<small>Target level</small>
-<table>
-<thead>
-<tr><th>Dimension</th><th>State</th></tr>
-</thead>
-<tbody>
-<tr><td>Individual execution (code, tests, CI/CD, IaC)</td><td>Verifiable, above typical junior level</td></tr>
-<tr><td>Formal ML/MLOps team experience</td><td>None — first search in the area</td></tr>
-<tr><td>Operational criteria under real consequences</td><td>14 years, transferable from operations</td></tr>
-<tr><td>Target role range</td><td>MLOps/Platform Engineer I–II, or roles without ML in the title with focus on infrastructure</td></tr>
-</tbody>
-</table>
-</div>
-
-<div class="portfolio-card" markdown="1">
+<div class="portfolio-stat-strip" markdown="1">
+<div class="portfolio-stat">
 <small>Location</small>
-<h3>Mexico City / Remote</h3>
-<p>Open to remote-first opportunities, especially with US, Mexico or LATAM teams
-where written technical communication matters.</p>
+<strong>Mexico City / Remote</strong>
+<span>Open to remote-first US, Mexico or LATAM teams.</span>
 </div>
-
-<div class="portfolio-card" markdown="1">
+<div class="portfolio-stat">
 <small>Languages</small>
-<h3>Spanish native, English B2</h3>
-<p>Comfortable with technical documentation, async collaboration and interview
-conversations in English with preparation.</p>
+<strong>Spanish native · English B2</strong>
+<span>Comfortable with async written technical communication.</span>
 </div>
-
-<div class="portfolio-card" markdown="1">
+<div class="portfolio-stat">
 <small>Education</small>
-<h3>TripleTen Data Science, 2026</h3>
-<p>Formal training layer supporting the portfolio projects and MLOps transition.
-Hands-on AWS (EKS, ECR, IRSA, Terraform) exercised across the portfolio
-infrastructure code.</p>
+<strong>TripleTen Data Science, 2026</strong>
+<span>Hands-on AWS (EKS, ECR, IRSA, Terraform) across the portfolio.</span>
+</div>
+<div class="portfolio-stat">
+<small>Available</small>
+<strong>In 2 weeks</strong>
+<span>Ready for a formal onboarding process now.</span>
 </div>
 </div>
 
@@ -243,5 +225,5 @@ proof I want to add.</p>
 [:fontawesome-solid-envelope: ](contact.md){ .portfolio-button .portfolio-button--icon }
 [:fontawesome-brands-youtube: Video Demo](https://youtu.be/7dFFqq2ROPw){ .portfolio-button .portfolio-button--primary }
 </div>
-
+<br>
 </div>

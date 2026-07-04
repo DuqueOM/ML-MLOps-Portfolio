@@ -60,9 +60,10 @@ strongest 10-minute read.
 <img src="../media/gifs/portfolio-demo.gif" alt="Portfolio deployment walkthrough — full build, test and serve cycle" loading="lazy">
 </div>
 
-The three services inside the portfolio — each with its own deep-dive page:
+The three services inside the portfolio — each with its own deep-dive page.
+Hover to hold, drag to browse, or click a card to bring it to center:
 
-<div class="portfolio-card-grid" markdown="1">
+<div class="portfolio-card-grid" data-pf-marquee markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>churn classification</small>
 <h3>BankChurn Predictor</h3>
@@ -232,10 +233,10 @@ status below tracks against the published plan
 
 <div class="portfolio-actions" markdown="1">
 [:fontawesome-solid-diagram-project: Full agent-local page](../agent-local.md){ .portfolio-button .portfolio-button--primary }
-[:fontawesome-brands-github: agent-local repository](https://github.com/DuqueOM/agent-local){ .portfolio-button }
+[:fontawesome-brands-github: Repository](https://github.com/DuqueOM/agent-local){ .portfolio-button }
 [:fontawesome-solid-diagram-project: The shared plan](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md){ .portfolio-button }
-[:fontawesome-solid-scale-balanced: Why a platform, not a template (ADR-001)](https://github.com/DuqueOM/agent-local/blob/main/docs/decisions/ADR-001-reusable-platform-not-template.md){ .portfolio-button }
+[:fontawesome-solid-scale-balanced: Why a platform (ADR-001)](https://github.com/DuqueOM/agent-local/blob/main/docs/decisions/ADR-001-reusable-platform-not-template.md){ .portfolio-button }
 [:fontawesome-solid-shield-halved: Why not MCP/A2A (ADR-010)](https://github.com/DuqueOM/agent-local/blob/main/docs/decisions/ADR-010-mcp-a2a-interop-rejected.md){ .portfolio-button }
 </div>
-
+<br>
 </div>
