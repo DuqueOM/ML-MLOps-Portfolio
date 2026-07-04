@@ -11,7 +11,7 @@
 Two years of focused ML engineering on top of 14 years of operations leadership.
 Three production services, three incidents diagnosed from first principles,
 one open-source template encoding everything learned. The portfolio makes the
-evidence reviewable — the level is yours to assign.
+evidence reviewable.
 
 </div>
 
