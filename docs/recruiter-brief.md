@@ -8,9 +8,6 @@
 
 # ML engineer who builds systems that survive production
 
-ML Engineer · production-leaning Data Scientist · MLOps —
-Mexico City hybrid or remote (LATAM / US / EU). Available in 2 weeks.
-The evidence is one click away.
 </div>
 
 <div class="portfolio-stat-strip" markdown="1">
