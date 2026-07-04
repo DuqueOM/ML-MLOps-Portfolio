@@ -6,11 +6,26 @@
 <canvas data-neural-scene="chart" aria-hidden="true"></canvas>
 <span class="portfolio-eyebrow">Recruiter screening view · 90 seconds</span>
 
-# ML engineer who builds systems that survive production
+# MLOps engineer who builds systems that survive production
+
+Two years of focused ML engineering on top of 14 years of operations leadership.
+Three production services, three incidents diagnosed from first principles,
+one open-source template encoding everything learned. The portfolio makes the
+evidence reviewable — the level is yours to assign.
 
 </div>
 
 <div class="portfolio-stat-strip" markdown="1">
+<div class="portfolio-stat">
+<small>Track record</small>
+<strong>3 services · 3 incidents solved · 1 template</strong>
+<span>GKE + EKS, 395+ tests, 18 ADRs — measured and documented.</span>
+</div>
+<div class="portfolio-stat">
+<small>Education</small>
+<strong>TripleTen Data Science, 2026</strong>
+<span>Hands-on AWS (EKS, ECR, IRSA, Terraform) across the portfolio.</span>
+</div>
 <div class="portfolio-stat">
 <small>Location</small>
 <strong>Mexico City / Remote</strong>
@@ -20,11 +35,6 @@
 <small>Languages</small>
 <strong>Spanish native · English B2</strong>
 <span>Comfortable with async written technical communication.</span>
-</div>
-<div class="portfolio-stat">
-<small>Education</small>
-<strong>TripleTen Data Science, 2026</strong>
-<span>Hands-on AWS (EKS, ECR, IRSA, Terraform) across the portfolio.</span>
 </div>
 <div class="portfolio-stat">
 <small>Available</small>
@@ -38,9 +48,16 @@
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Primary fit</small>
+<h3>MLOps Engineer</h3>
+<p>Serving, CI/CD, monitoring, MLflow hygiene and deployment reliability for ML
+systems in production — the discipline the entire portfolio is built around.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Equally strong</small>
 <h3>ML Engineer</h3>
 <p>Applied ML roles where model work needs APIs, testing, deployment and a
-clear handoff into an engineering workflow.</p>
+clear handoff into an engineering workflow — not just a notebook.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -52,16 +69,9 @@ operability matter alongside the modeling work.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Adjacent path</small>
-<h3>Data Engineer (ML workflows)</h3>
-<p>Pipeline, batch and data-path roles connected to production ML systems —
-PySpark, validation, feature engineering, cloud storage.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Low-volume bonus</small>
-<h3>MLOps Engineer</h3>
-<p>Serving, CI/CD, monitoring, MLflow hygiene, deployment artifacts and
-reliability improvements for ML systems in production.</p>
+<h3>Data / AI Platform Engineer</h3>
+<p>Pipeline, batch and agentic-systems roles connected to production ML —
+PySpark, validation, feature engineering, governed AI workflows.</p>
 </div>
 </div>
 
@@ -71,29 +81,33 @@ reliability improvements for ML systems in production.</p>
 <div class="portfolio-card" markdown="1">
 <small>2026 differentiator</small>
 <h3>Governed AI-assisted development</h3>
-<p>I engineer my AI workflow — behavior protocols, audit trail, eval gates —
-instead of hiding it. The template's governance layer is the proof.</p>
+<p>I engineer my AI workflow instead of hiding it: an AUTO/CONSULT/STOP
+behavior protocol, an audit trail and eval gates — codified in immutable
+Python, not a README promise.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Debugging</small>
-<h3>I measure before guessing</h3>
-<p>Three incidents, three root causes found by measuring — not by trial and
-error. The 81%→0% writeup is the clearest example.</p>
+<h3>I measure before I guess</h3>
+<p>Three production incidents, three root causes found by measuring, not
+trial and error. The clearest: an 81% error rate under load traced to CPU
+contention and fixed to 0% — with CPU cost cut in half.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Ownership</small>
-<h3>Decisions are documented</h3>
-<p>18 ADRs, runbooks and status pages so reviewers can see why, not only what.
-Another person can operate this system.</p>
+<h3>Decisions survive the handoff</h3>
+<p>18 ADRs across the portfolio, 38 more in the Production Template —
+runbooks and status pages so another engineer can operate the system, not
+just read about it.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Cost awareness</small>
-<h3>Budget is part of the design</h3>
-<p>14 years of operations means cost, scope and maintenance enter the
-engineering discussion from the start, not as afterthoughts.</p>
+<small>Career arc</small>
+<h3>Operations background is a feature</h3>
+<p>14 years of budgets, vendors, deadlines and team pressure. Cost discipline,
+scope judgment and documentation habits come from real stakes — not a
+certification module.</p>
 </div>
 </div>
 
@@ -103,23 +117,25 @@ engineering discussion from the start, not as afterthoughts.</p>
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Days 1-30</small>
-<h3>Learn and document the workflow</h3>
-<p>Run the stack locally, understand the model lifecycle, map deployment steps,
-document gaps and fix small onboarding or test issues.</p>
+<h3>Ship fast, break nothing</h3>
+<p>Run the stack locally, learn the model lifecycle and deployment path, and
+close the first small gaps — onboarding friction, flaky tests, missing docs.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Days 31-60</small>
-<h3>Contribute to delivery support</h3>
-<p>Help with FastAPI endpoints, validation checks, MLflow hygiene, CI/CD tasks,
-Docker/Kubernetes artifacts or monitoring improvements under review.</p>
+<h3>Take real delivery load</h3>
+<p>Own FastAPI endpoints, validation checks, MLflow hygiene, CI/CD tasks,
+Docker/Kubernetes artifacts or monitoring improvements — reviewed, then
+trusted.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Days 61-90</small>
-<h3>Own a focused reliability improvement</h3>
-<p>Take one scoped improvement from issue to documentation: smoke tests,
-readiness checks, drift notes, runbooks, cost tracking or deployment evidence.</p>
+<h3>Own a reliability win end-to-end</h3>
+<p>Take one scoped improvement from issue to shipped documentation: smoke
+tests, readiness checks, drift alerts, runbooks or deployment evidence —
+the same rigor as the 81%→0% fix, applied to your stack.</p>
 </div>
 </div>
 </div>
@@ -129,24 +145,26 @@ readiness checks, drift notes, runbooks, cost tracking or deployment evidence.</
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Project judgment</small>
-<h3>Reusable MLOps template</h3>
-<p>The strongest project is the production template: a reusable starting point
-for ML services with serving, testing, deployment and workflow guardrails.</p>
+<h3>A template, not just projects</h3>
+<p>The strongest signal is the Production Template: 36 encoded anti-patterns
+and 38 ADRs turning three projects' worth of pain into a reusable,
+governed starting point other engineers can build on.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Debugging ability</small>
-<h3>Measured incident writeups</h3>
-<p>The portfolio includes load testing, inference-path debugging and documented
-trade-offs rather than only final model metrics.</p>
+<h3>Incidents, not just metrics</h3>
+<p>Load testing, inference-path debugging, a caught data-leakage bug before
+it hit a published metric — the portfolio shows the failures as clearly as
+the wins.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Communication</small>
-<h3>Evidence a team can review</h3>
-<p>Architecture notes, model cards, runbooks, deployment evidence and current
-portfolio status are written so both technical and non-technical reviewers can
-understand the story.</p>
+<h3>Written for your whole team</h3>
+<p>Architecture notes, model cards, runbooks and deployment evidence written
+so both engineers and non-technical stakeholders follow the story without
+a walkthrough.</p>
 </div>
 </div>
 
@@ -156,61 +174,68 @@ understand the story.</p>
 <div class="portfolio-card" markdown="1">
 <small>Live evidence</small>
 <h3>More real traffic windows</h3>
-<p>Run short, cost-controlled live demos to capture fresh Grafana, Prometheus
+<p>Short, cost-controlled live demos to capture fresh Grafana, Prometheus
 and MLflow evidence without leaving infrastructure online permanently.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Frontier</small>
+<h3>Agentic systems, same governance</h3>
+<p><code>agent-local</code> extends the template's AUTO/CONSULT/STOP philosophy
+to local, multi-tier LLM agents — grammar-constrained routing already
+passing its quality gate 20/20.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Collaboration</small>
 <h3>More public review signals</h3>
-<p>Add external feedback, PR review examples or open-source contributions so
-the portfolio shows how I work with other engineers.</p>
-</div>
-
-<div class="portfolio-card" markdown="1">
-<small>Depth</small>
-<h3>One deeper infrastructure writeup</h3>
-<p>Expand one operational topic, such as monitoring or deployment strategy,
-into a concise trade-off article.</p>
+<p>External feedback, PR review examples or open-source contributions so the
+portfolio shows how I work with other engineers, not only alone.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Domain fit</small>
 <h3>A project closer to operations</h3>
-<p>Explore a future project around inventory, staffing, cost anomalies or
-operations forecasting, where my previous background is a direct advantage.</p>
+<p>Inventory, staffing, cost anomalies or operations forecasting — where
+14 years of business context is a direct modeling advantage,
+not just a bio line.</p>
 </div>
 </div>
 
-## Current Boundaries And Next Proof
+## Context For The Screening Call
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<small>Live traffic</small>
-<h3>Controlled load tests, not 24/7 users</h3>
-<p>The strongest runtime evidence comes from controlled load tests and live
-development windows, not persistent production user traffic.</p>
+<small>Runtime evidence</small>
+<h3>Load tests today, sustained traffic next</h3>
+<p>Current evidence comes from controlled load tests and live development
+windows. The portfolio captures the behavior; sustained production traffic
+on a team's system is the natural next chapter.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Cloud ML platforms</small>
-<h3>GCP and AWS Kubernetes first</h3>
-<p>My cloud work is centered on GKE, EKS, Terraform and kubectl. SageMaker and
-Azure ML are not yet core strengths.</p>
+<small>Cloud infrastructure</small>
+<h3>GCP and AWS, Kubernetes-first</h3>
+<p>Deep, hands-on GKE, EKS, Terraform and kubectl across three deployed
+services. Managed ML platforms (SageMaker, Vertex AI, Azure ML) —
+architecture is familiar; hands-on integration is the fastest onboarding
+item, not a blind spot.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>ML depth</small>
-<h3>Engineering and deployment side</h3>
-<p>I am not presenting myself as an ML researcher. My strongest signal is
-turning applied models into testable, operable systems.</p>
+<small>ML positioning</small>
+<h3>Engineering-first, not research-first</h3>
+<p>I am not positioning as an ML researcher. My edge is turning applied
+models into testable, observable, operable systems — the part most teams
+are actually short on.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>External collaboration</small>
-<h3>Next public signal</h3>
-<p>Open-source contribution, external review or a PR review sample is the next
-proof I want to add.</p>
+<small>Collaboration signals</small>
+<h3>Solo work with team habits</h3>
+<p>All projects are solo-built with team-operation standards: ADRs, runbooks,
+model cards, incident writeups. An open-source contribution or external
+PR review is the next proof point in progress.</p>
 </div>
 </div>
 
