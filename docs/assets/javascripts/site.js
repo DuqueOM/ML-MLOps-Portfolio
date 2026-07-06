@@ -161,14 +161,18 @@
   }
 
   /* ---- 3a) the neural agent figure --------------------------------
-     A waist-up bust drawn live on a transparent canvas: a 3D ellipsoid
-     head mesh that turns to look around (idle glances + occasional
-     cursor tracking), hair strands of linked nodes floating as if
-     weightless, and a breathing torso mesh with a pulsing energy core.
-     Same visual language as neural-field.js (nodes, thin edges,
-     cyan/violet palette) so she reads as made of the site's own
-     network — information, energy. Nothing is ever painted behind her
-     silhouette: whatever the page shows through IS her backdrop. */
+     The agent is the real reference artwork (docs/media/profile/
+     agent-figure.png — a woman rendered as a glowing neural network),
+     processed offline so her black background is fully transparent:
+     whatever the page shows behind her silhouette IS her backdrop.
+     The canvas brings her to life on top of that:
+     - gentle breathing + lean, idle glances to the sides, occasional
+       cursor tracking, and a look up toward the panel while it's open
+       (a flat artwork can't move its eyes, so the whole figure turns —
+       reads as attention, not as a static sticker)
+     - procedural hair strands floating behind her mane
+     - twinkling particles sampled from her own brightest pixels, so
+       the sparkle always sits ON her lines */
   function mountChatAgent(canvas, launcher) {
     var ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -176,10 +180,7 @@
     var TAU = Math.PI * 2;
     var CYAN = "34,211,238", VIOLET = "167,139,250", WHITE = "226,242,255";
 
-    /* draw in fixed design units (150 wide); resizing just rescales.
-       The figure sits low in the canvas on purpose: the strip above
-       her head is headroom so floating hair never hits the canvas
-       edge and gets shaved into a flat horizontal line. */
+    /* draw in fixed design units (150x190); resizing just rescales */
     var S = 1, DH = 190;
     function resize() {
       var r = canvas.getBoundingClientRect();
@@ -203,99 +204,76 @@
     var seed = 7;
     function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
 
-    /* ---- head: 3D ellipsoid mesh (lat rings x meridians) ---- */
-    var HEAD = { x: 75, y: 68, rx: 21.5, ry: 25.5, rz: 18.5 };
-    var LATS = [-64, -38, -12, 14, 40, 64];
-    var LONS = 12;
-    var headNodes = [], headEdges = [];
-    LATS.forEach(function (lat) {
-      var phi = lat * Math.PI / 180;
-      for (var lo = 0; lo < LONS; lo++) {
-        var th = lo / LONS * TAU;
-        headNodes.push({
-          x: HEAD.rx * Math.cos(phi) * Math.sin(th),
-          y: -HEAD.ry * Math.sin(phi),
-          z: HEAD.rz * Math.cos(phi) * Math.cos(th)
-        });
-      }
-    });
-    headNodes.push({ x: 0, y: -HEAD.ry, z: 0 });      /* crown */
-    headNodes.push({ x: 0, y: HEAD.ry, z: 2.5 });     /* chin */
-    var crownIdx = headNodes.length - 2, chinIdx = headNodes.length - 1;
-    headNodes.forEach(function (n, i) { n.c = i % 7 === 0 ? VIOLET : CYAN; });
-    (function () {
-      for (var li = 0; li < LATS.length; li++) {
-        for (var lo = 0; lo < LONS; lo++) {
-          var i = li * LONS + lo;
-          headEdges.push([i, li * LONS + (lo + 1) % LONS]);
-          if (li < LATS.length - 1) headEdges.push([i, (li + 1) * LONS + lo]);
+    /* the artwork: 294x420 source drawn at 133x190 design units,
+       bottom-anchored and centered */
+    var IMG = { x: 8.5, y: 0, w: 133, h: 190 };
+    var HEADC = { x: 76, y: 56 };  /* her head center, for hair anchors */
+    var img = new Image();
+    var imgReady = false;
+    var particles = [];
+    var sj = document.querySelector('script[src*="site.js"]');
+    img.src = sj
+      ? sj.src.replace(/assets\/javascripts\/site\.js.*$/, "media/profile/agent-figure.png")
+      : "media/profile/agent-figure.png";
+    img.onload = function () {
+      imgReady = true;
+      sampleParticles();
+      step(performance.now());
+    };
+
+    /* twinkle points sampled from her own brightest pixels, so the
+       sparkle always lands on her lines instead of floating in space */
+    function sampleParticles() {
+      try {
+        var oc = document.createElement("canvas");
+        oc.width = 150; oc.height = 190;
+        var octx = oc.getContext("2d");
+        octx.drawImage(img, IMG.x, IMG.y, IMG.w, IMG.h);
+        var data = octx.getImageData(0, 0, 150, 190).data;
+        var tries = 0;
+        while (particles.length < 64 && tries < 4000) {
+          tries++;
+          var x = 4 + (rnd() * 142) | 0, y = 4 + (rnd() * 182) | 0;
+          var i = (y * 150 + x) * 4;
+          if (data[i + 3] < 150 || data[i] + data[i + 1] + data[i + 2] < 330) continue;
+          var ok = true;
+          for (var k = 0; k < particles.length; k++) {
+            var dx = particles[k].x - x, dy = particles[k].y - y;
+            if (dx * dx + dy * dy < 49) { ok = false; break; }
+          }
+          if (!ok) continue;
+          particles.push({
+            x: x, y: y,
+            phase: rnd() * TAU,
+            period: 1800 + rnd() * 2600,
+            r: 0.7 + rnd() * 0.9,
+            c: rnd() < 0.25 ? WHITE : (rnd() < 0.7 ? CYAN : VIOLET)
+          });
         }
-      }
-      for (var lo2 = 0; lo2 < LONS; lo2 += 2) {
-        headEdges.push([(LATS.length - 1) * LONS + lo2, crownIdx]);
-        headEdges.push([lo2, chinIdx]);
-      }
-    })();
-
-    /* a point on the head surface (lat in deg, lon in rad from front) */
-    function surf(latDeg, lonRad, push) {
-      var phi = latDeg * Math.PI / 180;
-      return {
-        x: HEAD.rx * Math.cos(phi) * Math.sin(lonRad) * (push || 1),
-        y: -HEAD.ry * Math.sin(phi),
-        z: HEAD.rz * Math.cos(phi) * Math.cos(lonRad) * (push || 1)
-      };
+      } catch (e) { /* tainted canvas etc. — she still renders fine */ }
     }
-    /* ---- face: contour + features so she reads as a person, not a
-       stick figure. All are surface polylines that rotate with the
-       head; alpha is scaled by how front-facing they are. ---- */
-    var eyes = [surf(0, -0.36, 1.03), surf(0, 0.36, 1.03)];
-    var faceOval = [
-      surf(30, -0.20), surf(26, -0.52), surf(6, -0.62), surf(-16, -0.52),
-      surf(-38, -0.33), surf(-54, -0.12), surf(-54, 0.12), surf(-38, 0.33),
-      surf(-16, 0.52), surf(6, 0.62), surf(26, 0.52), surf(30, 0.20)
-    ];
-    var browL = [surf(10, -0.50, 1.02), surf(13, -0.30, 1.02), surf(11, -0.15, 1.02)];
-    var browR = [surf(11, 0.15, 1.02), surf(13, 0.30, 1.02), surf(10, 0.50, 1.02)];
-    var nose = [surf(2, 0, 1.01), surf(-14, 0, 1.03)];
-    var noseBase = [surf(-17, -0.08, 1.02), surf(-18, 0, 1.03), surf(-17, 0.08, 1.02)];
-    var lipTop = [surf(-27, -0.16, 1.02), surf(-26, 0, 1.02), surf(-27, 0.16, 1.02)];
-    var lipLow = [surf(-33, -0.10, 1.02), surf(-34, 0, 1.02), surf(-33, 0.10, 1.02)];
 
-    /* ---- hair: strands anchored to the scalp, floating outward ---- */
+    /* ---- hair: strands floating from behind her mane ---- */
     var hairs = [];
-    for (var h = 0; h < 26; h++) {
-      var side = h % 2 === 0 ? 1 : -1;
+    for (var h = 0; h < 18; h++) {
+      var a0 = -Math.PI * (0.08 + rnd() * 0.84); /* upper arc angles */
       hairs.push({
-        a: surf(2 + rnd() * 60, side * Math.PI * (0.30 + rnd() * 0.65), 1.04),
-        segs: 6 + (rnd() * 5 | 0),
-        len: 5 + rnd() * 3.5,
+        ax: HEADC.x + Math.cos(a0) * (26 + rnd() * 8),
+        ay: HEADC.y + Math.sin(a0) * (24 + rnd() * 7),
+        dir: a0,
+        segs: 5 + (rnd() * 4 | 0),
+        len: 5 + rnd() * 3,
         phase: rnd() * TAU,
         omega: 0.0007 + rnd() * 0.0007,
-        amp: 0.10 + rnd() * 0.07,
-        color: rnd() < 0.55 ? CYAN : VIOLET
+        amp: 0.11 + rnd() * 0.07,
+        color: rnd() < 0.6 ? CYAN : VIOLET
       });
     }
 
-    /* ---- torso rows (2D mesh; the waist is cut by the canvas edge,
-       which is what makes her read as "from the waist up"). The bust
-       row uses a negative crown (center dips) to give the chest
-       volume instead of a flat drum. ---- */
-    var ROWS = [
-      { y: 118, hw: 37, yawK: 5, crown: 8 },
-      { y: 130, hw: 33, yawK: 3.6, crown: 2.5 },
-      { y: 143, hw: 30, yawK: 2.4, crown: -3 },
-      { y: 157, hw: 26.5, yawK: 1.4, crown: 1.5 },
-      { y: 172, hw: 24, yawK: 0.7, crown: 1 },
-      { y: 188, hw: 25.5, yawK: 0.3, crown: 0.8 }
-    ];
-    var FRACS = [-1, -0.66, -0.33, 0, 0.33, 0.66, 1];
-
     /* ---- gaze state machine: idle glances / cursor follow / panel ---- */
-    var yaw = 0.12, pitch = 0.02, tYaw = 0.12, tPitch = 0.02;
+    var yaw = 0.10, pitch = 0, tYaw = 0.10, tPitch = 0;
     var mode = "idle";
     var nextGlance = 1400, followUntil = 0, nextFollowOk = 6000;
-    var blinkAt = 2400, blink = 0;
     var mouse = { x: 0, y: 0, at: -1e9 };
     if (finePointer && !reduced) {
       window.addEventListener("mousemove", function (e) {
@@ -306,8 +284,7 @@
     function step(t) {
       var open = launcher.classList.contains("is-open");
       if (open) {
-        /* panel sits right above her — she looks up at it */
-        mode = "panel"; tYaw = -0.04; tPitch = -0.18;
+        mode = "panel"; tYaw = -0.05; tPitch = -0.5;
       } else if (mode === "panel") {
         mode = "idle"; nextGlance = t + 500;
       }
@@ -322,218 +299,78 @@
           mode = "idle"; nextGlance = t + 400;
         } else {
           var rr = canvas.getBoundingClientRect();
-          var hx = rr.left + HEAD.x * S, hy = rr.top + HEAD.y * S;
-          tYaw = clamp((mouse.x - hx) / 260, -0.62, 0.62);
-          tPitch = clamp((mouse.y - hy) / 420, -0.30, 0.34);
+          var hx = rr.left + HEADC.x * S, hy = rr.top + HEADC.y * S;
+          tYaw = clamp((mouse.x - hx) / 420, -0.5, 0.5);
+          tPitch = clamp((mouse.y - hy) / 600, -0.5, 0.5);
         }
       }
       if (mode === "idle" && t >= nextGlance) {
-        nextGlance = t + 2600 + Math.random() * 3800;
-        tYaw = (Math.random() * 1.1 - 0.55) * (Math.random() < 0.75 ? 1 : 0.3);
-        tPitch = Math.random() * 0.26 - 0.10;
+        nextGlance = t + 2800 + Math.random() * 4200;
+        tYaw = (Math.random() * 0.9 - 0.45) * (Math.random() < 0.75 ? 1 : 0.35);
+        tPitch = Math.random() * 0.5 - 0.2;
       }
-      yaw += (tYaw - yaw) * 0.055;
-      pitch += (tPitch - pitch) * 0.055;
-      if (t >= blinkAt) { blinkAt = t + 2400 + Math.random() * 3600; blink = 1; }
-      if (blink > 0) blink = Math.max(0, blink - 0.09);
+      yaw += (tYaw - yaw) * 0.05;
+      pitch += (tPitch - pitch) * 0.05;
 
-      var cy = Math.cos(yaw), sy = Math.sin(yaw);
-      var cp = Math.cos(pitch), sp = Math.sin(pitch);
-      var bob = Math.sin(t / 3400 * TAU) * 1.1;
-      var breathe = 1 + Math.sin(t / 3400 * TAU) * 0.012;
-
-      function proj(p) {
-        var x = p.x * cy + p.z * sy;
-        var z = -p.x * sy + p.z * cy;
-        var y = p.y * cp - z * sp;
-        z = p.y * sp + z * cp;
-        return { x: HEAD.x + x, y: HEAD.y + y + bob * 0.5, z: z };
-      }
+      var sway = reduced ? 0 : Math.sin(t / 4600 * TAU) * 0.011;
+      var breathe = reduced ? 1 : 1 + Math.sin(t / 3400 * TAU) * 0.006;
 
       ctx.clearRect(-2, -2, 154, DH + 4);
 
-      /* front-gated surface polyline: rotates with the head, fades
-         out as it turns away from the viewer */
-      function facePath(pts, alpha, close) {
-        var zsum = 0;
-        ctx.beginPath();
-        for (var i3 = 0; i3 < pts.length; i3++) {
-          var q = proj(pts[i3]);
-          zsum += q.z;
-          if (i3 === 0) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
-        }
-        if (close) ctx.closePath();
-        var frontK = clamp(zsum / pts.length / HEAD.rz, 0, 1);
-        if (frontK <= 0.05) return;
-        ctx.strokeStyle = "rgba(" + WHITE + "," + (alpha * frontK).toFixed(3) + ")";
-        ctx.stroke();
-      }
+      /* whole-figure attitude: lean + tiny lift toward the gaze target.
+         Rotation pivots at her waist (bottom center). */
+      ctx.save();
+      ctx.translate(75 + yaw * 5, 190);
+      ctx.rotate(yaw * 0.05 + sway);
+      ctx.scale(breathe, breathe);
+      ctx.translate(-75, -190 + pitch * 3);
 
-      /* hair first, so the head mesh overlays it (reads as behind) */
+      /* hair strands behind her, drifting like they are weightless */
       ctx.lineWidth = 1;
       hairs.forEach(function (hs) {
-        var a = proj(hs.a);
-        var depth = (a.z / HEAD.rz + 1) / 2;
-        var alpha0 = 0.22 + depth * 0.42;
-        var ang = Math.atan2(a.y - HEAD.y, a.x - HEAD.x);
+        var ang = hs.dir + yaw * 0.35;
         var drift = Math.sin(t / 5200 * TAU + hs.phase) * 0.15;
-        var px = a.x, py = a.y;
+        var px = hs.ax + yaw * 6, py = hs.ay;
         for (var i = 0; i < hs.segs; i++) {
           ang += Math.sin(t * hs.omega + hs.phase + i * 0.62) *
                  hs.amp * (1 + i * 0.30) + drift * 0.12;
           var nx = px + Math.cos(ang) * hs.len;
           var ny = py + Math.sin(ang) * hs.len;
-          /* soft walls: steer strands back before they reach a canvas
-             edge, so hair never gets shaved into a flat clipped line */
-          if (ny < 12) { ang = -ang * 0.5; ny = py + Math.sin(ang) * hs.len; }
+          /* soft walls: steer back before any canvas edge, so hair
+             never gets shaved into a flat clipped line */
+          if (ny < 8) { ang = -ang * 0.5; ny = py + Math.sin(ang) * hs.len; }
           if (nx < 6) { ang = Math.PI - ang; nx = px + Math.cos(ang) * hs.len; }
           else if (nx > 144) { ang = Math.PI - ang; nx = px + Math.cos(ang) * hs.len; }
-          var fal = alpha0 * (1 - i / hs.segs);
+          var fal = 0.42 * (1 - i / hs.segs);
           ctx.strokeStyle = "rgba(" + hs.color + "," + fal.toFixed(3) + ")";
           ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(nx, ny); ctx.stroke();
           ctx.fillStyle = "rgba(" + hs.color + "," + (fal * 0.9).toFixed(3) + ")";
-          ctx.beginPath(); ctx.arc(nx, ny, 1.05, 0, TAU); ctx.fill();
+          ctx.beginPath(); ctx.arc(nx, ny, 1, 0, TAU); ctx.fill();
           px = nx; py = ny;
         }
       });
 
-      /* head wireframe — back edges dim, front bright (real depth) */
-      var P = headNodes.map(proj);
-      headEdges.forEach(function (e) {
-        var a = P[e[0]], b = P[e[1]];
-        var d = ((a.z + b.z) / 2 / HEAD.rz + 1) / 2;
-        ctx.strokeStyle = "rgba(" + CYAN + "," + (0.05 + d * 0.30).toFixed(3) + ")";
-        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-      });
-      P.forEach(function (p, i) {
-        var d = (p.z / HEAD.rz + 1) / 2;
-        ctx.fillStyle = "rgba(" + headNodes[i].c + "," + (0.15 + d * 0.55).toFixed(3) + ")";
-        ctx.beginPath(); ctx.arc(p.x, p.y, 0.7 + d * 0.9, 0, TAU); ctx.fill();
-      });
-
-      /* face — contour plane, brows, nose, lips: what turns the mesh
-         sphere into a person. Drawn over the mesh, under the eyes. */
-      ctx.lineWidth = 1;
-      facePath(faceOval, 0.30, true);
-      facePath(browL, 0.55);
-      facePath(browR, 0.55);
-      facePath(nose, 0.40);
-      facePath(noseBase, 0.35);
-      facePath(lipTop, 0.50);
-      facePath(lipLow, 0.38);
-
-      /* eyes — bright, blinking, only while facing forward enough */
-      eyes.forEach(function (ep) {
-        var e2 = proj(ep);
-        if (e2.z < 3) return;
-        var al = 0.9 * (1 - Math.min(1, blink * 1.5));
-        ctx.fillStyle = "rgba(" + WHITE + "," + (al * 0.22).toFixed(3) + ")";
-        ctx.beginPath(); ctx.arc(e2.x, e2.y, 3.4, 0, TAU); ctx.fill();
-        ctx.fillStyle = "rgba(" + WHITE + "," + al.toFixed(3) + ")";
-        ctx.beginPath(); ctx.arc(e2.x, e2.y, 1.6, 0, TAU); ctx.fill();
-      });
-
-      /* neck: chin down to the shoulder line, turning with the head */
-      var chin = P[chinIdx];
-      ctx.strokeStyle = "rgba(" + CYAN + ",0.30)";
-      [-1, 1].forEach(function (s2) {
-        ctx.beginPath();
-        ctx.moveTo(chin.x + s2 * 5, chin.y + 1);
-        ctx.lineTo(75 + yaw * 6 + s2 * 7, 113 + bob * 0.4);
-        ctx.stroke();
-      });
-
-      /* torso mesh: shoulders down to the waist */
-      var rowPts = ROWS.map(function (rw) {
-        var cx2 = 75 + yaw * rw.yawK;
-        var hw = rw.hw * breathe;
-        return FRACS.map(function (f) {
-          return {
-            x: cx2 + f * hw,
-            y: rw.y - (1 - Math.abs(f)) * rw.crown + bob * 0.35
-          };
-        });
-      });
-      ctx.strokeStyle = "rgba(" + CYAN + ",0.22)";
-      rowPts.forEach(function (row) {
-        for (var i2 = 0; i2 < row.length - 1; i2++) {
-          ctx.beginPath();
-          ctx.moveTo(row[i2].x, row[i2].y);
-          ctx.lineTo(row[i2 + 1].x, row[i2 + 1].y);
-          ctx.stroke();
-        }
-      });
-      for (var ri = 0; ri < rowPts.length - 1; ri++) {
-        for (var fi = 0; fi < FRACS.length; fi++) {
-          ctx.beginPath();
-          ctx.moveTo(rowPts[ri][fi].x, rowPts[ri][fi].y);
-          ctx.lineTo(rowPts[ri + 1][fi].x, rowPts[ri + 1][fi].y);
-          ctx.stroke();
+      /* the reference artwork itself */
+      if (imgReady) {
+        ctx.drawImage(img, IMG.x, IMG.y, IMG.w, IMG.h);
+      } else {
+        /* pre-load (or load failure) fallback: a quiet pulsing dot trio
+           so the button is never invisible */
+        var g0 = 0.5 + 0.5 * Math.sin(t / 900);
+        for (var d3 = -1; d3 <= 1; d3++) {
+          ctx.fillStyle = "rgba(" + CYAN + "," + (0.35 + g0 * 0.4).toFixed(3) + ")";
+          ctx.beginPath(); ctx.arc(75 + d3 * 10, 170, 3, 0, TAU); ctx.fill();
         }
       }
-      rowPts.forEach(function (row, ri2) {
-        row.forEach(function (p, fi2) {
-          var g = 0.5 + 0.5 * Math.sin(t / 2800 + ri2 * 1.7 + fi2 * 2.3);
-          ctx.fillStyle = "rgba(" + (((ri2 + fi2) % 5 === 0) ? VIOLET : CYAN) + "," +
-            (0.25 + g * 0.35).toFixed(3) + ")";
-          ctx.beginPath(); ctx.arc(p.x, p.y, 1 + g * 0.5, 0, TAU); ctx.fill();
-        });
+
+      /* twinkle: her own bright nodes breathing, a few white flares */
+      particles.forEach(function (p) {
+        var g = 0.5 + 0.5 * Math.sin(t / p.period * TAU + p.phase);
+        ctx.fillStyle = "rgba(" + p.c + "," + (0.10 + g * 0.5).toFixed(3) + ")";
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * (0.7 + g * 0.6), 0, TAU); ctx.fill();
       });
 
-      /* collarbones: neck base out to the shoulder tips */
-      ctx.strokeStyle = "rgba(" + CYAN + ",0.28)";
-      [rowPts[0][0], rowPts[0][FRACS.length - 1]].forEach(function (tip, ti) {
-        var s3 = ti === 0 ? -1 : 1;
-        ctx.beginPath();
-        ctx.moveTo(75 + yaw * 6 + s3 * 7, 113 + bob * 0.4);
-        ctx.lineTo(tip.x, tip.y + 1.5);
-        ctx.stroke();
-      });
-
-      /* arms: two-contour wireframe from each shoulder, swaying gently,
-         cut by the canvas edge like the waist */
-      [-1, 1].forEach(function (s4) {
-        var tip = rowPts[0][s4 < 0 ? 0 : FRACS.length - 1];
-        var inn = rowPts[1][s4 < 0 ? 0 : FRACS.length - 1];
-        var sway = Math.sin(t / 2900 * TAU + (s4 < 0 ? 0 : 1.6)) * 1.0;
-        var elbOut = { x: tip.x + s4 * 7 + sway, y: 154 + bob * 0.3 };
-        var wriOut = { x: tip.x + s4 * 2 + sway * 1.4, y: 189 };
-        var elbIn = { x: tip.x - s4 * 1 + sway, y: 155 + bob * 0.3 };
-        var wriIn = { x: tip.x - s4 * 5 + sway * 1.4, y: 189 };
-        ctx.strokeStyle = "rgba(" + CYAN + ",0.22)";
-        ctx.beginPath();
-        ctx.moveTo(tip.x, tip.y); ctx.lineTo(elbOut.x, elbOut.y); ctx.lineTo(wriOut.x, wriOut.y);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(inn.x, inn.y); ctx.lineTo(elbIn.x, elbIn.y); ctx.lineTo(wriIn.x, wriIn.y);
-        ctx.stroke();
-        /* rungs tie the two contours into a mesh */
-        [[0.45, 0.45], [1, 1], [0.5, 0.5]].forEach(function (fr, k) {
-          var ax, ay, bx, by;
-          if (k < 2) { /* shoulder->elbow span */
-            ax = tip.x + (elbOut.x - tip.x) * fr[0]; ay = tip.y + (elbOut.y - tip.y) * fr[0];
-            bx = inn.x + (elbIn.x - inn.x) * fr[1]; by = inn.y + (elbIn.y - inn.y) * fr[1];
-          } else { /* elbow->wrist span */
-            ax = elbOut.x + (wriOut.x - elbOut.x) * fr[0]; ay = elbOut.y + (wriOut.y - elbOut.y) * fr[0];
-            bx = elbIn.x + (wriIn.x - elbIn.x) * fr[1]; by = elbIn.y + (wriIn.y - elbIn.y) * fr[1];
-          }
-          ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
-        });
-        /* joint nodes */
-        [elbOut, elbIn].forEach(function (jp, ji) {
-          var g2 = 0.5 + 0.5 * Math.sin(t / 2600 + s4 * 2 + ji);
-          ctx.fillStyle = "rgba(" + CYAN + "," + (0.3 + g2 * 0.3).toFixed(3) + ")";
-          ctx.beginPath(); ctx.arc(jp.x, jp.y, 1.1 + g2 * 0.4, 0, TAU); ctx.fill();
-        });
-      });
-
-      /* energy core at the sternum — her "heartbeat" */
-      var coreG = 0.5 + 0.5 * Math.sin(t / 1600 * TAU);
-      var coreX = 75 + yaw * 4, coreY = 128 + bob * 0.35;
-      ctx.fillStyle = "rgba(" + CYAN + "," + (0.10 + coreG * 0.18).toFixed(3) + ")";
-      ctx.beginPath(); ctx.arc(coreX, coreY, 5.5, 0, TAU); ctx.fill();
-      ctx.fillStyle = "rgba(" + WHITE + "," + (0.5 + coreG * 0.45).toFixed(3) + ")";
-      ctx.beginPath(); ctx.arc(coreX, coreY, 1.9, 0, TAU); ctx.fill();
+      ctx.restore();
     }
 
     /* draw one frame immediately (visible even in background tabs /
