@@ -13,9 +13,10 @@ is the strongest artifact in this portfolio. It packages the production lessons
 from the monorepo into a starter system for ML services: FastAPI serving,
 training/serving parity, CI/CD, Docker, Kubernetes, Terraform examples,
 observability hooks, runbooks and an explicit agentic governance model. The
-template also encodes 37 anti-patterns with corrective actions, SLSA L2
+template also encodes 38 anti-patterns with corrective actions, SLSA L2
 supply-chain security practices, closed-loop monitoring with statistical
-promotion gates, and a self-auditing documentation-coherence system that
+promotion gates, native-cloud edge protection (Cloud Armor / AWS WAF+Shield,
+Cloudflare optional), and a self-auditing documentation-coherence system that
 keeps its own version, ADR count and governance surface honest across every
 document — a gate, not a suggestion.
 
@@ -39,7 +40,7 @@ document — a gate, not a suggestion.
 </div>
 <div class="portfolio-stat">
 <small>Failure modes</small>
-<strong>37 anti-patterns</strong>
+<strong>38 anti-patterns</strong>
 <span>Corrective actions for serving, HPA, SHAP, IAM, CI/CD, scaffolding and adoption risks.</span>
 </div>
 <div class="portfolio-stat">
@@ -155,7 +156,11 @@ part of the service contract from the beginning.</p>
 <small>5. Observability</small>
 <h3>Metrics and operations hooks</h3>
 <p>Prometheus-compatible metrics, prediction logging, tracing options, drift
-checks and retraining workflows are built into the template story.</p>
+checks and retraining workflows are built into the template story. A
+six-station coverage audit (edge, infra, inference, models, logs/traces,
+business KPIs) closed the real gaps it found: executor-saturation metrics,
+a business-KPI dashboard, and a structured access log that actually
+correlates a request to its trace on every call, not only on failures.</p>
 </div>
 
 <div class="portfolio-system-node" markdown="1">
@@ -163,7 +168,8 @@ checks and retraining workflows are built into the template story.</p>
 <h3>GCP and AWS patterns</h3>
 <p>The template documents GKE/EKS deployment expectations, identity patterns,
 artifact registries and operational runbooks without pretending local tests are
-cloud proof.</p>
+cloud proof. An opt-in edge layer (Cloud Armor / AWS WAF+Shield, Cloudflare
+optional) sits in front of the Ingress once an adopter wires it in.</p>
 </div>
 </div>
 
@@ -203,33 +209,34 @@ explicit test commands so agent-assisted work remains auditable.</p>
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<small>Rules (17)</small>
+<small>Rules (18)</small>
 <h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/rules">Context-aware engineering constraints</a></h3>
 <p>Rules cover Python serving, training, Kubernetes, Terraform, Docker,
 GitHub Actions, monitoring, data validation, security, API contracts,
-Copier template lifecycle and documentation coherence. The goal is to make
+Copier template lifecycle, documentation coherence and edge protection
+(Cloud Armor / AWS WAF+Shield / optional Cloudflare). The goal is to make
 failure modes harder to reintroduce.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Skills (25)</small>
+<small>Skills (26)</small>
 <h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/skills">Reusable MLOps procedures</a></h3>
 <p>Skills include new service creation, EDA, deploy to GKE/EKS, drift checks,
 model retraining, release checklist, rollback, cost audit, security audit,
 incident response, stack-profile switching, adopter onboarding,
 documentation-coherence enforcement, CI-green verification, dual-axis PR
-review, systematic bug diagnosis, pre-scaffold ML problem spec capture and
-blameless incident postmortems.</p>
+review, systematic bug diagnosis, pre-scaffold ML problem spec capture,
+blameless incident postmortems and edge-protection coverage auditing.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Workflows (17)</small>
+<small>Workflows (18)</small>
 <h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/workflows">Slash-command operating paths</a></h3>
 <p>Workflows such as <code>/new-service</code>, <code>/incident</code>,
 <code>/release</code>, <code>/drift-check</code>, <code>/retrain</code>,
 <code>/rollback</code>, <code>/secret-breach</code>, <code>/stack-switch</code>,
-<code>/onboard</code>, <code>/doc-coherence</code> and <code>/ci-green</code>
-turn repeatable MLOps work into auditable steps.</p>
+<code>/onboard</code>, <code>/doc-coherence</code>, <code>/ci-green</code> and
+<code>/edge-setup</code> turn repeatable MLOps work into auditable steps.</p>
 </div>
 </div>
 
@@ -293,6 +300,15 @@ a naming convention.</p>
 <p><strong>Corrective action:</strong> a read-only skill verifies CI status
 before release or a staging/prod deploy; overriding a red or missing signal
 requires explicit human approval and an audit-trail entry (D-36).</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Edge exposure</small>
+<h3>No public Ingress without edge protection</h3>
+<p><strong>Corrective action:</strong> a production overlay must wire in
+Cloud Armor or AWS WAF+Shield (Cloudflare optional) before going live;
+disabling an existing WAF/rate-limit rule is a STOP-class action in every
+environment, no exceptions (D-38).</p>
 </div>
 </div>
 
@@ -418,6 +434,15 @@ precondition into release and staging/prod deploy.</p>
 <p>A documented swap matrix for cloud, experiment tracking, serving backend,
 IaC engine and scaffolding tool — so "agnostic to technologies" is a
 verifiable claim, not a slogan.</p>
+</div>
+
+<div class="portfolio-card" markdown="1">
+<small>Edge protection</small>
+<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/decisions/ADR-042-native-cloud-edge-protection.md">Native-cloud-first, Cloudflare optional</a></h3>
+<p>Cloud Armor and AWS WAF+Shield Standard are the default per-cloud WAF and
+DDoS layer; Cloudflare stays available for genuinely concurrent multi-cloud
+deployments, but is never the default — the common case is one cloud, not
+a third-party account layered on top of it.</p>
 </div>
 </div>
 

@@ -13,10 +13,10 @@ distilled from building this portfolio end-to-end — then hardened further
 against NIST AI RMF, ISO/IEC 42001, the EU AI Act and frontier open-source
 scaffolds (Kubeflow, ZenML, LangGraph) in a later benchmarking pass.
 
-### What's in the template (latest, `v0.20.0` and later on `main`)
+### What's in the template (latest, `v0.21.0` and later on `main`)
 
 - **Vendor-neutral agentic canon, 4 IDE surfaces** — rules, skills and
-  workflows live once in `agentic/` (17 rules / 25 skills / 17 workflows)
+  workflows live once in `agentic/` (18 rules / 26 skills / 18 workflows)
   and are regenerated, never hand-edited, into Devin (full-body mirror),
   Cursor, Claude Code and Codex (pointer files). A manifest cross-indexes
   every surface so the mapping is validated, not trusted by memory.
@@ -53,6 +53,13 @@ scaffolds (Kubeflow, ZenML, LangGraph) in a later benchmarking pass.
   ISO/IEC 42001 and EU AI Act Arts. 9–15 control questions. Explicitly
   descriptive, not certifying — no framework certifies a template, only
   a deployed system.
+- **Native-cloud edge protection (D-38, ADR-042)** — Cloud Armor (GCP) and
+  AWS WAF+Shield Standard (AWS) are the per-cloud default, wired via
+  opt-in Kustomize Components; Cloudflare stays available for genuinely
+  concurrent multi-cloud deployments but is never the default. A
+  read-only `edge-audit` skill and two alerts track coverage and audit
+  freshness — deliberately without duplicating each cloud's own WAF
+  analytics console.
 - **Portability, not lock-in** — a documented swap matrix
   (`docs/ADOPTION.md`) for cloud, experiment tracking, serving backend,
   model framework, data validation, drift detection, scaffolding engine
@@ -172,10 +179,12 @@ ML-MLOps-Portfolio (this repo)
             │  - Vendor-neutral agentic canon, 4 IDE surfaces
             │    (Devin · Cursor · Claude Code · Codex)
             │  - Behavior Protocol: AUTO / CONSULT / STOP (static + dynamic)
-            │  - 37 anti-patterns D-01 → D-37
+            │  - 38 anti-patterns D-01 → D-38
             │  - Compliance mapping: NIST AI RMF · ISO 42001 · EU AI Act
             │  - CI-Green Verification Gate (D-36) — read is AUTO,
             │    override is STOP
+            │  - Edge protection (D-38) — Cloud Armor / AWS WAF+Shield
+            │    native by default, Cloudflare opt-in for multi-cloud
             │  - SLSA L2 supply chain — SHA-pinned CI, OpenSSF Scorecard,
             │    Cosign signing, Kyverno digest + signature gates,
             │    SBOM (CycloneDX + SPDX) attested by digest

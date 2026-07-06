@@ -14,7 +14,7 @@ Duque Ortega Mutis — Building ML systems that survive production.
 Three ML services (BankChurn, NLPInsight, ChicagoTaxi) deployed on GKE and EKS,
 395+ tests, 18 architecture decision records. Three production incidents
 root-caused: 81% error rate to 0%, SHAP all-zeros, HPA that could never scale
-down. Open-source ML-MLOps Production Template: 36 anti-patterns, 38 ADRs,
+down. Open-source ML-MLOps Production Template: 38 anti-patterns, 42 ADRs,
 SLSA L2 supply chain, governed AI-assisted development. 14 years of operations
 leadership before ML. Target roles: MLOps Engineer, Platform Engineer (ML infra),
 ML Engineer — evaluated on evidence, not tenure. Mexico City.
