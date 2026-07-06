@@ -2743,91 +2743,69 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
 ::-webkit-scrollbar-thumb:hover { background: rgba(34, 211, 238, 0.5); }
 
 /* =========================================================
-   Chat widget — floating neural-avatar assistant, mounted site-wide
-   by site.js. Sits above content (z-index 90) but under nothing else
-   the site currently defines above 100 (reading-progress hairline).
+   Chat widget — the "neural agent", a procedurally-drawn wireframe
+   figure (waist-up bust made of neural-network nodes/edges, drawn by
+   site.js on a transparent canvas). Deliberately NO circle, border or
+   backdrop: the page itself shows through her silhouette, so she reads
+   as made of information/energy rather than sitting inside a button.
+   Sits above content (z-index 90) but under nothing else the site
+   currently defines above 100 (reading-progress hairline).
    ========================================================= */
 .pf-chat-launcher {
   position: fixed;
-  right: 1.4rem;
-  bottom: 1.4rem;
+  right: 1rem;
+  bottom: 0.4rem;
   z-index: 90;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(34, 211, 238, 0.4);
-  background: radial-gradient(circle at 50% 30%, rgba(34, 211, 238, 0.16), rgba(11, 17, 32, 0.88) 70%);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: var(--portfolio-blue);
-  cursor: pointer;
+  width: 122px;
+  height: 154px;
+  display: block;
+  border: none;
+  background: none;
   padding: 0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 24px rgba(34, 211, 238, 0.18);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 16px rgba(34, 211, 238, 0.12));
+  transition: filter 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .pf-chat-launcher:hover {
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), 0 0 32px rgba(34, 211, 238, 0.3);
-  border-color: rgba(34, 211, 238, 0.7);
+  transform: translateY(-3px);
+  filter: drop-shadow(0 10px 26px rgba(34, 211, 238, 0.3));
 }
-.pf-chat-launcher.is-open {
-  border-color: rgba(34, 211, 238, 0.75);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 30px rgba(34, 211, 238, 0.35);
-}
-/* the neural-bust avatar image fills the circle; the source art is a
-   glowing emblem on pure black, so a slight zoom (oversized img inside
-   a clipping circle) hides its outer ring, and the black corners merge
-   with the button's dark backdrop. The clip is a separate layer so the
-   hint bubble can still overflow the button. */
-.pf-chat-avatar-clip {
+.pf-chat-agent {
   position: absolute;
   inset: 0;
-  border-radius: 50%;
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: block;
   pointer-events: none;
 }
-.pf-chat-avatar {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 124%;
-  height: 124%;
-  transform: translate(-50%, -50%);
-  object-fit: cover;
-  transition: opacity 0.25s ease, filter 0.25s ease;
-}
-.pf-chat-launcher.is-open .pf-chat-avatar { opacity: 0.35; filter: blur(1px); }
-/* ✕ overlay, only while open */
+/* ✕ chip near her shoulder, only while the panel is open */
 .pf-chat-x {
   position: absolute;
-  inset: 0;
+  top: 4px;
+  right: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid rgba(34, 211, 238, 0.5);
+  background: rgba(8, 13, 28, 0.92);
   color: var(--portfolio-blue);
   opacity: 0;
-  transform: scale(0.7);
+  transform: scale(0.6);
   transition: opacity 0.25s ease, transform 0.25s ease;
   pointer-events: none;
 }
-.pf-chat-x svg { width: 22px; height: 22px; display: block; }
+.pf-chat-x svg { width: 13px; height: 13px; display: block; }
 .pf-chat-launcher.is-open .pf-chat-x { opacity: 1; transform: scale(1); }
-@media (prefers-reduced-motion: no-preference) {
-  .pf-chat-launcher { animation: pf-chat-breathe 3.6s ease-in-out infinite; }
-}
-@keyframes pf-chat-breathe {
-  0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(34, 211, 238, 0.14); }
-  50% { transform: scale(1.04); box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5), 0 0 34px rgba(34, 211, 238, 0.3); }
-}
 
-/* speech-bubble hint: a quiet nudge, on only while pulsed by JS */
+/* speech-bubble hint: a quiet nudge, on only while pulsed by JS —
+   floats beside her head, on the free (left) side */
 .pf-chat-hint {
   position: absolute;
-  top: -0.35rem;
-  right: -0.35rem;
+  top: 14px;
+  left: -16px;
   display: flex;
   align-items: center;
   gap: 2px;
@@ -2854,13 +2832,18 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
   .pf-chat-hint.is-on span:nth-child(3) { animation-delay: 0.3s; }
 }
 
+/* phones: slightly smaller figure, tucked closer to the corner */
+@media screen and (max-width: 44.9375em) {
+  .pf-chat-launcher { width: 96px; height: 122px; right: 0.6rem; bottom: 0.3rem; }
+}
+
 .pf-chat-panel {
   position: fixed;
   right: 1.4rem;
-  bottom: 5.6rem;
+  bottom: 10.4rem; /* clears the 154px-tall agent figure below it */
   z-index: 90;
   width: min(380px, 92vw);
-  height: min(32rem, 70vh);
+  height: min(28rem, calc(100vh - 12.5rem));
   flex-direction: column;
   border-radius: 16px;
   border: 1px solid var(--portfolio-line);
@@ -3019,8 +3002,7 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
 .pf-chat-form button svg { width: 18px; height: 18px; display: block; }
 
 @media (max-width: 480px) {
-  .pf-chat-panel { right: 0.7rem; left: 0.7rem; width: auto; bottom: 5.2rem; }
-  .pf-chat-launcher { right: 1rem; bottom: 1rem; }
+  .pf-chat-panel { right: 0.7rem; left: 0.7rem; width: auto; bottom: 8.4rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

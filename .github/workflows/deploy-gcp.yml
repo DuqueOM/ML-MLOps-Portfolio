@@ -1,14 +1,15 @@
 name: Deploy to GKE
 
+# Manual trigger only: auto-deploy on push needs live GCP credentials
+# (GCP_SA_KEY currently returns invalid_grant — service account gone),
+# so every push touching the services painted the commit red with a
+# deploy that could never succeed. Re-add the push trigger when the
+# cluster + service account are provisioned again:
+#   push:
+#     branches: [main]
+#     paths: [BankChurn-Predictor/**, NLPInsight-Analyzer/**,
+#             ChicagoTaxi-Demand-Pipeline/**, k8s/**]
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'BankChurn-Predictor/**'
-      - 'NLPInsight-Analyzer/**'
-      - 'ChicagoTaxi-Demand-Pipeline/**'
-      - 'k8s/**'
-      - '.github/workflows/deploy-gcp.yml'
   workflow_dispatch:
     inputs:
       service:

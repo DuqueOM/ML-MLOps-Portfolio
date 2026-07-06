@@ -9,11 +9,12 @@
       case carousel — auto-drift, cursor-edge direction/speed, drag to
       scrub, click/tap to center, edge fade handled by CSS. Auto-mounts
       on About's ".pf-toolbox".
-   3) Chat widget: floating assistant backed by the Cloudflare Worker in
-      cloudflare/portfolio-chat-worker.js. Mounted on every page since a
-      recruiter can land on any tab. History lives in memory only —
-      resets on reload, nothing persisted, nothing sent anywhere but the
-      Worker (which itself only forwards to Workers AI). */
+   3) Chat widget: the "neural agent" — a procedurally-drawn wireframe
+      figure (canvas, transparent) that opens a chat panel backed by the
+      Cloudflare Worker in cloudflare/portfolio-chat-worker.js. Mounted
+      on every page since a recruiter can land on any tab. History lives
+      in memory only — resets on reload, nothing persisted, nothing sent
+      anywhere but the Worker (which only forwards to Workers AI). */
 (function () {
   "use strict";
 
@@ -159,12 +160,300 @@
     })();
   }
 
-  /* ---- 3) chat widget: floating neural-avatar assistant + panel ----
-     The launcher shows the neural "wireframe bust" avatar image (same
-     visual language as the site's neural scenes), breathing slowly.
+  /* ---- 3a) the neural agent figure --------------------------------
+     A waist-up bust drawn live on a transparent canvas: a 3D ellipsoid
+     head mesh that turns to look around (idle glances + occasional
+     cursor tracking), hair strands of linked nodes floating as if
+     weightless, and a breathing torso mesh with a pulsing energy core.
+     Same visual language as neural-field.js (nodes, thin edges,
+     cyan/violet palette) so she reads as made of the site's own
+     network — information, energy. Nothing is ever painted behind her
+     silhouette: whatever the page shows through IS her backdrop. */
+  function mountChatAgent(canvas, launcher) {
+    var ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    var DPR = Math.min(window.devicePixelRatio || 1, 2);
+    var TAU = Math.PI * 2;
+    var CYAN = "34,211,238", VIOLET = "167,139,250", WHITE = "226,242,255";
+
+    /* draw in fixed design units (122 wide); resizing just rescales */
+    var S = 1, DH = 154;
+    function resize() {
+      var r = canvas.getBoundingClientRect();
+      var w = Math.max(1, r.width), h = Math.max(1, r.height);
+      S = w / 122;
+      DH = h / S;
+      canvas.width = w * DPR;
+      canvas.height = h * DPR;
+      ctx.setTransform(DPR * S, 0, 0, DPR * S, 0, 0);
+    }
+    resize();
+    var rsT = null;
+    window.addEventListener("resize", function () {
+      clearTimeout(rsT);
+      rsT = setTimeout(function () { resize(); step(performance.now()); }, 150);
+    });
+
+    function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+    /* deterministic pseudo-random so she looks the same on every page */
+    var seed = 7;
+    function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+
+    /* ---- head: 3D ellipsoid mesh (lat rings x meridians) ---- */
+    var HEAD = { x: 61, y: 44, rx: 21, ry: 25, rz: 18 };
+    var LATS = [-64, -38, -12, 14, 40, 64];
+    var LONS = 10;
+    var headNodes = [], headEdges = [];
+    LATS.forEach(function (lat) {
+      var phi = lat * Math.PI / 180;
+      for (var lo = 0; lo < LONS; lo++) {
+        var th = lo / LONS * TAU;
+        headNodes.push({
+          x: HEAD.rx * Math.cos(phi) * Math.sin(th),
+          y: -HEAD.ry * Math.sin(phi),
+          z: HEAD.rz * Math.cos(phi) * Math.cos(th)
+        });
+      }
+    });
+    headNodes.push({ x: 0, y: -HEAD.ry, z: 0 });      /* crown */
+    headNodes.push({ x: 0, y: HEAD.ry, z: 2.5 });     /* chin */
+    var crownIdx = headNodes.length - 2, chinIdx = headNodes.length - 1;
+    headNodes.forEach(function (n, i) { n.c = i % 7 === 0 ? VIOLET : CYAN; });
+    (function () {
+      for (var li = 0; li < LATS.length; li++) {
+        for (var lo = 0; lo < LONS; lo++) {
+          var i = li * LONS + lo;
+          headEdges.push([i, li * LONS + (lo + 1) % LONS]);
+          if (li < LATS.length - 1) headEdges.push([i, (li + 1) * LONS + lo]);
+        }
+      }
+      for (var lo2 = 0; lo2 < LONS; lo2 += 2) {
+        headEdges.push([(LATS.length - 1) * LONS + lo2, crownIdx]);
+        headEdges.push([lo2, chinIdx]);
+      }
+    })();
+
+    /* a point on the head surface (lat in deg, lon in rad from front) */
+    function surf(latDeg, lonRad, push) {
+      var phi = latDeg * Math.PI / 180;
+      return {
+        x: HEAD.rx * Math.cos(phi) * Math.sin(lonRad) * (push || 1),
+        y: -HEAD.ry * Math.sin(phi),
+        z: HEAD.rz * Math.cos(phi) * Math.cos(lonRad) * (push || 1)
+      };
+    }
+    var eyes = [surf(-2, -0.38, 1.03), surf(-2, 0.38, 1.03)];
+
+    /* ---- hair: strands anchored to the scalp, floating outward ---- */
+    var hairs = [];
+    for (var h = 0; h < 14; h++) {
+      var side = h % 2 === 0 ? 1 : -1;
+      hairs.push({
+        a: surf(6 + rnd() * 56, side * Math.PI * (0.32 + rnd() * 0.62), 1.04),
+        segs: 6 + (rnd() * 3 | 0),
+        len: 5.5 + rnd() * 2.6,
+        phase: rnd() * TAU,
+        omega: 0.0007 + rnd() * 0.0007,
+        amp: 0.10 + rnd() * 0.07,
+        color: rnd() < 0.55 ? CYAN : VIOLET
+      });
+    }
+
+    /* ---- torso rows (2D mesh; the waist is cut by the canvas edge,
+       which is what makes her read as "from the waist up") ---- */
+    var ROWS = [
+      { y: 97, hw: 34, yawK: 5, crown: 7 },
+      { y: 110, hw: 30, yawK: 3.4, crown: 2 },
+      { y: 124, hw: 26, yawK: 2, crown: 2 },
+      { y: 138, hw: 23.5, yawK: 1, crown: 1.5 },
+      { y: 152, hw: 22.5, yawK: 0.4, crown: 1 }
+    ];
+    var FRACS = [-1, -0.55, 0, 0.55, 1];
+
+    /* ---- gaze state machine: idle glances / cursor follow / panel ---- */
+    var yaw = 0.12, pitch = 0.02, tYaw = 0.12, tPitch = 0.02;
+    var mode = "idle";
+    var nextGlance = 1400, followUntil = 0, nextFollowOk = 6000;
+    var blinkAt = 2400, blink = 0;
+    var mouse = { x: 0, y: 0, at: -1e9 };
+    if (finePointer && !reduced) {
+      window.addEventListener("mousemove", function (e) {
+        mouse.x = e.clientX; mouse.y = e.clientY; mouse.at = performance.now();
+      }, { passive: true });
+    }
+
+    function step(t) {
+      var open = launcher.classList.contains("is-open");
+      if (open) {
+        /* panel sits right above her — she looks up at it */
+        mode = "panel"; tYaw = -0.04; tPitch = -0.18;
+      } else if (mode === "panel") {
+        mode = "idle"; nextGlance = t + 500;
+      }
+      if (!open && finePointer && !reduced &&
+          t >= nextFollowOk && t - mouse.at < 1400) {
+        mode = "follow";
+        followUntil = t + 2600 + Math.random() * 1800;
+        nextFollowOk = followUntil + 7000 + Math.random() * 9000;
+      }
+      if (mode === "follow") {
+        if (t > followUntil) {
+          mode = "idle"; nextGlance = t + 400;
+        } else {
+          var rr = canvas.getBoundingClientRect();
+          var hx = rr.left + HEAD.x * S, hy = rr.top + HEAD.y * S;
+          tYaw = clamp((mouse.x - hx) / 260, -0.62, 0.62);
+          tPitch = clamp((mouse.y - hy) / 420, -0.30, 0.34);
+        }
+      }
+      if (mode === "idle" && t >= nextGlance) {
+        nextGlance = t + 2600 + Math.random() * 3800;
+        tYaw = (Math.random() * 1.1 - 0.55) * (Math.random() < 0.75 ? 1 : 0.3);
+        tPitch = Math.random() * 0.26 - 0.10;
+      }
+      yaw += (tYaw - yaw) * 0.055;
+      pitch += (tPitch - pitch) * 0.055;
+      if (t >= blinkAt) { blinkAt = t + 2400 + Math.random() * 3600; blink = 1; }
+      if (blink > 0) blink = Math.max(0, blink - 0.09);
+
+      var cy = Math.cos(yaw), sy = Math.sin(yaw);
+      var cp = Math.cos(pitch), sp = Math.sin(pitch);
+      var bob = Math.sin(t / 3400 * TAU) * 1.1;
+      var breathe = 1 + Math.sin(t / 3400 * TAU) * 0.012;
+
+      function proj(p) {
+        var x = p.x * cy + p.z * sy;
+        var z = -p.x * sy + p.z * cy;
+        var y = p.y * cp - z * sp;
+        z = p.y * sp + z * cp;
+        return { x: HEAD.x + x, y: HEAD.y + y + bob * 0.5, z: z };
+      }
+
+      ctx.clearRect(-2, -2, 126, DH + 4);
+
+      /* hair first, so the head mesh overlays it (reads as behind) */
+      ctx.lineWidth = 1;
+      hairs.forEach(function (hs) {
+        var a = proj(hs.a);
+        var depth = (a.z / HEAD.rz + 1) / 2;
+        var alpha0 = 0.22 + depth * 0.42;
+        var ang = Math.atan2(a.y - HEAD.y, a.x - HEAD.x);
+        var drift = Math.sin(t / 5200 * TAU + hs.phase) * 0.15;
+        var px = a.x, py = a.y;
+        for (var i = 0; i < hs.segs; i++) {
+          ang += Math.sin(t * hs.omega + hs.phase + i * 0.62) *
+                 hs.amp * (1 + i * 0.30) + drift * 0.12;
+          var nx = px + Math.cos(ang) * hs.len;
+          var ny = py + Math.sin(ang) * hs.len;
+          var fal = alpha0 * (1 - i / hs.segs);
+          ctx.strokeStyle = "rgba(" + hs.color + "," + fal.toFixed(3) + ")";
+          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(nx, ny); ctx.stroke();
+          ctx.fillStyle = "rgba(" + hs.color + "," + (fal * 0.9).toFixed(3) + ")";
+          ctx.beginPath(); ctx.arc(nx, ny, 1.05, 0, TAU); ctx.fill();
+          px = nx; py = ny;
+        }
+      });
+
+      /* head wireframe — back edges dim, front bright (real depth) */
+      var P = headNodes.map(proj);
+      headEdges.forEach(function (e) {
+        var a = P[e[0]], b = P[e[1]];
+        var d = ((a.z + b.z) / 2 / HEAD.rz + 1) / 2;
+        ctx.strokeStyle = "rgba(" + CYAN + "," + (0.05 + d * 0.30).toFixed(3) + ")";
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      });
+      P.forEach(function (p, i) {
+        var d = (p.z / HEAD.rz + 1) / 2;
+        ctx.fillStyle = "rgba(" + headNodes[i].c + "," + (0.15 + d * 0.55).toFixed(3) + ")";
+        ctx.beginPath(); ctx.arc(p.x, p.y, 0.7 + d * 0.9, 0, TAU); ctx.fill();
+      });
+
+      /* eyes — bright, blinking, only while facing forward enough */
+      eyes.forEach(function (ep) {
+        var e2 = proj(ep);
+        if (e2.z < 3) return;
+        var al = 0.9 * (1 - Math.min(1, blink * 1.5));
+        ctx.fillStyle = "rgba(" + WHITE + "," + (al * 0.22).toFixed(3) + ")";
+        ctx.beginPath(); ctx.arc(e2.x, e2.y, 3.4, 0, TAU); ctx.fill();
+        ctx.fillStyle = "rgba(" + WHITE + "," + al.toFixed(3) + ")";
+        ctx.beginPath(); ctx.arc(e2.x, e2.y, 1.6, 0, TAU); ctx.fill();
+      });
+
+      /* neck: chin down to the shoulder line, turning with the head */
+      var chin = P[chinIdx];
+      ctx.strokeStyle = "rgba(" + CYAN + ",0.30)";
+      [-1, 1].forEach(function (s2) {
+        ctx.beginPath();
+        ctx.moveTo(chin.x + s2 * 5, chin.y + 1);
+        ctx.lineTo(61 + yaw * 6 + s2 * 7, 92 + bob * 0.4);
+        ctx.stroke();
+      });
+
+      /* torso mesh: shoulders down to the waist */
+      var rowPts = ROWS.map(function (rw) {
+        var cx2 = 61 + yaw * rw.yawK;
+        var hw = rw.hw * breathe;
+        return FRACS.map(function (f) {
+          return {
+            x: cx2 + f * hw,
+            y: rw.y - (1 - Math.abs(f)) * rw.crown + bob * 0.35
+          };
+        });
+      });
+      ctx.strokeStyle = "rgba(" + CYAN + ",0.22)";
+      rowPts.forEach(function (row) {
+        for (var i2 = 0; i2 < row.length - 1; i2++) {
+          ctx.beginPath();
+          ctx.moveTo(row[i2].x, row[i2].y);
+          ctx.lineTo(row[i2 + 1].x, row[i2 + 1].y);
+          ctx.stroke();
+        }
+      });
+      for (var ri = 0; ri < rowPts.length - 1; ri++) {
+        for (var fi = 0; fi < FRACS.length; fi++) {
+          ctx.beginPath();
+          ctx.moveTo(rowPts[ri][fi].x, rowPts[ri][fi].y);
+          ctx.lineTo(rowPts[ri + 1][fi].x, rowPts[ri + 1][fi].y);
+          ctx.stroke();
+        }
+      }
+      rowPts.forEach(function (row, ri2) {
+        row.forEach(function (p, fi2) {
+          var g = 0.5 + 0.5 * Math.sin(t / 2800 + ri2 * 1.7 + fi2 * 2.3);
+          ctx.fillStyle = "rgba(" + (((ri2 + fi2) % 5 === 0) ? VIOLET : CYAN) + "," +
+            (0.25 + g * 0.35).toFixed(3) + ")";
+          ctx.beginPath(); ctx.arc(p.x, p.y, 1 + g * 0.5, 0, TAU); ctx.fill();
+        });
+      });
+
+      /* energy core at the sternum — her "heartbeat" */
+      var coreG = 0.5 + 0.5 * Math.sin(t / 1600 * TAU);
+      var coreX = 61 + yaw * 4, coreY = 106 + bob * 0.35;
+      ctx.fillStyle = "rgba(" + CYAN + "," + (0.10 + coreG * 0.18).toFixed(3) + ")";
+      ctx.beginPath(); ctx.arc(coreX, coreY, 5.5, 0, TAU); ctx.fill();
+      ctx.fillStyle = "rgba(" + WHITE + "," + (0.5 + coreG * 0.45).toFixed(3) + ")";
+      ctx.beginPath(); ctx.arc(coreX, coreY, 1.9, 0, TAU); ctx.fill();
+    }
+
+    /* draw one frame immediately (visible even in background tabs /
+       before the loop's first tick), then animate */
+    step(performance.now());
+    if (!reduced) {
+      (function loop(t) {
+        requestAnimationFrame(loop);
+        if (document.hidden) return;
+        step(t || performance.now());
+      })(performance.now());
+    }
+  }
+
+  /* ---- 3) chat widget: neural-agent assistant + panel ----
+     The launcher IS the agent figure above — no bubble, no circle.
      A speech-bubble hint with three dots pulses in every so often
      before the visitor has opened it once — a quiet nudge, not a
-     badge/counter. When open, the avatar dims under a ✕ overlay. */
+     badge/counter. While open, a small ✕ chip appears by her shoulder
+     and she looks up toward the panel. */
   function initChatWidget() {
     if (document.querySelector(".pf-chat-launcher")) return;
 
@@ -174,22 +463,13 @@
     var hasOpened = false;
     var hintTimer = null;
 
-    /* pages sit at different depths — derive the site base from this
-       script's own URL instead of hardcoding a relative path */
-    var sj = document.querySelector('script[src*="site.js"]');
-    var AVATAR_URL = sj
-      ? sj.src.replace(/assets\/javascripts\/site\.js.*$/, "media/profile/assistant-avatar.png")
-      : "media/profile/assistant-avatar.png";
-
     var launcher = document.createElement("button");
     launcher.type = "button";
     launcher.className = "pf-chat-launcher";
     launcher.setAttribute("aria-label", "Open portfolio assistant");
     launcher.setAttribute("aria-expanded", "false");
     launcher.innerHTML =
-      '<span class="pf-chat-avatar-clip" aria-hidden="true">' +
-        '<img class="pf-chat-avatar" src="' + AVATAR_URL + '" alt="">' +
-      "</span>" +
+      '<canvas class="pf-chat-agent" aria-hidden="true"></canvas>' +
       '<span class="pf-chat-x" aria-hidden="true">' +
         '<svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>' +
       "</span>" +
@@ -220,6 +500,8 @@
 
     document.body.appendChild(launcher);
     document.body.appendChild(panel);
+    /* mount after append — the figure needs real layout dimensions */
+    mountChatAgent(launcher.querySelector(".pf-chat-agent"), launcher);
 
     var log = panel.querySelector(".pf-chat-log");
     var form = panel.querySelector(".pf-chat-form");

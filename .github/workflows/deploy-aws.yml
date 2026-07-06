@@ -1,14 +1,15 @@
 name: Deploy to EKS
 
+# Manual trigger only: auto-deploy on push needs live AWS credentials
+# (Configure AWS credentials fails immediately — no valid keys in
+# secrets), so every push touching the services painted the commit red
+# with a deploy that could never succeed. Re-add the push trigger when
+# the cluster + IAM credentials are provisioned again:
+#   push:
+#     branches: [main]
+#     paths: [BankChurn-Predictor/**, NLPInsight-Analyzer/**,
+#             ChicagoTaxi-Demand-Pipeline/**, k8s/overlays/aws/**]
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'BankChurn-Predictor/**'
-      - 'NLPInsight-Analyzer/**'
-      - 'ChicagoTaxi-Demand-Pipeline/**'
-      - 'k8s/overlays/aws/**'
-      - '.github/workflows/deploy-aws.yml'
   workflow_dispatch:
     inputs:
       service:
