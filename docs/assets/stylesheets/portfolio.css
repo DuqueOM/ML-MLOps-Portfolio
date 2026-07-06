@@ -2754,21 +2754,21 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
 .pf-chat-launcher {
   position: fixed;
   right: 1rem;
-  bottom: 0.4rem;
+  bottom: 1rem; /* same breathing room below as on the right */
   z-index: 90;
-  width: 122px;
-  height: 154px;
+  width: 150px;
+  height: 190px;
   display: block;
   border: none;
   background: none;
   padding: 0;
   cursor: pointer;
   filter: drop-shadow(0 6px 16px rgba(34, 211, 238, 0.12));
-  transition: filter 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: filter 0.3s ease;
 }
+/* hover: glow only — no movement (a jump read as glitchy) */
 .pf-chat-launcher:hover {
-  transform: translateY(-3px);
-  filter: drop-shadow(0 10px 26px rgba(34, 211, 238, 0.3));
+  filter: drop-shadow(0 8px 24px rgba(34, 211, 238, 0.3));
 }
 .pf-chat-agent {
   position: absolute;
@@ -2804,7 +2804,7 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
    floats beside her head, on the free (left) side */
 .pf-chat-hint {
   position: absolute;
-  top: 14px;
+  top: 46px; /* beside her head (the top strip is hair headroom) */
   left: -16px;
   display: flex;
   align-items: center;
@@ -2834,16 +2834,16 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
 
 /* phones: slightly smaller figure, tucked closer to the corner */
 @media screen and (max-width: 44.9375em) {
-  .pf-chat-launcher { width: 96px; height: 122px; right: 0.6rem; bottom: 0.3rem; }
+  .pf-chat-launcher { width: 112px; height: 142px; right: 0.6rem; bottom: 0.6rem; }
 }
 
 .pf-chat-panel {
   position: fixed;
   right: 1.4rem;
-  bottom: 10.4rem; /* clears the 154px-tall agent figure below it */
+  bottom: 13.9rem; /* clears the 190px-tall agent figure below it */
   z-index: 90;
   width: min(380px, 92vw);
-  height: min(28rem, calc(100vh - 12.5rem));
+  height: min(26rem, calc(100vh - 16rem));
   flex-direction: column;
   border-radius: 16px;
   border: 1px solid var(--portfolio-line);
@@ -3002,7 +3002,7 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
 .pf-chat-form button svg { width: 18px; height: 18px; display: block; }
 
 @media (max-width: 480px) {
-  .pf-chat-panel { right: 0.7rem; left: 0.7rem; width: auto; bottom: 8.4rem; }
+  .pf-chat-panel { right: 0.7rem; left: 0.7rem; width: auto; bottom: 10.4rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

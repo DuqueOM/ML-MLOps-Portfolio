@@ -176,12 +176,15 @@
     var TAU = Math.PI * 2;
     var CYAN = "34,211,238", VIOLET = "167,139,250", WHITE = "226,242,255";
 
-    /* draw in fixed design units (122 wide); resizing just rescales */
-    var S = 1, DH = 154;
+    /* draw in fixed design units (150 wide); resizing just rescales.
+       The figure sits low in the canvas on purpose: the strip above
+       her head is headroom so floating hair never hits the canvas
+       edge and gets shaved into a flat horizontal line. */
+    var S = 1, DH = 190;
     function resize() {
       var r = canvas.getBoundingClientRect();
       var w = Math.max(1, r.width), h = Math.max(1, r.height);
-      S = w / 122;
+      S = w / 150;
       DH = h / S;
       canvas.width = w * DPR;
       canvas.height = h * DPR;
@@ -201,9 +204,9 @@
     function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
 
     /* ---- head: 3D ellipsoid mesh (lat rings x meridians) ---- */
-    var HEAD = { x: 61, y: 44, rx: 21, ry: 25, rz: 18 };
+    var HEAD = { x: 75, y: 68, rx: 21.5, ry: 25.5, rz: 18.5 };
     var LATS = [-64, -38, -12, 14, 40, 64];
-    var LONS = 10;
+    var LONS = 12;
     var headNodes = [], headEdges = [];
     LATS.forEach(function (lat) {
       var phi = lat * Math.PI / 180;
@@ -243,16 +246,30 @@
         z: HEAD.rz * Math.cos(phi) * Math.cos(lonRad) * (push || 1)
       };
     }
-    var eyes = [surf(-2, -0.38, 1.03), surf(-2, 0.38, 1.03)];
+    /* ---- face: contour + features so she reads as a person, not a
+       stick figure. All are surface polylines that rotate with the
+       head; alpha is scaled by how front-facing they are. ---- */
+    var eyes = [surf(0, -0.36, 1.03), surf(0, 0.36, 1.03)];
+    var faceOval = [
+      surf(30, -0.20), surf(26, -0.52), surf(6, -0.62), surf(-16, -0.52),
+      surf(-38, -0.33), surf(-54, -0.12), surf(-54, 0.12), surf(-38, 0.33),
+      surf(-16, 0.52), surf(6, 0.62), surf(26, 0.52), surf(30, 0.20)
+    ];
+    var browL = [surf(10, -0.50, 1.02), surf(13, -0.30, 1.02), surf(11, -0.15, 1.02)];
+    var browR = [surf(11, 0.15, 1.02), surf(13, 0.30, 1.02), surf(10, 0.50, 1.02)];
+    var nose = [surf(2, 0, 1.01), surf(-14, 0, 1.03)];
+    var noseBase = [surf(-17, -0.08, 1.02), surf(-18, 0, 1.03), surf(-17, 0.08, 1.02)];
+    var lipTop = [surf(-27, -0.16, 1.02), surf(-26, 0, 1.02), surf(-27, 0.16, 1.02)];
+    var lipLow = [surf(-33, -0.10, 1.02), surf(-34, 0, 1.02), surf(-33, 0.10, 1.02)];
 
     /* ---- hair: strands anchored to the scalp, floating outward ---- */
     var hairs = [];
-    for (var h = 0; h < 14; h++) {
+    for (var h = 0; h < 26; h++) {
       var side = h % 2 === 0 ? 1 : -1;
       hairs.push({
-        a: surf(6 + rnd() * 56, side * Math.PI * (0.32 + rnd() * 0.62), 1.04),
-        segs: 6 + (rnd() * 3 | 0),
-        len: 5.5 + rnd() * 2.6,
+        a: surf(2 + rnd() * 60, side * Math.PI * (0.30 + rnd() * 0.65), 1.04),
+        segs: 6 + (rnd() * 5 | 0),
+        len: 5 + rnd() * 3.5,
         phase: rnd() * TAU,
         omega: 0.0007 + rnd() * 0.0007,
         amp: 0.10 + rnd() * 0.07,
@@ -261,15 +278,18 @@
     }
 
     /* ---- torso rows (2D mesh; the waist is cut by the canvas edge,
-       which is what makes her read as "from the waist up") ---- */
+       which is what makes her read as "from the waist up"). The bust
+       row uses a negative crown (center dips) to give the chest
+       volume instead of a flat drum. ---- */
     var ROWS = [
-      { y: 97, hw: 34, yawK: 5, crown: 7 },
-      { y: 110, hw: 30, yawK: 3.4, crown: 2 },
-      { y: 124, hw: 26, yawK: 2, crown: 2 },
-      { y: 138, hw: 23.5, yawK: 1, crown: 1.5 },
-      { y: 152, hw: 22.5, yawK: 0.4, crown: 1 }
+      { y: 118, hw: 37, yawK: 5, crown: 8 },
+      { y: 130, hw: 33, yawK: 3.6, crown: 2.5 },
+      { y: 143, hw: 30, yawK: 2.4, crown: -3 },
+      { y: 157, hw: 26.5, yawK: 1.4, crown: 1.5 },
+      { y: 172, hw: 24, yawK: 0.7, crown: 1 },
+      { y: 188, hw: 25.5, yawK: 0.3, crown: 0.8 }
     ];
-    var FRACS = [-1, -0.55, 0, 0.55, 1];
+    var FRACS = [-1, -0.66, -0.33, 0, 0.33, 0.66, 1];
 
     /* ---- gaze state machine: idle glances / cursor follow / panel ---- */
     var yaw = 0.12, pitch = 0.02, tYaw = 0.12, tPitch = 0.02;
@@ -330,7 +350,24 @@
         return { x: HEAD.x + x, y: HEAD.y + y + bob * 0.5, z: z };
       }
 
-      ctx.clearRect(-2, -2, 126, DH + 4);
+      ctx.clearRect(-2, -2, 154, DH + 4);
+
+      /* front-gated surface polyline: rotates with the head, fades
+         out as it turns away from the viewer */
+      function facePath(pts, alpha, close) {
+        var zsum = 0;
+        ctx.beginPath();
+        for (var i3 = 0; i3 < pts.length; i3++) {
+          var q = proj(pts[i3]);
+          zsum += q.z;
+          if (i3 === 0) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
+        }
+        if (close) ctx.closePath();
+        var frontK = clamp(zsum / pts.length / HEAD.rz, 0, 1);
+        if (frontK <= 0.05) return;
+        ctx.strokeStyle = "rgba(" + WHITE + "," + (alpha * frontK).toFixed(3) + ")";
+        ctx.stroke();
+      }
 
       /* hair first, so the head mesh overlays it (reads as behind) */
       ctx.lineWidth = 1;
@@ -346,6 +383,11 @@
                  hs.amp * (1 + i * 0.30) + drift * 0.12;
           var nx = px + Math.cos(ang) * hs.len;
           var ny = py + Math.sin(ang) * hs.len;
+          /* soft walls: steer strands back before they reach a canvas
+             edge, so hair never gets shaved into a flat clipped line */
+          if (ny < 12) { ang = -ang * 0.5; ny = py + Math.sin(ang) * hs.len; }
+          if (nx < 6) { ang = Math.PI - ang; nx = px + Math.cos(ang) * hs.len; }
+          else if (nx > 144) { ang = Math.PI - ang; nx = px + Math.cos(ang) * hs.len; }
           var fal = alpha0 * (1 - i / hs.segs);
           ctx.strokeStyle = "rgba(" + hs.color + "," + fal.toFixed(3) + ")";
           ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(nx, ny); ctx.stroke();
@@ -369,6 +411,17 @@
         ctx.beginPath(); ctx.arc(p.x, p.y, 0.7 + d * 0.9, 0, TAU); ctx.fill();
       });
 
+      /* face — contour plane, brows, nose, lips: what turns the mesh
+         sphere into a person. Drawn over the mesh, under the eyes. */
+      ctx.lineWidth = 1;
+      facePath(faceOval, 0.30, true);
+      facePath(browL, 0.55);
+      facePath(browR, 0.55);
+      facePath(nose, 0.40);
+      facePath(noseBase, 0.35);
+      facePath(lipTop, 0.50);
+      facePath(lipLow, 0.38);
+
       /* eyes — bright, blinking, only while facing forward enough */
       eyes.forEach(function (ep) {
         var e2 = proj(ep);
@@ -386,13 +439,13 @@
       [-1, 1].forEach(function (s2) {
         ctx.beginPath();
         ctx.moveTo(chin.x + s2 * 5, chin.y + 1);
-        ctx.lineTo(61 + yaw * 6 + s2 * 7, 92 + bob * 0.4);
+        ctx.lineTo(75 + yaw * 6 + s2 * 7, 113 + bob * 0.4);
         ctx.stroke();
       });
 
       /* torso mesh: shoulders down to the waist */
       var rowPts = ROWS.map(function (rw) {
-        var cx2 = 61 + yaw * rw.yawK;
+        var cx2 = 75 + yaw * rw.yawK;
         var hw = rw.hw * breathe;
         return FRACS.map(function (f) {
           return {
@@ -427,9 +480,56 @@
         });
       });
 
+      /* collarbones: neck base out to the shoulder tips */
+      ctx.strokeStyle = "rgba(" + CYAN + ",0.28)";
+      [rowPts[0][0], rowPts[0][FRACS.length - 1]].forEach(function (tip, ti) {
+        var s3 = ti === 0 ? -1 : 1;
+        ctx.beginPath();
+        ctx.moveTo(75 + yaw * 6 + s3 * 7, 113 + bob * 0.4);
+        ctx.lineTo(tip.x, tip.y + 1.5);
+        ctx.stroke();
+      });
+
+      /* arms: two-contour wireframe from each shoulder, swaying gently,
+         cut by the canvas edge like the waist */
+      [-1, 1].forEach(function (s4) {
+        var tip = rowPts[0][s4 < 0 ? 0 : FRACS.length - 1];
+        var inn = rowPts[1][s4 < 0 ? 0 : FRACS.length - 1];
+        var sway = Math.sin(t / 2900 * TAU + (s4 < 0 ? 0 : 1.6)) * 1.0;
+        var elbOut = { x: tip.x + s4 * 7 + sway, y: 154 + bob * 0.3 };
+        var wriOut = { x: tip.x + s4 * 2 + sway * 1.4, y: 189 };
+        var elbIn = { x: tip.x - s4 * 1 + sway, y: 155 + bob * 0.3 };
+        var wriIn = { x: tip.x - s4 * 5 + sway * 1.4, y: 189 };
+        ctx.strokeStyle = "rgba(" + CYAN + ",0.22)";
+        ctx.beginPath();
+        ctx.moveTo(tip.x, tip.y); ctx.lineTo(elbOut.x, elbOut.y); ctx.lineTo(wriOut.x, wriOut.y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(inn.x, inn.y); ctx.lineTo(elbIn.x, elbIn.y); ctx.lineTo(wriIn.x, wriIn.y);
+        ctx.stroke();
+        /* rungs tie the two contours into a mesh */
+        [[0.45, 0.45], [1, 1], [0.5, 0.5]].forEach(function (fr, k) {
+          var ax, ay, bx, by;
+          if (k < 2) { /* shoulder->elbow span */
+            ax = tip.x + (elbOut.x - tip.x) * fr[0]; ay = tip.y + (elbOut.y - tip.y) * fr[0];
+            bx = inn.x + (elbIn.x - inn.x) * fr[1]; by = inn.y + (elbIn.y - inn.y) * fr[1];
+          } else { /* elbow->wrist span */
+            ax = elbOut.x + (wriOut.x - elbOut.x) * fr[0]; ay = elbOut.y + (wriOut.y - elbOut.y) * fr[0];
+            bx = elbIn.x + (wriIn.x - elbIn.x) * fr[1]; by = elbIn.y + (wriIn.y - elbIn.y) * fr[1];
+          }
+          ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+        });
+        /* joint nodes */
+        [elbOut, elbIn].forEach(function (jp, ji) {
+          var g2 = 0.5 + 0.5 * Math.sin(t / 2600 + s4 * 2 + ji);
+          ctx.fillStyle = "rgba(" + CYAN + "," + (0.3 + g2 * 0.3).toFixed(3) + ")";
+          ctx.beginPath(); ctx.arc(jp.x, jp.y, 1.1 + g2 * 0.4, 0, TAU); ctx.fill();
+        });
+      });
+
       /* energy core at the sternum — her "heartbeat" */
       var coreG = 0.5 + 0.5 * Math.sin(t / 1600 * TAU);
-      var coreX = 61 + yaw * 4, coreY = 106 + bob * 0.35;
+      var coreX = 75 + yaw * 4, coreY = 128 + bob * 0.35;
       ctx.fillStyle = "rgba(" + CYAN + "," + (0.10 + coreG * 0.18).toFixed(3) + ")";
       ctx.beginPath(); ctx.arc(coreX, coreY, 5.5, 0, TAU); ctx.fill();
       ctx.fillStyle = "rgba(" + WHITE + "," + (0.5 + coreG * 0.45).toFixed(3) + ")";
@@ -570,6 +670,13 @@
     closeBtn.addEventListener("click", close);
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && !panel.hidden) { close(); launcher.focus(); }
+    });
+    /* click anywhere outside the panel (and outside the agent, which
+       already toggles itself) minimizes the chat */
+    document.addEventListener("click", function (e) {
+      if (panel.hidden) return;
+      if (panel.contains(e.target) || launcher.contains(e.target)) return;
+      close();
     });
 
     form.addEventListener("submit", function (e) {
