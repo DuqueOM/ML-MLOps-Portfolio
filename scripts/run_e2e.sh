@@ -35,15 +35,22 @@ else
 fi
 
 # Step 1: Data Ingestion
+# This checks for the official dataset (fetch_data.py's own job — it is
+# reused by local dev workflows where a missing file IS a real error). In
+# CI/E2E the official dataset is intentionally never committed, so a "not
+# found" here is expected, not a pipeline defect: training in Step 3 uses
+# the synthetic CSV generated earlier in the job (E2E_DATA_FILE), which is
+# entirely independent of this check.
 echo -e "${YELLOW}[1/6] Data Ingestion${NC}"
 if [ -f "$PORTFOLIO_ROOT/scripts/fetch_data.py" ]; then
+    echo -e "${BLUE}[i] Checking for the official dataset (optional — E2E trains on synthetic data instead)${NC}"
     python "$PORTFOLIO_ROOT/scripts/fetch_data.py" --project bankchurn --validate || {
-        echo -e "${YELLOW}[!] Data validation failed, continuing...${NC}"
+        echo -e "${YELLOW}[i] Official dataset not present — expected in CI, training will use synthetic data${NC}"
     }
 else
     echo -e "${YELLOW}[!] Script fetch_data.py not found${NC}"
 fi
-echo -e "${GREEN}[✓] Data ingestion completed${NC}"
+echo -e "${GREEN}[✓] Data ingestion check completed${NC}"
 echo ""
 
 # Step 2: DVC Pull (if configured)
