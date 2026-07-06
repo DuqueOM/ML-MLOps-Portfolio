@@ -62,8 +62,6 @@ RUN python -m venv /opt/venv && \
     rm -rf /opt/venv/lib/python*/site-packages/torch/share 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/torch/_inductor 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/torch/_dynamo 2>/dev/null; \
-    rm -rf /opt/venv/lib/python*/site-packages/torch/_functorch 2>/dev/null; \
-    rm -rf /opt/venv/lib/python*/site-packages/torch/distributed 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/caffe2 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/pip 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/setuptools 2>/dev/null; \
