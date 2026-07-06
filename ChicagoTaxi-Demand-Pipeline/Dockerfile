@@ -27,7 +27,7 @@ RUN python -m venv /opt/venv && \
     rm -rf /opt/venv/lib/python*/site-packages/pip 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/setuptools 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/wheel 2>/dev/null; \
-    true
+    /opt/venv/bin/python -c "import fastapi, uvicorn"
 
 # Stage 2: Runtime
 FROM python:3.11-slim-bookworm AS runtime

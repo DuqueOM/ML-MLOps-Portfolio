@@ -25,7 +25,9 @@ COPY requirements.txt requirements.in* ./
 RUN python -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
     pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir --no-compile torch --index-url https://download.pytorch.org/whl/cpu && \
+    ( pip install --no-cache-dir --no-compile torch --index-url https://download.pytorch.org/whl/cpu \
+      || (sleep 10 && pip install --no-cache-dir --no-compile torch --index-url https://download.pytorch.org/whl/cpu) \
+      || (sleep 20 && pip install --no-cache-dir --no-compile torch --index-url https://download.pytorch.org/whl/cpu) ) && \
     if [ -f requirements.in ]; then \
         sed -e '/--hash=/d' -e 's/ \\$//' -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' -e '/^torch/d' requirements.in > requirements_clean.txt; \
     else \
@@ -49,7 +51,7 @@ RUN python -m venv /opt/venv && \
     rm -rf /opt/venv/lib/python*/site-packages/pip 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/setuptools 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/wheel 2>/dev/null; \
-    true
+    /opt/venv/bin/python -c "import fastapi, uvicorn, torch"
 
 # Stage 2: Runtime
 FROM python:3.13.14-slim-bookworm AS runtime

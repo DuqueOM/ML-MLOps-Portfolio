@@ -41,7 +41,7 @@ RUN python -m venv /opt/venv && \
     rm -rf /opt/venv/lib/python*/site-packages/pip 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/setuptools 2>/dev/null; \
     rm -rf /opt/venv/lib/python*/site-packages/wheel 2>/dev/null; \
-    true
+    /opt/venv/bin/python -c "import fastapi, uvicorn, xgboost, lightgbm"
 
 # Stage 2: Runtime — Lightweight final image
 FROM python:3.13.14-slim-bookworm AS runtime

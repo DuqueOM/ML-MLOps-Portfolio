@@ -29,6 +29,13 @@
 .md-typeset .ml-home { font-size: 1rem; }
 
 /* ---- canvas ---- */
+/* No opaque fallback color here (unlike a plain background-color) — the
+   layers below are pure gradients, staying transparent outside their
+   radii. --mlh-ink matches --md-default-bg-color exactly, so the body's
+   own background shows through with the same tone, but crucially it lets
+   the universal .pf-neural-ambient canvas (fixed, behind .md-container)
+   show through too, same as every other main page (about/contact/
+   recruiter-brief/projects), instead of being fully painted over. */
 .ml-home {
   position: relative;
   width: 100vw;
@@ -36,8 +43,7 @@
   background:
     radial-gradient(900px 540px at 12% -5%, rgba(34, 211, 238, 0.10), transparent 60%),
     radial-gradient(800px 600px at 95% 30%, rgba(251, 191, 36, 0.05), transparent 55%),
-    radial-gradient(700px 500px at 50% 110%, rgba(52, 211, 153, 0.05), transparent 60%),
-    var(--mlh-ink);
+    radial-gradient(700px 500px at 50% 110%, rgba(52, 211, 153, 0.05), transparent 60%);
   color: var(--mlh-text);
   font-family: var(--mlh-body);
   line-height: 1.65;
