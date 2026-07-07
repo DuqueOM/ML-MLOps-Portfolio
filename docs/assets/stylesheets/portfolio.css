@@ -2840,10 +2840,13 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
 .pf-chat-panel {
   position: fixed;
   right: 1.4rem;
-  bottom: 10.3rem; /* clears the 133px-tall agent figure below it */
+  /* sits right above the agent: 1rem launcher offset + 133px canvas,
+     minus the invisible hair-headroom strip at the canvas top, so the
+     panel hugs her head instead of floating far above it */
+  bottom: calc(1rem + 122px);
   z-index: 90;
   width: min(380px, 92vw);
-  height: min(28rem, calc(100vh - 12.5rem));
+  height: min(28rem, calc(100vh - 200px));
   flex-direction: column;
   border-radius: 16px;
   border: 1px solid var(--portfolio-line);
@@ -3002,7 +3005,7 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
 .pf-chat-form button svg { width: 18px; height: 18px; display: block; }
 
 @media (max-width: 480px) {
-  .pf-chat-panel { right: 0.7rem; left: 0.7rem; width: auto; bottom: 7.6rem; }
+  .pf-chat-panel { right: 0.7rem; left: 0.7rem; width: auto; bottom: calc(0.6rem + 91px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
