@@ -204,10 +204,10 @@
     var seed = 7;
     function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
 
-    /* the artwork: 294x420 source drawn at 133x190 design units,
+    /* the artwork: 315x420 source drawn at 142.5x190 design units,
        bottom-anchored and centered */
-    var IMG = { x: 8.5, y: 0, w: 133, h: 190 };
-    var HEADC = { x: 76, y: 56 };  /* her head center, for hair anchors */
+    var IMG = { x: 3.75, y: 0, w: 142.5, h: 190 };
+    var HEADC = { x: 74, y: 61 };  /* her head center, for hair anchors */
     var img = new Image();
     var imgReady = false;
     var particles = [];

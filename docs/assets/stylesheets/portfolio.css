@@ -2756,8 +2756,8 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
   right: 1rem;
   bottom: 1rem; /* same breathing room below as on the right */
   z-index: 90;
-  width: 150px;
-  height: 190px;
+  width: 105px;
+  height: 133px;
   display: block;
   border: none;
   background: none;
@@ -2804,7 +2804,7 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
    floats beside her head, on the free (left) side */
 .pf-chat-hint {
   position: absolute;
-  top: 46px; /* beside her head (the top strip is hair headroom) */
+  top: 32px; /* beside her head (the top strip is hair headroom) */
   left: -16px;
   display: flex;
   align-items: center;
@@ -2834,16 +2834,16 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
 
 /* phones: slightly smaller figure, tucked closer to the corner */
 @media screen and (max-width: 44.9375em) {
-  .pf-chat-launcher { width: 112px; height: 142px; right: 0.6rem; bottom: 0.6rem; }
+  .pf-chat-launcher { width: 78px; height: 99px; right: 0.6rem; bottom: 0.6rem; }
 }
 
 .pf-chat-panel {
   position: fixed;
   right: 1.4rem;
-  bottom: 13.9rem; /* clears the 190px-tall agent figure below it */
+  bottom: 10.3rem; /* clears the 133px-tall agent figure below it */
   z-index: 90;
   width: min(380px, 92vw);
-  height: min(26rem, calc(100vh - 16rem));
+  height: min(28rem, calc(100vh - 12.5rem));
   flex-direction: column;
   border-radius: 16px;
   border: 1px solid var(--portfolio-line);
@@ -3002,7 +3002,7 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
 .pf-chat-form button svg { width: 18px; height: 18px; display: block; }
 
 @media (max-width: 480px) {
-  .pf-chat-panel { right: 0.7rem; left: 0.7rem; width: auto; bottom: 10.4rem; }
+  .pf-chat-panel { right: 0.7rem; left: 0.7rem; width: auto; bottom: 7.6rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
