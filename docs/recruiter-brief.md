@@ -146,8 +146,8 @@ the same rigor as the 81%→0% fix, applied to your stack.</p>
 <div class="portfolio-card" markdown="1">
 <small>Project judgment</small>
 <h3>A template, not just projects</h3>
-<p>The strongest signal is the Production Template: 36 encoded anti-patterns
-and 38 ADRs turning three projects' worth of pain into a reusable,
+<p>The strongest signal is the Production Template: 38 encoded anti-patterns
+and 43 ADRs turning three projects' worth of pain into a reusable,
 governed starting point other engineers can build on.</p>
 </div>
 

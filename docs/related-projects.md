@@ -16,7 +16,7 @@ scaffolds (Kubeflow, ZenML, LangGraph) in a later benchmarking pass.
 ### What's in the template (latest, `v0.21.0` and later on `main`)
 
 - **Vendor-neutral agentic canon, 4 IDE surfaces** — rules, skills and
-  workflows live once in `agentic/` (18 rules / 26 skills / 18 workflows)
+  workflows live once in `agentic/` (19 rules / 27 skills / 20 workflows)
   and are regenerated, never hand-edited, into Devin (full-body mirror),
   Cursor, Claude Code and Codex (pointer files). A manifest cross-indexes
   every surface so the mapping is validated, not trusted by memory.
@@ -86,10 +86,18 @@ scaffolds (Kubeflow, ZenML, LangGraph) in a later benchmarking pass.
   validates the full chain in CI: scaffold → build + sign by digest →
   kind cluster + Kyverno admit + smoke → audit trail. Trust anchor
   for every PR.
-- **37 encoded anti-patterns (D-01 → D-37)** — runtime, training,
+- **38 encoded anti-patterns (D-01 → D-38)** — runtime, training,
   EDA, security, closed-loop, lifecycle (warm-up, PDB, PSS), delivery
   (env gates, API contracts, SBOM, digest pin), Copier scaffolding,
-  local-first adoption safety, and CI-green release safety.
+  local-first adoption safety, and CI-green release safety. Plus a
+  second, deliberately separate namespace — **8 audit-standard
+  anti-patterns (Q-01 → Q-08, ADR-043)** — for erosion that no runtime
+  test catches: unpinned actions, license drift, evidence-free releases,
+  complexity hotspots, weakened gates, one-sided vendored edits,
+  undocumented changes, working-tree pollution. Owned by a new Layer 3
+  agent, `Agent-QualityGuardian`, which runs the recurring 23-domain
+  enterprise audit and chains into `/document-changes` so every finding
+  it fixes stays documented.
 - **Self-auditing documentation** (ADR-031) — one deterministic CI gate
   enforces a single source of truth for release version, anti-pattern
   count, agentic-surface counts and ADR numbering across every document
