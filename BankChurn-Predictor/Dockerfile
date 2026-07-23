@@ -25,13 +25,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy production requirements (no jupyter, dev tools, torch/CUDA)
 COPY requirements-prod.txt ./
 
-# Install deps in venv; xgboost/lightgbm --no-deps avoids nvidia-nccl-cu12 (~290MB)
+# Install deps in venv; xgboost/lightgbm --no-deps avoids nvidia-nccl-cu12 (~290MB).
+# narwhals: required transitive dep of lightgbm>=4.7, excluded by --no-deps above.
 RUN python -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
     pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir --no-compile -r requirements-prod.txt && \
     pip install --no-cache-dir --no-deps "xgboost>=1.5.0,<3.0" && \
     pip install --no-cache-dir --no-deps "lightgbm>=4.0.0,<5.0" && \
+    pip install --no-cache-dir "narwhals>=1.15" && \
     find /opt/venv -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null; \
     find /opt/venv -type d -name 'tests' -not -path '*/numpy/*' -exec rm -rf {} + 2>/dev/null; \
     find /opt/venv -type f -name '*.pyc' -delete 2>/dev/null; \
