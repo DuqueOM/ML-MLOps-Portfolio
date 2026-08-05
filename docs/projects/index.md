@@ -115,7 +115,7 @@ portfolio lives in one place:
 [:fontawesome-solid-cloud: Deployment](../DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
 [:fontawesome-solid-circle-check: Status](../DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
 [:fontawesome-solid-diagram-project: ADRs](../architecture/decisions.md){ .portfolio-button }
-[:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button }
+[:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ml-service-template){ .portfolio-button }
 </div>
 
 ## Chapter 2 · The Production Template
@@ -150,7 +150,7 @@ I can turn that experience into a system other teams can adopt.
 
 <div class="portfolio-actions" markdown="1">
 [Open the Production Template](../template.md){ .portfolio-button .portfolio-button--primary }
-[:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button }
+[:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ml-service-template){ .portfolio-button }
 </div>
 
 ## Chapter 3 · agent-local — the LLM plane
@@ -182,7 +182,7 @@ written for. That is the jump from "builds things" to "designs platforms".
 
 This is an **active build**. Rather than rewrite this page each week, the
 status below tracks against the published plan
-([`ACTION_PLAN_LLM_AGENT.md`](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md))
+([`ACTION_PLAN_LLM_AGENT.md`](https://github.com/DuqueOM/ml-service-template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md))
 — ✅ done · 🔨 in progress · ⏳ gated/next.
 
 <div class="portfolio-card-grid" markdown="1">
@@ -234,7 +234,7 @@ status below tracks against the published plan
 <div class="portfolio-actions" markdown="1">
 [:fontawesome-solid-diagram-project: Full agent-local page](../agent-local.md){ .portfolio-button .portfolio-button--primary }
 [:fontawesome-brands-github: Repository](https://github.com/DuqueOM/agent-local){ .portfolio-button }
-[:fontawesome-solid-diagram-project: The shared plan](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md){ .portfolio-button }
+[:fontawesome-solid-diagram-project: The shared plan](https://github.com/DuqueOM/ml-service-template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md){ .portfolio-button }
 [:fontawesome-solid-scale-balanced: Why a platform (ADR-001)](https://github.com/DuqueOM/agent-local/blob/main/docs/decisions/ADR-001-reusable-platform-not-template.md){ .portfolio-button }
 [:fontawesome-solid-shield-halved: Why not MCP/A2A (ADR-010)](https://github.com/DuqueOM/agent-local/blob/main/docs/decisions/ADR-010-mcp-a2a-interop-rejected.md){ .portfolio-button }
 </div>

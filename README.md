@@ -73,7 +73,7 @@ The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0. Each entry
 
 The MLOps patterns in this portfolio are available as a reusable, opinionated template:
 
-**[ML-MLOps-Production-Template](https://github.com/DuqueOM/ML-MLOps-Production-Template)** · [related-projects.md](docs/related-projects.md)
+**[ml-service-template](https://github.com/DuqueOM/ml-service-template)** · [related-projects.md](docs/related-projects.md)
 
 **v1.12.0 highlights** — *audit Round-3 close + pre-commit hardened as mandatory first filter*:
 - **36 encoded anti-patterns** (D-01 → D-36) — runtime, data, EDA, security, closed-loop, lifecycle (warm-up, PDB, PSS), delivery (env gates, API contracts, SBOM, digest pin), placeholder hygiene (D-32: kebab-vs-snake path bug)

@@ -9,14 +9,14 @@
 # The template's governance philosophy, generalized to a domain it was never written for
 
 [**agent-local**](https://github.com/DuqueOM/agent-local) is a sibling of
-the [ML-MLOps Production Template](template.md), not a fork of it — a
+the [ML Service Template](template.md), not a fork of it — a
 reusable platform (`core/` + thin `usecases/<name>/` domains) for
 local, multi-tier LLM agents. It reuses the template's Terraform and
 Kustomize when it needs cloud, and runs the template's day-2 maintenance
 discipline (drift checks, retraining-equivalent eval gates, CI hardening)
 against its own local model tiers instead of a tabular ML model. The
 shared plan lives in the template's
-[`ACTION_PLAN_LLM_AGENT.md`](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md).
+[`ACTION_PLAN_LLM_AGENT.md`](https://github.com/DuqueOM/ml-service-template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md).
 
 <div class="portfolio-actions" markdown="1">
 [Open the agent-local repo](https://github.com/DuqueOM/agent-local){ .portfolio-button .portfolio-button--primary }

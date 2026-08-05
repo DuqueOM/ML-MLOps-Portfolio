@@ -8,7 +8,7 @@
 
 # A reusable ML service template with governed AI-assisted engineering
 
-The [ML-MLOps Production Template](https://github.com/DuqueOM/ML-MLOps-Production-Template)
+The [ML Service Template](https://github.com/DuqueOM/ml-service-template)
 is the strongest artifact in this portfolio. It packages the production lessons
 from the monorepo into a starter system for ML services: FastAPI serving,
 training/serving parity, CI/CD, Docker, Kubernetes, Terraform examples,
@@ -21,8 +21,8 @@ keeps its own version, ADR count and governance surface honest across every
 document — a gate, not a suggestion.
 
 <div class="portfolio-actions" markdown="1">
-[Open the template repo](https://github.com/DuqueOM/ML-MLOps-Production-Template){ .portfolio-button .portfolio-button--primary }
-[Read the quick start](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/QUICK_START.md){ .portfolio-button }
+[Open the template repo](https://github.com/DuqueOM/ml-service-template){ .portfolio-button .portfolio-button--primary }
+[Read the quick start](https://github.com/DuqueOM/ml-service-template/blob/main/QUICK_START.md){ .portfolio-button }
 [Review technical evidence](technical-evidence.md){ .portfolio-button }
 </div>
 </div>
@@ -88,14 +88,14 @@ deployment artifacts and reviewable AI-assisted workflows.</p>
 ## Code Review Shortcuts
 
 <div class="portfolio-actions" markdown="1">
-[Service Dockerfile](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/service/Dockerfile){ .portfolio-button .portfolio-button--primary }
-[K8s deployment](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/service/k8s/base/deployment.yaml){ .portfolio-button }
-[CI template](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/service/.github/workflows/ci.yml){ .portfolio-button }
-[Deploy GCP](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/service/.github/workflows/deploy-gcp.yml){ .portfolio-button }
-[Agent manifest](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/config/agentic_manifest.yaml){ .portfolio-button }
-[Agent rules](https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/rules){ .portfolio-button }
-[Agent skills](https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/skills){ .portfolio-button }
-[Agent workflows](https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/workflows){ .portfolio-button }
+[Service Dockerfile](https://github.com/DuqueOM/ml-service-template/blob/main/templates/service/Dockerfile){ .portfolio-button .portfolio-button--primary }
+[K8s deployment](https://github.com/DuqueOM/ml-service-template/blob/main/templates/service/k8s/base/deployment.yaml){ .portfolio-button }
+[CI template](https://github.com/DuqueOM/ml-service-template/blob/main/templates/service/.github/workflows/ci.yml){ .portfolio-button }
+[Deploy GCP](https://github.com/DuqueOM/ml-service-template/blob/main/templates/service/.github/workflows/deploy-gcp.yml){ .portfolio-button }
+[Agent manifest](https://github.com/DuqueOM/ml-service-template/blob/main/templates/config/agentic_manifest.yaml){ .portfolio-button }
+[Agent rules](https://github.com/DuqueOM/ml-service-template/tree/main/agentic/rules){ .portfolio-button }
+[Agent skills](https://github.com/DuqueOM/ml-service-template/tree/main/agentic/skills){ .portfolio-button }
+[Agent workflows](https://github.com/DuqueOM/ml-service-template/tree/main/agentic/workflows){ .portfolio-button }
 </div>
 
 ## Why This Is More Than A Template
@@ -210,7 +210,7 @@ explicit test commands so agent-assisted work remains auditable.</p>
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Rules (18)</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/rules">Context-aware engineering constraints</a></h3>
+<h3><a href="https://github.com/DuqueOM/ml-service-template/tree/main/agentic/rules">Context-aware engineering constraints</a></h3>
 <p>Rules cover Python serving, training, Kubernetes, Terraform, Docker,
 GitHub Actions, monitoring, data validation, security, API contracts,
 Copier template lifecycle, documentation coherence and edge protection
@@ -220,7 +220,7 @@ failure modes harder to reintroduce.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Skills (26)</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/skills">Reusable MLOps procedures</a></h3>
+<h3><a href="https://github.com/DuqueOM/ml-service-template/tree/main/agentic/skills">Reusable MLOps procedures</a></h3>
 <p>Skills include new service creation, EDA, deploy to GKE/EKS, drift checks,
 model retraining, release checklist, rollback, cost audit, security audit,
 incident response, stack-profile switching, adopter onboarding,
@@ -231,7 +231,7 @@ blameless incident postmortems and edge-protection coverage auditing.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Workflows (18)</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/agentic/workflows">Slash-command operating paths</a></h3>
+<h3><a href="https://github.com/DuqueOM/ml-service-template/tree/main/agentic/workflows">Slash-command operating paths</a></h3>
 <p>Workflows such as <code>/new-service</code>, <code>/incident</code>,
 <code>/release</code>, <code>/drift-check</code>, <code>/retrain</code>,
 <code>/rollback</code>, <code>/secret-breach</code>, <code>/stack-switch</code>,
@@ -318,7 +318,7 @@ environment, no exceptions (D-38).</p>
 <div markdown="1">
 
 Governance only counts if adopting the template is actually easy. A later
-pass ([<code>v0.19.0</code>–<code>v0.20.0</code>](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/CHANGELOG.md))
+pass ([<code>v0.19.0</code>–<code>v0.20.0</code>](https://github.com/DuqueOM/ml-service-template/blob/main/CHANGELOG.md))
 rebuilt the scaffolding path on [Copier](https://copier.readthedocs.io/)
 (so <code>copier update</code> can pull template improvements into an
 already-adopted service), added local-first stack profiles so a reviewer
@@ -372,7 +372,7 @@ production path touched.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Self-auditing docs</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/decisions/ADR-031-documentation-coherence-system.md">A CI gate for the docs themselves</a></h3>
+<h3><a href="https://github.com/DuqueOM/ml-service-template/blob/main/docs/decisions/ADR-031-documentation-coherence-system.md">A CI gate for the docs themselves</a></h3>
 <p>One deterministic script enforces a single source of truth for release
 version, anti-pattern count, agentic-surface counts and ADR numbering
 across every document — a gate, not a suggestion.</p>
@@ -405,7 +405,7 @@ be evaluated. Declining to over-claim is itself the signal.
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Compliance mapping</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/COMPLIANCE_MAPPING.md">NIST AI RMF · ISO/IEC 42001 · EU AI Act</a></h3>
+<h3><a href="https://github.com/DuqueOM/ml-service-template/blob/main/docs/COMPLIANCE_MAPPING.md">NIST AI RMF · ISO/IEC 42001 · EU AI Act</a></h3>
 <p>Traces artifacts the template already produces — quality gates, the
 fairness DIR floor, the audit trail, AUTO/CONSULT/STOP human oversight — to
 each framework's own control questions. Descriptive, never certifying.</p>
@@ -430,7 +430,7 @@ precondition into release and staging/prod deploy.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Portability</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/ADOPTION.md">Escape hatches, not lock-in</a></h3>
+<h3><a href="https://github.com/DuqueOM/ml-service-template/blob/main/docs/ADOPTION.md">Escape hatches, not lock-in</a></h3>
 <p>A documented swap matrix for cloud, experiment tracking, serving backend,
 IaC engine and scaffolding tool — so "agnostic to technologies" is a
 verifiable claim, not a slogan.</p>
@@ -438,7 +438,7 @@ verifiable claim, not a slogan.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Edge protection</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/decisions/ADR-042-native-cloud-edge-protection.md">Native-cloud-first, Cloudflare optional</a></h3>
+<h3><a href="https://github.com/DuqueOM/ml-service-template/blob/main/docs/decisions/ADR-042-native-cloud-edge-protection.md">Native-cloud-first, Cloudflare optional</a></h3>
 <p>Cloud Armor and AWS WAF+Shield Standard are the default per-cloud WAF and
 DDoS layer; Cloudflare stays available for genuinely concurrent multi-cloud
 deployments, but is never the default — the common case is one cloud, not
@@ -500,7 +500,7 @@ Both kinds are regenerated by one script and never hand-edited.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Manifest</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/templates/config/agentic_manifest.yaml">Cross-surface index</a></h3>
+<h3><a href="https://github.com/DuqueOM/ml-service-template/blob/main/templates/config/agentic_manifest.yaml">Cross-surface index</a></h3>
 <p>The manifest maps rules, skills and workflows across IDE surfaces so the
 governance model can be validated instead of trusted by memory.</p>
 </div>
@@ -560,21 +560,21 @@ which keeps the documentation useful without overstating production proof.</p>
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Repository</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template">Template source</a></h3>
+<h3><a href="https://github.com/DuqueOM/ml-service-template">Template source</a></h3>
 <p>Start here for the actual scaffold, docs, workflows, rules and release
 history.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Adoption path</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/QUICK_START.md">Quick Start</a></h3>
+<h3><a href="https://github.com/DuqueOM/ml-service-template/blob/main/QUICK_START.md">Quick Start</a></h3>
 <p>Best entry point for generating and validating a new service from the
 template.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Decision trail</small>
-<h3><a href="https://github.com/DuqueOM/ML-MLOps-Production-Template/tree/main/docs/decisions">Architecture decisions</a></h3>
+<h3><a href="https://github.com/DuqueOM/ml-service-template/tree/main/docs/decisions">Architecture decisions</a></h3>
 <p>Review the trade-offs behind the template instead of only reading the final
 structure.</p>
 </div>

@@ -1,8 +1,8 @@
-# AGENTS.md — ML-MLOps Production Template
+# AGENTS.md — ML Service Template
 
 ## Project Identity
 
-**ML-MLOps Production Template**: Agent-driven framework for building and maintaining production-grade ML systems with multi-cloud deployment (GKE + EKS), comprehensive observability, and enterprise CI/CD. Every architectural decision documented in ADRs with measured trade-offs.
+**ML Service Template**: Agent-driven framework for building and maintaining production-grade ML systems with multi-cloud deployment (GKE + EKS), comprehensive observability, and enterprise CI/CD. Every architectural decision documented in ADRs with measured trade-offs.
 
 - **Stack**: Python 3.11+, scikit-learn, XGBoost, LightGBM, FastAPI, Docker, Kubernetes, Terraform, GitHub Actions
 - **Clouds**: GCP (primary) + AWS (secondary parity)

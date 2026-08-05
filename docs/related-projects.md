@@ -2,9 +2,9 @@
 
 # Related Projects
 
-## ML-MLOps Production Template
+## ML Service Template
 
-[**github.com/DuqueOM/ML-MLOps-Production-Template** →](https://github.com/DuqueOM/ML-MLOps-Production-Template)
+[**github.com/DuqueOM/ml-service-template** →](https://github.com/DuqueOM/ml-service-template)
 
 This portfolio is the **reference implementation** from which a reusable,
 opinionated **production template** was extracted. The template encodes the
@@ -136,7 +136,7 @@ fork of it — a reusable platform (`core/` + thin `usecases/<name>/` domains)
 that reuses the template's Terraform and Kustomize when it needs cloud, and
 runs the template's day-2 maintenance lanes on its own local model tiers.
 The shared plan lives in the template's
-[`ACTION_PLAN_LLM_AGENT.md`](https://github.com/DuqueOM/ML-MLOps-Production-Template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md).
+[`ACTION_PLAN_LLM_AGENT.md`](https://github.com/DuqueOM/ml-service-template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md).
 
 ### What's distinctive about it
 
@@ -168,7 +168,7 @@ The shared plan lives in the template's
 | I want to… | Look at |
 |-----------|---------|
 | **Learn how MLOps is done in production** — see real code, real ADRs, real incidents | This portfolio (`ML-MLOps-Portfolio`) |
-| **Start a new MLOps project from a proven foundation** | The template (`ML-MLOps-Production-Template`) |
+| **Start a new MLOps project from a proven foundation** | The template (`ml-service-template`) |
 | **See the same governance model applied to LLM agents instead of tabular ML** | `agent-local` |
 | **Calibrate my own portfolio project** against a live example | This portfolio |
 | **Evaluate how agentic workflows accelerate ML engineering** | All three — portfolio for "how it was used", template for "how to reuse", agent-local for "how far it generalizes" |
@@ -181,7 +181,7 @@ ML-MLOps-Portfolio (this repo)
     │  Real deployments, 3 ML services, 18 ADRs,
     │  measured incidents, 395+ tests
     │
-    └──▶ ML-MLOps-Production-Template
+    └──▶ ml-service-template
             │
             │  Extracted patterns + reusable templates:
             │  - Vendor-neutral agentic canon, 4 IDE surfaces
