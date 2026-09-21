@@ -11,16 +11,16 @@ scipy~=1.14.0
 # ML Frameworks (inference)
 scikit-learn~=1.8.0
 # xgboost + lightgbm installed separately in Dockerfile with --no-deps
-joblib~=1.4.0
+joblib~=1.6.0
 
 # Explainability (SHAP for feature contributions)
 shap~=0.46.0
 
 # API Framework
-fastapi~=0.115.0
-uvicorn~=0.34.0
-pydantic~=2.10.0
-python-multipart~=0.0.9
+fastapi~=0.141.1
+uvicorn~=0.53.0
+pydantic~=2.13.5
+python-multipart~=0.0.32
 
 # Configuration
 pyyaml~=6.0.0
@@ -29,4 +29,4 @@ pyyaml~=6.0.0
 prometheus-client~=0.21.0
 
 # Type hints
-typing-extensions~=4.12.0
+typing-extensions~=4.16.0
