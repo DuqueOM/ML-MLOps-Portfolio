@@ -29,20 +29,20 @@ dependencies = [
     "numpy>=1.21.0",
     "scipy>=1.7.0",
     "scikit-learn>=1.0.0",
-    "joblib>=1.1.0",
+    "joblib>=1.6.0",
     "pyyaml>=6.0",
-    "fastapi>=0.78.0",
-    "uvicorn>=0.18.0",
-    "pydantic>=2.0.0",
-    "python-multipart>=0.0.5",
-    "typing-extensions>=4.0.0",
-    "imbalanced-learn>=0.10.0",
+    "fastapi>=0.141.1",
+    "uvicorn>=0.53.0",
+    "pydantic>=2.13.5",
+    "python-multipart>=0.0.32",
+    "typing-extensions>=4.16.0",
+    "imbalanced-learn>=0.14.2",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=3.0.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
     "black>=23.0.0",
     "isort>=5.12.0",
     "flake8>=6.0.0",
@@ -51,14 +51,14 @@ dev = [
 ]
 ml = [
     "optuna>=3.0.0",
-    "mlflow>=2.0.0",
+    "mlflow>=3.16.1",
     "dvc>=2.0.0",
 ]
 monitoring = [
-    "evidently>=0.4.0",
+    "evidently>=0.7.23",
 ]
 advanced = [
-    "xgboost>=2.0.0",
+    "xgboost>=3.2.0",
     "lightgbm>=4.0.0",
     "torch>=2.0.0",
     "optuna>=3.0.0",
