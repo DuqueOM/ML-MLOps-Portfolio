@@ -35,7 +35,7 @@ pytest>=9.1.1
 pytest-cov>=7.1.0
 black>=22.0.0
 flake8>=4.0.0
-mypy>=0.950
+mypy>=2.3.1
 
 # Jupyter Environment
 jupyter>=1.0.0
