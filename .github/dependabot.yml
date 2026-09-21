@@ -10,6 +10,14 @@ updates:
       interval: "weekly"
       day: "thursday"
     open-pull-requests-limit: 3
+    # Patch and minor travel together and merge on green
+    # (.github/workflows/dependabot-auto-merge.yml). A MAJOR arrives on its
+    # own and waits for a person: it asks whether a boundary should move, and
+    # CI cannot answer that.
+    groups:
+      actions-low-risk:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
     commit-message:
       prefix: "ci"
     labels:
@@ -22,6 +30,10 @@ updates:
     directory: "/BankChurn-Predictor"
     schedule:
       interval: "monthly"
+    groups:
+      images:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
     labels:
       - "dependencies"
       - "docker"
@@ -34,6 +46,10 @@ updates:
     directory: "/NLPInsight-Analyzer"
     schedule:
       interval: "monthly"
+    groups:
+      images:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
     labels:
       - "dependencies"
       - "docker"
@@ -41,3 +57,40 @@ updates:
       # Ignore Python 3.14+ (pre-release/development versions)
       - dependency-name: "python"
         versions: [">=3.14"]
+
+  # ---------------------------------------------------------------------
+  # Python. This was ABSENT while the repository carried ten files that
+  # declare Python dependencies: requirements-docs.txt, requirements-dvc.txt,
+  # three project requirement sets and four pyproject.toml files. With pip
+  # unwatched none of them ever received an update PR — a control that looks
+  # present and reports nothing.
+  #
+  # `directory:` is resolved literally and does not recurse, so every
+  # directory that declares dependencies is listed.
+  #
+  # `increase` raises the floor and PRESERVES the `~=` shape. Dependabot's
+  # pip default WIDENS a constraint (`~=2.2` becomes `>=2.2,<4.0`), which
+  # silently admits the major that ADR-005 exists to block: numpy 2.x
+  # silently corrupted joblib-serialised models here, with no error raised.
+  # ---------------------------------------------------------------------
+  - package-ecosystem: "pip"
+    directories:
+      - "/"
+      - "/BankChurn-Predictor"
+      - "/ChicagoTaxi-Demand-Pipeline"
+      - "/NLPInsight-Analyzer"
+      - "/common_utils"
+    versioning-strategy: increase
+    schedule:
+      interval: "weekly"
+      day: "thursday"
+    open-pull-requests-limit: 5
+    groups:
+      python-low-risk:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "python"
