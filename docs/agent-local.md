@@ -8,21 +8,36 @@
 
 # The template's governance philosophy, generalized to a domain it was never written for
 
-[**agent-local**](https://github.com/DuqueOM/agent-local) is a sibling of
-the [ML Service Template](template.md), not a fork of it — a
-reusable platform (`core/` + thin `usecases/<name>/` domains) for
-local, multi-tier LLM agents. It reuses the template's Terraform and
-Kustomize when it needs cloud, and runs the template's day-2 maintenance
-discipline (drift checks, retraining-equivalent eval gates, CI hardening)
-against its own local model tiers instead of a tabular ML model. The
-shared plan lives in the template's
+[**agent-local**](https://github.com/DuqueOM/agent-local) is a
+business-agnostic platform (`core/` + thin `usecases/<name>/` domains) for
+local, multi-tier LLM agents — the agent core on its own, with no platform
+around it. It applies the [ML Service Template](template.md)'s governance
+philosophy and day-2 maintenance discipline (drift checks,
+retraining-equivalent eval gates, CI hardening) to local model tiers instead
+of a tabular ML model. The original shared plan lives in the template's
 [`ACTION_PLAN_LLM_AGENT.md`](https://github.com/DuqueOM/ml-service-template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md).
 
 <div class="portfolio-actions" markdown="1">
 [Open the agent-local repo](https://github.com/DuqueOM/agent-local){ .portfolio-button .portfolio-button--primary }
 [Read the README](https://github.com/DuqueOM/agent-local/blob/main/README.md){ .portfolio-button }
-[Compare all three repos](related-projects.md){ .portfolio-button }
+[Compare all four repos](related-projects.md){ .portfolio-button }
 </div>
+</div>
+
+<div class="portfolio-callout" markdown="1">
+<strong>This core is also the LLM plane inside <code>ml-platform</code></strong>
+
+[`ml-platform`](ml-platform.md) vendored this work in with its full git
+history (ADR-002): <code>core/</code> became <code>libs/llm-core/</code>, and
+the <code>tienda</code> use-case became <code>projects/store-assistant/</code>.
+Cross-repository coordination costs two CI configurations, two changelogs and
+two ADR sets, and a third participant makes that cost superlinear.
+
+This repository stays live because the two are not the same value. The
+platform gives this core <em>one particular, governed use</em> inside a
+multi-project substrate; <code>agent-local</code> remains the
+<strong>agnostic upstream</strong> for anyone who wants the agent core without
+the platform around it.
 </div>
 
 <div class="portfolio-stat-strip" markdown="1">
@@ -231,7 +246,7 @@ original tabular-ML-serving context.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Portfolio context</small>
-<h3><a href="related-projects.md">How all three repos relate</a></h3>
+<h3><a href="related-projects.md">How all four repos relate</a></h3>
 <p>The full lineage: portfolio → template → agent-local, and which one to
 look at for what.</p>
 </div>

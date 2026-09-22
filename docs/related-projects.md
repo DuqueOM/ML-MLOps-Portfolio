@@ -2,7 +2,14 @@
 
 # Related Projects
 
-## ML Service Template
+Four repositories, one line of work. Two of them are templates, and they are
+**not the same tool**: `ml-service-template` scaffolds *one* governed tabular
+ML service and is deliberately small; `ml-platform` is the enterprise
+substrate that several unlike projects — tabular, deep learning, LLM, agents —
+share. The boundary between them is a written decision, not an accident of
+history. [Jump to the side-by-side comparison](#the-two-templates-side-by-side).
+
+## ML Service Template — one governed service
 
 [**github.com/DuqueOM/ml-service-template** →](https://github.com/DuqueOM/ml-service-template)
 
@@ -13,7 +20,15 @@ distilled from building this portfolio end-to-end — then hardened further
 against NIST AI RMF, ISO/IEC 42001, the EU AI Act and frontier open-source
 scaffolds (Kubeflow, ZenML, LangGraph) in a later benchmarking pass.
 
-### What's in the template (latest, `v0.21.0` and later on `main`)
+**Its scope limit is itself a decision.** One service, tabular models,
+small-team calibration — "2–3 models → CronJob, not Airflow", "in-memory
+DataFrames → Pandera, not Great Expectations". Widening it to cover feature
+stores, lakehouse formats, distributed training and GenAI serving would not
+improve it; it would destroy the property that makes it recommendable, which
+is that it is small enough to read in an afternoon. That work needed its own
+home, and got one — see [`ml-platform`](#ml-platform-the-substrate-many-projects-share).
+
+### What's in the template (latest, `v0.29.0` and later on `main`)
 
 - **Vendor-neutral agentic canon, 4 IDE surfaces** — rules, skills and
   workflows live once in `agentic/` (19 rules / 27 skills / 20 workflows)
@@ -125,17 +140,131 @@ scaffolds (Kubeflow, ZenML, LangGraph) in a later benchmarking pass.
   record, including a persona/orchestration system that would have
   violated the template's own engineering-calibration principle.
 
-## agent-local — the LLM plane
+## ml-platform — the substrate many projects share
+
+[**github.com/DuqueOM/ml-platform** →](https://github.com/DuqueOM/ml-platform) ·
+[**Full dedicated page →**](ml-platform.md)
+
+The second template, and the enterprise one. Where `ml-service-template`
+answers *"I need one governed ML service in production"*, `ml-platform`
+answers *"I need a substrate several unlike ML projects sit on"* — tabular,
+time series, deep learning, LLM/RAG and agents, on GCP and AWS. It
+**consumes** the first template through `copier` and is forbidden from
+reimplementing it: where the two disagree about serving, containers, probes,
+manifests or supply chain, the template wins (ADR-003).
+
+### What it adds above the template's boundary
+
+- **Lakehouse and real data engineering** — Apache Iceberg with monthly
+  partitioning and time travel (verified against real MinIO: reading snapshot 1
+  returns January only, 77,539 rows, while the table holds both months,
+  151,920), BigLake on GCP and S3 Tables on AWS, DuckDB + Polars, dbt, and
+  Spark scoped to historical backfill only because the DuckDB crossover
+  threshold was *measured* rather than assumed.
+- **Point-in-time correct features** — `libs/feature-defs` ships `as_of_join`
+  plus a leakage detector that runs on the *joined* frame, so it catches the
+  mistake regardless of which join produced it. A `naive_join` is kept
+  deliberately, so the detector can be shown to catch something real.
+- **Orchestration with lineage** — Airflow 3 DAGs and KFP v2 pipelines, with
+  Vertex AI Pipelines and SageMaker Pipelines as the managed targets. This is
+  precisely the tier the template refuses on calibration grounds: for 2–3
+  models a CronJob is correct, and an orchestrator is over-engineering.
+- **GitOps reconciliation** — ArgoCD with ApplicationSets and Argo Rollouts,
+  instead of the template's governed `kubectl apply` through GitHub Actions.
+- **Grafana LGTM observability** — OpenTelemetry traces into Loki, Tempo and
+  Mimir, with Jaeger as the local backend, rather than Prometheus + Grafana
+  alone.
+- **LLMOps as a first-class plane** — LiteLLM, a prompt registry, a semantic
+  cache, guardrails, Langfuse tracing and promptfoo evaluation gates. All of
+  it explicitly out of scope for the first template.
+- **Deep learning** — LoRA/PEFT and LayoutLM wired as demonstrated tiers for
+  the document-intelligence track.
+- **Drift detection per project kind (ADR-007)** — the inherited machinery
+  was built for *one* kind, a tabular service. Four kinds get four detectors
+  on one shared contract: PSI with quantile bins for tabular, embedding-space
+  drift for documents, recall-on-a-frozen-eval-set for retrieval, and
+  tool-use / escalation / policy-gate-rejection rates for agents. Plus the
+  failure most easily missed — a provider silently changing the model behind a
+  version alias, where evals degrade with zero code, data or deploy change.
+- **Technology triage instead of an anti-pattern catalogue (ADR-004)** —
+  every tool carries a public tier: **core** (critical path, needs an ADR, a
+  gate and a runbook), **demonstrated** (one narrow use with its stated
+  reason), **studied** (recorded findings, not wired in), or **rejected**
+  (evaluated and declined, with the reason). A reader never has to guess
+  whether something is operated or merely present.
+- **A status table derived from the filesystem** —
+  `scripts/check_implementation_status.py` generates it, because a status
+  table a human maintains will drift. Currently **48 done · 2 partial ·
+  5 absent** of 55 tracked components. A component marked ⬜ is *absent*, not
+  "planned".
+- **Evidence layers, with the top row printed at zero** — every component
+  carries the layer its evidence reaches: **37 at L1** (the suite passes),
+  **11 at L2** (the thing executes), **4 with L3 evidence available but not
+  run in CI**, and **0 at L4** — no cloud rollout, because none has happened.
+  The taxonomy exists because six Kubernetes overlays once rendered green for
+  weeks while their probes pointed at routes the service does not serve.
+- **A falsifiable platform claim** — *C1: a second project reuses ≥3 shared
+  libraries with no fork, verified by a dependency-graph test in CI.* If C1
+  fails, this is a monorepo of unrelated projects and the platform claim is
+  false. It is first testable at Phase 3, deliberately early.
+- **Measurement honesty as a shipped artifact** — a semantic retrieval index
+  was built, evaluated against the lexical baseline, tied it (both 15.4%
+  recall@5), failed to clear the 0.05 margin, and **no index ships**. The
+  number, the diagnosis and what would reverse the decision are published
+  anyway.
+- **10 ADRs, and a rule about documents** — ADR-005 rule H: *a document
+  asserting something false is itself a defect, even when the code is
+  correct.* The rule has a specific origin — an ADR in the sibling agent
+  platform recorded a hardware budget as "measured" from a single reading of a
+  fluctuating quantity, and rejected a model as too slow by citing a benchmark
+  run under the very assumption it was used to justify. Re-measured, the
+  budget was off by more than a gigabyte and the model was 3.3× faster. The
+  wrong claims were preserved with a dated correction rather than edited away.
+
+### The two templates, side by side
+
+| | `ml-service-template` | `ml-platform` |
+| --- | --- | --- |
+| **Question it answers** | "I need **one** governed ML service in production" | "I need a **substrate** several unlike ML projects sit on" |
+| **Unit of reuse** | A scaffold you copy out and own | A library plus a running service, consumed in-repo |
+| **Model kinds** | Tabular / classical ML only — a stated limit, not an omission | Tabular · time series · deep learning · LLM/RAG · agents |
+| **Data layer** | In-memory DataFrames, Pandera validation | Iceberg lakehouse, BigLake / S3 Tables, DuckDB + Polars, dbt, point-in-time joins with a leakage detector |
+| **Orchestration** | CronJob + GitHub Actions — calibrated for 2–3 models | Airflow 3 + KFP v2, Vertex AI Pipelines, SageMaker Pipelines |
+| **Deployment** | `kubectl apply` through governed GitHub Actions | GitOps: ArgoCD + ApplicationSets + Argo Rollouts |
+| **Observability** | Prometheus + Grafana + Evidently | OpenTelemetry + Grafana LGTM (Loki · Tempo · Mimir) + Jaeger |
+| **Drift** | PSI with quantile bins, one tabular detector | Four detectors for four project kinds, one shared contract |
+| **LLM / GenAI** | Out of scope by decision | LiteLLM, prompt registry, semantic cache, guardrails, promptfoo gates |
+| **Governance model** | 38 anti-patterns (D-01→D-38) + 8 audit-standard (Q-01→Q-08) | Technology triage: core / demonstrated / studied / **rejected**, each with its reason |
+| **Agentic surface** | 19 rules · 27 skills · 20 workflows | 23 rules · 29 skills · 22 workflows |
+| **ADRs** | 52 | 10 |
+| **Entry cost** | Minutes — `copier copy`, one service | Hours — a monorepo with a six-stage progression |
+| **Read it in** | An afternoon | Not in an afternoon, and that is the trade |
+
+**If you have one model to ship, the first template is the right answer and
+the second is over-engineering.** The second earns its complexity only once
+several projects of different kinds need to share substrate.
+
+## agent-local — the LLM core
 
 [**github.com/DuqueOM/agent-local** →](https://github.com/DuqueOM/agent-local) ·
 [**Full dedicated page →**](agent-local.md)
 
 The template's governance philosophy generalized to a new domain: local,
-multi-tier LLM agents. `agent-local` is a **sibling** of the template, not a
-fork of it — a reusable platform (`core/` + thin `usecases/<name>/` domains)
-that reuses the template's Terraform and Kustomize when it needs cloud, and
-runs the template's day-2 maintenance lanes on its own local model tiers.
-The shared plan lives in the template's
+multi-tier LLM agents. `agent-local` is a business-agnostic platform
+(`core/` + thin `usecases/<name>/` domains), not a fork of anything — the
+agent core on its own, without a platform around it.
+
+**It is also the LLM plane inside `ml-platform`.** That repository vendored
+this work in with its full git history (ADR-002): `core/` became
+`libs/llm-core/`, and the `tienda` use-case became
+`projects/store-assistant/`. Cross-repository coordination costs two CI
+configurations, two changelogs and two ADR sets, and a third participant makes
+that cost superlinear.
+
+The standalone repository stays live, because the two are not the same value.
+`ml-platform` gives this core one particular, governed use inside a platform;
+`agent-local` remains the **agnostic upstream** for anyone who wants the agent
+core by itself. The original shared plan lives in the template's
 [`ACTION_PLAN_LLM_AGENT.md`](https://github.com/DuqueOM/ml-service-template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md).
 
 ### What's distinctive about it
@@ -163,15 +292,18 @@ The shared plan lives in the template's
   model document maps the platform's controls to each of the ten
   categories, from prompt injection to unbounded consumption.
 
-### Portfolio vs. Template vs. agent-local — which should I look at?
+### Which one should I look at?
 
 | I want to… | Look at |
 |-----------|---------|
 | **Learn how MLOps is done in production** — see real code, real ADRs, real incidents | This portfolio (`ML-MLOps-Portfolio`) |
-| **Start a new MLOps project from a proven foundation** | The template (`ml-service-template`) |
-| **See the same governance model applied to LLM agents instead of tabular ML** | `agent-local` |
+| **Ship one ML service, properly, without building a platform first** | `ml-service-template` |
+| **Stand up a substrate for several unlike ML projects** — tabular, DL, LLM, agents | `ml-platform` |
+| **See lakehouse, feature store, orchestration and GitOps done together** | `ml-platform` |
+| **Take the LLM agent core on its own, with no platform around it** | `agent-local` |
+| **Judge scope discipline** — knowing which problems a tool should *not* absorb | Both templates, read against each other |
 | **Calibrate my own portfolio project** against a live example | This portfolio |
-| **Evaluate how agentic workflows accelerate ML engineering** | All three — portfolio for "how it was used", template for "how to reuse", agent-local for "how far it generalizes" |
+| **Evaluate how agentic workflows accelerate ML engineering** | All four — portfolio for "how it was used", the templates for "how to reuse", agent-local for "how far it generalizes" |
 
 ### Relationship
 
@@ -180,40 +312,59 @@ ML-MLOps-Portfolio (this repo)
     │
     │  Real deployments, 3 ML services, 18 ADRs,
     │  measured incidents, 395+ tests
+    │  Where the lessons were paid for.
     │
-    └──▶ ml-service-template
+    ├──▶ ml-service-template  ·  ONE governed tabular service
+    │       │
+    │       │  Extracted patterns, deliberately bounded:
+    │       │  - Vendor-neutral agentic canon, 4 IDE surfaces
+    │       │    (Devin · Cursor · Claude Code · Codex)
+    │       │  - Behavior Protocol: AUTO / CONSULT / STOP (static + dynamic)
+    │       │  - 38 anti-patterns D-01 → D-38, plus Q-01 → Q-08
+    │       │  - Compliance mapping: NIST AI RMF · ISO 42001 · EU AI Act
+    │       │  - CI-Green Verification Gate (D-36) — read is AUTO,
+    │       │    override is STOP
+    │       │  - SLSA L2 supply chain — SHA-pinned CI, OpenSSF Scorecard,
+    │       │    Cosign signing, Kyverno digest + signature gates, SBOM
+    │       │  - Self-auditing documentation-coherence CI gate
+    │       │  Scope limit is itself an ADR: widening it would destroy
+    │       │  the property that makes it recommendable.
+    │       │
+    │       │  consumed via copier (ADR-003) — never forked, never
+    │       │  reimplemented; the template wins on serving concerns
+    │       ▼
+    └──▶ ml-platform  ·  the substrate MANY unlike projects share
             │
-            │  Extracted patterns + reusable templates:
-            │  - Vendor-neutral agentic canon, 4 IDE surfaces
-            │    (Devin · Cursor · Claude Code · Codex)
-            │  - Behavior Protocol: AUTO / CONSULT / STOP (static + dynamic)
-            │  - 38 anti-patterns D-01 → D-38
-            │  - Compliance mapping: NIST AI RMF · ISO 42001 · EU AI Act
-            │  - CI-Green Verification Gate (D-36) — read is AUTO,
-            │    override is STOP
-            │  - Edge protection (D-38) — Cloud Armor / AWS WAF+Shield
-            │    native by default, Cloudflare opt-in for multi-cloud
-            │  - SLSA L2 supply chain — SHA-pinned CI, OpenSSF Scorecard,
-            │    Cosign signing, Kyverno digest + signature gates,
-            │    SBOM (CycloneDX + SPDX) attested by digest
-            │  - Portability swap matrix — cloud, tracking, serving,
-            │    IaC, scaffolding — agnostic by design, not by accident
-            │  - Self-auditing documentation-coherence CI gate
+            │  Everything above that boundary:
+            │  - Lakehouse: Iceberg · BigLake / S3 Tables · DuckDB + Polars
+            │  - Point-in-time joins with a leakage detector
+            │  - Orchestration: Airflow 3 + KFP v2 → Vertex AI / SageMaker
+            │  - GitOps: ArgoCD + ApplicationSets + Argo Rollouts
+            │  - Observability: OTel → Grafana LGTM (Loki · Tempo · Mimir)
+            │  - LLMOps: LiteLLM · prompt registry · semantic cache ·
+            │    guardrails · promptfoo eval gates
+            │  - Deep learning: LoRA/PEFT · LayoutLM
+            │  - Drift per project kind (ADR-007): tabular · embedding ·
+            │    retrieval · agent trajectory, one shared contract
+            │  - Technology triage: core / demonstrated / studied / rejected
+            │  - Status table derived from the filesystem, L4 printed at zero
             │
-            └──▶ agent-local (LLM plane, sibling not a fork)
-                    │
-                    │  Same governance philosophy, new domain:
-                    │  - Deterministic policy gate over model judgment
-                    │  - Reflection isolated from verifier evidence (ADR-009)
-                    │  - MCP/A2A evaluated and rejected (ADR-010)
-                    │  - 11 adversarial eval sets, OWASP LLM Top-10 mapped
-                    │  - Reuses the template's Terraform/Kustomize for cloud
-                    │
-                    └──▶ Your next MLOps or agentic project
+            ◀── agent-local, vendored with full history (ADR-002):
+            │       core/ → libs/llm-core/
+            │       usecases/tienda/ → projects/store-assistant/
+            │       The standalone repo stays live as the agnostic upstream:
+            │       - Deterministic policy gate over model judgment
+            │       - Reflection isolated from verifier evidence (ADR-009)
+            │       - MCP/A2A evaluated and rejected (ADR-010)
+            │       - 11 adversarial eval sets, OWASP LLM Top-10 mapped
+            │
+            └──▶ Your next MLOps or agentic project
 ```
 
-The template is the **codified knowledge** from this portfolio, and
-`agent-local` is the proof that the codification **generalizes** — the
-portfolio is the evidence that the underlying patterns work in practice.
+The portfolio is the evidence that the underlying patterns work in practice.
+`ml-service-template` is the **codified knowledge** from it, bounded on
+purpose. `ml-platform` is what that boundary made necessary — and the pair is
+the argument: knowing which problems a tool should *not* absorb is worth more
+than a single repository that tried to absorb all of them.
 
 </div>

@@ -9,16 +9,17 @@
 # MLOps engineer who builds systems that survive production
 
 Two years of focused ML engineering on top of 14 years of operations leadership.
-Three production services, three incidents diagnosed from first principles,
-one open-source template encoding everything learned. The portfolio makes the
-evidence reviewable.
+Three production services, three incidents diagnosed from first principles, and
+two open-source templates — one that encodes the lessons for a single governed
+ML service, one that covers the enterprise substrate above that boundary. The
+portfolio makes the evidence reviewable.
 
 </div>
 
 <div class="portfolio-stat-strip" markdown="1">
 <div class="portfolio-stat">
 <small>Track record</small>
-<strong>3 services · 3 incidents solved · 1 template</strong>
+<strong>3 services · 3 incidents solved · 2 templates</strong>
 <span>GKE + EKS, 395+ tests, 18 ADRs — measured and documented.</span>
 </div>
 <div class="portfolio-stat">
@@ -145,10 +146,13 @@ the same rigor as the 81%→0% fix, applied to your stack.</p>
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Project judgment</small>
-<h3>A template, not just projects</h3>
-<p>The strongest signal is the Production Template: 38 encoded anti-patterns
-and 43 ADRs turning three projects' worth of pain into a reusable,
-governed starting point other engineers can build on.</p>
+<h3>Two templates, and a boundary between them</h3>
+<p><code>ml-service-template</code> turns three projects' worth of pain into a
+reusable starting point: 38 encoded anti-patterns, 52 ADRs, one governed
+service. <code>ml-platform</code> is the enterprise substrate above that
+boundary — lakehouse, feature store, orchestration, GitOps, LLMOps. The
+strongest signal is that they are separate <em>on purpose</em>: knowing what a
+tool should refuse to absorb is the judgment.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -180,10 +184,12 @@ and MLflow evidence without leaving infrastructure online permanently.</p>
 
 <div class="portfolio-card" markdown="1">
 <small>Frontier</small>
-<h3>Agentic systems, same governance</h3>
-<p><code>agent-local</code> extends the template's AUTO/CONSULT/STOP philosophy
-to local, multi-tier LLM agents — grammar-constrained routing already
-passing its quality gate 20/20.</p>
+<h3>The platform, to first cloud rollout</h3>
+<p><code>ml-platform</code> stands at 48 of 55 components built and 0 at L4 —
+no cloud rollout claimed, because none has happened. Local validation
+precedes cloud by design, so the spend buys confirmation rather than
+discovery. The agentic plane (<code>agent-local</code>'s core, vendored in)
+already passes its routing gate 20/20.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">

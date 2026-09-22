@@ -4,30 +4,36 @@
 
 <div class="portfolio-hero" markdown="1">
 <canvas data-neural-scene="helm" aria-hidden="true"></canvas>
-<span class="portfolio-eyebrow">One evolution · three chapters</span>
+<span class="portfolio-eyebrow">One evolution · four chapters</span>
 
-# From services, to a template, to an agent platform
+# From services, to two templates, to a platform
 
 This is not a pile of projects — it is one line of work that compounds.
 Three production ML services taught the lessons; a **governed template**
-encoded them; and **`agent-local`** proves the same governance philosophy
-generalizes to a new domain — local LLM agents. Each chapter is the
-foundation of the next.
+encoded them for *one* service and then refused to grow; **`ml-platform`**
+became the enterprise substrate for the work above that boundary; and
+**`agent-local`** is the agnostic agent core that platform absorbed without
+replacing. Each chapter is the foundation of the next.
 
 <div class="portfolio-actions" markdown="1">
 [Ch.1 · Portfolio](#chapter-1-the-ml-mlops-portfolio){ .portfolio-button .portfolio-button--primary }
-[Ch.2 · Template](#chapter-2-the-production-template){ .portfolio-button }
-[Ch.3 · Agent platform](#chapter-3-agent-local-the-llm-plane){ .portfolio-button }
+[Ch.2 · Template · one service](#chapter-2-the-production-template){ .portfolio-button }
+[Ch.3 · Platform · many projects](#chapter-3-ml-platform-the-enterprise-substrate){ .portfolio-button }
+[Ch.4 · The agent core](#chapter-4-agent-local-the-llm-core){ .portfolio-button }
 </div>
 </div>
 
 <div class="portfolio-callout" markdown="1">
-<strong>Why three repos, not one</strong>
+<strong>Why four repos, not one</strong>
 
-Separate repositories with an explicit, bidirectional contract — not a
-monorepo. Each has its own lifecycle, audience and release line; `agent-local`
-reuses the template's IaC when it needs cloud, and the template documents it as
-a sibling. Knowing where to draw that boundary is the point.
+Separate repositories with explicit, written contracts between them — and two
+of them are templates *on purpose*. `ml-service-template` scaffolds one
+governed tabular service and stays small enough to read in an afternoon;
+`ml-platform` covers lakehouse, feature store, orchestration, GitOps and LLM
+serving, and <em>consumes</em> the template through <code>copier</code> rather
+than reimplementing it. Widening the first to cover the second would have
+destroyed what makes it recommendable. Knowing where to draw that boundary —
+and writing the boundary down as a decision — is the point.
 </div>
 
 ## Chapter 1 · The ML-MLOps Portfolio
@@ -115,7 +121,7 @@ portfolio lives in one place:
 [:fontawesome-solid-cloud: Deployment](../DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
 [:fontawesome-solid-circle-check: Status](../DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
 [:fontawesome-solid-diagram-project: ADRs](../architecture/decisions.md){ .portfolio-button }
-[:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ml-service-template){ .portfolio-button }
+[:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ML-MLOps-Portfolio){ .portfolio-button }
 </div>
 
 ## Chapter 2 · The Production Template
@@ -133,11 +139,15 @@ Inside the box: a FastAPI serving scaffold with the single-worker +
 ThreadPoolExecutor pattern, training pipelines with quality gates (metric,
 fairness, leakage), 6 env×cloud Kustomize overlays for GCP and AWS,
 Terraform modules, CI/CD that signs images and attests SBOMs (SLSA L2),
-closed-loop drift monitoring, 38 documented anti-patterns and 43 ADRs.
+closed-loop drift monitoring, 38 documented anti-patterns and 52 ADRs.
 
 Its differentiator is the **governed AI-assisted development layer**:
 behavior rules, skills, workflows and an audit trail that keep agentic
 coding reviewable and bounded — engineered, not hidden.
+
+Its **scope limit is itself an ADR**: one service, tabular models, small-team
+calibration — "2–3 models → CronJob, not Airflow". That limit is what
+Chapter 3 exists to respect.
 
 </div>
 <div class="portfolio-callout" markdown="1">
@@ -153,12 +163,70 @@ I can turn that experience into a system other teams can adopt.
 [:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ml-service-template){ .portfolio-button }
 </div>
 
-## Chapter 3 · agent-local — the LLM plane
+## Chapter 3 · ml-platform — the enterprise substrate
 
 <div class="portfolio-split" markdown="1">
 <div markdown="1">
 
-The third chapter takes the template's governance philosophy — `AUTO / CONSULT
+The third chapter exists **because Chapter 2's scope limits were correct**.
+A single-service scaffold cannot hold point-in-time feature retrieval,
+lakehouse table formats with schema evolution, orchestration with lineage,
+GitOps reconciliation, LLM systems with evaluation gates, or governance
+artifacts written for an auditor. All of that presumes a platform several
+projects share — so it got its own repository instead of widening the first.
+
+`ml-platform` is the second template, and the enterprise one: a multi-project
+monorepo whose unit of reuse is a *library plus a running service*, not a
+scaffold you copy out. Projects span tabular ML, time series, deep learning,
+LLM/RAG and agents — diversity is the point, because a substrate that serves
+one problem shape has not been shown to be a substrate. It **consumes**
+`ml-service-template` through `copier` and is forbidden from reimplementing
+it: where the two disagree on serving, the template wins (ADR-003).
+
+Inside: Apache Iceberg with BigLake / S3 Tables, DuckDB + Polars and dbt;
+point-in-time joins with a leakage detector; Airflow 3 + KFP v2 into Vertex AI
+and SageMaker Pipelines; ArgoCD with ApplicationSets and Argo Rollouts;
+OpenTelemetry into Grafana LGTM; LiteLLM with a prompt registry, semantic
+cache, guardrails and promptfoo eval gates; LoRA/PEFT for the document track;
+and four drift detectors for four project kinds on one shared contract.
+
+</div>
+<div class="portfolio-callout" markdown="1">
+<strong>The signal</strong>
+
+Chapters 1–2 show I can build and systematize ML. Chapter 3 shows I know what
+a tool should <em>refuse</em> to absorb. Two templates exist because one of
+them said no — and the boundary is written down as a decision, not left to
+taste.
+</div>
+</div>
+
+<div class="portfolio-callout" markdown="1">
+<strong>What it does not claim</strong>
+
+Build state is generated from the filesystem, never hand-maintained:
+<strong>48 done · 2 partial · 5 absent</strong> of 55 tracked components, with
+<strong>37 proven at L1</strong> (the suite passes) and <strong>11 at L2</strong>
+(the thing executes). <strong>L4 — a real rollout on GKE or EKS — is printed at
+zero</strong>, because none has happened. The taxonomy exists because six
+Kubernetes overlays once rendered green for weeks while their probes pointed at
+routes the service does not serve. A suite passing and a pod answering are not
+the same claim.
+</div>
+
+<div class="portfolio-actions" markdown="1">
+[Open the ML Platform page](../ml-platform.md){ .portfolio-button .portfolio-button--primary }
+[:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ml-platform){ .portfolio-button }
+[:fontawesome-solid-scale-balanced: Charter — what it refuses to be](https://github.com/DuqueOM/ml-platform/blob/main/docs/decisions/ADR-000-charter-and-scope.md){ .portfolio-button }
+[:fontawesome-solid-circle-check: Implementation status](https://github.com/DuqueOM/ml-platform/blob/main/docs/architecture/implementation-status.md){ .portfolio-button }
+</div>
+
+## Chapter 4 · agent-local — the LLM core
+
+<div class="portfolio-split" markdown="1">
+<div markdown="1">
+
+The fourth chapter takes the template's governance philosophy — `AUTO / CONSULT
 / STOP`, eval-gated autonomy, policy-as-data, no fine-tuning until a written
 gate fires — and **generalizes it to a new domain**: local, multi-tier LLM
 agents. The hard-won logic (grammar-constrained routing, an adaptive reasoning
@@ -166,17 +234,22 @@ loop, objective escalation, a deterministic policy gate) lives in a reusable
 `core/`; a new domain is a thin `usecases/<name>/` folder, never a fork.
 
 The shipped example use-case is a WhatsApp store assistant — but the point is
-the platform, not the store. It is a **sibling** of the template, not a copy:
-it reuses the template's Terraform and Kustomize when it needs cloud, and runs
-the template's day-2 maintenance lanes on its local model tiers.
+the platform, not the store.
+
+**This core is also the LLM plane inside Chapter 3.** `ml-platform` vendored
+it in with its full git history (ADR-002): `core/` became `libs/llm-core/`,
+the `tienda` use-case became `projects/store-assistant/`. The standalone
+repository stays live because the two are not the same value — the platform
+gives this core one particular, governed use, while `agent-local` remains the
+business-agnostic upstream for anyone who wants the agent core by itself.
 
 </div>
 <div class="portfolio-callout" markdown="1">
 <strong>The signal</strong>
 
-Chapters 1–2 show I can build and systematize ML. Chapter 3 shows the system
-<em>composes</em> — the same governance generalizes to a domain it was never
-written for. That is the jump from "builds things" to "designs platforms".
+The same governance generalizes to a domain it was never written for — and
+then travelled into a platform without being rewritten. That is the jump from
+"builds things" to "designs platforms".
 </div>
 </div>
 

@@ -4,7 +4,7 @@
   {{ super() }}
   <link rel="stylesheet" href="{{ 'assets/stylesheets/home.css' | url }}?v=20260703h">
   <meta property="og:title" content="Duque Ortega Mutis — Building ML systems that survive production">
-  <meta property="og:description" content="Three ML services on GKE + EKS, three production incidents root-caused, one open-source MLOps template. 14 years of operations leadership behind the engineering.">
+  <meta property="og:description" content="Three ML services on GKE + EKS, three production incidents root-caused, and two open-source templates: one governed ML service, one enterprise multi-project platform. 14 years of operations leadership behind the engineering.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://duqueom.github.io/ML-MLOps-Portfolio/">
   <meta property="og:image" content="https://duqueom.github.io/ML-MLOps-Portfolio/media/profile/duque-ortega-mutis.webp">
@@ -24,7 +24,8 @@
         <h1 class="mlh-display mlh-stagger">Building ML systems<br>that <em>survive</em> production.</h1>
         <p class="mlh-sub mlh-stagger">
           Three services deployed on GKE and EKS. Three production incidents measured,
-          root-caused and fixed. One open-source template that packaged the lessons.
+          root-caused and fixed. Two open-source templates: one that packaged the
+          lessons for a single service, one for the platform above that boundary.
           Built on fourteen years of running operations before the first model.
         </p>
         <div class="mlh-cta mlh-stagger">
@@ -307,11 +308,12 @@
   <section class="mlh-section" id="template">
     <div class="mlh-wrap">
       <div class="mlh-section-head mlh-section-head--major" data-reveal>
-        <h2 class="mlh-sec-title">Template</h2>
+        <h2 class="mlh-sec-title">Template · one service</h2>
         <p class="mlh-sec-sub mlh-sec-sub--amber">every lesson, packaged as defaults</p>
         <p class="mlh-section-note">The ML Service Template turns the portfolio's
-        production lessons into a reusable open-source system — the second project, and
-        the strongest proof of product thinking.</p>
+        production lessons into a reusable open-source system for <strong>one</strong>
+        governed tabular ML service. Its scope limit is an ADR, not an omission —
+        small enough to read in an afternoon, and that is what makes it recommendable.</p>
       </div>
 
       <figure class="mlh-template-diagram" data-reveal role="img"
@@ -336,7 +338,7 @@
 
       <ul class="mlh-template-points" data-reveal>
         <li><b>38 anti-patterns</b><span>D-01..D-38, each with its corrective action</span></li>
-        <li><b>42 ADRs</b><span>decisions with rejected alternatives</span></li>
+        <li><b>52 ADRs</b><span>decisions with rejected alternatives</span></li>
         <li><b>SLSA L2 supply chain</b><span>signed images + SBOM attestation</span></li>
         <li><b>AUTO · CONSULT · STOP</b><span>agent behavior protocol</span></li>
         <li><b>6 env×cloud overlays</b><span>dev / staging / prod on GCP + AWS</span></li>
@@ -353,17 +355,74 @@
     </div>
   </section>
 
-  <!-- ============ AGENT PLATFORM (chapter 3) ============ -->
+  <!-- ============ ML PLATFORM (chapter 3) ============ -->
+  <section class="mlh-section" id="ml-platform">
+    <div class="mlh-wrap">
+      <div class="mlh-section-head mlh-section-head--major" data-reveal>
+        <h2 class="mlh-sec-title">Platform · many projects</h2>
+        <p class="mlh-sec-sub">chapter three &middot; because the template said no</p>
+        <p class="mlh-section-note"><strong>ml-platform</strong> is the second
+        template, and the enterprise one. A single-service scaffold cannot hold
+        point-in-time feature retrieval, lakehouse tables, orchestration with lineage,
+        GitOps reconciliation or LLM evaluation gates &mdash; so that work got its own
+        repository instead of widening the first. It <em>consumes</em> the template
+        through <code>copier</code>; it never reimplements it.</p>
+      </div>
+
+      <figure class="mlh-template-diagram" data-reveal role="img"
+              aria-label="Platform layers: lakehouse, features, orchestration, GitOps, observability and governance, connected as one substrate">
+        <svg viewBox="0 0 1200 150" xmlns="http://www.w3.org/2000/svg" focusable="false">
+          <g class="mlh-d-node"><rect x="16" y="40" width="176" height="44" rx="4"/><text x="104" y="67">lakehouse</text></g>
+          <path d="M192 62 H222" class="mlh-d-edge"/>
+          <g class="mlh-d-node"><rect x="222" y="40" width="176" height="44" rx="4"/><text x="310" y="67">features</text></g>
+          <path d="M398 62 H428" class="mlh-d-edge"/>
+          <g class="mlh-d-node"><rect x="428" y="40" width="176" height="44" rx="4"/><text x="516" y="67">orchestrate</text></g>
+          <path d="M604 62 H634" class="mlh-d-edge"/>
+          <g class="mlh-d-node"><rect x="634" y="40" width="176" height="44" rx="4"/><text x="722" y="67">GitOps</text></g>
+          <path d="M810 62 H840" class="mlh-d-edge"/>
+          <g class="mlh-d-node"><rect x="840" y="40" width="176" height="44" rx="4"/><text x="928" y="67">observe</text></g>
+          <path d="M1016 62 H1046" class="mlh-d-edge"/>
+          <g class="mlh-d-node mlh-d-amber"><rect x="1046" y="40" width="138" height="44" rx="4"/><text x="1115" y="67">govern</text></g>
+          <text x="104" y="112" class="mlh-d-note">Iceberg &middot; BigLake / S3 Tables</text>
+          <text x="310" y="112" class="mlh-d-note">point-in-time joins</text>
+          <text x="516" y="112" class="mlh-d-note">Airflow 3 &middot; KFP v2</text>
+          <text x="722" y="112" class="mlh-d-note">ArgoCD &middot; Rollouts</text>
+          <text x="928" y="112" class="mlh-d-note">OTel &rarr; Grafana LGTM</text>
+          <text x="1115" y="112" class="mlh-d-note mlh-d-warn">claim &rarr; gate</text>
+        </svg>
+      </figure>
+
+      <ul class="mlh-template-points" data-reveal>
+        <li><b>4 project kinds</b><span>tabular &middot; deep learning &middot; LLM/RAG &middot; agents</span></li>
+        <li><b>4 drift detectors</b><span>one shared contract, per kind (ADR-007)</span></li>
+        <li><b>LLMOps plane</b><span>prompt registry, semantic cache, guardrails, eval gates</span></li>
+        <li><b>Tooling triage</b><span>core / demonstrated / studied / <em>rejected</em>, with reasons</span></li>
+        <li><b>48 of 55 components</b><span>status derived from the filesystem, not by hand</span></li>
+        <li><b>L4 printed at zero</b><span>no cloud rollout claimed, because none has happened</span></li>
+      </ul>
+
+      <div class="mlh-cta" data-reveal>
+        <a class="mlh-btn mlh-btn--primary" href="{{ 'ml-platform/' | url }}" data-magnetic>The ML Platform</a>
+        <a class="mlh-btn" href="https://github.com/DuqueOM/ml-platform" data-magnetic>
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" style="vertical-align:-3px;margin-right:0.35rem;"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.17c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.77 1.05.77 2.13v3.16c0 .3.21.67.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+          Repository
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AGENT CORE (chapter 4) ============ -->
   <section class="mlh-section" id="agent-platform">
     <div class="mlh-wrap">
       <div class="mlh-section-head mlh-section-head--major" data-reveal>
-        <h2 class="mlh-sec-title">Agent platform</h2>
-        <p class="mlh-sec-sub">chapter three · the philosophy generalizes</p>
-        <p class="mlh-section-note">The newest chapter takes the template's
-        governance — eval-gated autonomy, policy-as-data, no fine-tuning until a
-        written gate fires — and proves it generalizes to a new domain:
-        <strong>local, multi-tier LLM agents</strong>. A sibling repo with an
-        explicit contract, not a copy. <em>Active build.</em></p>
+        <h2 class="mlh-sec-title">The agent core</h2>
+        <p class="mlh-sec-sub">chapter four &middot; the philosophy generalizes</p>
+        <p class="mlh-section-note"><strong>agent-local</strong> takes the template's
+        governance &mdash; eval-gated autonomy, policy-as-data, no fine-tuning until a
+        written gate fires &mdash; and proves it generalizes to a domain it was never
+        written for: <strong>local, multi-tier LLM agents</strong>. It is also the LLM
+        plane inside <code>ml-platform</code>, vendored in with full git history, and
+        stays standalone as the business-agnostic upstream. <em>Active build.</em></p>
       </div>
 
       <figure class="mlh-template-diagram" data-reveal role="img"
@@ -390,12 +449,12 @@
         <li><b>Grammar-constrained routing</b><span>tier-0 router, 20/20 gate</span></li>
         <li><b>Policy-as-data</b><span>versioned YAML + decision_id</span></li>
         <li><b>Local-first</b><span>llama.cpp tiers; cloud only as budgeted overflow</span></li>
-        <li><b>Sibling of the template</b><span>reuses its IaC, runs its day-2 lanes</span></li>
+        <li><b>Also inside ml-platform</b><span>vendored with history; still standalone and agnostic</span></li>
         <li><b>Live status</b><span>tracked by checklist on the Projects page</span></li>
       </ul>
 
       <div class="mlh-cta" data-reveal>
-        <a class="mlh-btn mlh-btn--primary" href="{{ 'projects/#chapter-3-agent-local-the-llm-plane' | url }}" data-magnetic>See the build status</a>
+        <a class="mlh-btn mlh-btn--primary" href="{{ 'projects/#chapter-4-agent-local-the-llm-core' | url }}" data-magnetic>See the build status</a>
         <a class="mlh-btn" href="https://github.com/DuqueOM/agent-local" data-magnetic>
           <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" style="vertical-align:-3px;margin-right:0.35rem;"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.17c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.77 1.05.77 2.13v3.16c0 .3.21.67.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
           agent-local

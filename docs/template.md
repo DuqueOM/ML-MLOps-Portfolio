@@ -27,6 +27,25 @@ document — a gate, not a suggestion.
 </div>
 </div>
 
+<div class="portfolio-callout" markdown="1">
+<strong>Its scope limit is a decision, not an omission</strong>
+
+This template scaffolds <strong>one</strong> governed tabular ML service, with
+small-team calibration throughout — "2–3 models → CronJob, not Airflow";
+"in-memory DataFrames → Pandera, not Great Expectations". Widening it to cover
+feature stores, lakehouse table formats, distributed training, GenAI serving
+and multi-project orchestration would not improve it: it would destroy the
+property that makes it recommendable, which is that it is small enough to read
+in an afternoon.
+
+That work sits <em>above</em> this boundary, and it got its own repository —
+<a href="../ml-platform/">ml-platform</a>, the second and enterprise template.
+It <em>consumes</em> this one through <code>copier</code> rather than
+replacing it: where the two disagree about serving, containers, probes,
+manifests or supply chain, <strong>this template wins</strong>.
+<a href="../related-projects/#the-two-templates-side-by-side">See the two side by side →</a>
+</div>
+
 <div class="portfolio-stat-strip" markdown="1">
 <div class="portfolio-stat">
 <small>Serving baseline</small>
