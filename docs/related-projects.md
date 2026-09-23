@@ -3,13 +3,13 @@
 # Related Projects
 
 Four repositories, one line of work. Two of them are templates, and they are
-**not the same tool**: `ml-service-template` scaffolds *one* governed tabular
-ML service and is deliberately small; `ml-platform` is the enterprise
-substrate that several unlike projects — tabular, deep learning, LLM, agents —
-share. The boundary between them is a written decision, not an accident of
+**not the same tool**: `ml-service-template` governs **classical ML** —
+scikit-learn, XGBoost, LightGBM, single team, 1–5 models — and is deliberately
+small; `ml-platform` is the substrate for problem shapes it defers by decision:
+deep learning, LLM/RAG and agents alongside tabular. The boundary between them is a written decision, not an accident of
 history. [Jump to the side-by-side comparison](#the-two-templates-side-by-side).
 
-## ML Service Template — one governed service
+## ML Service Template — classical ML, production defaults
 
 [**github.com/DuqueOM/ml-service-template** →](https://github.com/DuqueOM/ml-service-template)
 
@@ -20,13 +20,13 @@ distilled from building this portfolio end-to-end — then hardened further
 against NIST AI RMF, ISO/IEC 42001, the EU AI Act and frontier open-source
 scaffolds (Kubeflow, ZenML, LangGraph) in a later benchmarking pass.
 
-**Its scope limit is itself a decision.** One service, tabular models,
-small-team calibration — "2–3 models → CronJob, not Airflow", "in-memory
+**Its scope limit is itself a decision.** Classical ML only — scikit-learn,
+XGBoost, LightGBM — single team, 1–5 models, small-team calibration — "2–3 models → CronJob, not Airflow", "in-memory
 DataFrames → Pandera, not Great Expectations". Widening it to cover feature
 stores, lakehouse formats, distributed training and GenAI serving would not
 improve it; it would destroy the property that makes it recommendable, which
 is that it is small enough to read in an afternoon. That work needed its own
-home, and got one — see [`ml-platform`](#ml-platform-the-substrate-many-projects-share).
+home, and got one — see [`ml-platform`](#ml-platform-the-substrate-for-every-problem-shape).
 
 ### What's in the template (latest, `v0.29.0` and later on `main`)
 
@@ -140,15 +140,15 @@ home, and got one — see [`ml-platform`](#ml-platform-the-substrate-many-projec
   record, including a persona/orchestration system that would have
   violated the template's own engineering-calibration principle.
 
-## ml-platform — the substrate many projects share
+## ml-platform — the substrate for every problem shape
 
 [**github.com/DuqueOM/ml-platform** →](https://github.com/DuqueOM/ml-platform) ·
 [**Full dedicated page →**](ml-platform.md)
 
 The second template, and the enterprise one. Where `ml-service-template`
-answers *"I need one governed ML service in production"*, `ml-platform`
-answers *"I need a substrate several unlike ML projects sit on"* — tabular,
-time series, deep learning, LLM/RAG and agents, on GCP and AWS. It
+answers *"I need governed **classical ML** in production"*, `ml-platform`
+answers *"I need a substrate that spans problem shapes the first one defers"* —
+tabular, time series, deep learning, LLM/RAG and agents, on GCP and AWS. It
 **consumes** the first template through `copier` and is forbidden from
 reimplementing it: where the two disagree about serving, containers, probes,
 manifests or supply chain, the template wins (ADR-003).
@@ -225,7 +225,7 @@ manifests or supply chain, the template wins (ADR-003).
 
 | | `ml-service-template` | `ml-platform` |
 | --- | --- | --- |
-| **Question it answers** | "I need **one** governed ML service in production" | "I need a **substrate** several unlike ML projects sit on" |
+| **Question it answers** | "I need governed **classical ML** in production" | "I need a **substrate** spanning tabular, DL, LLM and agents" |
 | **Unit of reuse** | A scaffold you copy out and own | A library plus a running service, consumed in-repo |
 | **Model kinds** | Tabular / classical ML only — a stated limit, not an omission | Tabular · time series · deep learning · LLM/RAG · agents |
 | **Data layer** | In-memory DataFrames, Pandera validation | Iceberg lakehouse, BigLake / S3 Tables, DuckDB + Polars, dbt, point-in-time joins with a leakage detector |
@@ -237,12 +237,13 @@ manifests or supply chain, the template wins (ADR-003).
 | **Governance model** | 38 anti-patterns (D-01→D-38) + 8 audit-standard (Q-01→Q-08) | Technology triage: core / demonstrated / studied / **rejected**, each with its reason |
 | **Agentic surface** | 19 rules · 27 skills · 20 workflows | 23 rules · 29 skills · 22 workflows |
 | **ADRs** | 52 | 10 |
-| **Entry cost** | Minutes — `copier copy`, one service | Hours — a monorepo with a six-stage progression |
+| **Entry cost** | Minutes — `copier copy` a service | Hours — a monorepo with a six-stage progression |
 | **Read it in** | An afternoon | Not in an afternoon, and that is the trade |
 
-**If you have one model to ship, the first template is the right answer and
-the second is over-engineering.** The second earns its complexity only once
-several projects of different kinds need to share substrate.
+**If your models are classical ML, the first template is the right answer and
+the second is over-engineering.** The second earns its complexity only once you
+need problem shapes the first defers by decision — deep learning, retrieval,
+agents — sharing one substrate.
 
 ## agent-local — the LLM core
 
@@ -297,8 +298,8 @@ core by itself. The original shared plan lives in the template's
 | I want to… | Look at |
 |-----------|---------|
 | **Learn how MLOps is done in production** — see real code, real ADRs, real incidents | This portfolio (`ML-MLOps-Portfolio`) |
-| **Ship one ML service, properly, without building a platform first** | `ml-service-template` |
-| **Stand up a substrate for several unlike ML projects** — tabular, DL, LLM, agents | `ml-platform` |
+| **Ship classical ML properly, without building a platform first** | `ml-service-template` |
+| **Work beyond classical ML** — deep learning, LLM/RAG, agents — on shared substrate | `ml-platform` |
 | **See lakehouse, feature store, orchestration and GitOps done together** | `ml-platform` |
 | **Take the LLM agent core on its own, with no platform around it** | `agent-local` |
 | **Judge scope discipline** — knowing which problems a tool should *not* absorb | Both templates, read against each other |
@@ -314,7 +315,7 @@ ML-MLOps-Portfolio (this repo)
     │  measured incidents, 395+ tests
     │  Where the lessons were paid for.
     │
-    ├──▶ ml-service-template  ·  ONE governed tabular service
+    ├──▶ ml-service-template  ·  CLASSICAL ML, production defaults
     │       │
     │       │  Extracted patterns, deliberately bounded:
     │       │  - Vendor-neutral agentic canon, 4 IDE surfaces
@@ -333,7 +334,7 @@ ML-MLOps-Portfolio (this repo)
     │       │  consumed via copier (ADR-003) — never forked, never
     │       │  reimplemented; the template wins on serving concerns
     │       ▼
-    └──▶ ml-platform  ·  the substrate MANY unlike projects share
+    └──▶ ml-platform  ·  the substrate EVERY problem shape shares
             │
             │  Everything above that boundary:
             │  - Lakehouse: Iceberg · BigLake / S3 Tables · DuckDB + Polars

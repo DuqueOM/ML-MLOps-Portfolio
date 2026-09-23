@@ -17,8 +17,8 @@ replacing. Each chapter is the foundation of the next.
 
 <div class="portfolio-actions" markdown="1">
 [Ch.1 · Portfolio](#chapter-1-the-ml-mlops-portfolio){ .portfolio-button .portfolio-button--primary }
-[Ch.2 · Template · one service](#chapter-2-the-production-template){ .portfolio-button }
-[Ch.3 · Platform · many projects](#chapter-3-ml-platform-the-enterprise-substrate){ .portfolio-button }
+[Ch.2 · Template · classical ML](#chapter-2-the-production-template){ .portfolio-button }
+[Ch.3 · Platform · DL, LLM & agents](#chapter-3-ml-platform-the-enterprise-substrate){ .portfolio-button }
 [Ch.4 · The agent core](#chapter-4-agent-local-the-llm-core){ .portfolio-button }
 </div>
 </div>
@@ -27,8 +27,9 @@ replacing. Each chapter is the foundation of the next.
 <strong>Why four repos, not one</strong>
 
 Separate repositories with explicit, written contracts between them — and two
-of them are templates *on purpose*. `ml-service-template` scaffolds one
-governed tabular service and stays small enough to read in an afternoon;
+of them are templates *on purpose*. `ml-service-template` governs classical
+ML — scikit-learn, XGBoost, LightGBM — and stays small enough to read in an
+afternoon;
 `ml-platform` covers lakehouse, feature store, orchestration, GitOps and LLM
 serving, and <em>consumes</em> the template through <code>copier</code> rather
 than reimplementing it. Widening the first to cover the second would have
@@ -145,9 +146,10 @@ Its differentiator is the **governed AI-assisted development layer**:
 behavior rules, skills, workflows and an audit trail that keep agentic
 coding reviewable and bounded — engineered, not hidden.
 
-Its **scope limit is itself an ADR**: one service, tabular models, small-team
-calibration — "2–3 models → CronJob, not Airflow". That limit is what
-Chapter 3 exists to respect.
+Its **scope limit is itself an ADR**: classical ML only, single team, 1–5
+models, small-team calibration — "2–3 models → CronJob, not Airflow". LLM/GenAI,
+feature stores and data contracts are deferred there *by decision*, each with a
+revisit trigger. That limit is what Chapter 3 exists to respect.
 
 </div>
 <div class="portfolio-callout" markdown="1">

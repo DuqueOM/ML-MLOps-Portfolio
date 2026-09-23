@@ -30,8 +30,9 @@ document — a gate, not a suggestion.
 <div class="portfolio-callout" markdown="1">
 <strong>Its scope limit is a decision, not an omission</strong>
 
-This template scaffolds <strong>one</strong> governed tabular ML service, with
-small-team calibration throughout — "2–3 models → CronJob, not Airflow";
+This template governs <strong>classical ML</strong> — scikit-learn, XGBoost,
+LightGBM — for a single team running 1–5 models, with small-team calibration
+throughout — "2–3 models → CronJob, not Airflow";
 "in-memory DataFrames → Pandera, not Great Expectations". Widening it to cover
 feature stores, lakehouse table formats, distributed training, GenAI serving
 and multi-project orchestration would not improve it: it would destroy the

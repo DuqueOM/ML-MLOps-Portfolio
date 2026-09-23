@@ -6,7 +6,7 @@
 <canvas data-neural-scene="cube" aria-hidden="true"></canvas>
 <span class="portfolio-eyebrow">Enterprise multi-project ML platform · monorepo</span>
 
-# The second template — where a single service stops being the unit of reuse
+# The second template — where classical ML stops being the whole problem
 
 [**ml-platform**](https://github.com/DuqueOM/ml-platform) is a multi-project
 ML platform monorepo: one shared substrate — data, features, serving,
@@ -15,9 +15,10 @@ differ in **kind**, not merely in dataset. Tabular ML, time series, deep
 learning, LLM/RAG and agents, on GCP and AWS.
 
 It is the **second template in this lineage, not a successor to the first**.
-[`ml-service-template`](template.md) scaffolds *one governed tabular service*
-and is deliberately small enough to read in an afternoon. `ml-platform` covers
-the work that sits *above* that boundary — point-in-time feature retrieval,
+[`ml-service-template`](template.md) governs *classical ML* — scikit-learn,
+XGBoost, LightGBM, single team, 1–5 models — and is deliberately small enough
+to read in an afternoon. `ml-platform` covers the work that sits *outside* that
+boundary — point-in-time feature retrieval,
 lakehouse table formats, orchestration with lineage, GitOps reconciliation,
 LLM systems with evaluation gates, and governance artifacts written for an
 auditor rather than a reviewer. It **consumes** the first template through
@@ -72,7 +73,7 @@ questions, and the boundary between them is itself a written decision
 
 | | [`ml-service-template`](template.md) | [`ml-platform`](https://github.com/DuqueOM/ml-platform) |
 | --- | --- | --- |
-| **Question it answers** | "I need **one** governed ML service in production" | "I need a **substrate** several unlike ML projects sit on" |
+| **Question it answers** | "I need governed **classical ML** in production" | "I need a **substrate** spanning tabular, DL, LLM and agents" |
 | **Unit of reuse** | A scaffold you copy out and own | A library plus a running service, consumed in-repo |
 | **Model kinds** | Tabular / classical ML only — a stated limit, not an omission | Tabular · time series · deep learning · LLM/RAG · agents |
 | **Data layer** | In-memory DataFrames, Pandera validation | Iceberg lakehouse, BigLake / S3 Tables, DuckDB + Polars, dbt, point-in-time joins with a leakage detector |
@@ -82,11 +83,11 @@ questions, and the boundary between them is itself a written decision
 | **Drift** | PSI with quantile bins, one tabular detector | Four detectors for four project kinds, one shared contract ([ADR-007](https://github.com/DuqueOM/ml-platform/blob/main/docs/decisions/ADR-007-drift-detection-per-project-kind.md)) |
 | **LLM / GenAI** | out of scope by decision | LiteLLM, prompt registry, semantic cache, guardrails, Langfuse, promptfoo eval gates |
 | **Anti-pattern model** | 38 encoded anti-patterns (D-01→D-38) + 8 audit-standard (Q-01→Q-08) | Technology triage: every tool tiered core / demonstrated / studied / **rejected**, with the reason |
-| **Entry cost** | Minutes — `copier copy`, one service | Hours — a monorepo with a six-stage progression |
+| **Entry cost** | Minutes — `copier copy` a service | Hours — a monorepo with a six-stage progression |
 | **Read it in** | An afternoon | Not in an afternoon, and that is the trade |
 
-The honest summary: **if you have one model to ship, the first template is the
-right answer and the second is over-engineering.** The second earns its
+The honest summary: **if your models are classical ML, the first template is
+the right answer and the second is over-engineering.** The second earns its
 complexity only once several projects of different kinds need to share
 substrate — which is exactly the claim it puts on record to be falsified.
 
@@ -232,11 +233,11 @@ wants the agent core without the platform around it.
 ```text
 ML-MLOps-Portfolio        three services, three incidents — where the lessons were paid for
         │
-        ├──▶ ml-service-template     one governed tabular service · read it in an afternoon
+        ├──▶ ml-service-template     classical ML · read it in an afternoon
         │            │
         │            │  consumed via copier (ADR-003), never forked
         │            ▼
-        └──▶ ml-platform             the substrate several unlike projects share
+        └──▶ ml-platform             the substrate every problem shape shares
                      ▲
                      │  agent core vendored with history (ADR-002)
                      │

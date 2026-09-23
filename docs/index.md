@@ -14,8 +14,8 @@ Duque Ortega Mutis — Building ML systems that survive production.
 Three ML services (BankChurn, NLPInsight, ChicagoTaxi) deployed on GKE and EKS,
 395+ tests, 18 architecture decision records. Three production incidents
 root-caused: 81% error rate to 0%, SHAP all-zeros, HPA that could never scale
-down. Two open-source templates: ml-service-template for one governed tabular
-service (38 anti-patterns, 52 ADRs, SLSA L2 supply chain, governed AI-assisted
+down. Two open-source templates: ml-service-template for classical ML —
+scikit-learn, XGBoost, LightGBM, single team, 1–5 models (38 anti-patterns, 52 ADRs, SLSA L2 supply chain, governed AI-assisted
 development), and ml-platform, the enterprise multi-project substrate above
 that boundary — Iceberg lakehouse, point-in-time features, Airflow and KFP,
 ArgoCD GitOps, Grafana LGTM observability, LLMOps with evaluation gates, and

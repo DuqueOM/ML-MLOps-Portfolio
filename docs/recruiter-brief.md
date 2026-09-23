@@ -10,8 +10,8 @@
 
 Two years of focused ML engineering on top of 14 years of operations leadership.
 Three production services, three incidents diagnosed from first principles, and
-two open-source templates — one that encodes the lessons for a single governed
-ML service, one that covers the enterprise substrate above that boundary. The
+two open-source templates — one that encodes the lessons for classical ML, one
+that covers deep learning, LLM and agents on a shared substrate. The
 portfolio makes the evidence reviewable.
 
 </div>
@@ -148,8 +148,7 @@ the same rigor as the 81%→0% fix, applied to your stack.</p>
 <small>Project judgment</small>
 <h3>Two templates, and a boundary between them</h3>
 <p><code>ml-service-template</code> turns three projects' worth of pain into a
-reusable starting point: 38 encoded anti-patterns, 52 ADRs, one governed
-service. <code>ml-platform</code> is the enterprise substrate above that
+reusable starting point for classical ML: 38 encoded anti-patterns, 52 ADRs. <code>ml-platform</code> is the enterprise substrate above that
 boundary — lakehouse, feature store, orchestration, GitOps, LLMOps. The
 strongest signal is that they are separate <em>on purpose</em>: knowing what a
 tool should refuse to absorb is the judgment.</p>

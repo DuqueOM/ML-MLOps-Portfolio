@@ -48,9 +48,9 @@ Fourteen years of context, two years of code.
 <span class="pf-tl-year">2026</span>
 <div>
 <h3>Two templates, governance, certification</h3>
-<p>TripleTen DS certificate. <code>ml-service-template</code> for one governed
-ML service, then <code>ml-platform</code> for the enterprise substrate above
-that boundary — lakehouse, feature store, orchestration, GitOps, LLMOps — both
+<p>TripleTen DS certificate. <code>ml-service-template</code> for classical
+ML, then <code>ml-platform</code> for the substrate that spans deep learning,
+LLM and agents too — lakehouse, feature store, orchestration, GitOps, LLMOps — both
 with governed AI-assisted development. Preparing GCP Associate Cloud Engineer
 and AWS ML Engineer Associate.</p>
 </div>
