@@ -192,6 +192,162 @@ optional) sits in front of the Ingress once an adopter wires it in.</p>
 </div>
 </div>
 
+## How It Works, In Four Diagrams
+
+The contracts above are written out in prose in the repository, because a
+contract needs prose. The first hour does not. These four diagrams are the
+shortest honest description of what the template actually does — the deploy
+chain, identity and secrets, the monitoring loop, and what governs the agentic
+surface. Each one describes behaviour that exists in the tree today; the same
+four, with the file that implements every step, live in
+[`docs/DIAGRAMS.md`](https://github.com/DuqueOM/ml-service-template/blob/main/docs/DIAGRAMS.md).
+
+### 1. From a commit to a pod you can verify
+
+One property matters before any other: the thing that is signed, the thing
+that is scanned and the thing the cluster admits are the **same bytes**,
+because every step after the build addresses the image by digest rather than
+by tag. A tag can be moved; a digest cannot.
+
+```mermaid
+flowchart TD
+    A["git push, or a vX.Y.Z tag"] --> B["CI: lint, tests, contract check, security audit"]
+    B --> C["build job authenticates by OIDC<br/>no static cloud keys anywhere"]
+    C --> D["docker build and push"]
+    D --> E["resolve the manifest digest"]
+    E --> F["cosign sign, by digest"]
+    E --> G["syft generates a CycloneDX SBOM"]
+    G --> H["cosign attest the SBOM, by digest"]
+    F --> I["one reusable deploy job per environment"]
+    H --> I
+    I --> J["Environment protection<br/>dev auto, staging and prod gated, prod tag-only"]
+    J --> K["live-signal pre-check<br/>risk can escalate the mode to STOP and abort"]
+    K --> L["the overlay image is pinned to that digest"]
+    L --> M["apply to the target overlay"]
+    M --> N["Kyverno admission: digest required, signature verified"]
+    N --> O["rollout status, 600s budget"]
+    O --> P["smoke test: readiness, then the auth path<br/>with a deliberately wrong key"]
+    P --> Q["audit entry appended"]
+```
+
+Two nodes are the adopter's to wire, and the diagram would be dishonest
+without saying so: reviewer counts live in GitHub's Environment settings
+rather than in the repository, and Kyverno admits nothing until its policies
+are installed in the cluster. The tag-only gate on production *is* enforced in
+the repository, twice.
+
+Two other steps exist because the obvious version failed. Building and
+signing a *tag* leaves a window in which the tag can move, so the build job
+emits a digest map and the deploy job rewrites the overlay with it. And a
+readiness probe alone once went green on a deployment whose every
+authenticated request failed — readiness never touches the secret backend — so
+the smoke test sends a key that is deliberately wrong: `401` proves the secret
+resolved, `503` proves it did not.
+
+### 2. Who the code is, and where its secrets come from
+
+There is no credential file anywhere in this template: not in the repository,
+not in the image, not on the node. Every actor proves its identity with a
+short-lived token, and the identities are deliberately separate — the job that
+detects drift cannot read the API key, and the job that retrains cannot delete
+a model.
+
+```mermaid
+flowchart LR
+    subgraph TF["Terraform, per environment"]
+        T1["federation pool and provider<br/>trust conditioned on this repository"]
+        T2["five purpose-scoped identities<br/>ci, deploy, runtime, drift, retrain"]
+        T3["secret entries<br/>only the runtime identity is granted access"]
+    end
+    subgraph GH["GitHub Actions"]
+        G1["OIDC token<br/>subject names the repo and the environment"]
+        G2["exchanged for a cloud identity<br/>Workload Identity on GCP, IRSA on AWS"]
+    end
+    subgraph K8S["Cluster"]
+        K1["ServiceAccount annotated with that identity"]
+        K2["pod starts with no key on disk"]
+        K3["the secret is resolved at runtime and cached"]
+    end
+    T1 --> G1
+    G1 --> G2
+    T2 --> G2
+    T2 --> K1
+    K1 --> K2
+    K2 --> K3
+    T3 --> K3
+    K3 --> R["request served, or 503 if the backend is unreachable"]
+```
+
+The part that is easy to get wrong is the **name**. Terraform decides what a
+secret is called and the pod has to ask for the same string — joined with `-`
+on GCP and `/` on AWS. That join lives in one function, and a contract test
+evaluates the Terraform interpolations against the Kubernetes overlays so four
+layers cannot quietly choose four different names. Failure is closed: if the
+backend is unreachable in staging or production the service answers `503`
+rather than falling back to an unauthenticated path.
+
+### 3. The loop that closes
+
+A monitoring setup that only emits metrics is an open loop — it can say
+something changed, but nothing downstream is obliged to act. This one closes,
+and it closes through artefacts a human reads: an issue, a quality-gate
+report, a champion-versus-challenger decision. Not an automatic push to
+production.
+
+```mermaid
+flowchart TD
+    R["POST /predict"] --> S["inference on a thread pool<br/>the event loop is never blocked"]
+    S --> T["the prediction is logged to object storage"]
+    S --> U["Prometheus metrics, SLO rules, AlertManager"]
+    T --> V["ground-truth ingester, daily"]
+    V --> W["performance monitor, daily<br/>sliced metrics pushed to the gateway"]
+    T --> X["drift job, daily<br/>PSI over quantile bins"]
+    X -->|"drift above threshold"| Y["an issue is opened"]
+    W -->|"sliced performance degrades"| Y
+    Y --> Z["retrain workflow, dispatched by a human"]
+    Z --> AA["schema validation, training, quality gates<br/>primary metric, fairness ratio, leakage check"]
+    AA --> AB["champion versus challenger, statistically compared"]
+    AB -->|"promote"| AC["model signed and registered<br/>re-enters diagram 1"]
+    AB -->|"keep or blocked"| AD["promotion refused, decision recorded"]
+```
+
+The fairness gate uses a disparate impact ratio with a floor of `0.80`, the US
+four-fifths rule — and the template says in the same file that this is a
+starting point rather than a universal threshold, that the metric is
+group-level, that it is unreliable on small subgroups, and that passing it
+does not by itself make a model fair.
+
+### 4. What governs the agent
+
+The agentic surface is not load-bearing. Agents make the work faster; the
+gates decide what ships. Everything an agent reads is generated from one
+canonical tree, and a check fails CI when a generated adapter stops matching
+its source — so a rule cannot be softened in one IDE's copy without the
+difference appearing in a diff.
+
+```mermaid
+flowchart TD
+    A["AGENTS.md<br/>canonical policy and the anti-pattern catalogue"] --> B["the agentic manifest"]
+    B --> C["rules"]
+    B --> D["skills"]
+    B --> E["workflows"]
+    C --> F["generated adapters<br/>Claude Code, Cursor, and the service payload mirror"]
+    D --> F
+    E --> F
+    F --> G["adapter sync check<br/>a drifted adapter fails CI"]
+    A --> H["deterministic gates"]
+    H --> I["doc coherence, traceable control claims, pin shape,<br/>deploy contract, payload scope, render safety, and more"]
+    I --> J["CI lanes: validate templates, policy tests, context tests"]
+    G --> J
+    J --> K["what ships is what the gates allowed"]
+```
+
+The same idea applies to the page you are reading. The template's coherence
+gate reconciles the claims that appear in more than one document — the
+version, the anti-pattern count, the agentic surface counts, ADR numbering —
+against the tree, in every live document at once rather than in a list of
+filenames someone has to remember to extend.
+
 ## Agentic Operating Model
 
 <div class="portfolio-card-grid" markdown="1">
@@ -228,7 +384,7 @@ explicit test commands so agent-assisted work remains auditable.</p>
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<small>Rules (18)</small>
+<small>Rules (19)</small>
 <h3><a href="https://github.com/DuqueOM/ml-service-template/tree/main/agentic/rules">Context-aware engineering constraints</a></h3>
 <p>Rules cover Python serving, training, Kubernetes, Terraform, Docker,
 GitHub Actions, monitoring, data validation, security, API contracts,
@@ -238,7 +394,7 @@ failure modes harder to reintroduce.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Skills (26)</small>
+<small>Skills (27)</small>
 <h3><a href="https://github.com/DuqueOM/ml-service-template/tree/main/agentic/skills">Reusable MLOps procedures</a></h3>
 <p>Skills include new service creation, EDA, deploy to GKE/EKS, drift checks,
 model retraining, release checklist, rollback, cost audit, security audit,
@@ -249,7 +405,7 @@ blameless incident postmortems and edge-protection coverage auditing.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Workflows (18)</small>
+<small>Workflows (20)</small>
 <h3><a href="https://github.com/DuqueOM/ml-service-template/tree/main/agentic/workflows">Slash-command operating paths</a></h3>
 <p>Workflows such as <code>/new-service</code>, <code>/incident</code>,
 <code>/release</code>, <code>/drift-check</code>, <code>/retrain</code>,
