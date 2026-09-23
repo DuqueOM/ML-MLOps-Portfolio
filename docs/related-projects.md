@@ -264,8 +264,8 @@ that cost superlinear.
 
 The standalone repository stays live, because the two are not the same value.
 `ml-platform` gives this core one particular, governed use inside a platform;
-`agent-local` remains the **agnostic upstream** for anyone who wants the agent
-core by itself. The original shared plan lives in the template's
+`agent-local` is the **standalone version** of that core, for anyone who wants
+it by itself. The core itself is developed in `ml-platform`. The original shared plan lives in the template's
 [`ACTION_PLAN_LLM_AGENT.md`](https://github.com/DuqueOM/ml-service-template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md).
 
 ### What's distinctive about it
@@ -353,7 +353,7 @@ ML-MLOps-Portfolio (this repo)
             ◀── agent-local, vendored with full history (ADR-002):
             │       core/ → libs/llm-core/
             │       usecases/tienda/ → projects/store-assistant/
-            │       The standalone repo stays live as the agnostic upstream:
+            │       The standalone repo stays live as the core's standalone version:
             │       - Deterministic policy gate over model judgment
             │       - Reflection isolated from verifier evidence (ADR-009)
             │       - MCP/A2A evaluated and rejected (ADR-010)

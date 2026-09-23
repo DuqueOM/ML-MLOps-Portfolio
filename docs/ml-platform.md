@@ -211,8 +211,8 @@ makes that cost superlinear.
 
 The standalone repository **stays live**, because its value is not the same
 value. `ml-platform` gives that core one particular, governed use inside a
-platform; `agent-local` remains the business-agnostic upstream for anyone who
-wants the agent core without the platform around it.
+platform; `agent-local` is the standalone version of that core, for anyone who
+wants it without the platform around it. The core itself is developed here.
 
 ## Code Review Shortcuts
 

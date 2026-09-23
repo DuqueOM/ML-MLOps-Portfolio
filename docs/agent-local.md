@@ -35,9 +35,10 @@ two ADR sets, and a third participant makes that cost superlinear.
 
 This repository stays live because the two are not the same value. The
 platform gives this core <em>one particular, governed use</em> inside a
-multi-project substrate; <code>agent-local</code> remains the
-<strong>agnostic upstream</strong> for anyone who wants the agent core without
-the platform around it.
+multi-project substrate; <code>agent-local</code> is the
+<strong>standalone version</strong> of that core, for anyone who wants it
+without the platform around it. The core itself is developed in
+<code>ml-platform</code>.
 </div>
 
 <div class="portfolio-stat-strip" markdown="1">

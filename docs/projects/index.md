@@ -242,8 +242,9 @@ the platform, not the store.
 it in with its full git history (ADR-002): `core/` became `libs/llm-core/`,
 the `tienda` use-case became `projects/store-assistant/`. The standalone
 repository stays live because the two are not the same value — the platform
-gives this core one particular, governed use, while `agent-local` remains the
-business-agnostic upstream for anyone who wants the agent core by itself.
+gives this core one particular, governed use, while `agent-local` is the
+standalone version of that core, for anyone who wants it by itself. The core
+itself is developed in `ml-platform`.
 
 </div>
 <div class="portfolio-callout" markdown="1">
