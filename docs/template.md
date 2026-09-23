@@ -220,7 +220,7 @@ flowchart TD
     G --> H["cosign attest the SBOM, by digest"]
     F --> I["one reusable deploy job per environment"]
     H --> I
-    I --> J["Environment protection<br/>dev auto, staging 1 reviewer, prod 2 reviewers and tag-only"]
+    I --> J["Environment protection<br/>dev auto, staging and prod gated, prod tag-only"]
     J --> K["live-signal pre-check<br/>risk can escalate the mode to STOP and abort"]
     K --> L["the overlay image is pinned to that digest"]
     L --> M["apply to the target overlay"]
@@ -230,7 +230,13 @@ flowchart TD
     P --> Q["audit entry appended"]
 ```
 
-Two of those steps exist because the obvious version failed. Building and
+Two nodes are the adopter's to wire, and the diagram would be dishonest
+without saying so: reviewer counts live in GitHub's Environment settings
+rather than in the repository, and Kyverno admits nothing until its policies
+are installed in the cluster. The tag-only gate on production *is* enforced in
+the repository, twice.
+
+Two other steps exist because the obvious version failed. Building and
 signing a *tag* leaves a window in which the tag can move, so the build job
 emits a digest map and the deploy job rewrites the overlay with it. And a
 readiness probe alone once went green on a deployment whose every
