@@ -55,7 +55,7 @@ auditor rather than a reviewer. It **consumes** the first template through
 </div>
 <div class="portfolio-stat">
 <small>Governance</small>
-<strong>10 ADRs · claim → gate</strong>
+<strong>11 ADRs · claim → gate</strong>
 <span>Every published quality claim maps to a command that can fail a build.</span>
 </div>
 <div class="portfolio-stat">

@@ -212,7 +212,7 @@ manifests or supply chain, the template wins (ADR-003).
   recall@5), failed to clear the 0.05 margin, and **no index ships**. The
   number, the diagnosis and what would reverse the decision are published
   anyway.
-- **10 ADRs, and a rule about documents** — ADR-005 rule H: *a document
+- **11 ADRs, and a rule about documents** — ADR-005 rule H: *a document
   asserting something false is itself a defect, even when the code is
   correct.* The rule has a specific origin — an ADR in the sibling agent
   platform recorded a hardware budget as "measured" from a single reading of a
