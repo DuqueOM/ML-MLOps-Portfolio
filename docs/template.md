@@ -332,7 +332,7 @@ flowchart TD
     B --> C["rules"]
     B --> D["skills"]
     B --> E["workflows"]
-    C --> F["generated adapters<br/>Claude Code, Cursor, and the service payload mirror"]
+    C --> F["one generated adapter per supported tool<br/>plus a byte-identical mirror in the payload"]
     D --> F
     E --> F
     F --> G["adapter sync check<br/>a drifted adapter fails CI"]
@@ -342,6 +342,15 @@ flowchart TD
     G --> J
     J --> K["what ships is what the gates allowed"]
 ```
+
+The diagram names no IDE on purpose. Its first version listed two, and within
+a week the template began rendering skills where Cursor and Codex actually look
+for them — the picture was wrong before anyone had edited it. Which tools are
+supported is an inventory that changes whenever a tool does, so it lives in
+the template's
+[AGENTS.md](https://github.com/DuqueOM/ml-service-template/blob/main/AGENTS.md#multi-ide-support),
+where a gate reconciles every count against the directories. A diagram draws
+the mechanism, which changes rarely.
 
 The same idea applies to the page you are reading. The template's coherence
 gate reconciles the claims that appear in more than one document — the
