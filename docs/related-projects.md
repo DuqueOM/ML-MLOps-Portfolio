@@ -86,11 +86,11 @@ home, and got one — see [`ml-platform`](#ml-platform-the-substrate-for-every-p
   cover bootstrap: `docs/runbooks/gcp-wif-setup.md` +
   `docs/runbooks/aws-irsa-setup.md`.
 - **Per-environment Terraform remote state** — partial backend configs
-  under `templates/infra/terraform/{gcp,aws}/backend-configs/` segregate
+  under `templates/service/infra/terraform/{gcp,aws}/backend-configs/` segregate
   dev / staging / prod state buckets with the bootstrap runbook
   `docs/runbooks/terraform-state-bootstrap.md`.
-- **Drift + retrain operationalized** — `templates/cicd/drift-detection.yml`
-  and `retrain-service.yml` ship cloud-aware data/model adapters (GCS or
+- **Drift + retrain operationalized** — `drift-detection.yml` and
+  `retrain-service.yml` under `templates/service/.github/workflows/` ship cloud-aware data/model adapters (GCS or
   S3 via OIDC), Prometheus Pushgateway integration, and MLflow promotion
   hooks.
 - **Audit trail wired into CI** — `scripts/audit_record.py` CLI wrapper
