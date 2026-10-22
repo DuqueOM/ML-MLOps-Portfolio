@@ -11,7 +11,7 @@ joblib~=1.3.0
 
 # Data
 pandas~=2.3.0
-numpy~=2.2.0
+numpy~=2.5.4
 
 # API
 fastapi~=0.115.0
@@ -23,7 +23,7 @@ python-multipart~=0.0.9
 pyyaml~=6.0.0
 
 # Monitoring
-prometheus-client~=0.21.0
+prometheus-client~=0.26.0
 
 # Serialization
 protobuf~=5.29.0
