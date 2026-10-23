@@ -70,8 +70,12 @@ updates:
   #
   # `increase` raises the floor and PRESERVES the `~=` shape. Dependabot's
   # pip default WIDENS a constraint (`~=2.2` becomes `>=2.2,<4.0`), which
-  # silently admits the major that ADR-005 exists to block: numpy 2.x
-  # silently corrupted joblib-serialised models here, with no error raised.
+  # admits a major without anyone deciding to take it — the thing ADR-005's
+  # `~=` exists to prevent. That is the reason, and it does not depend on any
+  # one package. (This comment used to say "numpy 2.x silently corrupted
+  # joblib-serialised models here". These services moved to numpy 2.2
+  # deliberately in v3.5.0, and a measured round trip does not reproduce a
+  # silent corruption; see ADR-005's amendment of 2026-10-23.)
   # ---------------------------------------------------------------------
   - package-ecosystem: "pip"
     directories:

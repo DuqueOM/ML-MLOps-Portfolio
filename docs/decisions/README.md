@@ -18,7 +18,7 @@ ADRs capture the **reasoning behind decisions**, not just the outcome. Six month
 | [002](002-emptydir-model-storage.md) | emptyDir + Init Container for Model Storage | Infrastructure | Accepted |
 | [003](003-stacking-classifier-bankchurn.md) | StackingClassifier for BankChurn | ML Modeling | Accepted |
 | [004](004-opentelemetry-graceful-fallback.md) | OpenTelemetry with Graceful No-Op Fallback | Observability | Accepted |
-| [005](005-compatible-release-pinning.md) | Compatible Release Pinning (~=) for Dependencies | DevOps | Accepted |
+| [005](005-compatible-release-pinning.md) | Compatible Release Pinning (~=) for Dependencies | DevOps | Accepted, amended 2026-10-23 |
 | [006](006-drift-triggered-retraining.md) | Drift-Triggered Retraining Architecture | MLOps | Accepted (stub) |
 | [007](007-feature-store-decision.md) | Feature Store — Deferred with Design Document | MLOps | Deferred |
 | [008](008-argo-rollouts-canary.md) | Canary Deployments with Argo Rollouts | Infrastructure | Accepted |
