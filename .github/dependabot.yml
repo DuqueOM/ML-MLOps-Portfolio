@@ -89,6 +89,25 @@ updates:
       python-low-risk:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+    # Python 3.11 is supported here and it is not a formality: CI tests it
+    # (ci-mlops.yml matrix 3.11 / 3.12), one service image is
+    # python:3.11-slim-bookworm, and the projects declare requires-python
+    # >= 3.10 / >= 3.11. These four packages dropped 3.11 in a MINOR release,
+    # so the low-risk group carried them in and #315 failed every job with
+    # "No matching distribution found for numpy>=2.5.4" on 3.11. Each
+    # threshold is the first stable release whose Requires-Python is >= 3.12,
+    # read from PyPI — not the version Dependabot happened to propose (shap
+    # crossed at 0.52, three minors before the 0.54 in that PR). Lift these
+    # together when 3.11 leaves the matrix and the 3.11 image.
+    ignore:
+      - dependency-name: "numpy"
+        versions: [">=2.5"]
+      - dependency-name: "scipy"
+        versions: [">=1.18"]
+      - dependency-name: "shap"
+        versions: [">=0.52"]
+      - dependency-name: "xgboost"
+        versions: [">=3.3"]
     commit-message:
       prefix: "deps"
     labels:
