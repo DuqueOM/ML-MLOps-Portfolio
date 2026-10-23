@@ -5,8 +5,8 @@
 
 # Core Data Science
 pandas~=2.3.0
-numpy~=2.2.0
-scipy~=1.14.0
+numpy~=2.4.6
+scipy~=1.17.1
 
 # ML Frameworks (inference)
 scikit-learn~=1.8.0
@@ -26,7 +26,7 @@ python-multipart~=0.0.32
 pyyaml~=6.0.0
 
 # Monitoring
-prometheus-client~=0.21.0
+prometheus-client~=0.26.0
 
 # Type hints
 typing-extensions~=4.16.0
