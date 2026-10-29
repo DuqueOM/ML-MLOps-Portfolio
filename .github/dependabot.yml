@@ -24,10 +24,12 @@ updates:
       - "dependencies"
       - "github-actions"
 
-  # Docker
-  # Note: Ignore pre-release Python versions (3.14+) as they lack wheel support
+  # Docker (base images of the three services)
   - package-ecosystem: "docker"
-    directory: "/BankChurn-Predictor"
+    directories:
+      - "/BankChurn-Predictor"
+      - "/NLPInsight-Analyzer"
+      - "/ChicagoTaxi-Demand-Pipeline"
     schedule:
       interval: "monthly"
     groups:
@@ -38,25 +40,14 @@ updates:
       - "dependencies"
       - "docker"
     ignore:
-      # Ignore Python 3.14+ (pre-release/development versions)
+      # The portfolio runs ONE Python minor: 3.13 in the images, CI,
+      # .python-version and requires-python (<3.14). Moving to 3.14 is a
+      # deliberate portfolio-wide change (ADR-019), never an image bump.
       - dependency-name: "python"
         versions: [">=3.14"]
-
-  - package-ecosystem: "docker"
-    directory: "/NLPInsight-Analyzer"
-    schedule:
-      interval: "monthly"
-    groups:
-      images:
-        patterns: ["*"]
-        update-types: ["minor", "patch"]
-    labels:
-      - "dependencies"
-      - "docker"
-    ignore:
-      # Ignore Python 3.14+ (pre-release/development versions)
-      - dependency-name: "python"
-        versions: [">=3.14"]
+      # The uv that installs the lock in the images moves together with
+      # UV_VERSION in the workflows, in one PR — not per Dockerfile.
+      - dependency-name: "ghcr.io/astral-sh/uv"
 
   # ---------------------------------------------------------------------
   # Python. This was ABSENT while the repository carried ten files that
@@ -65,8 +56,15 @@ updates:
   # unwatched none of them ever received an update PR — a control that looks
   # present and reports nothing.
   #
+  # Since ADR-019 the services and common_utils are ONE uv workspace with one
+  # uv.lock, watched by the `uv` ecosystem. pip keeps only the two root
+  # requirement files that are not part of the workspace (MkDocs, DVC).
+  #
   # `directory:` is resolved literally and does not recurse, so every
-  # directory that declares dependencies is listed.
+  # directory that declares dependencies is listed. If an update ever lands
+  # in a member's pyproject.toml without uv.lock, `uv lock --check`
+  # (ci-mlops.yml, Quality Gates) fails that PR instead of letting the lock
+  # and the declaration drift.
   #
   # `increase` raises the floor and PRESERVES the `~=` shape. Dependabot's
   # pip default WIDENS a constraint (`~=2.2` becomes `>=2.2,<4.0`), which
@@ -77,7 +75,7 @@ updates:
   # deliberately in v3.5.0, and a measured round trip does not reproduce a
   # silent corruption; see ADR-005's amendment of 2026-10-23.)
   # ---------------------------------------------------------------------
-  - package-ecosystem: "pip"
+  - package-ecosystem: "uv"
     directories:
       - "/"
       - "/BankChurn-Predictor"
@@ -93,25 +91,28 @@ updates:
       python-low-risk:
         patterns: ["*"]
         update-types: ["minor", "patch"]
-    # Python 3.11 is supported here and it is not a formality: CI tests it
-    # (ci-mlops.yml matrix 3.11 / 3.12), one service image is
-    # python:3.11-slim-bookworm, and the projects declare requires-python
-    # >= 3.10 / >= 3.11. These four packages dropped 3.11 in a MINOR release,
-    # so the low-risk group carried them in and #315 failed every job with
-    # "No matching distribution found for numpy>=2.5.4" on 3.11. Each
-    # threshold is the first stable release whose Requires-Python is >= 3.12,
-    # read from PyPI — not the version Dependabot happened to propose (shap
-    # crossed at 0.52, three minors before the 0.54 in that PR). Lift these
-    # together when 3.11 leaves the matrix and the 3.11 image.
-    ignore:
-      - dependency-name: "numpy"
-        versions: [">=2.5"]
-      - dependency-name: "scipy"
-        versions: [">=1.18"]
-      - dependency-name: "shap"
-        versions: [">=0.52"]
-      - dependency-name: "xgboost"
-        versions: [">=3.3"]
+    # The 3.11-era ignores (numpy >= 2.5, scipy >= 1.18, shap >= 0.52,
+    # xgboost >= 3.3 — each the first release requiring Python >= 3.12, after
+    # #315) were lifted by ADR-019: 3.11 left the CI matrix and the images,
+    # and the workspace runs 3.13 only. A dependency that drops 3.13 is now
+    # stopped by the resolver itself (requires-python = ">=3.13,<3.14").
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "python"
+
+  - package-ecosystem: "pip"
+    directory: "/"   # requirements-docs.txt, requirements-dvc.txt
+    versioning-strategy: increase
+    schedule:
+      interval: "weekly"
+      day: "thursday"
+    open-pull-requests-limit: 3
+    groups:
+      python-tools-low-risk:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
     commit-message:
       prefix: "deps"
     labels:

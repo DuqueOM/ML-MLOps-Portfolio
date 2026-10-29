@@ -1,5 +1,12 @@
 # Multi-stage Dockerfile for NLPInsight Analyzer
 # Optimized for transformer model inference (CPU)
+#
+# Build context is the REPOSITORY ROOT (ADR-019):
+#     docker build -f NLPInsight-Analyzer/Dockerfile .
+# Installs from the workspace lock (uv.lock), the resolution CI and development
+# use; torch is the CPU wheel from download.pytorch.org (root pyproject
+# [tool.uv.sources]). Dockerfile.dockerignore whitelists the root context.
+
 # Stage 1: Builder
 FROM python:3.13.15-slim-bookworm AS builder
 
@@ -8,50 +15,48 @@ LABEL project="NLPInsight-Analyzer"
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    UV_PROJECT_ENVIRONMENT=/opt/venv \
+    UV_PYTHON=/usr/local/bin/python3 \
+    UV_PYTHON_DOWNLOADS=never \
+    UV_LINK_MODE=copy \
+    UV_NO_CACHE=1 \
+    UV_HTTP_RETRIES=5
+
+# uv, pinned to the version that wrote uv.lock
+COPY --from=ghcr.io/astral-sh/uv:0.11.19 /uv /usr/local/bin/uv
 
 WORKDIR /build
 
-# Install build dependencies
+# Install build dependencies (curl: the torch fallback below)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc g++ build-essential curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements
-COPY requirements.txt requirements.in* ./
+# Workspace metadata only (uv validates the whole workspace)
+COPY pyproject.toml uv.lock ./
+COPY BankChurn-Predictor/pyproject.toml BankChurn-Predictor/
+COPY ChicagoTaxi-Demand-Pipeline/pyproject.toml ChicagoTaxi-Demand-Pipeline/
+COPY NLPInsight-Analyzer/pyproject.toml NLPInsight-Analyzer/
+COPY common_utils/pyproject.toml common_utils/
+COPY NLPInsight-Analyzer/docker/fetch_locked_wheel.py /tmp/fetch_locked_wheel.py
 
-# Install dependencies in venv (CPU-only torch to keep image small).
-# torch via pip/urllib3 has been observed to fail the TLS handshake against
-# download.pytorch.org's CDN edge from GitHub-hosted runners (reproduced
-# consistently, not a one-off blip — curl against the identical URL from an
-# unrelated network succeeds every time). The two clients build a different
-# ClientHello (cipher order, ALPN), and some CDN/WAF edges are known to be
-# pickier about Python's urllib3 fingerprint than curl's. So: try pip twice
-# with backoff first (cheap, usually enough), then fall back to resolving
-# the exact wheel from PyTorch's index and fetching it with curl instead.
-RUN python -m venv /opt/venv && \
-    . /opt/venv/bin/activate && \
-    pip install --upgrade pip setuptools wheel && \
-    ( pip install --no-cache-dir --no-compile torch --index-url https://download.pytorch.org/whl/cpu \
-      || (sleep 10 && pip install --no-cache-dir --no-compile torch --index-url https://download.pytorch.org/whl/cpu) \
-      || ( echo "pip install of torch failed twice via download.pytorch.org - falling back to curl" && \
-           PYTAG=$(python -c "import sys;print(f'cp{sys.version_info[0]}{sys.version_info[1]}')") && \
-           WHL_PATH=$(curl -fsSL --retry 3 --retry-delay 3 https://download.pytorch.org/whl/cpu/torch/ \
-                      | grep -oE "href=\"/whl/cpu/torch-[0-9][^\"]*-${PYTAG}-${PYTAG}-manylinux[^\"]*x86_64\.whl" \
-                      | sed 's/^href="//' | sort -V | tail -1) && \
-           test -n "$WHL_PATH" && \
-           curl -fsSL --retry 3 --retry-delay 3 -o /tmp/torch.whl "https://download.pytorch.org${WHL_PATH}" && \
-           pip install --no-cache-dir --no-compile /tmp/torch.whl && \
-           rm -f /tmp/torch.whl \
+# Exactly this service's locked runtime dependencies (--frozen never
+# re-resolves). torch via pip/urllib3 has been observed to fail the TLS
+# handshake against download.pytorch.org's CDN edge from GitHub-hosted runners
+# while curl, against the same URL, succeeds — the two clients build a
+# different ClientHello. uv uses yet another TLS stack and is tried first. If
+# it fails, everything else is installed with uv and torch is fetched with curl
+# from the URL uv.lock records, verified against the lock's sha256 — the same
+# file, or the build fails. (The old fallback scraped the index for the newest
+# wheel: a version nobody had locked.)
+RUN ( uv sync --frozen --no-dev --package nlpinsight-analyzer --no-install-workspace \
+      || ( echo "uv could not fetch from download.pytorch.org - installing the locked torch wheel with curl" && \
+           uv sync --frozen --no-dev --package nlpinsight-analyzer --no-install-workspace --no-install-package torch && \
+           WHL=$(python3 /tmp/fetch_locked_wheel.py uv.lock torch /tmp/wheels) && \
+           uv pip install --python /opt/venv/bin/python --no-deps "$WHL" && \
+           rm -rf /tmp/wheels \
          ) \
     ) && \
-    if [ -f requirements.in ]; then \
-        sed -e '/--hash=/d' -e 's/ \\$//' -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' -e '/^torch/d' requirements.in > requirements_clean.txt; \
-    else \
-        sed -e '/--hash=/d' -e 's/ \\$//' -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' -e '/^torch/d' requirements.txt > requirements_clean.txt; \
-    fi && \
-    pip install --no-cache-dir --no-compile -r requirements_clean.txt && \
     find /opt/venv -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null; \
     find /opt/venv -type d -name 'tests' -not -path '*/numpy/*' -exec rm -rf {} + 2>/dev/null; \
     find /opt/venv -type d -name 'test' -exec rm -rf {} + 2>/dev/null; \
@@ -94,12 +99,12 @@ WORKDIR /app
 COPY --from=builder --chown=appuser:appuser /opt/venv /opt/venv
 
 # Copy configs first (change less frequently, better cache)
-COPY --chown=appuser:appuser configs/ ./configs/
-COPY --chown=appuser:appuser pyproject.toml ./
+COPY --chown=appuser:appuser NLPInsight-Analyzer/configs/ ./configs/
+COPY --chown=appuser:appuser NLPInsight-Analyzer/pyproject.toml ./
 
 # Copy source code
-COPY --chown=appuser:appuser src/ ./src/
-COPY --chown=appuser:appuser app/ ./app/
+COPY --chown=appuser:appuser NLPInsight-Analyzer/src/ ./src/
+COPY --chown=appuser:appuser NLPInsight-Analyzer/app/ ./app/
 
 # Create directories
 RUN mkdir -p logs models artifacts data/raw .cache/huggingface && \

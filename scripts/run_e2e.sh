@@ -23,14 +23,15 @@ echo ""
 
 cd "$PROJECT_DIR"
 
-# Activate virtual environment if available (optional in CI)
-if [ -d ".venv" ]; then
-    source .venv/bin/activate
+# Activate the workspace virtual environment if available (optional in CI,
+# where it is already on PATH). One .venv at the repo root (ADR-019).
+if [ -d "$PORTFOLIO_ROOT/.venv" ]; then
+    source "$PORTFOLIO_ROOT/.venv/bin/activate"
 elif python -c "import sklearn" 2>/dev/null; then
     echo -e "${YELLOW}[!] No .venv found, but dependencies available — continuing${NC}"
 else
     echo -e "${RED}[ERROR] No .venv and dependencies not installed${NC}"
-    echo "Run: python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt"
+    echo "Run from the repo root: make install && source .venv/bin/activate"
     exit 1
 fi
 

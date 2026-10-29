@@ -1,7 +1,7 @@
 # Makefile - ML-MLOps Portfolio Root
 # Unified commands for managing the entire portfolio
 
-.PHONY: help install test lint format docker-build docker-demo clean
+.PHONY: help install install-dev lock test lint format docker-build docker-demo clean
 
 # Colors
 RED := \033[0;31m
@@ -13,6 +13,11 @@ NC := \033[0m # No Color
 # Projects
 PROJECTS := BankChurn-Predictor NLPInsight-Analyzer ChicagoTaxi-Demand-Pipeline
 
+# One uv workspace, one uv.lock, one .venv at the root (ADR-019). `install`
+# syncs it; every other target runs in it without re-syncing (a sync is exact
+# and would drop the other projects' packages).
+RUN := uv run --frozen --no-sync
+
 help: ## Show this help message
 	@echo "$(GREEN)ML-MLOps Portfolio - Available Commands:$(NC)"
 	@echo ""
@@ -22,24 +27,20 @@ help: ## Show this help message
 # Development Commands
 # ═══════════════════════════════════════════════
 
-install: ## Install all project dependencies (editable mode)
-	@echo "$(GREEN)Installing dependencies for all projects...$(NC)"
-	@for project in $(PROJECTS); do \
-		echo "$(BLUE)► Installing $$project (editable)...$(NC)"; \
-		pip install -e $$project && \
-		echo "$(GREEN)  ✓ $$project installed$(NC)"; \
-	done
+install: ## Install every project + dev tools into .venv from uv.lock
+	@echo "$(GREEN)Syncing .venv from uv.lock (all projects, all groups)...$(NC)"
+	uv sync --frozen --all-packages --all-groups
 	@echo "$(GREEN)✓ All dependencies installed$(NC)"
 
-install-dev: ## Install development dependencies
-	@echo "$(GREEN)Installing dev dependencies...$(NC)"
-	pip install pre-commit
+install-dev: install ## install + pre-commit hooks
+	@echo "$(GREEN)Installing pre-commit hooks...$(NC)"
+	uv tool install pre-commit
 	pre-commit install
-	@for project in $(PROJECTS); do \
-		echo "$(BLUE)► Installing dev deps for $$project...$(NC)"; \
-		pip install -e "$$project[dev]" 2>/dev/null || pip install -e $$project; \
-	done
-	@echo "$(GREEN)✓ Dev dependencies installed$(NC)"
+	@echo "$(GREEN)✓ Dev environment ready$(NC)"
+
+lock: ## Re-resolve uv.lock after editing a pyproject.toml
+	uv lock
+	@echo "$(GREEN)✓ uv.lock updated — commit it with the pyproject change$(NC)"
 
 # ═══════════════════════════════════════════════
 # Testing & Quality
@@ -49,14 +50,14 @@ test: ## Run tests for all projects
 	@echo "$(GREEN)Running tests for all projects...$(NC)"
 	@for project in $(PROJECTS); do \
 		echo "$(BLUE)► Testing $$project...$(NC)"; \
-		cd $$project && pytest tests/ -q || echo "$(RED)Tests failed for $$project$(NC)" && cd ..; \
+		cd $$project && $(RUN) pytest tests/ -q || echo "$(RED)Tests failed for $$project$(NC)" && cd ..; \
 	done
 
 test-coverage: ## Run tests with coverage report
 	@echo "$(GREEN)Running tests with coverage...$(NC)"
 	@for project in $(PROJECTS); do \
 		echo "$(BLUE)► Coverage for $$project...$(NC)"; \
-		cd $$project && pytest --cov=. --cov-report=term-missing && cd ..; \
+		cd $$project && $(RUN) pytest --cov=. --cov-report=term-missing && cd ..; \
 	done
 
 lint: ## Run linting on all projects
@@ -65,15 +66,15 @@ lint: ## Run linting on all projects
 
 format: ## Format code for all projects
 	@echo "$(GREEN)Formatting code...$(NC)"
-	black . --exclude '/(\.git|\.venv|venv|data|artifacts|mlruns)/'
-	isort . --skip-gitignore
+	$(RUN) black . --exclude '/(\.git|\.venv|venv|data|artifacts|mlruns)/'
+	$(RUN) isort . --skip-gitignore
 	@echo "$(GREEN)✓ Code formatted$(NC)"
 
 typecheck: ## Run mypy type checking
 	@echo "$(GREEN)Running type checking...$(NC)"
 	@for project in $(PROJECTS); do \
 		echo "$(BLUE)► Type checking $$project...$(NC)"; \
-		cd $$project && mypy src/ app/ --ignore-missing-imports || echo "$(YELLOW)Type issues in $$project$(NC)" && cd ..; \
+		cd $$project && $(RUN) mypy src/ app/ --ignore-missing-imports || echo "$(YELLOW)Type issues in $$project$(NC)" && cd ..; \
 	done
 
 # ═══════════════════════════════════════════════
@@ -82,9 +83,10 @@ typecheck: ## Run mypy type checking
 
 docker-build: ## Build Docker images for all projects
 	@echo "$(GREEN)Building Docker images...$(NC)"
+	@# Context = repo root: the images install from uv.lock (ADR-019)
 	@for project in $(PROJECTS); do \
 		echo "$(BLUE)► Building $$project...$(NC)"; \
-		cd $$project && docker build -t $$(echo $$project | tr '[:upper:]' '[:lower:]'):latest . && cd ..; \
+		docker build -f $$project/Dockerfile -t $$(echo $$project | tr '[:upper:]' '[:lower:]'):latest . || exit 1; \
 	done
 	@echo "$(GREEN)✓ All images built$(NC)"
 
@@ -139,7 +141,7 @@ dvc-repro: ## Reproduce DVC pipelines for all projects
 
 mlflow-ui: ## Start MLflow UI
 	@echo "$(GREEN)Starting MLflow UI...$(NC)"
-	mlflow ui --port 5000 --backend-store-uri ./mlruns
+	$(RUN) mlflow ui --port 5000 --backend-store-uri ./mlruns
 
 # ═══════════════════════════════════════════════
 # CI/CD Simulation

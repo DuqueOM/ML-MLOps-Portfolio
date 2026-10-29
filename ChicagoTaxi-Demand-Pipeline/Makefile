@@ -3,21 +3,23 @@
 
 .PHONY: help install test test-coverage lint format etl predict serve docker-build docker-run clean
 
-PYTHON := python
-PIP := pip
+# Workspace .venv at the repo root, synced from uv.lock (ADR-019).
+# --no-sync: running never changes the installed set.
+RUN := uv run --frozen --no-sync
+PYTHON := $(RUN) python
+PACKAGE := chicagotaxi-demand-pipeline
 DOCKER_IMAGE := chicagotaxi-demand
 DOCKER_TAG := latest
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-20s %s\n", $$1, $$2}'
 
-install: ## Install dependencies
-	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements.txt
+install: ## Install everything: API + ETL (PySpark, Dask) + dev tools, from uv.lock
+	uv sync --frozen --package $(PACKAGE) --all-groups
+	uv sync --frozen --only-dev --inexact
 
-install-prod: ## Install production dependencies only
-	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements-prod.txt
+install-prod: ## Install the API's dependencies only (= the image)
+	uv sync --frozen --package $(PACKAGE) --no-dev
 
 test: ## Run tests
 	$(PYTHON) -m pytest tests/ -v --tb=short
@@ -26,12 +28,12 @@ test-coverage: ## Run tests with coverage
 	$(PYTHON) -m pytest tests/ --cov=src --cov=app --cov-report=html --cov-report=term
 
 lint: ## Check code quality
-	flake8 src/ app/ tests/
-	mypy src/ --ignore-missing-imports
+	$(RUN) flake8 src/ app/ tests/
+	$(RUN) mypy src/ --ignore-missing-imports
 
 format: ## Format code
-	black src/ app/ tests/
-	isort src/ app/ tests/
+	$(RUN) black src/ app/ tests/
+	$(RUN) isort src/ app/ tests/
 
 etl: ## Run PySpark ETL pipeline
 	$(PYTHON) scripts/spark_etl.py \
@@ -42,10 +44,10 @@ predict: ## Run Dask batch predictions
 	$(PYTHON) scripts/batch_predict.py
 
 serve: ## Start FastAPI server
-	cd app && uvicorn fastapi_app:app --host 0.0.0.0 --port 8004 --reload
+	cd app && $(RUN) uvicorn fastapi_app:app --host 0.0.0.0 --port 8004 --reload
 
-docker-build: ## Build Docker image
-	docker build -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
+docker-build: ## Build Docker image (context = repo root: installs from uv.lock, ADR-019)
+	docker build -f Dockerfile -t $(DOCKER_IMAGE):$(DOCKER_TAG) ..
 
 docker-run: ## Run Docker container
 	docker run -d --name chicagotaxi-container -p 8004:8000 $(DOCKER_IMAGE):$(DOCKER_TAG)

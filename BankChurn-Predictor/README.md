@@ -2,7 +2,7 @@
 
 **Production-grade customer churn prediction — StackingClassifier ensemble with SHAP explainability**
 
-[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://python.org)
+[![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://python.org)
 [![scikit-learn](https://img.shields.io/badge/sklearn-1.8-F7931E.svg)](https://scikit-learn.org)
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)]()
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](Dockerfile)
@@ -64,8 +64,9 @@ Pipeline([
 ## Quick Start
 
 ```bash
-# Install
-pip install -r requirements.txt
+# Install (uv workspace at the repo root — one uv.lock, ADR-019)
+make install        # = uv sync --frozen --package bankchurn-predictor --all-groups
+source ../.venv/bin/activate
 
 # Train
 python main.py --seed 42 train --config configs/config.yaml --input data/raw/Churn.csv

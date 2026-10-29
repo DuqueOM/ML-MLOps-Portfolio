@@ -1,0 +1,21 @@
+# Build context is the repository root (ADR-019). BuildKit reads this file
+# instead of the root .dockerignore because it sits next to the Dockerfile.
+# Whitelist: everything is excluded unless listed — the root holds GBs of data,
+# models and docs that must never reach the daemon.
+*
+
+# Workspace metadata the builder needs to install from the lock
+!pyproject.toml
+!uv.lock
+!BankChurn-Predictor/pyproject.toml
+!ChicagoTaxi-Demand-Pipeline/pyproject.toml
+!NLPInsight-Analyzer/pyproject.toml
+!common_utils/pyproject.toml
+
+# What the runtime image copies (models and predictions are mounted volumes)
+!ChicagoTaxi-Demand-Pipeline/app/
+!ChicagoTaxi-Demand-Pipeline/configs/
+!ChicagoTaxi-Demand-Pipeline/src/
+
+**/__pycache__
+**/*.py[cod]

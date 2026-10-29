@@ -2,7 +2,7 @@
 
 **Batch demand prediction pipeline processing 6.3M taxi trips with PySpark ETL and Dask inference.**
 
-[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.13-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![PySpark](https://img.shields.io/badge/PySpark-4.1-E25A1C?style=flat-square&logo=apachespark&logoColor=white)](https://spark.apache.org)
 [![Dask](https://img.shields.io/badge/Dask-2026-FDA061?style=flat-square&logo=dask&logoColor=white)](https://dask.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
@@ -38,8 +38,10 @@ Predict hourly taxi demand per Chicago community area to optimize driver allocat
 ## Quick Start
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies: API + ETL (PySpark needs Java 17+) + dev tools,
+# from the workspace uv.lock (ADR-019)
+make install
+source ../.venv/bin/activate
 
 # 1. Download data from Chicago Open Data Portal
 # Place CSV in data/raw/taxi_trips.csv
@@ -126,9 +128,8 @@ ChicagoTaxi-Demand-Pipeline/
 ├── tests/
 │   ├── test_api.py              # FastAPI endpoint tests
 │   └── test_etl.py              # ETL logic unit tests
-├── Dockerfile                   # API serving image (Python 3.11)
-├── requirements.txt             # Full dependencies (incl. PySpark, Dask)
-└── requirements-prod.txt        # Production API dependencies only
+├── Dockerfile                   # API serving image (Python 3.13, from uv.lock)
+└── pyproject.toml               # API dependencies + `etl` group (PySpark, Dask)
 ```
 
 ## Data
@@ -163,7 +164,7 @@ See [data_card.md](data_card.md) for full schema, cleaning rules, and quality de
 - **Batch Inference**: Dask (parallel prediction with partitioned data)
 - **API**: FastAPI + Pydantic + Uvicorn (serves pre-computed predictions)
 - **Monitoring**: Prometheus custom metrics (`chicagotaxi_*`)
-- **Container**: Docker (Python 3.11-slim)
+- **Container**: Docker (Python 3.13-slim)
 - **Config**: YAML-based pipeline configuration
 
 📄 [Model Card](model_card.md) · [Data Card](data_card.md) · [Full Docs](https://duqueom.github.io/ML-MLOps-Portfolio/projects/chicagotaxi/)

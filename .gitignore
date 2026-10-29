@@ -57,6 +57,8 @@ ipython_config.py
 
 # pyenv
 .python-version
+# ...except the workspace pin uv reads (ADR-019)
+!/.python-version
 
 # DVC
 .dvc/tmp

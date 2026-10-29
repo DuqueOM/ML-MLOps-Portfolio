@@ -29,7 +29,7 @@ git push origin v{VERSION}
 
 For each service in the project:
 ```bash
-docker build -t ${GCP_REGISTRY}/${SERVICE}:v{VERSION} ${SERVICE}/
+docker build -f ${SERVICE}/Dockerfile -t ${GCP_REGISTRY}/${SERVICE}:v{VERSION} .   # repo root: uv.lock
 docker push ${GCP_REGISTRY}/${SERVICE}:v{VERSION}
 ```
 
@@ -37,7 +37,7 @@ docker push ${GCP_REGISTRY}/${SERVICE}:v{VERSION}
 
 ```bash
 aws ecr get-login-password | docker login --username AWS --password-stdin ${AWS_REGISTRY}
-docker build -t ${AWS_REGISTRY}/${SERVICE}:v{VERSION} ${SERVICE}/
+docker build -f ${SERVICE}/Dockerfile -t ${AWS_REGISTRY}/${SERVICE}:v{VERSION} .
 docker push ${AWS_REGISTRY}/${SERVICE}:v{VERSION}
 ```
 

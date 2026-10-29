@@ -16,6 +16,14 @@ PROJECTS=(
     "NLPInsight-Analyzer"
 )
 
+# Nombre del paquete uv (pyproject [project].name) de cada directorio
+package_of() {
+    case "$1" in
+        BankChurn-Predictor) echo "bankchurn-predictor" ;;
+        NLPInsight-Analyzer) echo "nlpinsight-analyzer" ;;
+    esac
+}
+
 # Función para ejecutar tests de un proyecto
 run_project_tests() {
     local project=$1
@@ -25,21 +33,14 @@ run_project_tests() {
     echo "========================================="
     
     cd "$project"
-    
-    # Activar venv si existe
-    if [ -d ".venv" ]; then
-        source .venv/bin/activate
-    fi
-    
-    # Instalar dependencias si requirements.txt existe
-    if [ -f "requirements.txt" ]; then
-        echo "Installing dependencies..."
-        pip install -q -r requirements.txt
-    elif [ -f "requirements.in" ]; then
-        echo "Installing dependencies from requirements.in..."
-        pip install -q -r requirements.in
-    fi
-    
+
+    # Dependencias del proyecto + herramientas de test, desde uv.lock (ADR-019),
+    # en el .venv del workspace (raíz del repo)
+    echo "Installing dependencies..."
+    uv sync --frozen --quiet --package "$(package_of "$project")" --all-groups
+    uv sync --frozen --quiet --only-dev --inexact
+    source ../.venv/bin/activate
+
     # Ejecutar pytest con coverage
     echo "Running pytest..."
     if pytest --maxfail=1 --disable-warnings -q --cov=src 2>&1 | tee "../reports/${project}-pytest-log.txt"; then

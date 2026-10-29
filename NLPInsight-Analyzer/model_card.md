@@ -20,7 +20,7 @@
 | **Model ID** | `nlpinsight-sentiment-v3.6.0` |
 | **Model Type** | Multi-class Classification (3-class Sentiment) |
 | **Algorithm** | TF-IDF + LogReg (production) / ProsusAI/FinBERT (GPU fine-tuning) |
-| **Framework** | scikit-learn 1.8+ / PyTorch 2.6+ / HuggingFace Transformers 4.48+ |
+| **Framework** | scikit-learn 1.7 / PyTorch 2.14 (CPU) / HuggingFace Transformers 4.48 |
 | **Primary Metric** | Accuracy: **80.6%**, F1-macro: **0.748** |
 | **Business Impact** | Automated sentiment scoring for financial intelligence |
 | **Production Status** | ✅ Active |
@@ -279,8 +279,8 @@ The model's per-class Recall for negative is 0.72 (72% of actual negative tweets
 git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git
 cd ML-MLOps-Portfolio/NLPInsight-Analyzer
 
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+uv sync --frozen --package nlpinsight-analyzer --all-groups   # from the workspace uv.lock (ADR-019)
+source ../.venv/bin/activate
 
 # 2. Pull data (DVC)
 dvc pull  # Or manually: place train.csv in data/raw/
@@ -296,7 +296,7 @@ ls models/
 **Reproducibility Guarantees**:
 - ✅ Random seed: `seed=42` across all components
 - ✅ Data versioning: DVC tracks dataset (SHA: `c7d2e3f`)
-- ✅ Dependency pinning: `requirements.txt` with `~=` compatible-release
+- ✅ Dependency pinning: `~=` in `pyproject.toml`, exact versions and hashes in `uv.lock`
 - ✅ Config-driven: All hyperparameters in `configs/config.yaml`
 
 ### API Inference

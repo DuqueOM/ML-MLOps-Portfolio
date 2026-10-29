@@ -65,7 +65,7 @@ pytest tests/ --cov
 - [ ] No secrets/credentials hardcoded
 - [ ] Docker image builds successfully
 - [ ] Trivy scan passes (no critical CVEs)
-- [ ] Dependencies updated in requirements.txt/pyproject.toml
+- [ ] Dependencies updated in pyproject.toml and `uv.lock` re-generated (`make lock`)
 
 ### CI/CD
 - [ ] Pre-commit hooks pass

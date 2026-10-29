@@ -14,7 +14,7 @@ Quick reference for running, testing, and deploying the ML/MLOps Portfolio.
 
 ## Prerequisites
 
-- Python 3.11+, Docker 20.10+, Docker Compose 2.0+, Make, Git
+- [uv](https://docs.astral.sh/uv/) (installs Python 3.13 itself), Docker 20.10+, Docker Compose 2.0+, Make, Git
 - RAM: 8GB min (16GB recommended)
 
 ```bash
@@ -65,7 +65,7 @@ pytest tests/integration/test_demo.py -v           # integration (requires runni
 
 ```bash
 make docker-build                                             # build all
-docker build -t bankchurn:latest ./BankChurn-Predictor        # individual
+docker build -f BankChurn-Predictor/Dockerfile -t bankchurn:latest .   # individual (context = repo root)
 docker compose -f docker-compose.demo.yml down -v --rmi all   # full cleanup
 ```
 

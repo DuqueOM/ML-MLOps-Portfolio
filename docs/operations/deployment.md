@@ -28,7 +28,7 @@ gcloud container clusters get-credentials ml-portfolio-gke-production \
 
 # 3. Build & push images
 gcloud auth configure-docker us-central1-docker.pkg.dev
-docker build -t us-central1-docker.pkg.dev/PROJECT/ml-portfolio-images/bankchurn:latest ./BankChurn-Predictor
+docker build -f BankChurn-Predictor/Dockerfile -t us-central1-docker.pkg.dev/PROJECT/ml-portfolio-images/bankchurn:latest .
 docker push ...
 
 # 4. Deploy

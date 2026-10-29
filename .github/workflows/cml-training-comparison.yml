@@ -18,7 +18,8 @@ on:
   workflow_dispatch:  # Manual trigger only (for testing)
 
 env:
-  PYTHON_VERSION: '3.12'
+  PYTHON_VERSION: '3.13'  # = the images' runtime (ADR-019)
+  UV_VERSION: '0.11.19'   # = the version that wrote uv.lock
 
 jobs:
   train-and-compare:
@@ -40,27 +41,19 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10
         with:
+          version: ${{ env.UV_VERSION }}
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-      
-      - name: Install dependencies
-        working-directory: ${{ matrix.project }}
+          enable-cache: true
+
+      - name: Install dependencies (from uv.lock — ADR-019)
+        # The PR branch's lock. Both trainings below run in this environment,
+        # so the comparison isolates code changes from dependency drift.
         run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.in ]; then
-            pip install -r requirements.in
-          elif [ -f requirements.txt ]; then
-            # Strip hashes to avoid --require-hashes errors with transitive deps
-            grep -v '^[[:space:]]*--hash=' requirements.txt | \
-            grep -v '^[[:space:]]*--require-hashes' | \
-            sed 's/ \\$//' | \
-            grep -v '^[[:space:]]*#' | \
-            grep -v '^[[:space:]]*$' > requirements_no_hash.txt
-            pip install -r requirements_no_hash.txt
-          fi
+          uv sync --frozen --package bankchurn-predictor --all-groups
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
       # CML setup removed: using plain GitHub Actions report + artifacts only
 
       - name: Train model on PR branch

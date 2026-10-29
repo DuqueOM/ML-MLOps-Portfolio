@@ -7,7 +7,7 @@ Thank you for your interest in contributing to this portfolio! This project demo
 ## Getting Started
 
 ### Prerequisites
-- **Python 3.11+** (3.12 also supported)
+- **[uv](https://docs.astral.sh/uv/)** — it installs the Python the workspace pins (3.13, `.python-version`)
 - **Docker** & **Docker Compose**
 - **Make** utility
 - **pytest** for running tests
@@ -46,14 +46,18 @@ The portfolio consists of three main microservices:
 - `ChicagoTaxi-Demand-Pipeline/` (FastAPI + PySpark + Dask)
 
 ### 2. Dependency Management
-We use `requirements.in` for direct dependencies and `pip-compile` for locking.
-**To add a package:**
-1. Edit `requirements.in` in the specific project folder.
-2. Run:
-   ```bash
-   pip-compile requirements.in
-   ```
-3. Re-install: `pip install -r requirements.txt`
+The repository is one [uv workspace](https://docs.astral.sh/uv/concepts/projects/workspaces/)
+with a single `uv.lock` ([ADR-019](../decisions/019-uv-workspace-single-lock.md)).
+Each service declares its dependencies in its own `pyproject.toml`; the lock
+resolves all of them together, so a package shared by two services has one version.
+
+**To add or change a package:**
+1. Edit the service's `pyproject.toml` — `dependencies` for what the image
+   serves with, a `[dependency-groups]` group (`train`, `notebook`, `etl`) for
+   the rest. Use `~=` ([ADR-005](../decisions/005-compatible-release-pinning.md)).
+2. Run `make lock` (`uv lock`) and commit `uv.lock` with the change. The
+   pre-commit hook does this for you; CI fails a PR whose lock is stale.
+3. Re-install: `make install` (`uv sync --frozen --all-packages --all-groups`).
 
 ### 3. Running Locally
 Use the unified Docker stack for testing integration:

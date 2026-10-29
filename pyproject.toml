@@ -1,0 +1,64 @@
+# ── ML-MLOps Portfolio — uv workspace (ADR-019) ──────────────────────────────
+#
+# One lock for the whole monorepo: uv.lock at this root resolves every service
+# together, so a package has ONE version across BankChurn, ChicagoTaxi and
+# NLPInsight, and the environment that trains a model is the environment that
+# serves it. Each image installs only its own member:
+#
+#     uv sync --frozen --no-dev --package <service>
+#
+# Services are VIRTUAL members (`[tool.uv] package = false` in each): uv
+# installs their dependencies but never builds them, which is how CI and the
+# images have always run them — from source, never installed as packages.
+# common_utils is a real member (installed editable in development); the
+# images do not ship it, and the services import it under `try/except
+# ImportError`, so serving behaviour is unchanged.
+#
+# Python 3.13 only: it is the runtime of all three images. No ADR asked for
+# more — the services are deployed, not consumed as libraries.
+
+[project]
+name = "ml-mlops-portfolio"
+version = "0"
+description = "Workspace root of the ML-MLOps Portfolio (not a distributable package)."
+requires-python = ">=3.13,<3.14"
+dependencies = []
+
+[dependency-groups]
+# The CI test/lint toolchain, previously installed unpinned per job (black
+# was the only pin). ADR-005: compatible release.
+dev = [
+    "common-utils",
+    "pytest ~= 9.2.0",
+    "pytest-cov ~= 7.1.0",
+    "httpx ~= 0.28.1",
+    "flake8 ~= 7.4.1",
+    "black ~= 26.1.0",
+    "isort ~= 9.0.2",
+    "mypy ~= 2.4.1",
+    # scripts/run_demo_tests.sh (integration tests against the demo stack)
+    "requests ~= 2.34.2",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = [
+    "BankChurn-Predictor",
+    "ChicagoTaxi-Demand-Pipeline",
+    "NLPInsight-Analyzer",
+    "common_utils",
+]
+
+[tool.uv.sources]
+common-utils = { workspace = true }
+# CPU wheels for the NLP image, as the Dockerfile installed them before
+# (--index-url https://download.pytorch.org/whl/cpu). `explicit`: only torch
+# is ever taken from this index.
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

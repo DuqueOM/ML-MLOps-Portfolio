@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   bankchurn-api:
-    build: .
+    build:
+      # Repository root: the image installs from the workspace uv.lock (ADR-019)
+      context: ..
+      dockerfile: BankChurn-Predictor/Dockerfile
     container_name: bankchurn-demo
     ports:
       - "8000:8000"

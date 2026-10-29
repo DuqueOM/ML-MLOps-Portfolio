@@ -8,10 +8,44 @@ version = "1.0.0"
 description = "Batch demand prediction pipeline for Chicago taxi trips (6.3M rows, PySpark ETL + Dask inference)"
 readme = "README.md"
 license = {text = "MIT"}
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 authors = [
     {name = "DuqueOM", email = "DuqueOrtegaMutis@gmail.com"},
 ]
+
+# What the image installs and the service imports (ADR-019) — the only
+# declaration; requirements.in and requirements-prod.txt are gone. The image
+# moves from Python 3.11 to 3.13 with the rest of the portfolio. pyarrow
+# ~= 25.0.1 is the newest line with Python 3.13 wheels that mlflow 3.16 (the
+# BankChurn training group, same lock) accepts; it was 17.0, which has no 3.13
+# wheel. fastapi/uvicorn/pydantic/joblib share BankChurn's versions.
+dependencies = [
+    "fastapi ~= 0.141.1",
+    "uvicorn ~= 0.53.0",
+    "pydantic ~= 2.13.5",
+    "pandas ~= 2.3.0",
+    "numpy ~= 2.4.6",
+    "pyarrow ~= 25.0.1",
+    "scikit-learn ~= 1.7.2",
+    "joblib ~= 1.6.0",
+    "prometheus-client ~= 0.26.0",
+]
+
+[dependency-groups]
+# The batch side: scripts/spark_etl.py (PySpark 4.x, needs Java 17+) and
+# scripts/batch_predict.py (Dask). Never in the image, which only serves the
+# precomputed predictions, and not in CI: no test imports them. Until ADR-019
+# these lived only in an untracked, unpinned requirements.txt.
+# `make install` (uv sync --group etl) installs them.
+etl = [
+    "pyspark ~= 4.2.1",
+    "dask[dataframe] ~= 2026.8.0",
+]
+
+[tool.uv]
+# Virtual member: run from source, never built (ADR-019). This also means the
+# `setuptools.backends._legacy:_Backend` build-backend above is never invoked.
+package = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -41,7 +75,7 @@ exclude_lines = [
 
 [tool.black]
 line-length = 120
-target-version = ["py311"]
+target-version = ["py313"]
 
 [tool.isort]
 profile = "black"

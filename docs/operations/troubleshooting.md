@@ -21,7 +21,7 @@ curl localhost:8001/health           # API health
 | 422 on predict | Invalid input | Check Pydantic schema, required fields |
 | 500 on predict | Feature mismatch | Verify training/inference alignment |
 | Slow predictions | SHAP overhead | Use `?explain=true` only when needed |
-| CI tests fail locally pass | Python version | Ensure Python 3.11, check `pip freeze` |
+| CI tests fail locally pass | Environment drift | `uv sync --frozen --all-packages --all-groups` (CI's exact set), then rerun |
 | Coverage below threshold | Uncovered code | `pytest --cov --cov-report=html` |
 | Gitleaks false positive | Non-secret string | Add to `.gitleaksignore` |
 | MLflow connection refused | Not running | `kubectl port-forward svc/mlflow-service 5000:5000` |
@@ -40,8 +40,8 @@ kubectl rollout undo deployment/<svc>         # Rollback
 ## Dependency Issues
 
 - **sklearn mismatch**: Model trained with different version → retrain
-- **NumPy/Pandas**: Pin versions in `requirements.txt`
-- **pip conflicts**: `pip check` and `pipdeptree` to diagnose
+- **NumPy/Pandas**: `~=` in the service's `pyproject.toml`, then `uv lock`
+- **Conflicts**: `uv lock` explains an unsatisfiable set; `uv tree --package <pkg>` shows why a package is there
 
 ---
 

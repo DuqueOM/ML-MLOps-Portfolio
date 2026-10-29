@@ -40,7 +40,7 @@
 
 | Layer | Technologies |
 |-------|-------------|
-| **ML** | Python 3.11, scikit-learn 1.8.0, LightGBM 4.6+, HuggingFace Transformers, SHAP 0.50.0 |
+| **ML** | Python 3.13, scikit-learn 1.7.2, LightGBM 4.7, HuggingFace Transformers, SHAP 0.54 (exact set: `uv.lock`, ADR-019) |
 | **APIs** | FastAPI, Pydantic |
 | **MLOps** | MLflow 3.10, DVC, Evidently AI, OpenTelemetry |
 | **Responsible AI** | Fairness audits (×3), drift detection (KS+PSI+Evidently), Pandera validation |

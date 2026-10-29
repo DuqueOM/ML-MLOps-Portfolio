@@ -1,25 +1,43 @@
 # Multi-stage Dockerfile for ChicagoTaxi Demand Pipeline
 # Serves pre-computed batch predictions via FastAPI
 # PySpark ETL runs as a separate K8s Job (not in this image)
+#
+# Build context is the REPOSITORY ROOT (ADR-019):
+#     docker build -f ChicagoTaxi-Demand-Pipeline/Dockerfile .
+# Installs from the workspace lock (uv.lock), the resolution CI and development
+# use. Python 3.13, like the rest of the portfolio (was 3.11, pinned there by
+# pyarrow 17, which has no 3.13 wheel). Dockerfile.dockerignore whitelists the
+# root context.
+
 # Stage 1: Builder
-FROM python:3.11-slim-bookworm AS builder
+FROM python:3.13.15-slim-bookworm AS builder
 
 LABEL maintainer="DuqueOM <DuqueOrtegaMutis@gmail.com>" \
       version="1.0.0" \
       description="ChicagoTaxi Demand Pipeline — Batch demand prediction API"
 
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PIP_NO_CACHE_DIR=1
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    UV_PROJECT_ENVIRONMENT=/opt/venv \
+    UV_PYTHON=/usr/local/bin/python3 \
+    UV_PYTHON_DOWNLOADS=never \
+    UV_LINK_MODE=copy \
+    UV_NO_CACHE=1
+
+# uv, pinned to the version that wrote uv.lock
+COPY --from=ghcr.io/astral-sh/uv:0.11.19 /uv /usr/local/bin/uv
 
 WORKDIR /build
 
-COPY requirements-prod.txt ./
+# Workspace metadata only (uv validates the whole workspace)
+COPY pyproject.toml uv.lock ./
+COPY BankChurn-Predictor/pyproject.toml BankChurn-Predictor/
+COPY ChicagoTaxi-Demand-Pipeline/pyproject.toml ChicagoTaxi-Demand-Pipeline/
+COPY NLPInsight-Analyzer/pyproject.toml NLPInsight-Analyzer/
+COPY common_utils/pyproject.toml common_utils/
 
-RUN python -m venv /opt/venv && \
-    . /opt/venv/bin/activate && \
-    pip install --no-cache-dir -r requirements-prod.txt && \
+# Exactly this service's locked runtime dependencies; --frozen never re-resolves
+RUN uv sync --frozen --no-dev --package chicagotaxi-demand-pipeline --no-install-workspace && \
     find /opt/venv -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null; \
     find /opt/venv -type d -name 'tests' -not -path '*/numpy/*' -exec rm -rf {} + 2>/dev/null; \
     find /opt/venv -type d -name 'test' -exec rm -rf {} + 2>/dev/null; \
@@ -30,7 +48,7 @@ RUN python -m venv /opt/venv && \
     /opt/venv/bin/python -c "import fastapi, uvicorn"
 
 # Stage 2: Runtime
-FROM python:3.11-slim-bookworm AS runtime
+FROM python:3.13.15-slim-bookworm AS runtime
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -49,9 +67,9 @@ WORKDIR /app
 COPY --from=builder /opt/venv /opt/venv
 
 # Copy application code
-COPY app/ ./app/
-COPY configs/ ./configs/
-COPY src/ ./src/
+COPY ChicagoTaxi-Demand-Pipeline/app/ ./app/
+COPY ChicagoTaxi-Demand-Pipeline/configs/ ./configs/
+COPY ChicagoTaxi-Demand-Pipeline/src/ ./src/
 
 # Create directories for mounted volumes
 RUN mkdir -p /app/models /app/data/processed/taxi_predictions && \
