@@ -20,9 +20,9 @@ authors = [
 # BankChurn training group, same lock) accepts; it was 17.0, which has no 3.13
 # wheel. fastapi/uvicorn/pydantic/joblib share BankChurn's versions.
 dependencies = [
-    "fastapi ~= 0.141.1",
+    "fastapi ~= 0.162.0",
     "uvicorn ~= 0.53.0",
-    "pydantic ~= 2.13.5",
+    "pydantic ~= 2.14.1",
     "pandas ~= 2.3.0",
     "numpy ~= 2.4.6",
     "pyarrow ~= 25.0.1",

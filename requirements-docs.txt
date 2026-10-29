@@ -1,13 +1,13 @@
 # Documentation build dependencies
 mkdocs>=1.6.1
-mkdocs-material>=9.7.7
+mkdocs-material>=9.8.0
 mkdocstrings>=0.24.0
 mkdocstrings-python>=2.0.10
 pymdown-extensions>=12.3
 mkdocs-mermaid2-plugin>=1.2.3
 
 # Quality checks
-codespell>=2.2.0
+codespell>=2.4.3
 
 # Node.js dependencies (see package.json)
 # jest>=30.2.0 - For documentation testing and validation
