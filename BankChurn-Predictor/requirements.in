@@ -14,9 +14,9 @@ imbalanced-learn>=0.14.2
 optuna>=3.0.0
 
 # API Framework
-fastapi>=0.141.1
+fastapi>=0.162.0
 uvicorn>=0.53.0
-pydantic>=2.13.5
+pydantic>=2.14.1
 
 # Configuration Management
 pyyaml>=6.0
