@@ -33,7 +33,7 @@ dev = [
     "pytest-cov ~= 7.1.0",
     "httpx ~= 0.28.1",
     "flake8 ~= 7.4.1",
-    "black>=26.1,<26.11",
+    "black>=26.10.1,<26.11",
     "isort ~= 9.0.2",
     "mypy ~= 2.4.1",
     # scripts/run_demo_tests.sh (integration tests against the demo stack)
