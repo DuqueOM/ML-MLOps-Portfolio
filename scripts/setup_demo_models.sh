@@ -8,15 +8,18 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Use Python 3.11 if available (matches Docker image)
-PY311="/home/duque_om/miniconda3/envs/ml-py311/bin/python"
-if [ -x "$PY311" ]; then
-    PYTHON="$PY311"
-    echo -e "${GREEN}Using Python 3.11 (matches Docker): $PYTHON${NC}"
+# Run in the workspace's locked environment (uv.lock, ADR-019), so the demo
+# models are saved with the same scikit-learn the services load them with.
+# They need only scikit-learn, pandas and joblib, which BankChurn's locked
+# environment carries; that avoids installing the transformer stack the other
+# services use for a TF-IDF demo.
+if command -v uv >/dev/null 2>&1; then
+    PYTHON="uv run --frozen --package bankchurn-predictor python"
+    echo -e "${GREEN}Using the locked environment (uv.lock)${NC}"
 else
     PYTHON="python"
-    echo -e "${BLUE}Using system Python: $(python --version)${NC}"
-    echo "  ⚠️  For production, use: conda activate ml-py311"
+    echo -e "${BLUE}uv not found; using system Python: $(python --version)${NC}"
+    echo "  ⚠️  Install uv (https://docs.astral.sh/uv/) to use the locked environment"
 fi
 
 # BankChurn: Train quick baseline model
@@ -84,80 +87,6 @@ print('✅ BankChurn model saved to models/model.joblib')
 "
 cd ..
 echo -e "${GREEN}BankChurn model ready${NC}"
-
-# Features matching the API schema (VehicleFeatures)
-cat_features = ['model', 'condition', 'fuel', 'transmission', 'drive', 'type', 'paint_color']
-num_features = ['model_year', 'cylinders', 'odometer']
-
-# Try to load real data, otherwise create synthetic
-data_path = Path('data/raw/vehicles_us.csv')
-if data_path.exists():
-    df = pd.read_csv(data_path).head(500).dropna(subset=['price'])
-    # Rename columns to match API schema
-    if 'year' in df.columns and 'model_year' not in df.columns:
-        df['model_year'] = df['year']
-    print('Using real data')
-else:
-    # Create synthetic demo data matching API schema
-    np.random.seed(42)
-    n = 200
-    df = pd.DataFrame({
-        'model_year': np.random.randint(2010, 2023, n),
-        'model': np.random.choice(['civic', 'corolla', 'camry', 'accord', 'f150'], n),
-        'condition': np.random.choice(['good', 'excellent', 'fair', 'like new'], n),
-        'cylinders': np.random.choice([4, 6, 8], n).astype(float),
-        'fuel': np.random.choice(['gas', 'diesel', 'hybrid', 'electric'], n),
-        'odometer': np.random.uniform(10000, 150000, n),
-        'transmission': np.random.choice(['automatic', 'manual'], n),
-        'drive': np.random.choice(['fwd', 'rwd', '4wd'], n),
-        'type': np.random.choice(['sedan', 'suv', 'truck', 'coupe'], n),
-        'paint_color': np.random.choice(['white', 'black', 'silver', 'red', 'blue'], n),
-        'price': np.random.uniform(5000, 50000, n)
-    })
-    print('Using synthetic data (real data not found)')
-
-# Ensure all features exist
-for col in cat_features:
-    if col not in df.columns:
-        df[col] = 'unknown'
-for col in num_features:
-    if col not in df.columns:
-        df[col] = 0
-
-# Prepare data
-X = df[cat_features + num_features].copy()
-for col in cat_features:
-    X[col] = X[col].fillna('unknown').astype(str)
-for col in num_features:
-    X[col] = pd.to_numeric(X[col], errors='coerce').fillna(0)
-
-y = df['price']
-
-# Build pipeline with named steps
-preprocessor = ColumnTransformer([
-    ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), cat_features),
-    ('num', StandardScaler(), num_features)
-])
-
-model = Pipeline([
-    ('pre', preprocessor),
-    ('model', RandomForestRegressor(n_estimators=10, max_depth=5, random_state=42))
-])
-
-model.fit(X, y)
-
-# Save model and feature columns
-Path('models').mkdir(exist_ok=True)
-joblib.dump(model, 'models/model.joblib')
-
-Path('artifacts').mkdir(exist_ok=True)
-feature_columns = cat_features + num_features
-Path('artifacts/feature_columns.json').write_text(json.dumps(feature_columns))
-
-print('✅  model saved to models/model.joblib')
-print(f'   Features: {feature_columns}')
-"
-cd ..
 
 # NLPInsight: Train quick TF-IDF baseline for sentiment analysis
 echo -e "${BLUE}Training NLPInsight model...${NC}"
