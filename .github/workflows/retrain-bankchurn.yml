@@ -50,26 +50,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
         with:
-          python-version: '3.12'
-          cache: 'pip'
+          version: "0.11.19"       # = the version that wrote uv.lock
+          python-version: "3.13"   # = the images' runtime (ADR-019)
+          enable-cache: true
 
-      - name: Install dependencies
-        working-directory: ${{ env.PROJECT_DIR }}
+      - name: Install dependencies (from uv.lock — ADR-019)
+        # BankChurn's runtime set + `train` group (mlflow, optuna, ...): the
+        # model is trained on exactly the versions its image serves with.
         run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.in ]; then
-            pip install -r requirements.in
-          fi
-          pip install mlflow dvc
+          uv sync --frozen --package bankchurn-predictor --all-groups
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Pull data with DVC
         working-directory: ${{ env.PROJECT_DIR }}
         continue-on-error: true
+        # dvc runs in its own tool environment from requirements-dvc.txt, so
+        # its dependencies never move a version in the training environment.
         run: |
-          dvc pull || echo "DVC pull skipped (no remote configured)"
+          uvx --with-requirements ../requirements-dvc.txt dvc pull || echo "DVC pull skipped (no remote configured)"
 
       - name: Train model
         working-directory: ${{ env.PROJECT_DIR }}

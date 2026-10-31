@@ -418,7 +418,7 @@ curl -X POST "http://136.111.152.72/bankchurn/predict?explain=true" \
 
 | Aspect | Value |
 |--------|-------|
-| SHAP library | `shap~=0.46.0` (pinned in `requirements-prod.txt`) |
+| SHAP library | `shap~=0.54.1` (declared in `pyproject.toml`, exact version in `uv.lock`) |
 | Explainer type | `KernelExplainer` (model-agnostic fallback) |
 | Background samples | 50 samples from `Churn.csv` |
 | Latency with `?explain=true` | ~4.5s (KernelExplainer, measured in GKE) |
@@ -470,9 +470,9 @@ pytest tests/test_fairness.py -v  # Automated bias detection in CI/CD
 git clone https://github.com/DuqueOM/ML-MLOps-Portfolio.git
 cd ML-MLOps-Portfolio/BankChurn-Predictor
 
-# 2. Set up environment
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+# 2. Set up environment (from the workspace uv.lock — ADR-019)
+uv sync --frozen --package bankchurn-predictor --all-groups
+source ../.venv/bin/activate
 
 # 3. Pull data (DVC)
 dvc pull  # Or manually: place Churn_Modelling.csv in data/raw/
@@ -488,7 +488,7 @@ ls artifacts/
 **Reproducibility Guarantees**:
 - ✅ Random seed: `random_state=42` across all estimators
 - ✅ Data versioning: DVC tracks dataset (SHA: `a3f7b9c`)
-- ✅ Dependency pinning: `requirements.txt` with exact versions
+- ✅ Dependency pinning: `uv.lock` — exact versions and hashes, the same set the image installs
 - ✅ Config-driven: All hyperparameters in `configs/config.yaml`
 
 ### Inference (API)

@@ -75,11 +75,11 @@ git push origin ${VERSION}
 # For each service
 for SERVICE in service-a service-b service-c; do
   # GCP Artifact Registry
-  docker build -t ${GCP_REGISTRY}/${SERVICE}:${VERSION} ${SERVICE}/
+  docker build -f ${SERVICE}/Dockerfile -t ${GCP_REGISTRY}/${SERVICE}:${VERSION} .   # repo root: uv.lock
   docker push ${GCP_REGISTRY}/${SERVICE}:${VERSION}
 
   # AWS ECR
-  docker build -t ${AWS_REGISTRY}/${SERVICE}:${VERSION} ${SERVICE}/
+  docker build -f ${SERVICE}/Dockerfile -t ${AWS_REGISTRY}/${SERVICE}:${VERSION} .
   docker push ${AWS_REGISTRY}/${SERVICE}:${VERSION}
 done
 ```

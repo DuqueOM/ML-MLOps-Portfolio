@@ -4,7 +4,7 @@
 
 **ML Service Template**: Agent-driven framework for building and maintaining production-grade ML systems with multi-cloud deployment (GKE + EKS), comprehensive observability, and enterprise CI/CD. Every architectural decision documented in ADRs with measured trade-offs.
 
-- **Stack**: Python 3.11+, scikit-learn, XGBoost, LightGBM, FastAPI, Docker, Kubernetes, Terraform, GitHub Actions
+- **Stack**: Python 3.13 (one uv workspace + uv.lock, ADR-019), scikit-learn, XGBoost, LightGBM, FastAPI, Docker, Kubernetes, Terraform, GitHub Actions
 - **Clouds**: GCP (primary) + AWS (secondary parity)
 - **Tracking**: MLflow (self-hosted on K8s)
 - **Monitoring**: Prometheus + Grafana + AlertManager + Evidently
@@ -238,7 +238,7 @@ GitHub Actions flow with required_reviewers.
 | D-02 | Memory HPA in any HorizontalPodAutoscaler | Remove memory metric, keep CPU only |
 | D-03 | `model.predict()` directly in async endpoint | Wrap in `run_in_executor` with ThreadPoolExecutor |
 | D-04 | `shap.TreeExplainer` with ensemble/pipeline/stacking | Change to KernelExplainer with predict_proba_wrapper |
-| D-05 | `==` in requirements.txt for ML packages | Change to `~=` (compatible release) |
+| D-05 | `==` in pyproject.toml for ML packages | Change to `~=` (compatible release) |
 | D-06 | Unrealistically high primary metric | Investigate data leakage before promoting |
 | D-07 | SHAP background data with only one class | Replace with representative sample |
 | D-08 | PSI with uniform bins (not quantile-based) | Refactor to quantile bins from reference |
@@ -433,8 +433,7 @@ templates/
 │   ├── dvc.yaml        # DVC pipeline (validate → featurize → train → evaluate)
 │   ├── .dvc/config     # DVC remote config (GCS/S3)
 │   ├── Dockerfile
-│   ├── pyproject.toml  # Modern Python project config
-│   ├── requirements.txt
+│   ├── pyproject.toml  # The service's dependencies (workspace member, ADR-019)
 │   └── README.md
 ├── tests/integration/  # Integration test templates (health, predict, latency SLA)
 ├── k8s/                # K8s manifests (base/ + overlays/), SLO PrometheusRule

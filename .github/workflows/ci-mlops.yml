@@ -25,7 +25,12 @@ permissions:
   security-events: write  # Required for CodeQL/SARIF upload
 
 env:
-  PYTHON_VERSION: '3.12'
+  # The runtime of all three images (ADR-019). One version: the services are
+  # deployed, not consumed as libraries, so there is no other Python to support.
+  PYTHON_VERSION: '3.13'
+  # Every Python job installs from the workspace lock with this uv (= the
+  # version that wrote uv.lock and the one the Dockerfiles copy).
+  UV_VERSION: '0.11.19'
   MLFLOW_TRACKING_URI: http://localhost:5000
   # docker/build-push-action v6+ uploads a "build record" artifact
   # (named <owner>~<repo>~<hash>.dockerbuild) by default after every
@@ -49,12 +54,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.11', '3.12']
+        # 3.11/3.12 were tested while two images shipped 3.13, which nothing
+        # tested. One lock, one Python: the one that is deployed (ADR-019).
+        python-version: ['3.13']
         project:
           - BankChurn-Predictor
           - NLPInsight-Analyzer
           - ChicagoTaxi-Demand-Pipeline
-    
+        include:
+          - project: BankChurn-Predictor
+            package: bankchurn-predictor
+            groups: --all-groups
+          - project: NLPInsight-Analyzer
+            package: nlpinsight-analyzer
+            groups: --all-groups
+          - project: ChicagoTaxi-Demand-Pipeline
+            package: chicagotaxi-demand-pipeline
+            # etl = PySpark + Dask for the batch scripts; no test imports them
+            groups: --all-groups --no-group etl
+
     services:
       postgres:
         image: postgres:13
@@ -77,34 +95,29 @@ jobs:
           fetch-depth: 0  # Required for gitleaks history scan
           lfs: false  # LFS files not needed for tests (saves LFS bandwidth)
       
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
         with:
+          version: ${{ env.UV_VERSION }}
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-      
-      - name: Install dependencies
-        working-directory: ${{ matrix.project }}
+          enable-cache: true
+
+      - name: Install dependencies (from uv.lock — ADR-019)
+        # 1) the service's locked runtime deps + its own groups (training,
+        #    notebooks): the same resolution its image installs, plus what its
+        #    tests import; 2) the workspace dev tools and common_utils, added
+        #    without removing anything (--inexact). One lock, so shared
+        #    packages resolve to the same version in both steps. --frozen
+        #    fails instead of re-resolving. Was: requirements.in (unlocked)
+        #    or a hash-stripped lock, plus unpinned test tools.
         run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.in ]; then
-            pip install -r requirements.in
-          elif [ -f requirements.txt ]; then
-            # Strip hashes to avoid --require-hashes errors with transitive deps
-            grep -v '^[[:space:]]*--hash=' requirements.txt | \
-            grep -v '^[[:space:]]*--require-hashes' | \
-            sed 's/ \\$//' | \
-            grep -v '^[[:space:]]*#' | \
-            grep -v '^[[:space:]]*$' > requirements_no_hash.txt
-            pip install -r requirements_no_hash.txt
-          fi
-          pip install pytest pytest-cov httpx flake8 "black==26.1.0" isort mypy
-          pip install -e ../common_utils
-      
+          uv sync --frozen --package "${{ matrix.package }}" ${{ matrix.groups }}
+          uv sync --frozen --only-dev --inexact
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+
       - name: Run linting
         working-directory: ${{ matrix.project }}
         run: |
-          pip install flake8 "black==26.1.0" isort mypy
           flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
           black --check src/ app/
           isort --check-only src/ app/
@@ -157,13 +170,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
         with:
+          version: ${{ env.UV_VERSION }}
           python-version: ${{ env.PYTHON_VERSION }}
-      
-      - name: Install quality tools
-        run: pip install "black==26.1.0" flake8 coverage mypy
+          enable-cache: true
+
+      - name: Check uv.lock matches every pyproject.toml (ADR-019)
+        # Every other job installs with --frozen, which trusts the lock and
+        # does NOT compare it with the declarations. This is the one place
+        # that does: a pyproject edited without `uv lock` (by hand or by
+        # Dependabot) fails here instead of shipping a stale lock.
+        run: uv lock --check
+
+      - name: Install quality tools (locked dev group)
+        run: |
+          uv sync --frozen --only-dev
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
       
       - name: Check Black formatting
         run: |
@@ -237,7 +261,12 @@ jobs:
       
       - name: Install security tools
         run: pip install bandit pip-audit
-      
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: ${{ env.UV_VERSION }}
+
       - name: Run Bandit security scan
         run: |
           mkdir -p reports
@@ -249,9 +278,15 @@ jobs:
             --severity-level high
       
       - name: Run pip-audit dependency scan
+        # Audits what uv.lock pins — every service, every group — which is what
+        # the images and the test jobs install. It used to audit this job's own
+        # interpreter, which held nothing but bandit and pip-audit.
         run: |
-          pip-audit --format=json > reports/pip-audit-report.json || true
-          pip-audit || true
+          uv export --frozen --all-packages --all-groups --no-hashes --no-emit-workspace \
+            --no-header -o reports/locked-requirements.txt
+          pip-audit --disable-pip --no-deps -r reports/locked-requirements.txt \
+            --format=json > reports/pip-audit-report.json || true
+          pip-audit --disable-pip --no-deps -r reports/locked-requirements.txt || true
       
       - name: Check for critical vulnerabilities
         run: |
@@ -300,13 +335,15 @@ jobs:
       - name: Build Docker image (with cache)
         uses: docker/build-push-action@v7
         with:
-          context: ${{ matrix.project }}
+          # Repository root: the image installs from the workspace uv.lock
+          # (ADR-019); <project>/Dockerfile.dockerignore whitelists the context.
+          context: .
           file: ${{ matrix.project }}/Dockerfile
           push: false
           load: true
           tags: ml-portfolio:${{ matrix.project }}-${{ github.sha }}
-          cache-from: type=gha,scope=${{ matrix.project }}-v2
-          cache-to: type=gha,mode=max,scope=${{ matrix.project }}-v2
+          cache-from: type=gha,scope=${{ matrix.project }}-v3
+          cache-to: type=gha,mode=max,scope=${{ matrix.project }}-v3
       
       - name: Install Trivy
         run: |
@@ -348,27 +385,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
         with:
+          version: ${{ env.UV_VERSION }}
           python-version: ${{ env.PYTHON_VERSION }}
-      
-      - name: Install dependencies
-        working-directory: BankChurn-Predictor
+          enable-cache: true
+
+      - name: Install dependencies (from uv.lock)
         run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.in ]; then
-            pip install -r requirements.in
-          elif [ -f requirements.txt ]; then
-            # Strip hashes to avoid --require-hashes errors with transitive deps
-            grep -v '^[[:space:]]*--hash=' requirements.txt | \
-            grep -v '^[[:space:]]*--require-hashes' | \
-            sed 's/ \\$//' | \
-            grep -v '^[[:space:]]*#' | \
-            grep -v '^[[:space:]]*$' > requirements_no_hash.txt
-            pip install -r requirements_no_hash.txt
-          fi
-      
+          uv sync --frozen --package bankchurn-predictor --all-groups
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+
       - name: Generate synthetic data for E2E
         working-directory: BankChurn-Predictor
         run: |
@@ -430,7 +458,7 @@ jobs:
       - name: Build demo images for docker-compose (no cache)
         uses: docker/build-push-action@v7
         with:
-          context: BankChurn-Predictor
+          context: .
           file: BankChurn-Predictor/Dockerfile
           push: false
           load: true
@@ -440,7 +468,7 @@ jobs:
       - name: Build NLPInsight image (no cache)
         uses: docker/build-push-action@v7
         with:
-          context: NLPInsight-Analyzer
+          context: .
           file: NLPInsight-Analyzer/Dockerfile
           push: false
           load: true
@@ -450,17 +478,28 @@ jobs:
       - name: Build ChicagoTaxi image (no cache)
         uses: docker/build-push-action@v7
         with:
-          context: ChicagoTaxi-Demand-Pipeline
+          context: .
           file: ChicagoTaxi-Demand-Pipeline/Dockerfile
           push: false
           load: true
           tags: ml-portfolio-chicagotaxi:latest
           no-cache: true
       
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+
       - name: Generate CI test models
+        # With the locked stack the images serve with (scikit-learn 1.7.2,
+        # numpy 2.4). Was scikit-learn ~= 1.6.0 / numpy ~= 1.26.0: models
+        # trained on one version and loaded by another, inside the very test
+        # that is meant to prove the stack works.
         run: |
-          pip install "scikit-learn~=1.6.0" joblib "numpy~=1.26.0" pandas
-          python scripts/generate_ci_test_models.py
+          uv sync --frozen --package bankchurn-predictor --no-dev
+          uv run --frozen --no-sync python scripts/generate_ci_test_models.py
 
       - name: Spin up Demo Stack
         run: |
@@ -547,8 +586,10 @@ jobs:
           echo "=== Git LFS status ==="
           git lfs ls-files 2>&1 | grep model.joblib || echo "No LFS model files found (expected in CI - models loaded at runtime)"
 
-      - name: Install test dependencies
-        run: pip install pytest requests
+      - name: Install test dependencies (locked dev group)
+        run: |
+          uv sync --frozen --only-dev --inexact
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Run Integration Tests
         run: |
@@ -578,15 +619,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
         with:
+          version: ${{ env.UV_VERSION }}
           python-version: ${{ env.PYTHON_VERSION }}
-      
-      - name: Install dependencies
+          enable-cache: true
+
+      - name: Install dependencies (from uv.lock)
+        # BankChurn's runtime set carries everything the benchmark imports
+        # (pandas, numpy, scikit-learn, joblib, pyyaml, pydantic) at the
+        # versions the image serves with — they were installed unpinned.
         run: |
-          python -m pip install --upgrade pip
-          pip install pandas numpy scikit-learn joblib pyyaml pydantic
+          uv sync --frozen --package bankchurn-predictor --no-dev
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
       
       - name: Run benchmarks
         run: |
@@ -734,7 +780,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
-          context: ${{ matrix.project }}
+          context: .
           file: ${{ matrix.project }}/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}

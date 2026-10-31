@@ -31,6 +31,8 @@ ADRs capture the **reasoning behind decisions**, not just the outcome. Six month
 | [015](015-async-inference-threadpool.md) | Async Inference via ThreadPoolExecutor | Performance | Accepted |
 | [016](016-gcp-aws-performance-parity.md) | GCP vs AWS Performance — Cost vs Latency Trade-off | Infrastructure | Accepted |
 | [017](017-custom-vs-managed-ml-platforms.md) | Custom FastAPI + K8s vs Managed ML Platforms (SageMaker/Vertex AI) | Architecture | Accepted |
+| [018](018-portfolio-maintenance-mode.md) | Portfolio Maintenance Mode | Operations | Accepted |
+| [019](019-uv-workspace-single-lock.md) | One uv Workspace and One Lock for Every Environment | DevOps | Accepted |
 
 ---
 
@@ -54,6 +56,9 @@ ADR-006 (Drift-triggered retraining)
 
 ADR-002 (emptyDir model storage)
   └── ADR-006 (Retraining writes new model → ConfigMap update → rollout)
+
+ADR-005 (Compatible release pinning ~=)
+  └── ADR-019 (One uv workspace + uv.lock — the lockfile ADR-005 deferred)
 
 ADR-012 (Security scanner policy)
   └── ADR-013 (Multi-cloud parity — security posture matches per cloud)
@@ -85,7 +90,7 @@ Every ADR follows a consistent structure:
 - **Recruiters/Hiring Managers**: Read the TL;DR of each ADR for a quick overview of technical depth. ADR-009 (Simplification), ADR-015 (Async Inference), and ADR-016 (Cost vs Performance) are recommended for understanding engineering judgment.
 - **ML Engineers**: Start with ADR-003 (model choice), ADR-010 (explainability), ADR-006 (drift retraining).
 - **Platform/DevOps Engineers**: Start with ADR-001 (HPA), ADR-014 (single-worker), ADR-002 (model storage), ADR-008 (canary).
-- **Security Engineers**: ADR-012 (scanner policy), ADR-005 (dependency pinning).
+- **Security Engineers**: ADR-012 (scanner policy), ADR-005 (dependency pinning), ADR-019 (one hashed lock for every environment).
 - **Hiring Managers (platform focus)**: ADR-017 (custom vs managed platforms) — demonstrates ability to articulate build-vs-buy trade-offs.
 
 </div>

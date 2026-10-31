@@ -2,7 +2,7 @@
 
 **Financial Sentiment Analysis — TF-IDF + LogReg (Production) / FinBERT (GPU)**
 
-[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://python.org)
+[![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.6+-ee4c2c.svg)](https://pytorch.org)
 [![HuggingFace](https://img.shields.io/badge/🤗-FinBERT-yellow.svg)](https://huggingface.co/ProsusAI/finbert)
 [![scikit-learn](https://img.shields.io/badge/sklearn-1.8-F7931E.svg)](https://scikit-learn.org)
@@ -59,8 +59,9 @@ The production deployment uses TF-IDF + LogReg for CPU-optimized inference. FinB
 ## Quick Start
 
 ```bash
-# Install
-pip install -e ".[dev]"
+# Install (uv workspace at the repo root — one uv.lock, ADR-019)
+make install
+source ../.venv/bin/activate
 
 # Train FinBERT (production)
 python main.py --mode train --config configs/config.yaml

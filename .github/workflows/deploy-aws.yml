@@ -55,13 +55,21 @@ jobs:
       - uses: dorny/paths-filter@v4
         id: filter
         with:
+          # Images install from the workspace lock (ADR-019): a change to the
+          # lock or the root pyproject rebuilds every service.
           filters: |
             bankchurn:
               - 'BankChurn-Predictor/**'
+              - 'pyproject.toml'
+              - 'uv.lock'
             nlpinsight:
               - 'NLPInsight-Analyzer/**'
+              - 'pyproject.toml'
+              - 'uv.lock'
             chicagotaxi:
               - 'ChicagoTaxi-Demand-Pipeline/**'
+              - 'pyproject.toml'
+              - 'uv.lock'
             k8s:
               - 'k8s/overlays/aws/**'
       # Gate downstream jobs on AWS credentials being configured. The `secrets`
@@ -127,10 +135,13 @@ jobs:
           IMAGE="${{ env.ECR_REGISTRY }}/${{ matrix.image }}"
           TAG="sha-${GITHUB_SHA::8}"
 
+          # Repository root as context: the image installs from the workspace
+          # uv.lock (ADR-019); <service>/Dockerfile.dockerignore whitelists it.
           docker build \
+            -f ${{ matrix.context }}/Dockerfile \
             -t ${IMAGE}:${TAG} \
             -t ${IMAGE}:latest \
-            ${{ matrix.context }}/
+            .
 
           docker push ${IMAGE}:${TAG}
           docker push ${IMAGE}:latest

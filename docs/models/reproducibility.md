@@ -6,24 +6,24 @@
 
 | Component | Version |
 |-----------|---------|
-| Python | 3.11.14 |
-| scikit-learn | 1.8.0 |
-| LightGBM | 4.6+ |
-| Transformers | 4.48+ |
-| SHAP | 0.50.0 |
-| MLflow | 3.10 |
+| Python | 3.13 (`.python-version`) |
+| scikit-learn | 1.7.2 |
+| LightGBM | 4.7.0 |
+| Transformers | 4.48.3 |
+| SHAP | 0.54.1 |
+| MLflow | 3.16.1 |
+
+The complete set — every package, exact version and hash — is `uv.lock`
+([ADR-019](../decisions/019-uv-workspace-single-lock.md)). Training and the
+images install from the same lock, so a model is never trained on a newer
+library than the one that serves it.
 
 ## Reproduce Training
 
 ```bash
-# 1. Create environment
-conda create -n ml-py311 python=3.11.14 -y
-conda activate ml-py311
-
-# 2. Install dependencies (per project)
-pip install -r BankChurn-Predictor/requirements.txt
-pip install -r requirements.txt
-pip install -r NLPInsight-Analyzer/requirements.txt
+# 1-2. Create .venv with the locked Python and dependencies (all services)
+uv sync --frozen --all-packages --all-groups
+source .venv/bin/activate
 
 # 3. Train all models
 python scripts/train_production_models.py

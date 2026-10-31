@@ -14,7 +14,8 @@ on:
       - '.github/workflows/drift-detection.yml'
 
 env:
-  PYTHON_VERSION: '3.12'
+  PYTHON_VERSION: '3.13'  # = the images' runtime (ADR-019)
+  UV_VERSION: '0.11.19'   # = the version that wrote uv.lock
 
 jobs:
   drift-detection:
@@ -29,33 +30,38 @@ jobs:
           - BankChurn-Predictor
           - NLPInsight-Analyzer
           - ChicagoTaxi-Demand-Pipeline
-    
+        include:
+          - project: BankChurn-Predictor
+            package: bankchurn-predictor
+            groups: --group train   # evidently
+          - project: NLPInsight-Analyzer
+            package: nlpinsight-analyzer
+            groups: --group train   # evidently
+          - project: ChicagoTaxi-Demand-Pipeline
+            package: chicagotaxi-demand-pipeline
+            groups: ''              # no monitoring/drift_detection.py yet
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
       
-      - name: Set up Python
-        uses: actions/setup-python@v7
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
         with:
+          version: ${{ env.UV_VERSION }}
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-      
-      - name: Install dependencies
-        working-directory: ${{ matrix.project }}
+          enable-cache: true
+
+      - name: Install dependencies (from uv.lock — ADR-019)
+        # The service's locked runtime set + evidently from its `train` group:
+        # drift is measured with the pandas/numpy/sklearn the model serves
+        # with. Was: unpinned evidently/pandas/numpy/scikit-learn plus a
+        # hash-stripped requirements.txt.
         run: |
-          python -m pip install --upgrade pip
-          # Install minimal deps for drift detection first
-          pip install evidently pandas numpy scikit-learn
-          # If a hashed requirements.txt exists (with --require-hashes),
-          # clean it before installing to avoid pip --require-hashes errors
-          if [ -f requirements.txt ]; then
-            sed -e '/--hash=/d' -e '/--require-hashes/d' -e 's/ \\$//' \
-                -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' \
-                requirements.txt > requirements_no_hash.txt
-            pip install -r requirements_no_hash.txt
-          fi
+          uv sync --frozen --package "${{ matrix.package }}" ${{ matrix.groups }}
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
       
       - name: Create reports directory
         working-directory: ${{ matrix.project }}

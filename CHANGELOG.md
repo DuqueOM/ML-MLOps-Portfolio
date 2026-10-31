@@ -6,6 +6,52 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ---
 
+## [Unreleased]
+
+One uv workspace, one `uv.lock`, Python 3.13 everywhere —
+[ADR-019](docs/decisions/019-uv-workspace-single-lock.md).
+
+### Changed
+
+- **Every environment installs from one `uv.lock`**: local (`make install`),
+  all CI jobs (`astral-sh/setup-uv` + `uv sync --frozen`) and the three images
+  (`uv sync --frozen --no-dev --package <service>`). Training, tests and
+  serving now run the same versions; before, the BankChurn image served
+  xgboost 2.x for a model trained with 3.x, and training resolved a newer
+  scikit-learn than the image served with.
+- **Python 3.13 only**: CI matrix, `.python-version`, `requires-python` and all
+  images (ChicagoTaxi moves from `python:3.11`).
+- **Docker build context is the repository root**:
+  `docker build -f <service>/Dockerfile .`. Workflows, compose files and
+  Makefiles updated; each service has a whitelist `Dockerfile.dockerignore`.
+- **scikit-learn `~= 1.7.2`, joblib `~= 1.6.0`** — the versions the published
+  artifacts were saved with (all five load with no `InconsistentVersionWarning`).
+  shap `~= 0.54.1` (0.46 fails with numpy 2.4 + matplotlib), `xgboost-cpu` and a
+  CPU-only torch index: no `nvidia-*` package in any environment.
+- **pip-audit audits the lock** (`uv export`); it previously scanned only the
+  runner's own interpreter.
+- **Dependabot**: `uv` ecosystem for the workspace; `pip` only for
+  `requirements-docs.txt` / `requirements-dvc.txt`. The 3.11-era ignores
+  (numpy, scipy, shap, xgboost) are lifted with 3.11.
+- **`drift-detection.yml`, `retrain-bankchurn.yml`, `drift-bankchurn.yml`,
+  `cml-training-comparison.yml`** install from the lock (DVC runs via `uvx`).
+
+### Added
+
+- `uv lock --check` in Quality Gates — the step that fails a PR whose lock no
+  longer matches its `pyproject.toml` files (`--frozen` alone does not check).
+- `uv-lock` pre-commit hook; `make lock`.
+- ChicagoTaxi `etl` dependency group (PySpark, Dask): the batch pipeline was
+  declared only in an untracked file.
+- ADR index rows for 018 and 019.
+
+### Removed
+
+- `requirements.in`, `requirements.txt`, `requirements-prod.txt` of the three
+  services and their per-directory `.dockerignore` files.
+
+---
+
 ## [3.6.2] — 2026-05-25
 
 Hotfix follow-up to `[3.6.1]` — the previous opt-out only covered the

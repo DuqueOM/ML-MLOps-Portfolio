@@ -34,8 +34,8 @@ services:
   bankchurn:
     image: ml-portfolio-bankchurn:latest
     build:
-      context: ./BankChurn-Predictor
-      dockerfile: Dockerfile
+      context: .   # repo root: the images install from uv.lock (ADR-019)
+      dockerfile: BankChurn-Predictor/Dockerfile
     container_name: bankchurn-api
     ports:
       - "8001:8000"
@@ -63,8 +63,8 @@ services:
   nlpinsight:
     image: ml-portfolio-nlpinsight:latest
     build:
-      context: ./NLPInsight-Analyzer
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: NLPInsight-Analyzer/Dockerfile
     container_name: nlpinsight-api
     ports:
       - "8003:8000"
@@ -94,8 +94,8 @@ services:
   chicagotaxi:
     image: ml-portfolio-chicagotaxi:latest
     build:
-      context: ./ChicagoTaxi-Demand-Pipeline
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ChicagoTaxi-Demand-Pipeline/Dockerfile
     container_name: chicagotaxi-api
     ports:
       - "8004:8000"

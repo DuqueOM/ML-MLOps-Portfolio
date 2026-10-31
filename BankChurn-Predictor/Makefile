@@ -4,8 +4,11 @@
 .PHONY: help install test train evaluate predict clean docker-build docker-run lint format
 
 # Variables
-PYTHON := python
-PIP := pip
+# Workspace .venv at the repo root, synced from uv.lock by `make install`
+# (ADR-019). --no-sync: running never changes the installed set.
+RUN := uv run --frozen --no-sync
+PYTHON := $(RUN) python
+PACKAGE := bankchurn-predictor
 DOCKER_IMAGE := bankchurn-predictor
 DOCKER_TAG := latest
 
@@ -20,17 +23,14 @@ help: ## Mostrar ayuda
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "$(YELLOW)%-20s$(NC) %s\n", $$1, $$2}'
 
-install: ## Instalar dependencias
+install: ## Instalar dependencias (servicio + entrenamiento + notebooks, desde uv.lock)
 	@echo "$(GREEN)Instalando dependencias...$(NC)"
-	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements.txt
+	uv sync --frozen --package $(PACKAGE) --all-groups
 	@echo "$(GREEN)Dependencias instaladas correctamente$(NC)"
 
-install-dev: ## Instalar dependencias de desarrollo
+install-dev: install ## Instalar dependencias de desarrollo (pytest, black, flake8, mypy...)
 	@echo "$(GREEN)Instalando dependencias de desarrollo...$(NC)"
-	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements.txt
-	$(PIP) install pytest pytest-cov black flake8 mypy
+	uv sync --frozen --only-dev --inexact
 	@echo "$(GREEN)Dependencias de desarrollo instaladas$(NC)"
 
 setup: ## Configurar entorno inicial
@@ -52,12 +52,12 @@ test-coverage: ## Ejecutar tests con cobertura
 
 lint: ## Verificar calidad de código
 	@echo "$(GREEN)Verificando calidad de código...$(NC)"
-	flake8 src/ main.py app/ --max-line-length=100 --ignore=E203,W503
-	mypy src/ main.py --ignore-missing-imports
+	$(RUN) flake8 src/ main.py app/ --max-line-length=100 --ignore=E203,W503
+	$(RUN) mypy src/ main.py --ignore-missing-imports
 
 format: ## Formatear código
 	@echo "$(GREEN)Formateando código...$(NC)"
-	black src/ main.py app/ tests/ --line-length=100
+	$(RUN) black src/ main.py app/ tests/ --line-length=100
 	@echo "$(GREEN)Código formateado$(NC)"
 
 train: ## Entrenar modelo
@@ -94,7 +94,7 @@ test-fairness: ## Ejecutar tests de fairness
 
 api-start: ## Iniciar API
 	@echo "$(GREEN)Iniciando API...$(NC)"
-	cd app && uvicorn fastapi_app:app --host 0.0.0.0 --port 8000 --reload
+	cd app && $(RUN) uvicorn fastapi_app:app --host 0.0.0.0 --port 8000 --reload
 
 # alias
 serve: ## Alias para iniciar API
@@ -108,7 +108,8 @@ api-test: ## Probar API
 
 docker-build: ## Construir imagen Docker
 	@echo "$(GREEN)Construyendo imagen Docker...$(NC)"
-	docker build -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
+	@# Contexto = raíz del repo: la imagen instala desde uv.lock (ADR-019)
+	docker build -f Dockerfile -t $(DOCKER_IMAGE):$(DOCKER_TAG) ..
 	@echo "$(GREEN)Imagen Docker construida: $(DOCKER_IMAGE):$(DOCKER_TAG)$(NC)"
 
 docker-run: ## Ejecutar container Docker

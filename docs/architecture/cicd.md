@@ -37,10 +37,12 @@ Both deploy workflows: build Docker images → push to registry (AR / ECR) → `
 ```yaml
 matrix:
   project: [BankChurn-Predictor, NLPInsight-Analyzer, ChicagoTaxi-Demand-Pipeline]
-  python-version: ['3.11', '3.12']
+  python-version: ['3.13']   # = the images' runtime (ADR-019)
 ```
 
-6 parallel test jobs (3 projects × 2 Python versions).
+3 parallel test jobs (one per project), each installed from the workspace `uv.lock`
+with `uv sync --frozen`. Quality Gates runs `uv lock --check`, the one step that
+verifies the lock still matches every `pyproject.toml`.
 
 ### Jobs
 
@@ -53,7 +55,7 @@ matrix:
 
 ### Caching
 
-- **pip**: `actions/setup-python` with `cache: 'pip'`
+- **uv**: `astral-sh/setup-uv` with `enable-cache: true` (keyed on `uv.lock`)
 - **Docker layers**: `docker/build-push-action` with GHA cache
 
 ## Pipeline Metrics
