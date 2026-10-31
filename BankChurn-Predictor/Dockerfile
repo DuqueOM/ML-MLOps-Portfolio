@@ -9,7 +9,7 @@
 # the root context may send.
 
 # Stage 1: Builder
-FROM python:3.13.15-slim-bookworm AS builder
+FROM python:3.13.18-slim-bookworm AS builder
 
 LABEL maintainer="DuqueOM <DuqueOrtegaMutis@gmail.com>" \
       version="3.0.0" \
@@ -63,7 +63,7 @@ RUN uv sync --frozen --no-dev --package bankchurn-predictor --no-install-workspa
     /opt/venv/bin/python -c "import fastapi, uvicorn, xgboost, lightgbm"
 
 # Stage 2: Runtime — Lightweight final image
-FROM python:3.13.15-slim-bookworm AS runtime
+FROM python:3.13.18-slim-bookworm AS runtime
 
 # Runtime environment variables
 ENV PYTHONUNBUFFERED=1
