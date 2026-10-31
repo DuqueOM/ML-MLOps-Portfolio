@@ -30,7 +30,7 @@ classifiers = [
 # versions — one version per package across the monorepo (ADR-019).
 dependencies = [
     "torch ~= 2.14.1",
-    "transformers ~= 4.48.0",
+    "transformers>=4.48,<5.22",
     "sentencepiece ~= 0.2.0",
     "protobuf ~= 5.29.0",
     "scikit-learn ~= 1.7.2",
