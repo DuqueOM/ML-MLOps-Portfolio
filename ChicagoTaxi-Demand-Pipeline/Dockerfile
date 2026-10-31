@@ -10,7 +10,7 @@
 # root context.
 
 # Stage 1: Builder
-FROM python:3.13.15-slim-bookworm AS builder
+FROM python:3.13.18-slim-bookworm AS builder
 
 LABEL maintainer="DuqueOM <DuqueOrtegaMutis@gmail.com>" \
       version="1.0.0" \
@@ -48,7 +48,7 @@ RUN uv sync --frozen --no-dev --package chicagotaxi-demand-pipeline --no-install
     /opt/venv/bin/python -c "import fastapi, uvicorn"
 
 # Stage 2: Runtime
-FROM python:3.13.15-slim-bookworm AS runtime
+FROM python:3.13.18-slim-bookworm AS runtime
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
