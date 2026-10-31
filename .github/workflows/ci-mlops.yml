@@ -184,6 +184,19 @@ jobs:
         # Dependabot) fails here instead of shipping a stale lock.
         run: uv lock --check
 
+      - name: Shell scripts are valid bash
+        # scripts/setup_demo_models.sh carried a block of Python pasted into the
+        # middle of it when a project was removed from the portfolio. It is the
+        # command eight documents give for generating the demo models, and
+        # nothing noticed that bash could not even parse it. `bash -n` parses
+        # without running.
+        run: |
+          fail=0
+          for f in scripts/*.sh; do
+            bash -n "$f" || { echo "::error file=$f::not valid bash"; fail=1; }
+          done
+          exit "$fail"
+
       - name: Install quality tools (locked dev group)
         run: |
           uv sync --frozen --only-dev

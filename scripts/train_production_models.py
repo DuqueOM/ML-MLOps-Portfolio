@@ -8,7 +8,8 @@ v3.0.0 — March 2026 upgrade:
   - NLPInsight: Fine-tuned DistilBERT transformer (real deep learning model)
 
 Usage:
-    /home/duque_om/miniconda3/envs/ml-py311/bin/python scripts/train_production_models.py
+    uv sync --frozen --all-packages --all-groups
+    uv run python scripts/train_production_models.py
 
     # With MLflow logging:
     MLFLOW_TRACKING_URI=http://localhost:5000 ... scripts/train_production_models.py
