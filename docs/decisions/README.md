@@ -32,7 +32,7 @@ ADRs capture the **reasoning behind decisions**, not just the outcome. Six month
 | [016](016-gcp-aws-performance-parity.md) | GCP vs AWS Performance — Cost vs Latency Trade-off | Infrastructure | Accepted |
 | [017](017-custom-vs-managed-ml-platforms.md) | Custom FastAPI + K8s vs Managed ML Platforms (SageMaker/Vertex AI) | Architecture | Accepted |
 | [018](018-portfolio-maintenance-mode.md) | Portfolio Maintenance Mode | Operations | Accepted |
-| [019](019-uv-workspace-single-lock.md) | One uv Workspace and One Lock for Every Environment | DevOps | Accepted |
+| [019](019-uv-workspace-single-lock.md) | One uv Workspace and One Lock for Every Environment | DevOps | Accepted, amended 2026-11-02 |
 
 ---
 

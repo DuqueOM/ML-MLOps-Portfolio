@@ -66,14 +66,41 @@ updates:
   # (ci-mlops.yml, Quality Gates) fails that PR instead of letting the lock
   # and the declaration drift.
   #
-  # `increase` raises the floor and PRESERVES the `~=` shape. Dependabot's
-  # pip default WIDENS a constraint (`~=2.2` becomes `>=2.2,<4.0`), which
-  # admits a major without anyone deciding to take it — the thing ADR-005's
-  # `~=` exists to prevent. That is the reason, and it does not depend on any
-  # one package. (This comment used to say "numpy 2.x silently corrupted
-  # joblib-serialised models here". These services moved to numpy 2.2
-  # deliberately in v3.5.0, and a measured round trip does not reproduce a
-  # silent corruption; see ADR-005's amendment of 2026-10-23.)
+  # `versioning-strategy` behaves differently per ecosystem, and this comment
+  # used to say `increase` "PRESERVES the `~=` shape". For `uv` it does not.
+  # MEASURED, 2026-11-02: it rewrote `~=` into a range for six packages (eight
+  # declarations) and the lock followed, with CI green every time: `numpy ~=
+  # 2.4.6` and `black ~= 26.1.0` in #344, then `scipy ~= 1.17.1`, `pyspark ~=
+  # 4.2.1`, `torch ~= 2.14.1` and `flake8 ~= 7.4.1` in #356 (each to
+  # `>=x,<y`). The lock moved numpy 2.4.6 -> 2.5.4, torch 2.14 -> 2.15, scipy
+  # 1.17 -> 1.18, pyspark 4.2 -> 4.3, flake8 7.4 -> 7.5 and black 26.1 ->
+  # 26.10: six minors nobody chose, against ADR-019 ("`~=` remains the rule
+  # for every entry") and ADR-005 (a crossing is a decision, because "the
+  # published models' versions win"). Nothing enforced it: `uv lock --check`
+  # is satisfied by a rewritten range.
+  #
+  # So the `uv` entry uses `lockfile-only`: Dependabot moves uv.lock inside the
+  # ranges the pyproject.toml files declare and never edits those files; "Ignore
+  # any new versions that would require package manifest changes" (GitHub's
+  # reference), and dependabot-core's shared requirements updater returns the
+  # manifest untouched for it (`return requirements if
+  # update_strategy.lockfile_only?`). A minor of a `~=` pin becomes a person's
+  # edit, which is what ADR-005 intends. It also ends the
+  # `dependency_file_not_resolvable` failures of the update job: scikit-learn
+  # 1.9, uvicorn 0.54, mlflow 3.17, plotly 7 and pyarrow 26 cannot resolve
+  # against pins the models require (scikit-learn ~= 1.7.2 is the version the
+  # published artifacts were saved with), and were logged as errors each run.
+  #
+  # The cost is the same as for any ignore: a SECURITY update whose fix lives
+  # outside a `~=` range is not proposed either. The Trivy gate and pip-audit
+  # show it on the next PR; raise the pin by hand then.
+  #
+  # `pip` + `increase` is still right for the two requirement files it keeps:
+  # it raises the floor of a `>=` requirement.
+  # (An older sentence here blamed "numpy 2.x silently corrupted
+  # joblib-serialised models". These services moved to numpy 2.2 deliberately
+  # in v3.5.0, and a measured round trip does not reproduce a silent
+  # corruption; see ADR-005's amendment of 2026-10-23.)
   # ---------------------------------------------------------------------
   # ONE entry, at the workspace root. The four members used to be listed too,
   # and that is what produced the broken PRs of 2026-10-31 (#349-#353):
@@ -92,7 +119,7 @@ updates:
   # from `/`, list it here again and add its name to this comment.
   - package-ecosystem: "uv"
     directory: "/"
-    versioning-strategy: increase
+    versioning-strategy: lockfile-only
     schedule:
       interval: "weekly"
       day: "thursday"
@@ -106,7 +133,10 @@ updates:
     # #315) were lifted by ADR-019: 3.11 left the CI matrix and the images,
     # and the workspace runs 3.13 only. A dependency that drops 3.13 is now
     # stopped by the resolver itself (requires-python = ">=3.13,<3.14").
-    # Three majors held, because no advisory asks for them and ADR-018 keeps
+    # Redundant under `lockfile-only` by construction (a major of a `~=` pin
+    # needs a manifest change), kept as the written reason and as protection
+    # if the strategy ever changes. Three majors held, because no advisory
+    # asks for them and ADR-018 keeps
     # this repository in maintenance mode: a data-stack major means retraining
     # or revalidating the served artifacts, and the services gain nothing from
     # it. Checked 2026-11-02: Trivy on uv.lock with that day's database finds 0

@@ -33,8 +33,8 @@ classifiers = [
 # that serves (ADR-005 amendment) — one lock makes them the same.
 dependencies = [
     "pandas ~= 2.3.0",
-    "numpy>=2.4.6,<2.6.0",
-    "scipy>=1.17.1,<1.19.0",
+    "numpy ~= 2.5.4",
+    "scipy ~= 1.18.1",
     "scikit-learn ~= 1.7.2",
     "joblib ~= 1.6.0",
     # 0.46 (the old serving pin) fails to import under numpy 2.4 once
