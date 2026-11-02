@@ -2,7 +2,7 @@
 
 # ADR-019: One uv Workspace and One Lock for Every Environment
 
-- **Status**: Accepted
+- **Status**: Accepted, amended 2026-11-02 (how Dependabot edits the declared ranges)
 - **Date**: 2026-10-28
 - **Authors**: Duque Ortega Mutis
 - **Relates to**: [ADR-005](005-compatible-release-pinning.md) (kept: `~=` stays the
@@ -145,5 +145,57 @@ has never contained; they are mounted at runtime.
 - [uv — Using uv in Docker](https://docs.astral.sh/uv/guides/integration/docker/)
 - [uv — Locking and syncing (`--frozen`, `--locked`)](https://docs.astral.sh/uv/concepts/projects/sync/)
 - [ADR-005 — Compatible Release Pinning](005-compatible-release-pinning.md)
+
+---
+
+## Amendment, 2026-11-02 — the rule held on paper; Dependabot rewrote it for six packages
+
+**The decision stands.** One workspace, one lock, `uv sync --frozen`, and `~=` as
+the declaration rule for every entry (item 2). What failed is the enforcement of
+that last part, and this record is where the failure belongs.
+
+"Revisit When" expected Dependabot's `uv` ecosystem to fail visibly: a pull
+request that edits a member's `pyproject.toml` without the lock is rejected by
+`uv lock --check`. That case happened (#349–#353, and #342; the failing step in
+each was "Check uv.lock matches every pyproject.toml") and was caught. The
+case that was not caught is the opposite one: a rewrite that arrives **with** its
+lock, so every check agrees with it.
+
+With `versioning-strategy: increase`, the `uv` ecosystem does not preserve `~=`.
+The configuration comment said it did; nobody had measured it. Measured, on
+2026-11-02, from the merged history of `main`:
+
+| Merged | Rewrite | Locked version after |
+| --- | --- | --- |
+| #344, 31 Oct | `numpy ~= 2.4.6` → `>=2.4.6,<2.6.0` (three members); `black ~= 26.1.0` → `>=26.1,<26.11` | numpy 2.4.6 → **2.5.4**, black 26.1.0 → 26.10.1 |
+| #356, 2 Nov | `scipy ~= 1.17.1`, `pyspark ~= 4.2.1`, `torch ~= 2.14.1`, `flake8 ~= 7.4.1` → `>=x,<y` | scipy 1.17 → **1.18.1**, pyspark 4.2 → **4.3.0**, torch 2.14 → **2.15.0**, flake8 7.4 → 7.5.0 |
+
+Six minors entered the lock (five libraries and black), each through a green auto-merge, none decided. They
+are exactly the crossings ADR-005 exists to make deliberate, and item 4 ("the
+published models' versions win") was about to be tested by numpy and scipy, the
+two packages every pickled scikit-learn object reaches.
+
+**What was not verified, and cannot be from this repository.** Item 4 records
+that all five published artifacts load under the lock "with no
+`InconsistentVersionWarning`". That was checked once, by hand, when the lock was
+adopted. The artifacts are not in the repository and no test loads them, so
+whether numpy 2.5.4 and scipy 1.18.1 changed anything for them is **unmeasured**.
+CI passing says nothing about it.
+
+What changes:
+
+- The `uv` entry uses `versioning-strategy: lockfile-only`. Dependabot moves
+  `uv.lock` inside the ranges the `pyproject.toml` files declare and never edits
+  those files. A minor of a `~=` pin becomes a person's edit.
+- The six rewritten entries are restored to `~=`, **at the versions the lock
+  already holds** (`numpy ~= 2.5.4`, `scipy ~= 1.18.1`, `pyspark ~= 4.3.0`,
+  `torch ~= 2.15.0`, `flake8 ~= 7.5.0`, `black ~= 26.10.1`). The lock does not
+  change: only its recorded `requires-dist` does. This restores the shape of the
+  rule and does not undo the six minors, because deciding whether to undo them
+  needs the artifacts. Rolling any of them back is one
+  `uv lock --upgrade-package <name>==<old>` plus the matching `~=` edit.
+- The cost is the one every ignore carries: a security update whose fix lies
+  outside a `~=` range is not proposed. The Trivy gate and pip-audit show it on
+  the next pull request.
 
 </div>

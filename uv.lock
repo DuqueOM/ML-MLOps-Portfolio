@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = "==3.13.*"
 resolution-markers = [
     "sys_platform != 'darwin'",
@@ -320,14 +320,14 @@ requires-dist = [
     { name = "fastapi", specifier = "~=0.162.0" },
     { name = "joblib", specifier = "~=1.6.0" },
     { name = "lightgbm", specifier = "~=4.7.0" },
-    { name = "numpy", specifier = ">=2.4.6,<2.6.0" },
+    { name = "numpy", specifier = "~=2.5.4" },
     { name = "pandas", specifier = "~=2.3.0" },
     { name = "prometheus-client", specifier = "~=0.26.0" },
     { name = "pydantic", specifier = "~=2.14.1" },
     { name = "python-multipart", specifier = "~=0.0.32" },
     { name = "pyyaml", specifier = "~=6.0.0" },
     { name = "scikit-learn", specifier = "~=1.7.2" },
-    { name = "scipy", specifier = ">=1.17.1,<1.19.0" },
+    { name = "scipy", specifier = "~=1.18.1" },
     { name = "shap", specifier = "~=0.54.1" },
     { name = "typing-extensions", specifier = "~=4.16.0" },
     { name = "uvicorn", specifier = "~=0.53.0" },
@@ -527,7 +527,7 @@ etl = [
 requires-dist = [
     { name = "fastapi", specifier = "~=0.162.0" },
     { name = "joblib", specifier = "~=1.6.0" },
-    { name = "numpy", specifier = ">=2.4.6,<2.6.0" },
+    { name = "numpy", specifier = "~=2.5.4" },
     { name = "pandas", specifier = "~=2.3.0" },
     { name = "prometheus-client", specifier = "~=0.26.0" },
     { name = "pyarrow", specifier = "~=25.0.1" },
@@ -539,7 +539,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 etl = [
     { name = "dask", extras = ["dataframe"], specifier = "~=2026.8.0" },
-    { name = "pyspark", specifier = ">=4.2.1,<4.4.0" },
+    { name = "pyspark", specifier = "~=4.3.0" },
 ]
 
 [[package]]
@@ -2061,9 +2061,9 @@ dev = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "black", specifier = ">=26.1,<26.11" },
+    { name = "black", specifier = "~=26.10.1" },
     { name = "common-utils", editable = "common_utils" },
-    { name = "flake8", specifier = ">=7.4.1,<7.6.0" },
+    { name = "flake8", specifier = "~=7.5.0" },
     { name = "httpx", specifier = "~=0.28.1" },
     { name = "isort", specifier = "~=9.0.2" },
     { name = "mypy", specifier = "~=2.4.1" },
@@ -2384,7 +2384,7 @@ train = [
 requires-dist = [
     { name = "fastapi", specifier = "~=0.162.0" },
     { name = "joblib", specifier = "~=1.6.0" },
-    { name = "numpy", specifier = ">=2.4.6,<2.6.0" },
+    { name = "numpy", specifier = "~=2.5.4" },
     { name = "pandas", specifier = "~=2.3.0" },
     { name = "prometheus-client", specifier = "~=0.26.0" },
     { name = "protobuf", specifier = "~=5.29.0" },
@@ -2393,7 +2393,7 @@ requires-dist = [
     { name = "pyyaml", specifier = "~=6.0.0" },
     { name = "scikit-learn", specifier = "~=1.7.2" },
     { name = "sentencepiece", specifier = "~=0.2.0" },
-    { name = "torch", specifier = ">=2.14.1,<2.16.0", index = "https://download.pytorch.org/whl/cpu" },
+    { name = "torch", specifier = "~=2.15.0", index = "https://download.pytorch.org/whl/cpu" },
     { name = "transformers", specifier = "~=4.48.0" },
     { name = "uvicorn", specifier = "~=0.53.0" },
 ]
@@ -3810,13 +3810,13 @@ resolution-markers = [
     "sys_platform == 'darwin'",
 ]
 dependencies = [
-    { name = "filelock" },
-    { name = "fsspec" },
-    { name = "jinja2" },
-    { name = "networkx" },
-    { name = "setuptools" },
-    { name = "sympy" },
-    { name = "typing-extensions" },
+    { name = "filelock", marker = "sys_platform == 'darwin'" },
+    { name = "fsspec", marker = "sys_platform == 'darwin'" },
+    { name = "jinja2", marker = "sys_platform == 'darwin'" },
+    { name = "networkx", marker = "sys_platform == 'darwin'" },
+    { name = "setuptools", marker = "sys_platform == 'darwin'" },
+    { name = "sympy", marker = "sys_platform == 'darwin'" },
+    { name = "typing-extensions", marker = "sys_platform == 'darwin'" },
 ]
 wheels = [
     { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.15.0-cp313-cp313-macosx_14_0_arm64.whl", hash = "sha256:fbefd73b521d3c75c5a1d7c77056b2c6339b81468d14d4e33c55f525418a5855", upload-time = "2026-10-28T13:17:07Z" },
@@ -3830,13 +3830,13 @@ resolution-markers = [
     "sys_platform != 'darwin'",
 ]
 dependencies = [
-    { name = "filelock" },
-    { name = "fsspec" },
-    { name = "jinja2" },
-    { name = "networkx" },
-    { name = "setuptools" },
-    { name = "sympy" },
-    { name = "typing-extensions" },
+    { name = "filelock", marker = "sys_platform != 'darwin'" },
+    { name = "fsspec", marker = "sys_platform != 'darwin'" },
+    { name = "jinja2", marker = "sys_platform != 'darwin'" },
+    { name = "networkx", marker = "sys_platform != 'darwin'" },
+    { name = "setuptools", marker = "sys_platform != 'darwin'" },
+    { name = "sympy", marker = "sys_platform != 'darwin'" },
+    { name = "typing-extensions", marker = "sys_platform != 'darwin'" },
 ]
 wheels = [
     { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.15.0%2Bcpu-cp313-cp313-linux_s390x.whl", hash = "sha256:88f5fe2c5d25a809a315a4a3f494e367539a307356f37752d89cd0b9d84f175a", upload-time = "2026-10-28T13:18:52Z" },

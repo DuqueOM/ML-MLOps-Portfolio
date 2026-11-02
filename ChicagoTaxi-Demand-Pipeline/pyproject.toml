@@ -24,7 +24,7 @@ dependencies = [
     "uvicorn ~= 0.53.0",
     "pydantic ~= 2.14.1",
     "pandas ~= 2.3.0",
-    "numpy>=2.4.6,<2.6.0",
+    "numpy ~= 2.5.4",
     "pyarrow ~= 25.0.1",
     "scikit-learn ~= 1.7.2",
     "joblib ~= 1.6.0",
@@ -38,7 +38,7 @@ dependencies = [
 # these lived only in an untracked, unpinned requirements.txt.
 # `make install` (uv sync --group etl) installs them.
 etl = [
-    "pyspark>=4.2.1,<4.4.0",
+    "pyspark ~= 4.3.0",
     "dask[dataframe] ~= 2026.8.0",
 ]
 
