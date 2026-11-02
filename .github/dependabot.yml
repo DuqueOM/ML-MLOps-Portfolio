@@ -75,13 +75,23 @@ updates:
   # deliberately in v3.5.0, and a measured round trip does not reproduce a
   # silent corruption; see ADR-005's amendment of 2026-10-23.)
   # ---------------------------------------------------------------------
+  # ONE entry, at the workspace root. The four members used to be listed too,
+  # and that is what produced the broken PRs of 2026-10-31 (#349-#353):
+  # Dependabot visits `/` first and then each member again, and the member
+  # visits propose the same update from the member's own pyproject.toml, with
+  # no uv.lock change and a WIDENED range (`~=2.3.0` -> `>=2.3,<3.2`, which
+  # admits pandas 3). `uv lock --check` rejected them, correctly, and each was
+  # a duplicate of the root PR that does carry the lock (#345-#347).
+  #
+  # Why dropping the members loses nothing, MEASURED (not documented: GitHub's
+  # reference says nothing about uv workspaces). In run 41211368341 the `/` job
+  # reported a dependency snapshot and a "Checking if ..." line for 46 of the
+  # 46 direct dependencies declared across the five pyproject.toml files
+  # (extras such as `dask[dataframe]` included), and its PRs edit the members'
+  # pyproject.toml and uv.lock together. If a member ever stops being seen
+  # from `/`, list it here again and add its name to this comment.
   - package-ecosystem: "uv"
-    directories:
-      - "/"
-      - "/BankChurn-Predictor"
-      - "/ChicagoTaxi-Demand-Pipeline"
-      - "/NLPInsight-Analyzer"
-      - "/common_utils"
+    directory: "/"
     versioning-strategy: increase
     schedule:
       interval: "weekly"
@@ -96,14 +106,43 @@ updates:
     # #315) were lifted by ADR-019: 3.11 left the CI matrix and the images,
     # and the workspace runs 3.13 only. A dependency that drops 3.13 is now
     # stopped by the resolver itself (requires-python = ">=3.13,<3.14").
+    # Three majors held, because no advisory asks for them and ADR-018 keeps
+    # this repository in maintenance mode: a data-stack major means retraining
+    # or revalidating the served artifacts, and the services gain nothing from
+    # it. Checked 2026-11-02: Trivy on uv.lock with that day's database finds 0
+    # advisories at any severity, and the lock pins pandas 2.3.3, transformers
+    # 4.48.3 and protobuf 5.29.6. #345-#347 were the proposals, green in CI and
+    # still closed, because "CI passes" says nothing about artifacts trained
+    # under the old versions.
+    #
+    # `ignore` filters SECURITY updates too (GitHub's reference: "filters out
+    # any ignored dependencies or versions"), so this is not a safe parking
+    # place. LIFT an entry when (a) an advisory lists a fix only in that major
+    # (Trivy's gate will show it on the next PR), or (b) the service that uses
+    # it is retrained and revalidated on the new major.
+    ignore:
+      - dependency-name: "pandas"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "transformers"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "protobuf"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "deps"
     labels:
       - "dependencies"
       - "python"
 
+  # `pip` at `/` also reads the root pyproject.toml, which the `uv` entry above
+  # owns together with uv.lock. It proposed `black` there on 2026-10-31
+  # (#342): a floor raised with no lock change, which `uv lock --check`
+  # rejects, and it did so again at 15:09 after the workspace migration landed.
+  # `exclude-paths` (GitHub's reference: paths relative to `directory`, per
+  # ecosystem) leaves this entry the two requirement files its comment names.
   - package-ecosystem: "pip"
     directory: "/"   # requirements-docs.txt, requirements-dvc.txt
+    exclude-paths:
+      - "pyproject.toml"
     versioning-strategy: increase
     schedule:
       interval: "weekly"
