@@ -38,7 +38,7 @@ dependencies = [
 # these lived only in an untracked, unpinned requirements.txt.
 # `make install` (uv sync --group etl) installs them.
 etl = [
-    "pyspark ~= 4.2.1",
+    "pyspark>=4.2.1,<4.4.0",
     "dask[dataframe] ~= 2026.8.0",
 ]
 

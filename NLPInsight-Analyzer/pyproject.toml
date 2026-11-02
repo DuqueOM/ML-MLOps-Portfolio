@@ -29,7 +29,7 @@ classifiers = [
 # models/model.joblib; fastapi/uvicorn/pydantic/joblib now share BankChurn's
 # versions — one version per package across the monorepo (ADR-019).
 dependencies = [
-    "torch ~= 2.14.1",
+    "torch>=2.14.1,<2.16.0",
     "transformers ~= 4.48.0",
     "sentencepiece ~= 0.2.0",
     "protobuf ~= 5.29.0",
