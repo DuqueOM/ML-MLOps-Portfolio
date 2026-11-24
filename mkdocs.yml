@@ -91,9 +91,6 @@ nav:
       - BankChurn Predictor: projects/bankchurn.md
       - NLPInsight Analyzer: projects/nlpinsight.md
       - ChicagoTaxi Pipeline: projects/chicagotaxi.md
-      - "Architecture study: ml-service-template": template.md
-      - "Architecture study: ml-platform": ml-platform.md
-      - "Architecture study: agent-local": agent-local.md
   - Recruiter-Brief: recruiter-brief.md
   - About: about.md
   - Contact: contact.md

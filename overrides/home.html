@@ -2,7 +2,7 @@
 
 {% block extrahead %}
   {{ super() }}
-  <link rel="stylesheet" href="{{ 'assets/stylesheets/home.css' | url }}?v=20260703h">
+  <link rel="stylesheet" href="{{ 'assets/stylesheets/home.css' | url }}?v=20261124a">
   <meta property="og:title" content="Duque Ortega Mutis — Junior AI Engineer · LLM apps and agents · ML in production">
   <meta property="og:description" content="Three ML services deployed to GKE and EKS, three production problems found and fixed, a WhatsApp customer-service agent in progress and a text-to-speech app with a voice fine-tuned with LoRA. 14 years running my own businesses before tech.">
   <meta property="og:type" content="website">
@@ -310,49 +310,23 @@
     <div class="mlh-wrap">
       <div class="mlh-section-head mlh-section-head--major" data-reveal>
         <h2 class="mlh-sec-title">More projects</h2>
-        <p class="mlh-sec-sub">an LLM agent in progress · an app I use every day</p>
-        <p class="mlh-section-note"><strong>agent-whatsapp-php</strong> is a WhatsApp
-        customer-service agent, in progress: I wrote the spec and the plan and I write
-        the core logic; AI agents generate the scaffolding, which I review personally.
-        First release planned for January 2027. <strong>read_aloud</strong> is a
-        Windows text-to-speech app I use every day, with a voice I fine-tuned myself.</p>
+        <p class="mlh-sec-sub">an app I use every day · an LLM agent in progress</p>
+        <p class="mlh-section-note"><strong>read_aloud</strong> is a Windows
+        text-to-speech app I use every day; one of its voices I fine-tuned myself with
+        LoRA. <strong>agent-whatsapp-php</strong> is a WhatsApp customer-service agent,
+        in progress: I wrote the spec and the plan and I write the core logic; AI agents
+        generate the scaffolding, which I review personally. First release planned for
+        January 2027.</p>
       </div>
 
-      <ul class="mlh-template-points" data-reveal>
-        <li><b>WhatsApp agent</b><span>PHP 8.3 · MySQL · Meta Cloud API webhooks · LLM tool calling · human handoff · evals</span></li>
-        <li><b>read_aloud</b><span>local neural voices (Piper, Qwen3-TTS) · Spanish and English in the same text · offline</span></li>
-        <li><b>LoRA voice fine-tuning</b><span>my own GPU (RTX 5070, 8 GB) · I chose the training setup and the final epoch · WavLM to compare voices · 15 ADRs</span></li>
+      <ul class="mlh-template-points mlh-template-points--two" data-reveal>
+        <li><b>read_aloud</b><span>local neural voices (Piper, Qwen3-TTS) · Spanish and English in the same text · offline · one voice fine-tuned with LoRA on my own GPU (RTX 5070, 8 GB): I chose the training setup and the final epoch, and used WavLM to compare voices · 15 ADRs</span></li>
+        <li><b>WhatsApp agent</b><span>PHP 8.3 · MySQL · Meta Cloud API webhooks · LLM tool calling · human handoff · evals · in progress</span></li>
       </ul>
 
       <div class="mlh-cta" data-reveal>
-        <a class="mlh-btn mlh-btn--primary" href="https://github.com/DuqueOM/agent-whatsapp-php" data-magnetic>WhatsApp agent</a>
-        <a class="mlh-btn" href="https://github.com/DuqueOM/read_aloud" data-magnetic>read_aloud</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ ARCHITECTURE STUDIES ============ -->
-  <section class="mlh-section" id="architecture-studies">
-    <div class="mlh-wrap">
-      <div class="mlh-section-head mlh-section-head--major" data-reveal>
-        <h2 class="mlh-sec-title">Architecture studies</h2>
-        <p class="mlh-sec-sub mlh-sec-sub--amber">designed and directed by me · not deployed to a cloud</p>
-        <p class="mlh-section-note">Larger systems I designed and directed. AI coding
-        agents wrote most of the code. Not deployed to a cloud. They show how I plan a
-        system: scope limits, decisions with rejected alternatives (ADRs), and tests
-        that can fail a build.</p>
-      </div>
-
-      <ul class="mlh-template-points" data-reveal>
-        <li><b>ml-service-template</b><span>a Copier template for one classical ML service on Kubernetes (GKE/EKS) · 38 anti-patterns · 52 ADRs</span></li>
-        <li><b>ml-platform</b><span>a multi-project ML platform template: tabular, deep learning, LLM/RAG and agents · 51 of 65 components done</span></li>
-        <li><b>agent-local</b><span>a local LLM agent core with grammar-constrained routing and a deterministic policy gate</span></li>
-      </ul>
-
-      <div class="mlh-cta" data-reveal>
-        <a class="mlh-btn mlh-btn--primary" href="{{ 'template/' | url }}" data-magnetic>ml-service-template</a>
-        <a class="mlh-btn" href="{{ 'ml-platform/' | url }}" data-magnetic>ml-platform</a>
-        <a class="mlh-btn" href="{{ 'agent-local/' | url }}" data-magnetic>agent-local</a>
+        <a class="mlh-btn mlh-btn--primary" href="https://github.com/DuqueOM/read_aloud" data-magnetic>read_aloud</a>
+        <a class="mlh-btn" href="https://github.com/DuqueOM/agent-whatsapp-php" data-magnetic>WhatsApp agent</a>
       </div>
     </div>
   </section>
@@ -399,6 +373,32 @@
         I design the system and make the decisions; AI coding agents (Claude Code) build
         faster inside rules I set — tests first, small reviewed changes, CI gates.
       </p>
+    </div>
+  </section>
+
+  <!-- ============ ARCHITECTURE STUDIES ============ -->
+  <section class="mlh-section" id="architecture-studies">
+    <div class="mlh-wrap">
+      <div class="mlh-section-head mlh-section-head--major" data-reveal>
+        <h2 class="mlh-sec-title">Architecture studies</h2>
+        <p class="mlh-sec-sub mlh-sec-sub--amber">designed and directed by me · not deployed to a cloud</p>
+        <p class="mlh-section-note">Larger systems I designed and directed. AI coding
+        agents wrote most of the code. Not deployed to a cloud. They show how I plan a
+        system: scope limits, decisions with rejected alternatives (ADRs), and tests
+        that can fail a build.</p>
+      </div>
+
+      <ul class="mlh-template-points" data-reveal>
+        <li><b>ml-service-template</b><span>a Copier template for one classical ML service on Kubernetes (GKE/EKS) · 38 anti-patterns · 52 ADRs</span></li>
+        <li><b>ml-platform</b><span>a multi-project ML platform template: tabular, deep learning, LLM/RAG and agents · 51 of 65 components done</span></li>
+        <li><b>agent-local</b><span>a local LLM agent core with grammar-constrained routing and a deterministic policy gate</span></li>
+      </ul>
+
+      <div class="mlh-cta" data-reveal>
+        <a class="mlh-btn" href="{{ 'template/' | url }}" data-magnetic>ml-service-template</a>
+        <a class="mlh-btn" href="{{ 'ml-platform/' | url }}" data-magnetic>ml-platform</a>
+        <a class="mlh-btn" href="{{ 'agent-local/' | url }}" data-magnetic>agent-local</a>
+      </div>
     </div>
   </section>
 

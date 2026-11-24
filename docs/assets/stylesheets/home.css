@@ -490,6 +490,8 @@
 .mlh-template-points span {
   font-size: 0.84rem; color: var(--mlh-muted);
 }
+/* Two items: two columns, so the row has no empty third column. */
+.md-typeset .ml-home .mlh-template-points--two { grid-template-columns: repeat(2, 1fr); }
 @media (max-width: 900px) {
   .md-typeset .ml-home .mlh-template-points { grid-template-columns: 1fr 1fr; }
 }
