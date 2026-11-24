@@ -4,7 +4,7 @@
 
 <div class="portfolio-hero" markdown="1">
 <canvas data-neural-scene="cube" aria-hidden="true"></canvas>
-<span class="portfolio-eyebrow">Local, multi-tier LLM agent platform</span>
+<span class="portfolio-eyebrow">Architecture study · local LLM agent core</span>
 
 # The template's governance philosophy, generalized to a domain it was never written for
 
@@ -16,6 +16,8 @@ philosophy and day-2 maintenance discipline (drift checks,
 retraining-equivalent eval gates, CI hardening) to local model tiers instead
 of a tabular ML model. The original shared plan lives in the template's
 [`ACTION_PLAN_LLM_AGENT.md`](https://github.com/DuqueOM/ml-service-template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md).
+An architecture study: I designed and directed it; AI coding agents wrote most
+of the code. Not deployed to a cloud.
 
 <div class="portfolio-actions" markdown="1">
 [Open the agent-local repo](https://github.com/DuqueOM/agent-local){ .portfolio-button .portfolio-button--primary }

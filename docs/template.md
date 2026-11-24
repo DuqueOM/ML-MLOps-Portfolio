@@ -1,15 +1,16 @@
-# Production Template
+# ml-service-template
 
 <div class="portfolio-page portfolio-template" markdown="1">
 
 <div class="portfolio-hero" markdown="1">
 <canvas data-neural-scene="cube" aria-hidden="true"></canvas>
-<span class="portfolio-eyebrow">Production template and agentic operating model</span>
+<span class="portfolio-eyebrow">Architecture study · not deployed to a cloud</span>
 
-# A reusable ML service template with governed AI-assisted engineering
+# A template for one classical ML service on Kubernetes
 
 The [ML Service Template](https://github.com/DuqueOM/ml-service-template)
-is the strongest artifact in this portfolio. It packages the production lessons
+is an architecture study: I designed and directed it; AI coding agents wrote
+most of the code. Not deployed to a cloud. It packages the production lessons
 from the monorepo into a starter system for ML services: FastAPI serving,
 training/serving parity, CI/CD, Docker, Kubernetes, Terraform examples,
 observability hooks, runbooks and an explicit agentic governance model. The
@@ -40,7 +41,7 @@ property that makes it recommendable, which is that it is small enough to read
 in an afternoon.
 
 That work sits <em>above</em> this boundary, and it got its own repository —
-<a href="../ml-platform/">ml-platform</a>, the second and enterprise template.
+<a href="../ml-platform/">ml-platform</a>, the second template.
 It <em>consumes</em> this one through <code>copier</code> rather than
 replacing it: where the two disagree about serving, containers, probes,
 manifests or supply chain, <strong>this template wins</strong>.
@@ -564,7 +565,7 @@ across every document — a gate, not a suggestion.</p>
 </div>
 </div>
 
-## Enterprise Governance &amp; Compliance Posture
+## Governance &amp; Compliance Posture
 
 <div class="portfolio-split" markdown="1">
 <div markdown="1">
@@ -718,7 +719,7 @@ readiness based on model loading rather than a superficial health endpoint.</p>
 <div class="portfolio-card" markdown="1">
 <small>Governance contract</small>
 <h3>Can agents act safely?</h3>
-<p>The strongest technical signal is whether agent workflows are bounded by
+<p>The key technical signal is whether agent workflows are bounded by
 rules, manifests, validations and explicit escalation points.</p>
 </div>
 
@@ -734,7 +735,8 @@ which keeps the documentation useful without overstating production proof.</p>
 
 | Signal | What it means |
 |--------|---------------|
-| Product thinking | I turned portfolio lessons into a reusable starter system. |
+| How it was built | I designed and directed it; AI coding agents wrote most of the code. Not deployed to a cloud. |
+| Product thinking | I designed a way to turn the services' lessons into a reusable starter system. |
 | MLOps discipline | The template treats serving, testing, packaging and deployment as one system. |
 | Governance mindset | AI-assisted engineering is bounded by explicit rules, not only prompts. |
 | Operational honesty | Cloud validation, cost control and limitations are documented instead of hidden. |

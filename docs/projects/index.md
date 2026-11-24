@@ -4,40 +4,25 @@
 
 <div class="portfolio-hero" markdown="1">
 <canvas data-neural-scene="helm" aria-hidden="true"></canvas>
-<span class="portfolio-eyebrow">One evolution · four chapters</span>
+<span class="portfolio-eyebrow">Projects · what I built and how</span>
 
-# From services, to two templates, to a platform
+# ML services in production, an LLM agent, and architecture studies
 
-This is not a pile of projects — it is one line of work that compounds.
-Three production ML services taught the lessons; a **governed template**
-encoded them for *one* service and then refused to grow; **`ml-platform`**
-became the enterprise substrate for the work above that boundary; and
-**`agent-local`** is the agnostic agent core that platform absorbed without
-replacing. Each chapter is the foundation of the next.
+Three ML services I deployed to GKE and EKS, with the production problems I
+found and fixed; a WhatsApp customer-service agent, in progress; `read_aloud`, a
+text-to-speech app I use every day; and three architecture studies. I design the
+system and make the decisions; I use AI coding agents (Claude Code) for speed.
+Each section says which parts the agents wrote.
 
 <div class="portfolio-actions" markdown="1">
-[Ch.1 · Portfolio](#chapter-1-the-ml-mlops-portfolio){ .portfolio-button .portfolio-button--primary }
-[Ch.2 · Template · classical ML](#chapter-2-the-production-template){ .portfolio-button }
-[Ch.3 · Platform · DL, LLM & agents](#chapter-3-ml-platform-the-enterprise-substrate){ .portfolio-button }
-[Ch.4 · The agent core](#chapter-4-agent-local-the-llm-core){ .portfolio-button }
+[ML-MLOps Portfolio](#the-ml-mlops-portfolio){ .portfolio-button .portfolio-button--primary }
+[WhatsApp agent](#whatsapp-customer-service-agent){ .portfolio-button }
+[read_aloud](#read_aloud){ .portfolio-button }
+[Architecture studies](#architecture-studies){ .portfolio-button }
 </div>
 </div>
 
-<div class="portfolio-callout" markdown="1">
-<strong>Why four repos, not one</strong>
-
-Separate repositories with explicit, written contracts between them — and two
-of them are templates *on purpose*. `ml-service-template` governs classical
-ML — scikit-learn, XGBoost, LightGBM — and stays small enough to read in an
-afternoon;
-`ml-platform` covers lakehouse, feature store, orchestration, GitOps and LLM
-serving, and <em>consumes</em> the template through <code>copier</code> rather
-than reimplementing it. Widening the first to cover the second would have
-destroyed what makes it recommendable. Knowing where to draw that boundary —
-and writing the boundary down as a decision — is the point.
-</div>
-
-## Chapter 1 · The ML-MLOps Portfolio
+## The ML-MLOps Portfolio
 
 <div class="portfolio-split" markdown="1">
 <div markdown="1">
@@ -47,8 +32,9 @@ to serve three of them. Each service ships with its FastAPI contract, test
 suite, Docker image and Kubernetes manifests; around them sits the shared
 MLOps surface: Terraform-provisioned GKE and EKS clusters, Kustomize overlays
 per environment, GitHub Actions CI/CD with quality gates, MLflow tracking,
-Prometheus + Grafana monitoring, and the incident writeups that prove the
-system was operated, not just deployed.
+Prometheus + Grafana monitoring, and the incident write-ups. Deployed to GKE
+and EKS in March 2026, then shut down to save costs. I designed the
+architecture and made the decisions; AI coding agents helped me build it faster.
 
 395+ automated tests and 18 architecture decision records hold it together —
 every non-trivial choice is documented with the alternatives it rejected.
@@ -125,13 +111,82 @@ portfolio lives in one place:
 [:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ML-MLOps-Portfolio){ .portfolio-button }
 </div>
 
-## Chapter 2 · The Production Template
+## WhatsApp customer-service agent
 
 <div class="portfolio-split" markdown="1">
 <div markdown="1">
 
-The second project is what the first one taught: an open-source starter
-system that encodes the portfolio's production lessons as reusable defaults.
+A WhatsApp customer-service agent for a small business, **in progress**. Built
+with PHP 8.3 and MySQL on the Meta Cloud API: webhooks with signature
+validation, idempotent message storage, LLM tool calling so the agent can look
+up real data, human handoff when the bot should not answer, and evals to
+measure the answers.
+
+I wrote the spec and the plan, and I write the core logic. AI agents generate
+the scaffolding, which I review personally. First release planned for January
+2027.
+
+</div>
+<div class="portfolio-callout" markdown="1">
+<strong>Why this project</strong>
+
+It has the same shape as real junior AI engineer work: an LLM inside a
+product, with tools, a human in the loop and a way to measure quality.
+</div>
+</div>
+
+<div class="portfolio-actions" markdown="1">
+[:fontawesome-brands-github: agent-whatsapp-php](https://github.com/DuqueOM/agent-whatsapp-php){ .portfolio-button .portfolio-button--primary }
+</div>
+
+## read_aloud
+
+<div class="portfolio-split" markdown="1">
+<div markdown="1">
+
+A Windows text-to-speech app **I use every day**. It reads selected text aloud
+with local neural voices (Piper, Qwen3-TTS), in Spanish and English in the same
+text, offline.
+
+I fine-tuned a Qwen3-TTS voice with LoRA on my own GPU (RTX 5070, 8 GB). I
+chose the training setup and the final epoch, and used WavLM to compare the
+voices. 15 ADRs record the decisions. Built with AI coding agents.
+
+</div>
+<div class="portfolio-callout" markdown="1">
+<strong>What to look at</strong>
+
+The ADRs on the LoRA training and the epoch choice, and how WavLM compares
+voices.
+</div>
+</div>
+
+<div class="portfolio-media portfolio-media--demo" markdown="1">
+<img src="https://raw.githubusercontent.com/DuqueOM/read_aloud/main/docs/media/demo.gif" alt="read_aloud demo: selected text is read aloud and each sentence is highlighted" loading="lazy">
+</div>
+
+<div class="portfolio-actions" markdown="1">
+[:fontawesome-brands-github: read_aloud](https://github.com/DuqueOM/read_aloud){ .portfolio-button .portfolio-button--primary }
+</div>
+
+## Architecture studies
+
+<div class="portfolio-callout" markdown="1">
+<strong>Designed and directed by me · not deployed to a cloud</strong>
+
+Larger systems I designed and directed. AI coding agents wrote most of the
+code. Not deployed to a cloud. They show how I plan a system: separate
+repositories with written contracts between them, scope limits written down as
+decisions, and claims tied to tests that can fail a build.
+</div>
+
+### ml-service-template
+
+<div class="portfolio-split" markdown="1">
+<div markdown="1">
+
+The first study is what the ML services taught: a starter template that
+encodes their production lessons as reusable defaults.
 Scaffold a new ML service and it arrives with the serving and training
 patterns, deployment overlays and operating guardrails already in place —
 the mistakes the portfolio paid for once, prevented by default.
@@ -149,35 +204,35 @@ coding reviewable and bounded — engineered, not hidden.
 Its **scope limit is itself an ADR**: classical ML only, single team, 1–5
 models, small-team calibration — "2–3 models → CronJob, not Airflow". LLM/GenAI,
 feature stores and data contracts are deferred there *by decision*, each with a
-revisit trigger. That limit is what Chapter 3 exists to respect.
+revisit trigger. That limit is why `ml-platform` is a separate study.
 
 </div>
 <div class="portfolio-callout" markdown="1">
 <strong>Why it matters</strong>
 
-The portfolio proves I can build and operate ML services. The template proves
-I can turn that experience into a system other teams can adopt.
+The ML services are where the lessons came from. The template is my design for
+turning those lessons into defaults for the next service.
 </div>
 </div>
 
 <div class="portfolio-actions" markdown="1">
-[Open the Production Template](../template.md){ .portfolio-button .portfolio-button--primary }
+[Open the template page](../template.md){ .portfolio-button .portfolio-button--primary }
 [:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ml-service-template){ .portfolio-button }
 </div>
 
-## Chapter 3 · ml-platform — the enterprise substrate
+### ml-platform
 
 <div class="portfolio-split" markdown="1">
 <div markdown="1">
 
-The third chapter exists **because Chapter 2's scope limits were correct**.
+This study exists **because the template's scope limits were correct**.
 A single-service scaffold cannot hold point-in-time feature retrieval,
 lakehouse table formats with schema evolution, orchestration with lineage,
 GitOps reconciliation, LLM systems with evaluation gates, or governance
 artifacts written for an auditor. All of that presumes a platform several
 projects share — so it got its own repository instead of widening the first.
 
-`ml-platform` is the second template, and the enterprise one: a multi-project
+`ml-platform` is the second template: a multi-project
 monorepo whose unit of reuse is a *library plus a running service*, not a
 scaffold you copy out. Projects span tabular ML, time series, deep learning,
 LLM/RAG and agents — diversity is the point, because a substrate that serves
@@ -194,12 +249,10 @@ and four drift detectors for four project kinds on one shared contract.
 
 </div>
 <div class="portfolio-callout" markdown="1">
-<strong>The signal</strong>
+<strong>What it shows</strong>
 
-Chapters 1–2 show I can build and systematize ML. Chapter 3 shows I know what
-a tool should <em>refuse</em> to absorb. Two templates exist because one of
-them said no — and the boundary is written down as a decision, not left to
-taste.
+Scope discipline: two templates exist because one of them said no — and the
+boundary is written down as a decision, not left to taste.
 </div>
 </div>
 
@@ -207,8 +260,8 @@ taste.
 <strong>What it does not claim</strong>
 
 Build state is generated from the filesystem, never hand-maintained:
-<strong>48 done · 2 partial · 5 absent</strong> of 55 tracked components, with
-<strong>37 proven at L1</strong> (the suite passes) and <strong>11 at L2</strong>
+<strong>51 done · 3 partial · 11 absent</strong> of 65 tracked components, with
+<strong>39 proven at L1</strong> (the suite passes) and <strong>12 at L2</strong>
 (the thing executes). <strong>L4 — a real rollout on GKE or EKS — is printed at
 zero</strong>, because none has happened. The taxonomy exists because six
 Kubernetes overlays once rendered green for weeks while their probes pointed at
@@ -217,18 +270,18 @@ the same claim.
 </div>
 
 <div class="portfolio-actions" markdown="1">
-[Open the ML Platform page](../ml-platform.md){ .portfolio-button .portfolio-button--primary }
+[Open the ml-platform page](../ml-platform.md){ .portfolio-button .portfolio-button--primary }
 [:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ml-platform){ .portfolio-button }
 [:fontawesome-solid-scale-balanced: Charter — what it refuses to be](https://github.com/DuqueOM/ml-platform/blob/main/docs/decisions/ADR-000-charter-and-scope.md){ .portfolio-button }
 [:fontawesome-solid-circle-check: Implementation status](https://github.com/DuqueOM/ml-platform/blob/main/docs/architecture/implementation-status.md){ .portfolio-button }
 </div>
 
-## Chapter 4 · agent-local — the LLM core
+### agent-local
 
 <div class="portfolio-split" markdown="1">
 <div markdown="1">
 
-The fourth chapter takes the template's governance philosophy — `AUTO / CONSULT
+This study takes the template's governance philosophy — `AUTO / CONSULT
 / STOP`, eval-gated autonomy, policy-as-data, no fine-tuning until a written
 gate fires — and **generalizes it to a new domain**: local, multi-tier LLM
 agents. The hard-won logic (grammar-constrained routing, an adaptive reasoning
@@ -238,7 +291,7 @@ loop, objective escalation, a deterministic policy gate) lives in a reusable
 The shipped example use-case is a WhatsApp store assistant — but the point is
 the platform, not the store.
 
-**This core is also the LLM plane inside Chapter 3.** `ml-platform` vendored
+**This core is also the LLM plane inside `ml-platform`.** `ml-platform` vendored
 it in with its full git history (ADR-002): `core/` became `libs/llm-core/`,
 the `tienda` use-case became `projects/store-assistant/`. The standalone
 repository stays live because the two are not the same value — the platform
@@ -248,16 +301,14 @@ itself is developed in `ml-platform`.
 
 </div>
 <div class="portfolio-callout" markdown="1">
-<strong>The signal</strong>
+<strong>What it shows</strong>
 
-The same governance generalizes to a domain it was never written for — and
-then travelled into a platform without being rewritten. That is the jump from
-"builds things" to "designs platforms".
+The same governance rules carried over to a different domain (LLM agents), and
+then moved into a platform without being rewritten.
 </div>
 </div>
 
-This is an **active build**. Rather than rewrite this page each week, the
-status below tracks against the published plan
+The status below tracks against the published plan
 ([`ACTION_PLAN_LLM_AGENT.md`](https://github.com/DuqueOM/ml-service-template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md))
 — ✅ done · 🔨 in progress · ⏳ gated/next.
 
@@ -308,7 +359,7 @@ status below tracks against the published plan
 </div>
 
 <div class="portfolio-actions" markdown="1">
-[:fontawesome-solid-diagram-project: Full agent-local page](../agent-local.md){ .portfolio-button .portfolio-button--primary }
+[:fontawesome-solid-diagram-project: The agent-local page](../agent-local.md){ .portfolio-button .portfolio-button--primary }
 [:fontawesome-brands-github: Repository](https://github.com/DuqueOM/agent-local){ .portfolio-button }
 [:fontawesome-solid-diagram-project: The shared plan](https://github.com/DuqueOM/ml-service-template/blob/main/docs/audit/ACTION_PLAN_LLM_AGENT.md){ .portfolio-button }
 [:fontawesome-solid-scale-balanced: Why a platform (ADR-001)](https://github.com/DuqueOM/agent-local/blob/main/docs/decisions/ADR-001-reusable-platform-not-template.md){ .portfolio-button }

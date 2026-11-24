@@ -1,10 +1,10 @@
-# ML Platform
+# ml-platform
 
 <div class="portfolio-page portfolio-template" markdown="1">
 
 <div class="portfolio-hero" markdown="1">
 <canvas data-neural-scene="cube" aria-hidden="true"></canvas>
-<span class="portfolio-eyebrow">Enterprise multi-project ML platform · monorepo</span>
+<span class="portfolio-eyebrow">Architecture study · not deployed to a cloud</span>
 
 # The second template — where classical ML stops being the whole problem
 
@@ -12,7 +12,9 @@
 ML platform monorepo: one shared substrate — data, features, serving,
 observability, governance, agentic tooling — reused across projects that
 differ in **kind**, not merely in dataset. Tabular ML, time series, deep
-learning, LLM/RAG and agents, on GCP and AWS.
+learning, LLM/RAG and agents, on GCP and AWS. An architecture study: I designed
+and directed it; AI coding agents wrote most of the code. Not deployed to a
+cloud.
 
 It is the **second template in this lineage, not a successor to the first**.
 [`ml-service-template`](template.md) governs *classical ML* — scikit-learn,
@@ -45,17 +47,17 @@ auditor rather than a reviewer. It **consumes** the first template through
 </div>
 <div class="portfolio-stat">
 <small>Build state</small>
-<strong>48 of 55 components</strong>
-<span>48 done · 2 partial · 5 absent — derived from the filesystem, not hand-maintained.</span>
+<strong>51 of 65 components</strong>
+<span>51 done · 3 partial · 11 absent — derived from the filesystem, not hand-maintained.</span>
 </div>
 <div class="portfolio-stat">
 <small>Evidence depth</small>
-<strong>37 L1 · 11 L2 · 0 L4</strong>
+<strong>39 L1 · 12 L2 · 0 L4</strong>
 <span>No cloud rollout claimed, because none has happened. The top row is printed at zero on purpose.</span>
 </div>
 <div class="portfolio-stat">
 <small>Governance</small>
-<strong>11 ADRs · claim → gate</strong>
+<strong>12 ADRs · claim → gate</strong>
 <span>Every published quality claim maps to a command that can fail a build.</span>
 </div>
 <div class="portfolio-stat">
@@ -138,9 +140,9 @@ status table a human maintains will drift. Each component also carries the
 
 | Layer | What it proves | Count |
 | :-- | --- | :-: |
-| **L1** | Contract — the test suite passes | 37 |
-| **L2** | Component — the generator renders, the gate runs, the build completes | 11 |
-| **L3** | Cluster — it starts and answers in `kind` | 4 available, not run in CI |
+| **L1** | Contract — the test suite passes | 39 |
+| **L2** | Component — the generator renders, the gate runs, the build completes | 12 |
+| **L3** | Cluster — it starts and answers in `kind` | 5 available, not run in CI |
 | **L4** | Cloud — a real rollout on GKE or EKS | **0** |
 
 L4 is printed at zero on purpose. That taxonomy exists because of a measured

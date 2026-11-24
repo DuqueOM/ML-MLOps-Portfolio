@@ -7,10 +7,10 @@
 <div class="portfolio-hero-copy" markdown="1">
 <span class="portfolio-eyebrow">The person behind the systems</span>
 
-# From operations to production ML
+# From running businesses to AI engineering
 
-I'm **Duque Ortega Mutis**, based in Mexico City, and I am making my first
-formal career move into ML/MLOps.
+I'm **Duque Ortega Mutis**, a junior AI engineer based in Mexico City. I build
+LLM apps and agents and ML services, and I am looking for my first job in tech.
 
 My previous career was not technical by title, but it was technical in practice:
 I spent 14 years coordinating people, budgets, vendors, customer pressure,
@@ -18,8 +18,8 @@ deadlines and process failures. That work taught me to value systems that are
 clear, measurable and usable by the next person responsible for them.
 
 That is why this portfolio is built around production habits rather than only
-model scores. I am seeking my first formal ML/MLOps role, but I am not new to
-ownership, trade-offs, documentation or operating under pressure.
+model scores. This will be my first job in tech, but I am not new to ownership,
+trade-offs, documentation or working under pressure.
 
 </div>
 <figure class="portfolio-profile-frame portfolio-profile-frame--compact">
@@ -29,15 +29,15 @@ ownership, trade-offs, documentation or operating under pressure.
 
 </div>
 <div class="portfolio-callout" markdown="1">
-<span class="portfolio-eyebrow">How to read my seniority</span>
+<span class="portfolio-eyebrow">How to read my level</span>
 
-First formal ML/MLOps role — experienced in ownership, pressure,
+Junior AI engineer, first job in tech — experienced in ownership, pressure,
 cost-awareness and making systems easier for other people to operate.
 </div>
 
 ## The Route
 
-Fourteen years of context, two years of code.
+Fourteen years running businesses, then AI and ML engineering.
 
 <div class="portfolio-split" markdown="1">
 <div markdown="1">
@@ -47,41 +47,34 @@ Fourteen years of context, two years of code.
 <span class="pf-tl-dot pf-tl-dot--green"></span>
 <span class="pf-tl-year">2026</span>
 <div>
-<h3>Two templates, governance, certification</h3>
-<p>TripleTen DS certificate. <code>ml-service-template</code> for classical
-ML, then <code>ml-platform</code> for the substrate that spans deep learning,
-LLM and agents too — lakehouse, feature store, orchestration, GitOps, LLMOps — both
-with governed AI-assisted development. Preparing GCP Associate Cloud Engineer
-and AWS ML Engineer Associate.</p>
+<h3>Deployed, then new projects</h3>
+<p>The three ML services deployed to GKE and EKS in March 2026, then shut down
+to save costs. TripleTen Data Science finished in March.
+<code>read_aloud</code>, a text-to-speech app with a voice I fine-tuned with
+LoRA, and a WhatsApp customer-service agent, in progress. Architecture studies:
+<code>ml-service-template</code>, <code>ml-platform</code> and
+<code>agent-local</code>.</p>
 </div>
 </li>
 <li>
 <span class="pf-tl-dot pf-tl-dot--cyan"></span>
 <span class="pf-tl-year">2025</span>
 <div>
-<h3>Three services, three incidents</h3>
-<p>BankChurn, NLPInsight and ChicagoTaxi built, tested (395+) and deployed
-to GKE + EKS. The serving failure, the SHAP zeros and the impossible HPA
-scale-down — measured, root-caused, documented.</p>
-</div>
-</li>
-<li>
-<span class="pf-tl-dot"></span>
-<span class="pf-tl-year">2024</span>
-<div>
-<h3>The deliberate pivot</h3>
-<p>Full-time retraining into data science and machine learning —
-TripleTen Data Science program.</p>
+<h3>The pivot: data science and ML</h3>
+<p>TripleTen Data Science program from June 2025. BankChurn, NLPInsight and
+ChicagoTaxi built and tested (395+ tests). The serving failure, the SHAP zeros
+and the HPA that could not scale down: I found them, measured them and fixed
+them.</p>
 </div>
 </li>
 <li>
 <span class="pf-tl-dot pf-tl-dot--amber"></span>
 <span class="pf-tl-year">2010</span>
 <div>
-<h3>Operations leadership</h3>
-<p>Fourteen years coordinating teams of 5–10 (peak 20), budgets up to
-$20K USD, vendors, customer pressure and process failures. The origin of
-the cost discipline and the documentation habit.</p>
+<h3>Founder &amp; operator, 2010–2024</h3>
+<p>Five businesses of my own in Colombia over fourteen years: teams of up to
+20 people, budgets up to USD 20K, vendors, customers and process failures. The
+origin of the cost discipline and the documentation habit.</p>
 </div>
 </li>
 </ol>
@@ -144,8 +137,9 @@ evidence clear enough that another engineer can review it.
 
 ## The Toolbox
 
-Every tool below was used in at least one of the three production services —
-not listed from a tutorial, but from working code with tests, incidents and ADRs.
+Every tool below was used in at least one of the three ML services, in working
+code with tests, incidents and ADRs. The LLM side (tool calling, evals and LoRA
+fine-tuning) is in the WhatsApp agent and in `read_aloud`.
 
 <div class="pf-toolbox" markdown="1">
 
@@ -222,31 +216,31 @@ not listed from a tutorial, but from working code with tests, incidents and ADRs
 
 </div>
 
-## Education And Certifications
+## Education
 
 <div class="portfolio-card-grid portfolio-card-grid--compact" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Formal ML training</small>
-<h3>Data Science Professional Program — TripleTen</h3>
-<p>Completed in 2026. The formal training layer behind the portfolio:
-applied machine learning, data workflows, evaluation and project delivery.</p>
+<h3>Data Science Program — TripleTen</h3>
+<p>June 2025 – March 2026. Applied machine learning, data workflows,
+evaluation and project delivery.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>In progress</small>
-<h3>GCP ACE · AWS ML Engineer Associate</h3>
-<p>Preparing both cloud certifications — one per cloud, matching the
-multi-cloud evidence already in the portfolio (GKE + EKS, Terraform,
-Workload Identity / IRSA).</p>
+<small>Next step</small>
+<h3>MS in Artificial Intelligence — CU Boulder</h3>
+<p>University of Colorado Boulder, online on Coursera. Planned for 2027.</p>
 </div>
 </div>
 
-## AI Transparency
+## How I Use AI
 
-This portfolio was written with AI-assisted tooling for drafting and documentation.
-Every architectural decision, trade-off, and debugging conclusion is my own — the
-reasoning trail is in the ADRs and incident writeups, not in the tool that helped
-type them.
+I design the system, write the spec and the decisions (ADRs), and review the
+work. I use AI coding agents (Claude Code) for speed, inside rules I set: tests
+first, small reviewed changes, CI gates. The reasoning trail is in the ADRs and
+the incident write-ups. The architecture studies were built mostly by AI coding
+agents. In the WhatsApp agent I write the core logic; the agents generate the
+scaffolding, which I review personally.
 
 ## Links
 

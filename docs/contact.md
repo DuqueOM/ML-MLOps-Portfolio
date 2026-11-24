@@ -8,8 +8,8 @@
 
 # Let's talk.
 
-If you are hiring for an ML, MLOps or production-leaning data role —
-or you just want to discuss one of the systems on this site — the fastest
+If you are hiring a junior AI engineer, ML engineer or MLOps engineer —
+or you just want to discuss one of the projects on this site — the fastest
 way to reach me is email. I reply within 24 hours.
 
 </div>
@@ -18,7 +18,7 @@ way to reach me is email. I reply within 24 hours.
 <form class="pf-contact-form" data-contact-composer>
   <input type="text" name="name" placeholder="Your name" autocomplete="name">
   <input type="email" name="from" placeholder="Your email" autocomplete="email">
-  <input type="text" name="subject" placeholder="Subject — e.g. MLOps role at …">
+  <input type="text" name="subject" placeholder="Subject — e.g. Junior AI Engineer role at …">
   <textarea name="message" placeholder="Your message" required></textarea>
   <div class="portfolio-actions" style="margin:0;">
     <button type="submit" class="portfolio-button portfolio-button--primary">Compose email draft</button>
@@ -59,19 +59,19 @@ way to reach me is email. I reply within 24 hours.
 <div class="portfolio-availability" markdown="1">
 <div class="portfolio-availability-row">
 <span class="portfolio-availability-label">Available to start</span>
-<strong>In 2 weeks</strong>
+<strong>In 1–2 weeks</strong>
 </div>
 <div class="portfolio-availability-row">
 <span class="portfolio-availability-label">Work modes</span>
-<strong>CDMX hybrid · MX remote · LATAM remote for USA/EU companies</strong>
+<strong>Remote · On-site or hybrid in Mexico City</strong>
 </div>
 <div class="portfolio-availability-row">
 <span class="portfolio-availability-label">Languages</span>
-<strong>Spanish (native) · English (professional)</strong>
+<strong>Spanish (native) · English (B1, intermediate)</strong>
 </div>
 <div class="portfolio-availability-row">
 <span class="portfolio-availability-label">Time zone</span>
-<strong>America/Mexico_City (CST) — comfortable with US/EU overlap</strong>
+<strong>America/Mexico_City (CST, UTC−6)</strong>
 </div>
 </div>
 

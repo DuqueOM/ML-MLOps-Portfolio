@@ -1,5 +1,5 @@
-site_name: Duque Ortega Mutis | MLOps & Production ML Portfolio
-site_description: Portfolio for early-career MLOps, Production ML, and Applied AI roles, built around operations experience and production-minded project evidence.
+site_name: Duque Ortega Mutis | Junior AI Engineer Portfolio
+site_description: Junior AI Engineer (LLM apps and agents, ML in production) in Mexico City. Three ML services deployed to GKE and EKS, a WhatsApp customer-service agent in progress and a text-to-speech app with a LoRA fine-tuned voice.
 site_author: Duque Ortega Mutis
 site_url: https://duqueom.github.io/ML-MLOps-Portfolio/
 
@@ -91,9 +91,9 @@ nav:
       - BankChurn Predictor: projects/bankchurn.md
       - NLPInsight Analyzer: projects/nlpinsight.md
       - ChicagoTaxi Pipeline: projects/chicagotaxi.md
-      - Template · classical ML: template.md
-      - Platform · ML · DL · LLM · agents: ml-platform.md
-      - agent-local (LLM core): agent-local.md
+      - "Architecture study: ml-service-template": template.md
+      - "Architecture study: ml-platform": ml-platform.md
+      - "Architecture study: agent-local": agent-local.md
   - Recruiter-Brief: recruiter-brief.md
   - About: about.md
   - Contact: contact.md

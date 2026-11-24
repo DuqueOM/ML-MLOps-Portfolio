@@ -9,6 +9,10 @@ small; `ml-platform` is the substrate for problem shapes it defers by decision:
 deep learning, LLM/RAG and agents alongside tabular. The boundary between them is a written decision, not an accident of
 history. [Jump to the side-by-side comparison](#the-two-templates-side-by-side).
 
+**Status:** `ml-service-template`, `ml-platform` and `agent-local` are
+architecture studies. I designed and directed them; AI coding agents wrote most
+of the code. Not deployed to a cloud.
+
 ## ML Service Template — classical ML, production defaults
 
 [**github.com/DuqueOM/ml-service-template** →](https://github.com/DuqueOM/ml-service-template)
@@ -145,7 +149,7 @@ home, and got one — see [`ml-platform`](#ml-platform-the-substrate-for-every-p
 [**github.com/DuqueOM/ml-platform** →](https://github.com/DuqueOM/ml-platform) ·
 [**Full dedicated page →**](ml-platform.md)
 
-The second template, and the enterprise one. Where `ml-service-template`
+The second template. Where `ml-service-template`
 answers *"I need governed **classical ML** in production"*, `ml-platform`
 answers *"I need a substrate that spans problem shapes the first one defers"* —
 tabular, time series, deep learning, LLM/RAG and agents, on GCP and AWS. It
@@ -194,12 +198,12 @@ manifests or supply chain, the template wins (ADR-003).
   whether something is operated or merely present.
 - **A status table derived from the filesystem** —
   `scripts/check_implementation_status.py` generates it, because a status
-  table a human maintains will drift. Currently **48 done · 2 partial ·
-  5 absent** of 55 tracked components. A component marked ⬜ is *absent*, not
+  table a human maintains will drift. Currently **51 done · 3 partial ·
+  11 absent** of 65 tracked components. A component marked ⬜ is *absent*, not
   "planned".
 - **Evidence layers, with the top row printed at zero** — every component
-  carries the layer its evidence reaches: **37 at L1** (the suite passes),
-  **11 at L2** (the thing executes), **4 with L3 evidence available but not
+  carries the layer its evidence reaches: **39 at L1** (the suite passes),
+  **12 at L2** (the thing executes), **5 with L3 evidence available but not
   run in CI**, and **0 at L4** — no cloud rollout, because none has happened.
   The taxonomy exists because six Kubernetes overlays once rendered green for
   weeks while their probes pointed at routes the service does not serve.
@@ -212,7 +216,7 @@ manifests or supply chain, the template wins (ADR-003).
   recall@5), failed to clear the 0.05 margin, and **no index ships**. The
   number, the diagnosis and what would reverse the decision are published
   anyway.
-- **11 ADRs, and a rule about documents** — ADR-005 rule H: *a document
+- **12 ADRs, and a rule about documents** — ADR-005 rule H: *a document
   asserting something false is itself a defect, even when the code is
   correct.* The rule has a specific origin — an ADR in the sibling agent
   platform recorded a hardware budget as "measured" from a single reading of a
@@ -236,7 +240,7 @@ manifests or supply chain, the template wins (ADR-003).
 | **LLM / GenAI** | Out of scope by decision | LiteLLM, prompt registry, semantic cache, guardrails, promptfoo gates |
 | **Governance model** | 38 anti-patterns (D-01→D-38) + 8 audit-standard (Q-01→Q-08) | Technology triage: core / demonstrated / studied / **rejected**, each with its reason |
 | **Agentic surface** | 19 rules · 27 skills · 20 workflows | 23 rules · 29 skills · 22 workflows |
-| **ADRs** | 52 | 10 |
+| **ADRs** | 52 | 12 |
 | **Entry cost** | Minutes — `copier copy` a service | Hours — a monorepo with a six-stage progression |
 | **Read it in** | An afternoon | Not in an afternoon, and that is the trade |
 

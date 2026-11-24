@@ -3,8 +3,8 @@
 {% block extrahead %}
   {{ super() }}
   <link rel="stylesheet" href="{{ 'assets/stylesheets/home.css' | url }}?v=20260703h">
-  <meta property="og:title" content="Duque Ortega Mutis — Building ML systems that survive production">
-  <meta property="og:description" content="Three ML services on GKE + EKS, three production incidents root-caused, and two open-source templates: one for classical ML, one spanning deep learning, LLM and agents. 14 years of operations leadership behind the engineering.">
+  <meta property="og:title" content="Duque Ortega Mutis — Junior AI Engineer · LLM apps and agents · ML in production">
+  <meta property="og:description" content="Three ML services deployed to GKE and EKS, three production problems found and fixed, a WhatsApp customer-service agent in progress and a text-to-speech app with a voice fine-tuned with LoRA. 14 years running my own businesses before tech.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://duqueom.github.io/ML-MLOps-Portfolio/">
   <meta property="og:image" content="https://duqueom.github.io/ML-MLOps-Portfolio/media/profile/duque-ortega-mutis.webp">
@@ -20,13 +20,14 @@
     <canvas class="mlh-neural" data-neural-scene="brain" aria-hidden="true"></canvas>
     <div class="mlh-wrap mlh-hero-grid">
       <div class="mlh-hero-copy">
-        <p class="mlh-eyebrow mlh-stagger">Duque Ortega Mutis · Mexico City · open to ML / MLOps roles</p>
-        <h1 class="mlh-display mlh-stagger">Building ML systems<br>that <em>survive</em> production.</h1>
+        <p class="mlh-eyebrow mlh-stagger">Duque Ortega Mutis · Mexico City · open to junior AI / ML engineer roles</p>
+        <h1 class="mlh-display mlh-stagger">Junior AI Engineer.<br>LLM apps, agents and <em>ML in production</em>.</h1>
         <p class="mlh-sub mlh-stagger">
-          Three services deployed on GKE and EKS. Three production incidents measured,
-          root-caused and fixed. Two open-source templates: one that packaged the
-          lessons for a single service, one for the platform above that boundary.
-          Built on fourteen years of running operations before the first model.
+          I design AI and ML systems, make the decisions and review the work; I use
+          AI coding agents (Claude Code) for speed. Three ML services deployed to GKE
+          and EKS, three production problems I found and fixed, a WhatsApp
+          customer-service agent in progress, and a text-to-speech app I use every day.
+          Before tech, fourteen years running my own businesses.
         </p>
         <div class="mlh-cta mlh-stagger">
           <a class="mlh-btn mlh-btn--primary" href="{{ 'projects/' | url }}" data-magnetic>Projects</a>
@@ -52,8 +53,8 @@
         <h2 class="mlh-sec-title">Portfolio</h2>
         <p class="mlh-sec-sub">one monorepo · three production services</p>
         <p class="mlh-section-note">Fourteen years of operations flow into the build:
-        churn, financial NLP and demand forecasting — tested, deployed and operated
-        on GKE and EKS.</p>
+        churn, financial NLP and demand forecasting — tested and deployed to GKE and
+        EKS in March 2026, then shut down to save costs.</p>
       </div>
     </div>
 
@@ -173,8 +174,8 @@
       <div class="mlh-section-head" data-reveal>
         <p class="mlh-kicker">The work</p>
         <h2>Projects, problems, solutions</h2>
-        <p class="mlh-section-note">Each service, the production problem it hit, and the
-        fix — measured, root-caused and documented. <span class="mlh-hscroll-hint">
+        <p class="mlh-section-note">Each service, the production problem I found in it,
+        and how I fixed it — measured, root-caused and documented. <span class="mlh-hscroll-hint">
         <svg class="mlh-hscroll-arrow" viewBox="0 0 24 24" aria-hidden="true" width="14" height="14">
           <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 12h15m0 0-5-5m5 5-5 5"/>
         </svg>
@@ -201,11 +202,11 @@
           <p class="mlh-case-project">BankChurn Predictor</p>
           <h3><a href="{{ 'projects/bankchurn-debugging/' | url }}">81% of requests failing. The model was fine.</a></h3>
           <p>
-            A load test exposed an 81% error rate on the BankChurn API. Root cause:
-            <code>uvicorn --workers</code> inside Kubernetes — multiple workers competing
-            for one shared CPU budget produce thrashing, not parallelism. Redesigned the
-            inference path with asyncio plus a ThreadPoolExecutor (GIL analysis documented),
-            errors dropped to zero and the CPU request was halved.
+            A load test showed an 81% error rate on the BankChurn API. I found the root
+            cause: <code>uvicorn --workers</code> inside Kubernetes — several workers
+            competing for one shared CPU budget produce thrashing, not parallelism. I
+            redesigned the inference path with asyncio plus a ThreadPoolExecutor (GIL
+            analysis documented): errors dropped to zero and the CPU request was halved.
           </p>
           <svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="Serving architecture: client to FastAPI single worker, inference offloaded to thread pool, model and SHAP">
             <g class="mlh-d-node"><rect x="2" y="32" width="86" height="32" rx="3"/><text x="45" y="52">client</text></g>
@@ -236,7 +237,7 @@
         </div>
         <div class="mlh-case-body">
           <p class="mlh-case-project">NLPInsight Analyzer</p>
-          <h3><a href="{{ 'projects/nlpinsight/' | url }}">The heavier model we chose not to ship</a></h3>
+          <h3><a href="{{ 'projects/nlpinsight/' | url }}">The heavier model I chose not to ship</a></h3>
           <p>
             Financial sentiment classification where the production question mattered more
             than the leaderboard: a transformer would score higher and cost more to operate,
@@ -273,7 +274,7 @@
           <h3><a href="{{ 'projects/chicagotaxi/' | url }}">A score too good to be true — until it was</a></h3>
           <p>
             Demand forecasting over 6.3M Chicago taxi trips. The first model looked perfect
-            because a feature was leaking the future into training. Removed the leak, rebuilt
+            because a feature was leaking the future into training. I removed the leak, rebuilt
             validation as strictly temporal, and the R² of 0.96 that survived honest
             re-evaluation is the one published.
           </p>
@@ -304,161 +305,54 @@
     </div>
   </section>
 
-  <!-- ============ TEMPLATE ============ -->
-  <section class="mlh-section" id="template">
+  <!-- ============ MORE PROJECTS ============ -->
+  <section class="mlh-section" id="more-projects">
     <div class="mlh-wrap">
       <div class="mlh-section-head mlh-section-head--major" data-reveal>
-        <h2 class="mlh-sec-title">Template · classical ML</h2>
-        <p class="mlh-sec-sub mlh-sec-sub--amber">every lesson, packaged as defaults</p>
-        <p class="mlh-section-note">The ML Service Template turns the portfolio's
-        production lessons into a reusable open-source system for <strong>classical ML</strong>
-        — scikit-learn, XGBoost, LightGBM, single team, 1–5 models. Its scope limit is an ADR, not an omission —
-        small enough to read in an afternoon, and that is what makes it recommendable.</p>
+        <h2 class="mlh-sec-title">More projects</h2>
+        <p class="mlh-sec-sub">an LLM agent in progress · an app I use every day</p>
+        <p class="mlh-section-note"><strong>agent-whatsapp-php</strong> is a WhatsApp
+        customer-service agent, in progress: I wrote the spec and the plan and I write
+        the core logic; AI agents generate the scaffolding, which I review personally.
+        First release planned for January 2027. <strong>read_aloud</strong> is a
+        Windows text-to-speech app I use every day, with a voice I fine-tuned myself.</p>
       </div>
 
-      <figure class="mlh-template-diagram" data-reveal role="img"
-              aria-label="Template modules: serve, train, deploy, monitor and govern, connected as one system">
-        <svg viewBox="0 0 1200 150" xmlns="http://www.w3.org/2000/svg" focusable="false">
-          <g class="mlh-d-node"><rect x="30" y="40" width="190" height="44" rx="4"/><text x="125" y="67">serve</text></g>
-          <path d="M220 62 H266" class="mlh-d-edge"/>
-          <g class="mlh-d-node"><rect x="266" y="40" width="190" height="44" rx="4"/><text x="361" y="67">train</text></g>
-          <path d="M456 62 H502" class="mlh-d-edge"/>
-          <g class="mlh-d-node"><rect x="502" y="40" width="190" height="44" rx="4"/><text x="597" y="67">deploy</text></g>
-          <path d="M692 62 H738" class="mlh-d-edge"/>
-          <g class="mlh-d-node"><rect x="738" y="40" width="190" height="44" rx="4"/><text x="833" y="67">monitor</text></g>
-          <path d="M928 62 H974" class="mlh-d-edge"/>
-          <g class="mlh-d-node mlh-d-amber"><rect x="974" y="40" width="196" height="44" rx="4"/><text x="1072" y="67">govern</text></g>
-          <text x="125" y="112" class="mlh-d-note">FastAPI scaffolds</text>
-          <text x="361" y="112" class="mlh-d-note">quality gates</text>
-          <text x="597" y="112" class="mlh-d-note">GKE + EKS overlays</text>
-          <text x="833" y="112" class="mlh-d-note">closed-loop drift</text>
-          <text x="1072" y="112" class="mlh-d-note mlh-d-warn">rules · skills · audit trail</text>
-        </svg>
-      </figure>
-
       <ul class="mlh-template-points" data-reveal>
-        <li><b>38 anti-patterns</b><span>D-01..D-38, each with its corrective action</span></li>
-        <li><b>52 ADRs</b><span>decisions with rejected alternatives</span></li>
-        <li><b>SLSA L2 supply chain</b><span>signed images + SBOM attestation</span></li>
-        <li><b>AUTO · CONSULT · STOP</b><span>agent behavior protocol</span></li>
-        <li><b>6 env×cloud overlays</b><span>dev / staging / prod on GCP + AWS</span></li>
-        <li><b>Governed AI-assisted dev</b><span>reviewable, bounded agentic coding</span></li>
+        <li><b>WhatsApp agent</b><span>PHP 8.3 · MySQL · Meta Cloud API webhooks · LLM tool calling · human handoff · evals</span></li>
+        <li><b>read_aloud</b><span>local neural voices (Piper, Qwen3-TTS) · Spanish and English in the same text · offline</span></li>
+        <li><b>LoRA voice fine-tuning</b><span>my own GPU (RTX 5070, 8 GB) · I chose the training setup and the final epoch · WavLM to compare voices · 15 ADRs</span></li>
       </ul>
 
       <div class="mlh-cta" data-reveal>
-        <a class="mlh-btn mlh-btn--primary" href="{{ 'template/' | url }}" data-magnetic>Production Template</a>
-        <a class="mlh-btn" href="https://github.com/DuqueOM/ml-service-template" data-magnetic>
-          <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" style="vertical-align:-3px;margin-right:0.35rem;"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.17c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.77 1.05.77 2.13v3.16c0 .3.21.67.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
-          Repository
-        </a>
+        <a class="mlh-btn mlh-btn--primary" href="https://github.com/DuqueOM/agent-whatsapp-php" data-magnetic>WhatsApp agent</a>
+        <a class="mlh-btn" href="https://github.com/DuqueOM/read_aloud" data-magnetic>read_aloud</a>
       </div>
     </div>
   </section>
 
-  <!-- ============ ML PLATFORM (chapter 3) ============ -->
-  <section class="mlh-section" id="ml-platform">
+  <!-- ============ ARCHITECTURE STUDIES ============ -->
+  <section class="mlh-section" id="architecture-studies">
     <div class="mlh-wrap">
       <div class="mlh-section-head mlh-section-head--major" data-reveal>
-        <h2 class="mlh-sec-title">Platform · ML · DL · LLM · agents</h2>
-        <p class="mlh-sec-sub">chapter three &middot; because the template said no</p>
-        <p class="mlh-section-note"><strong>ml-platform</strong> is the second
-        template, and the enterprise one. A single-service scaffold cannot hold
-        point-in-time feature retrieval, lakehouse tables, orchestration with lineage,
-        GitOps reconciliation or LLM evaluation gates &mdash; so that work got its own
-        repository instead of widening the first. It <em>consumes</em> the template
-        through <code>copier</code>; it never reimplements it.</p>
+        <h2 class="mlh-sec-title">Architecture studies</h2>
+        <p class="mlh-sec-sub mlh-sec-sub--amber">designed and directed by me · not deployed to a cloud</p>
+        <p class="mlh-section-note">Larger systems I designed and directed. AI coding
+        agents wrote most of the code. Not deployed to a cloud. They show how I plan a
+        system: scope limits, decisions with rejected alternatives (ADRs), and tests
+        that can fail a build.</p>
       </div>
 
-      <figure class="mlh-template-diagram" data-reveal role="img"
-              aria-label="Platform layers: lakehouse, features, orchestration, GitOps, observability and governance, connected as one substrate">
-        <svg viewBox="0 0 1200 150" xmlns="http://www.w3.org/2000/svg" focusable="false">
-          <g class="mlh-d-node"><rect x="16" y="40" width="176" height="44" rx="4"/><text x="104" y="67">lakehouse</text></g>
-          <path d="M192 62 H222" class="mlh-d-edge"/>
-          <g class="mlh-d-node"><rect x="222" y="40" width="176" height="44" rx="4"/><text x="310" y="67">features</text></g>
-          <path d="M398 62 H428" class="mlh-d-edge"/>
-          <g class="mlh-d-node"><rect x="428" y="40" width="176" height="44" rx="4"/><text x="516" y="67">orchestrate</text></g>
-          <path d="M604 62 H634" class="mlh-d-edge"/>
-          <g class="mlh-d-node"><rect x="634" y="40" width="176" height="44" rx="4"/><text x="722" y="67">GitOps</text></g>
-          <path d="M810 62 H840" class="mlh-d-edge"/>
-          <g class="mlh-d-node"><rect x="840" y="40" width="176" height="44" rx="4"/><text x="928" y="67">observe</text></g>
-          <path d="M1016 62 H1046" class="mlh-d-edge"/>
-          <g class="mlh-d-node mlh-d-amber"><rect x="1046" y="40" width="138" height="44" rx="4"/><text x="1115" y="67">govern</text></g>
-          <text x="104" y="112" class="mlh-d-note">Iceberg &middot; BigLake / S3 Tables</text>
-          <text x="310" y="112" class="mlh-d-note">point-in-time joins</text>
-          <text x="516" y="112" class="mlh-d-note">Airflow 3 &middot; KFP v2</text>
-          <text x="722" y="112" class="mlh-d-note">ArgoCD &middot; Rollouts</text>
-          <text x="928" y="112" class="mlh-d-note">OTel &rarr; Grafana LGTM</text>
-          <text x="1115" y="112" class="mlh-d-note mlh-d-warn">claim &rarr; gate</text>
-        </svg>
-      </figure>
-
       <ul class="mlh-template-points" data-reveal>
-        <li><b>4 project kinds</b><span>tabular &middot; deep learning &middot; LLM/RAG &middot; agents</span></li>
-        <li><b>4 drift detectors</b><span>one shared contract, per kind (ADR-007)</span></li>
-        <li><b>LLMOps plane</b><span>prompt registry, semantic cache, guardrails, eval gates</span></li>
-        <li><b>Tooling triage</b><span>core / demonstrated / studied / <em>rejected</em>, with reasons</span></li>
-        <li><b>48 of 55 components</b><span>status derived from the filesystem, not by hand</span></li>
-        <li><b>L4 printed at zero</b><span>no cloud rollout claimed, because none has happened</span></li>
+        <li><b>ml-service-template</b><span>a Copier template for one classical ML service on Kubernetes (GKE/EKS) · 38 anti-patterns · 52 ADRs</span></li>
+        <li><b>ml-platform</b><span>a multi-project ML platform template: tabular, deep learning, LLM/RAG and agents · 51 of 65 components done</span></li>
+        <li><b>agent-local</b><span>a local LLM agent core with grammar-constrained routing and a deterministic policy gate</span></li>
       </ul>
 
       <div class="mlh-cta" data-reveal>
-        <a class="mlh-btn mlh-btn--primary" href="{{ 'ml-platform/' | url }}" data-magnetic>The ML Platform</a>
-        <a class="mlh-btn" href="https://github.com/DuqueOM/ml-platform" data-magnetic>
-          <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" style="vertical-align:-3px;margin-right:0.35rem;"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.17c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.77 1.05.77 2.13v3.16c0 .3.21.67.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
-          Repository
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ AGENT CORE (chapter 4) ============ -->
-  <section class="mlh-section" id="agent-platform">
-    <div class="mlh-wrap">
-      <div class="mlh-section-head mlh-section-head--major" data-reveal>
-        <h2 class="mlh-sec-title">The agent core</h2>
-        <p class="mlh-sec-sub">chapter four &middot; the philosophy generalizes</p>
-        <p class="mlh-section-note"><strong>agent-local</strong> takes the template's
-        governance &mdash; eval-gated autonomy, policy-as-data, no fine-tuning until a
-        written gate fires &mdash; and proves it generalizes to a domain it was never
-        written for: <strong>local, multi-tier LLM agents</strong>. It is also the LLM
-        plane inside <code>ml-platform</code>, vendored in with full git history, and
-        stays standalone as the business-agnostic upstream. <em>Active build.</em></p>
-      </div>
-
-      <figure class="mlh-template-diagram" data-reveal role="img"
-              aria-label="agent-local loop: route, plan, tools, reflect, critic, policy gate, finalize">
-        <svg viewBox="0 0 1200 150" xmlns="http://www.w3.org/2000/svg" focusable="false">
-          <g class="mlh-d-node"><rect x="20" y="40" width="150" height="44" rx="4"/><text x="95" y="67">route</text></g>
-          <path d="M170 62 H206" class="mlh-d-edge"/>
-          <g class="mlh-d-node"><rect x="206" y="40" width="150" height="44" rx="4"/><text x="281" y="67">plan</text></g>
-          <path d="M356 62 H392" class="mlh-d-edge"/>
-          <g class="mlh-d-node"><rect x="392" y="40" width="150" height="44" rx="4"/><text x="467" y="67">tools</text></g>
-          <path d="M542 62 H578" class="mlh-d-edge"/>
-          <g class="mlh-d-node"><rect x="578" y="40" width="150" height="44" rx="4"/><text x="653" y="67">critic</text></g>
-          <path d="M728 62 H764" class="mlh-d-edge"/>
-          <g class="mlh-d-node mlh-d-amber"><rect x="764" y="40" width="190" height="44" rx="4"/><text x="859" y="67">policy gate</text></g>
-          <path d="M954 62 H990" class="mlh-d-edge"/>
-          <g class="mlh-d-node"><rect x="990" y="40" width="180" height="44" rx="4"/><text x="1080" y="67">finalize</text></g>
-          <text x="467" y="112" class="mlh-d-note">app executes, never the model</text>
-          <text x="859" y="112" class="mlh-d-note mlh-d-warn">deterministic · no answer bypasses it</text>
-        </svg>
-      </figure>
-
-      <ul class="mlh-template-points" data-reveal>
-        <li><b>Reusable core</b><span>a new domain is a thin use-case, never a fork</span></li>
-        <li><b>Grammar-constrained routing</b><span>tier-0 router, 20/20 gate</span></li>
-        <li><b>Policy-as-data</b><span>versioned YAML + decision_id</span></li>
-        <li><b>Local-first</b><span>llama.cpp tiers; cloud only as budgeted overflow</span></li>
-        <li><b>Also inside ml-platform</b><span>vendored with history; still standalone and agnostic</span></li>
-        <li><b>Live status</b><span>tracked by checklist on the Projects page</span></li>
-      </ul>
-
-      <div class="mlh-cta" data-reveal>
-        <a class="mlh-btn mlh-btn--primary" href="{{ 'projects/#chapter-4-agent-local-the-llm-core' | url }}" data-magnetic>See the build status</a>
-        <a class="mlh-btn" href="https://github.com/DuqueOM/agent-local" data-magnetic>
-          <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" style="vertical-align:-3px;margin-right:0.35rem;"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.17c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.77 1.05.77 2.13v3.16c0 .3.21.67.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
-          agent-local
-        </a>
+        <a class="mlh-btn mlh-btn--primary" href="{{ 'template/' | url }}" data-magnetic>ml-service-template</a>
+        <a class="mlh-btn" href="{{ 'ml-platform/' | url }}" data-magnetic>ml-platform</a>
+        <a class="mlh-btn" href="{{ 'agent-local/' | url }}" data-magnetic>agent-local</a>
       </div>
     </div>
   </section>
@@ -475,7 +369,7 @@
           <h3>ml engineering</h3>
           <ul>
             <li>Python</li><li>scikit-learn</li><li>XGBoost / LightGBM</li>
-            <li>SHAP explainability</li><li>Pandera validation</li>
+            <li>SHAP explainability</li><li>LLM tool calling · LoRA</li>
           </ul>
         </div>
         <div class="mlh-cap">
@@ -501,9 +395,9 @@
         </div>
       </div>
       <p class="mlh-caps-foot" data-reveal>
-        <span>governed ai-assisted development</span>
-        Claude Code · Cursor · Codex · Devin — behavior rules, skills, audit trail, eval gates.
-        Engineered, not hidden.
+        <span>how I work</span>
+        I design the system and make the decisions; AI coding agents (Claude Code) build
+        faster inside rules I set — tests first, small reviewed changes, CI gates.
       </p>
     </div>
   </section>
@@ -511,8 +405,8 @@
   <!-- ============ CONTACT ============ -->
   <section class="mlh-section mlh-contact" id="contact">
     <div class="mlh-wrap" data-reveal>
-      <p class="mlh-kicker">Next system</p>
-      <h2 class="mlh-contact-display">Let's talk about the systems<br>you need to survive production.</h2>
+      <p class="mlh-kicker">Contact</p>
+      <h2 class="mlh-contact-display">Hiring a junior AI engineer?<br>Let's talk.</h2>
       <a class="mlh-contact-mail" href="mailto:DuqueOrtegaMutis@gmail.com" data-magnetic>DuqueOrtegaMutis@gmail.com</a>
       <nav class="mlh-contact-links" aria-label="Profiles and evidence">
         <a class="mlh-contact-icon" href="https://linkedin.com/in/duqueom" aria-label="LinkedIn" data-magnetic>
@@ -534,7 +428,7 @@
           Technical evidence
         </a>
       </nav>
-      <p class="mlh-contact-meta">available in 2 weeks · cdmx hybrid · remote latam / us / eu · spanish native · english professional</p>
+      <p class="mlh-contact-meta">available in 1–2 weeks · remote or mexico city · spanish native · english b1</p>
     </div>
   </section>
 </div>

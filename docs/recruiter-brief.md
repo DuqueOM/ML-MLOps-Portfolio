@@ -6,40 +6,40 @@
 <canvas data-neural-scene="chart" aria-hidden="true"></canvas>
 <span class="portfolio-eyebrow">Recruiter screening view · 90 seconds</span>
 
-# MLOps engineer who builds systems that survive production
+# Junior AI Engineer · LLM apps and agents · ML in production
 
-Two years of focused ML engineering on top of 14 years of operations leadership.
-Three production services, three incidents diagnosed from first principles, and
-two open-source templates — one that encodes the lessons for classical ML, one
-that covers deep learning, LLM and agents on a shared substrate. The
-portfolio makes the evidence reviewable.
+Three ML services deployed to GKE and EKS in March 2026, three production
+problems I found and fixed, a WhatsApp customer-service agent in progress, and a
+text-to-speech app with a voice I fine-tuned with LoRA. Before tech, 14 years
+running my own businesses. I design the system and make the decisions; I use AI
+coding agents (Claude Code) for speed.
 
 </div>
 
 <div class="portfolio-stat-strip" markdown="1">
 <div class="portfolio-stat">
 <small>Track record</small>
-<strong>3 services · 3 incidents solved · 2 templates</strong>
+<strong>3 services · 3 incidents solved · 1 LLM agent in progress</strong>
 <span>GKE + EKS, 395+ tests, 18 ADRs — measured and documented.</span>
 </div>
 <div class="portfolio-stat">
 <small>Education</small>
-<strong>TripleTen Data Science, 2026</strong>
-<span>Hands-on AWS (EKS, ECR, IRSA, Terraform) across the portfolio.</span>
+<strong>TripleTen Data Science</strong>
+<span>June 2025 – March 2026. Next: MS in Artificial Intelligence, CU Boulder (Coursera), planned for 2027.</span>
 </div>
 <div class="portfolio-stat">
 <small>Location</small>
 <strong>Mexico City / Remote</strong>
-<span>Open to remote-first US, Mexico or LATAM teams.</span>
+<span>Open to remote roles or on-site in Mexico City.</span>
 </div>
 <div class="portfolio-stat">
 <small>Languages</small>
-<strong>Spanish native · English B2</strong>
-<span>Comfortable with async written technical communication.</span>
+<strong>Spanish native · English B1</strong>
+<span>Intermediate English; I read and write technical English every day.</span>
 </div>
 <div class="portfolio-stat">
 <small>Available</small>
-<strong>In 2 weeks</strong>
+<strong>In 1–2 weeks</strong>
 <span>Ready for a formal onboarding process now.</span>
 </div>
 </div>
@@ -49,30 +49,30 @@ portfolio makes the evidence reviewable.
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
 <small>Primary fit</small>
-<h3>MLOps Engineer</h3>
-<p>Serving, CI/CD, monitoring, MLflow hygiene and deployment reliability for ML
-systems in production — the discipline the entire portfolio is built around.</p>
+<h3>Junior AI Engineer</h3>
+<p>LLM apps and agents: tool calling, evals, human handoff and the API and
+deployment work around them, as in the WhatsApp agent.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Equally strong</small>
-<h3>ML Engineer</h3>
+<h3>Junior ML Engineer</h3>
 <p>Applied ML roles where model work needs APIs, testing, deployment and a
 clear handoff into an engineering workflow — not just a notebook.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Strong second</small>
-<h3>Data Scientist (production-leaning)</h3>
-<p>DS roles where the model is not the end state — serving, monitoring and
-operability matter alongside the modeling work.</p>
+<h3>Junior MLOps Engineer</h3>
+<p>Serving, CI/CD, monitoring, MLflow hygiene and deployment reliability for ML
+systems in production, as in the three ML services.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
 <small>Adjacent path</small>
-<h3>Data / AI Platform Engineer</h3>
-<p>Pipeline, batch and agentic-systems roles connected to production ML —
-PySpark, validation, feature engineering, governed AI workflows.</p>
+<h3>Data Scientist (production-leaning)</h3>
+<p>DS roles where the model is not the end state — serving, monitoring and
+operability matter alongside the modeling work.</p>
 </div>
 </div>
 
@@ -80,11 +80,11 @@ PySpark, validation, feature engineering, governed AI workflows.</p>
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<small>2026 differentiator</small>
-<h3>Governed AI-assisted development</h3>
-<p>I engineer my AI workflow instead of hiding it: an AUTO/CONSULT/STOP
-behavior protocol, an audit trail and eval gates — codified in immutable
-Python, not a README promise.</p>
+<small>How I work</small>
+<h3>I design; AI coding agents build faster</h3>
+<p>I write the spec, the limits and the decisions (ADRs). I use AI coding agents
+(Claude Code) for speed, inside rules I set: tests first, small reviewed
+changes, CI gates. I say openly which parts the agents wrote.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -98,7 +98,7 @@ contention and fixed to 0% — with CPU cost cut in half.</p>
 <div class="portfolio-card" markdown="1">
 <small>Ownership</small>
 <h3>Decisions survive the handoff</h3>
-<p>18 ADRs across the portfolio, 38 more in the Production Template —
+<p>18 ADRs in the ML services and 15 in <code>read_aloud</code> —
 runbooks and status pages so another engineer can operate the system, not
 just read about it.</p>
 </div>
@@ -145,13 +145,11 @@ the same rigor as the 81%→0% fix, applied to your stack.</p>
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<small>Project judgment</small>
-<h3>Two templates, and a boundary between them</h3>
-<p><code>ml-service-template</code> turns three projects' worth of pain into a
-reusable starting point for classical ML: 38 encoded anti-patterns, 52 ADRs. <code>ml-platform</code> is the enterprise substrate above that
-boundary — lakehouse, feature store, orchestration, GitOps, LLMOps. The
-strongest signal is that they are separate <em>on purpose</em>: knowing what a
-tool should refuse to absorb is the judgment.</p>
+<small>LLM work</small>
+<h3>An agent and a fine-tuned voice</h3>
+<p>The WhatsApp agent (in progress): PHP 8.3, MySQL, Meta Cloud API webhooks,
+LLM tool calling, human handoff and evals. <code>read_aloud</code>: a Qwen3-TTS
+voice I fine-tuned with LoRA on my own GPU, with WavLM to compare voices.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -175,20 +173,16 @@ a walkthrough.</p>
 
 <div class="portfolio-card-grid" markdown="1">
 <div class="portfolio-card" markdown="1">
-<small>Live evidence</small>
-<h3>More real traffic windows</h3>
-<p>Short, cost-controlled live demos to capture fresh Grafana, Prometheus
-and MLflow evidence without leaving infrastructure online permanently.</p>
+<small>In progress</small>
+<h3>The WhatsApp agent, first release</h3>
+<p>A customer-service agent for a small business. I wrote the spec and the plan
+and I write the core logic. First release planned for January 2027.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
-<small>Frontier</small>
-<h3>The platform, to first cloud rollout</h3>
-<p><code>ml-platform</code> stands at 48 of 55 components built and 0 at L4 —
-no cloud rollout claimed, because none has happened. Local validation
-precedes cloud by design, so the spend buys confirmation rather than
-discovery. The agentic plane (<code>agent-local</code>'s core, vendored in)
-already passes its routing gate 20/20.</p>
+<small>Education</small>
+<h3>MS in Artificial Intelligence</h3>
+<p>University of Colorado Boulder, online on Coursera, planned for 2027.</p>
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -221,7 +215,7 @@ on a team's system is the natural next chapter.</p>
 <div class="portfolio-card" markdown="1">
 <small>Cloud infrastructure</small>
 <h3>GCP and AWS, Kubernetes-first</h3>
-<p>Deep, hands-on GKE, EKS, Terraform and kubectl across three deployed
+<p>Hands-on GKE, EKS, Terraform and kubectl across three deployed
 services. Managed ML platforms (SageMaker, Vertex AI, Azure ML) —
 architecture is familiar; hands-on integration is the fastest onboarding
 item, not a blind spot.</p>
