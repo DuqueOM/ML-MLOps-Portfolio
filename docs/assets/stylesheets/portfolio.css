@@ -3037,3 +3037,16 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
     box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4), 0 0 18px rgba(34, 211, 238, 0.18);
   }
 }
+/* Contact form fields: clearer neutral border at rest; cyan stays for focus, so fields never look like buttons. */
+.md-typeset .pf-contact-form input,
+.md-typeset .pf-contact-form textarea {
+  border-color: rgba(148, 163, 184, 0.38);
+}
+.md-typeset .pf-contact-form input:hover,
+.md-typeset .pf-contact-form textarea:hover {
+  border-color: rgba(148, 163, 184, 0.55);
+}
+.md-typeset .pf-contact-form input:focus,
+.md-typeset .pf-contact-form textarea:focus {
+  border-color: rgba(34, 211, 238, 0.7);
+}
