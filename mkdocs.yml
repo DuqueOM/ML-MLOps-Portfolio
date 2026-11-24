@@ -91,7 +91,7 @@ nav:
       - BankChurn Predictor: projects/bankchurn.md
       - NLPInsight Analyzer: projects/nlpinsight.md
       - ChicagoTaxi Pipeline: projects/chicagotaxi.md
-  - Recruiter-Brief: recruiter-brief.md
+  - Recruiter Brief: recruiter-brief.md
   - About: about.md
   - Contact: contact.md
 

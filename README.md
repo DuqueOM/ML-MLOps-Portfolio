@@ -2,7 +2,7 @@
 
 # 🚀 ML/MLOps Portfolio — Production ML Systems
 
-**Human-first portfolio for MLOps / Production ML roles · 3 ML services · GKE + EKS evidence · 18 ADRs · 395+ tests**
+**3 ML services · deployed to GKE + EKS in March 2026, then shut down to save costs · 18 ADRs · 395+ tests**
 
 [![CI](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
 [![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)
@@ -426,15 +426,15 @@ Same ML system deployed cloud-agnostically on **both GCP and AWS**:
 
 ## 🔧 AI Transparency
 
-Built using Windsurf Cascade for code generation and boilerplate. All architectural decisions, system design, trade-off analysis, and incident resolution are the author's. The `.windsurf/` configuration constrains the agent with documented decisions — demonstrating that AI tooling can be governed, not just used.
+I designed the architecture and made the decisions (18 ADRs); AI coding agents (Windsurf Cascade at the time) helped me build it faster. The system design, the trade-offs and the incident fixes are mine. The `.windsurf/` configuration sets the rules the agent had to follow: tests first, small reviewed changes, CI gates.
 
 ---
 
 ## 👤 Author
 
-**Duque Ortega Mutis** · MLOps / ML Platform Engineer
+**Duque Ortega Mutis** · Junior AI Engineer · LLM apps and agents · ML in production
 
-14 years running operations taught me that systems fail silently when nobody monitors them, nobody documents decisions, and nobody thinks about what happens at 2am. That's the mindset I bring to ML infrastructure — not just deploying models, but building systems you can actually trust in production.
+14 years running my own businesses taught me that systems fail silently when nobody monitors them, nobody documents decisions, and nobody thinks about what happens at 2am. That's the mindset I bring to ML infrastructure — not just deploying models, but building systems you can actually trust in production.
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin)](https://linkedin.com/in/duqueom)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=flat&logo=github)](https://github.com/DuqueOM)
@@ -445,7 +445,7 @@ Built using Windsurf Cascade for code generation and boilerplate. All architectu
 
 <div align="center">
 
-**Portfolio Version**: 3.6.0 · **License**: MIT · **Status**: ✅ Deployed on GCP (GKE) + AWS (EKS)
+**Portfolio Version**: 3.6.0 · **License**: MIT · **Status**: deployed to GKE + EKS in March 2026, now offline to save costs
 
 *Building ML systems that work at 2am* 🌙
 

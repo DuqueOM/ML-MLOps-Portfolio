@@ -492,6 +492,10 @@
 }
 /* Two items: two columns, so the row has no empty third column. */
 .md-typeset .ml-home .mlh-template-points--two { grid-template-columns: repeat(2, 1fr); }
+/* A button inside one point: sits under that point's text. */
+.md-typeset .ml-home .mlh-template-points--two li { display: flex; flex-direction: column; align-items: flex-start; }
+.md-typeset .ml-home .mlh-template-points--two li > span { margin-bottom: 1.1rem; }
+.md-typeset .ml-home .mlh-point-btn { margin-top: auto; }
 @media (max-width: 900px) {
   .md-typeset .ml-home .mlh-template-points { grid-template-columns: 1fr 1fr; }
 }

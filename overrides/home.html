@@ -2,7 +2,7 @@
 
 {% block extrahead %}
   {{ super() }}
-  <link rel="stylesheet" href="{{ 'assets/stylesheets/home.css' | url }}?v=20261124a">
+  <link rel="stylesheet" href="{{ 'assets/stylesheets/home.css' | url }}?v=20261124c">
   <meta property="og:title" content="Duque Ortega Mutis — Junior AI Engineer · LLM apps and agents · ML in production">
   <meta property="og:description" content="Three ML services deployed to GKE and EKS, three production problems found and fixed, a WhatsApp customer-service agent in progress and a text-to-speech app with a voice fine-tuned with LoRA. 14 years running my own businesses before tech.">
   <meta property="og:type" content="website">
@@ -320,14 +320,11 @@
       </div>
 
       <ul class="mlh-template-points mlh-template-points--two" data-reveal>
-        <li><b>read_aloud</b><span>local neural voices (Piper, Qwen3-TTS) · Spanish and English in the same text · offline · one voice fine-tuned with LoRA on my own GPU (RTX 5070, 8 GB): I chose the training setup and the final epoch, and used WavLM to compare voices · 15 ADRs</span></li>
-        <li><b>WhatsApp agent</b><span>PHP 8.3 · MySQL · Meta Cloud API webhooks · LLM tool calling · human handoff · evals · in progress</span></li>
+        <li><b>read_aloud</b><span>local neural voices (Piper, Qwen3-TTS) · Spanish and English in the same text · offline · one voice fine-tuned with LoRA on my own GPU (RTX 5070, 8 GB): I chose the training setup and the final epoch, and used WavLM to compare voices · 15 ADRs</span>
+          <a class="mlh-btn mlh-btn--primary mlh-point-btn" href="https://github.com/DuqueOM/read_aloud" data-magnetic>read_aloud</a></li>
+        <li><b>WhatsApp agent</b><span>PHP 8.3 · MySQL · Meta Cloud API webhooks · LLM tool calling · human handoff · evals · in progress</span>
+          <a class="mlh-btn mlh-btn--primary mlh-point-btn" href="https://github.com/DuqueOM/agent-whatsapp-php" data-magnetic>WhatsApp agent</a></li>
       </ul>
-
-      <div class="mlh-cta" data-reveal>
-        <a class="mlh-btn mlh-btn--primary" href="https://github.com/DuqueOM/read_aloud" data-magnetic>read_aloud</a>
-        <a class="mlh-btn" href="https://github.com/DuqueOM/agent-whatsapp-php" data-magnetic>WhatsApp agent</a>
-      </div>
     </div>
   </section>
 
