@@ -3024,3 +3024,16 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
   background: rgba(34, 211, 238, 0.09);
   box-shadow: 0 0 18px rgba(34, 211, 238, 0.18);
 }
+/* Contact page cards: same visible-at-rest treatment. */
+.md-typeset .pf-contact-card {
+  border-color: rgba(34, 211, 238, 0.45);
+  background: linear-gradient(rgba(34, 211, 238, 0.04), rgba(34, 211, 238, 0.04)), rgba(11, 17, 32, 0.55);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.08);
+}
+@media (hover: hover) and (pointer: fine) {
+  .md-typeset .pf-contact-card:hover {
+    border-color: rgba(110, 231, 255, 0.8);
+    background: linear-gradient(rgba(34, 211, 238, 0.09), rgba(34, 211, 238, 0.09)), rgba(11, 17, 32, 0.8);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4), 0 0 18px rgba(34, 211, 238, 0.18);
+  }
+}
