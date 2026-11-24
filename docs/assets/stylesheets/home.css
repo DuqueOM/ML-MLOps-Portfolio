@@ -936,3 +936,23 @@
   }
   [data-reveal].is-in { opacity: 1; transform: none; }
 }
+
+/* ============ SECONDARY BUTTONS: VISIBLE AT REST (Nov 2026) ============ */
+/* Secondary buttons were a 16% gray hairline on a dark background and did not read as buttons.
+   Cyan border + faint fill + soft glow; still clearly weaker than the solid primary button. */
+.md-typeset .ml-home .mlh-btn:not(.mlh-btn--primary),
+.md-typeset .ml-home .mlh-quicklinks a:not(.mlh-ql-video),
+.md-typeset .ml-home .mlh-contact-links a,
+.md-typeset .ml-home .mlh-case-link {
+  border-color: rgba(34, 211, 238, 0.45);
+  background: rgba(34, 211, 238, 0.04);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.08);
+}
+.md-typeset .ml-home .mlh-btn:not(.mlh-btn--primary):hover,
+.md-typeset .ml-home .mlh-quicklinks a:not(.mlh-ql-video):hover,
+.md-typeset .ml-home .mlh-contact-links a:hover,
+.md-typeset .ml-home .mlh-case-link:hover {
+  border-color: rgba(110, 231, 255, 0.8);
+  background: rgba(34, 211, 238, 0.09);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.18);
+}

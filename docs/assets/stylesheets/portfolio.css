@@ -3011,3 +3011,16 @@ html { scrollbar-color: rgba(34, 211, 238, 0.35) #070B18; scrollbar-width: thin;
 @media (prefers-reduced-motion: reduce) {
   .pf-chat-launcher, .pf-chat-form button, .pf-chat-close { transition: none; }
 }
+
+/* ============ SECONDARY BUTTONS: VISIBLE AT REST (Nov 2026) ============ */
+/* Same treatment for the Markdown pages' secondary buttons. */
+.md-typeset .portfolio-button:not(.portfolio-button--primary) {
+  border-color: rgba(34, 211, 238, 0.45);
+  background: rgba(34, 211, 238, 0.04);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.08);
+}
+.md-typeset .portfolio-button:not(.portfolio-button--primary):hover {
+  border-color: rgba(110, 231, 255, 0.8);
+  background: rgba(34, 211, 238, 0.09);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.18);
+}
