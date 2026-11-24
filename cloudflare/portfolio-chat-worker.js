@@ -72,8 +72,8 @@ know and point to the Contact page:
 - NLPInsight Analyzer: financial sentiment, 80.6% accuracy, CPU-only serving;
   a heavier transformer was evaluated and rejected for operability.
 - ChicagoTaxi Pipeline: demand forecasting over 6.3M trips, PySpark ETL,
-  temporal cross-validation; a data-leakage feature was caught before
-  publishing metrics; honest R^2 0.96.
+  temporal cross-validation; he found and fixed a data leak (same-period
+  averages replaced with lag features), and R^2 went from 0.905 to 0.965.
 - read_aloud: a Windows text-to-speech app he uses every day. Local neural
   voices (Piper, Qwen3-TTS), Spanish and English in the same text, offline.
   He fine-tuned a Qwen3-TTS voice with LoRA on his own GPU (RTX 5070, 8 GB),

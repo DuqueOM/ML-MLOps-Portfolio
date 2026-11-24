@@ -93,7 +93,7 @@ heavier transformer documented as a rejected trade-off.</p>
 <span class="portfolio-badge">PySpark · temporal CV</span>
 </div>
 <p>Demand forecasting at scale with strictly temporal validation — and the
-data leak that was caught before the metrics were published.</p>
+data leak I found and fixed: R² went from 0.905 to 0.965 with honest lag features.</p>
 
 [ChicagoTaxi Pipeline](chicagotaxi.md){ .portfolio-button }
 </div>
