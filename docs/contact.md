@@ -51,6 +51,11 @@ way to reach me is email. I reply within 24 hours.
 <span class="pf-cc-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-5 4h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></span>
 <span><small>Recruiter brief</small><b>90-second screening view</b></span>
 </a>
+
+<a class="pf-contact-card" href="../resumen-reclutadores/">
+<span class="pf-cc-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-5 4h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></span>
+<span><small>En español</small><b>Resumen para reclutadores</b></span>
+</a>
 </div>
 </div>
 

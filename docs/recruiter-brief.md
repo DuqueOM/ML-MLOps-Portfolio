@@ -12,6 +12,8 @@ Looking for a junior AI Engineer, ML Engineer or MLOps role, remote or in
 Mexico City. I design the system and make the decisions; I use AI coding agents
 (Claude Code) for speed, with tests first, small reviewed changes and CI gates.
 
+Español: [Resumen para reclutadores](resumen-reclutadores.md)
+
 </div>
 
 <div class="portfolio-stat-strip" markdown="1">
