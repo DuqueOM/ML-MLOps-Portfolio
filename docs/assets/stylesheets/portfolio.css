@@ -189,6 +189,27 @@ body:has(.portfolio-page) .md-typeset h3 {
   content: "▸ ";
 }
 
+/* Language switch on the recruiter pages: right end of the eyebrow row.
+   On narrow screens it wraps to its own line, still above the title. */
+.md-typeset .portfolio-hero-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+}
+
+.md-typeset .portfolio-lang {
+  font-size: 0.78rem;
+  font-weight: 650;
+  white-space: nowrap;
+  color: var(--portfolio-muted);
+}
+
+.md-typeset .portfolio-lang [aria-current] {
+  color: var(--portfolio-ink);
+}
+
 /* Stat strip: teal keyline + monospace figures = dashboard feel. */
 .md-typeset .portfolio-stat {
   border-left: 3px solid var(--portfolio-accent);

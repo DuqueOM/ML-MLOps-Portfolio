@@ -4,15 +4,16 @@
 
 <div class="portfolio-hero" markdown="1">
 <canvas data-neural-scene="chart" aria-hidden="true"></canvas>
+<div class="portfolio-hero-top">
 <span class="portfolio-eyebrow">Recruiter screening view · 90 seconds</span>
+<span class="portfolio-lang"><span aria-current="page">English</span> · <a href="../resumen-reclutadores/" hreflang="es" lang="es">Español</a></span>
+</div>
 
 # Junior AI Engineer · LLM apps and agents · ML in production
 
 Looking for a junior AI Engineer, ML Engineer or MLOps role, remote or in
 Mexico City. I design the system and make the decisions; I use AI coding agents
 (Claude Code) for speed, with tests first, small reviewed changes and CI gates.
-
-Español: [Resumen para reclutadores](resumen-reclutadores.md)
 
 </div>
 

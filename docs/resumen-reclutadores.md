@@ -4,7 +4,10 @@
 
 <div class="portfolio-hero" markdown="1">
 <canvas data-neural-scene="chart" aria-hidden="true"></canvas>
+<div class="portfolio-hero-top">
 <span class="portfolio-eyebrow">Vista para el filtro de reclutamiento · 90 segundos</span>
+<span class="portfolio-lang"><a href="../recruiter-brief/" hreflang="en" lang="en">English</a> · <span aria-current="page">Español</span></span>
+</div>
 
 # Junior AI Engineer · apps con LLM y agentes · ML en producción
 
@@ -12,8 +15,6 @@ Busco un puesto junior de AI Engineer (ingeniero de inteligencia artificial), ML
 machine learning a producción y operarlos), remoto o en Ciudad de México. Yo diseño el sistema y tomo las decisiones;
 uso agentes de programación con IA (Claude Code) para avanzar más rápido, con pruebas primero, cambios pequeños y
 revisados, y controles de CI.
-
-English: [Recruiter Brief](recruiter-brief.md)
 
 </div>
 
