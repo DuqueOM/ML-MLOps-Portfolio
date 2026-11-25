@@ -476,10 +476,14 @@
     }
 
     /* Greeting, then dots:
-       - on every page load the greeting shows once, ~2.6 s in, for 9 s
-         (or until the first scroll / tap elsewhere — on a phone it sits
-         over content, e.g. the home Contact button). A reload gives a
-         visitor who missed it another chance.
+       - on every page load the greeting shows once, ~2.6 s in, for 9 s,
+         or until a tap / click elsewhere (on a phone it sits over
+         content, e.g. the home Contact button). Scrolling does NOT hide
+         it: the first thing a visitor does is scroll, many times, so a
+         scroll-hide meant almost nobody read it. "click" (not
+         pointerdown) because a touch-scroll starts with a pointerdown
+         but never fires a click. A reload gives a visitor who missed it
+         another chance.
        - after it, the same bubble comes back every 30 s for 4 s with
          three typing dots: "she still has something to say".
        - once the visitor has opened the chat (this tab session), both
@@ -489,10 +493,9 @@
        motion is exactly what that setting asks to avoid). */
     var GREET_MS = 9000, DOTS_EVERY = 30000, DOTS_SHOW = 4000;
     function stopListening() {
-      window.removeEventListener("scroll", hideHint);
-      document.removeEventListener("pointerdown", onOutsidePointer, true);
+      document.removeEventListener("click", onOutsideClick, true);
     }
-    function onOutsidePointer(e) {
+    function onOutsideClick(e) {
       if (!launcher.contains(e.target)) hideHint();
     }
     function hideHint() {
@@ -515,8 +518,7 @@
       hintTimer = setTimeout(function () {
         if (hasOpened) return;
         hint.classList.add("is-on");
-        window.addEventListener("scroll", hideHint, { passive: true });
-        document.addEventListener("pointerdown", onOutsidePointer, true);
+        document.addEventListener("click", onOutsideClick, true);
         hintTimer = setTimeout(hideHint, GREET_MS);
       }, reduced ? 1200 : 2600);
     }

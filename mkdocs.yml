@@ -39,7 +39,7 @@ extra_css:
   - assets/stylesheets/portfolio.css?v=20261125b
 
 extra_javascript:
-  - assets/javascripts/site.js?v=20261125b
+  - assets/javascripts/site.js?v=20261125c
   - assets/javascripts/neural-field.js?v=20260703h
   - assets/javascripts/neural-scene.js?v=20260703h
   - assets/javascripts/portfolio.js?v=20260703h
