@@ -476,22 +476,33 @@
     }
 
     /* Greeting, then dots:
-       - on every page load the greeting shows once, ~2.6 s in, for 9 s,
-         or until a tap / click elsewhere (on a phone it sits over
-         content, e.g. the home Contact button). Scrolling does NOT hide
-         it: the first thing a visitor does is scroll, many times, so a
-         scroll-hide meant almost nobody read it. "click" (not
-         pointerdown) because a touch-scroll starts with a pointerdown
-         but never fires a click. A reload gives a visitor who missed it
-         another chance.
-       - after it, the same bubble comes back every 30 s for 4 s with
-         three typing dots: "she still has something to say".
+       - the greeting shows ~2.6 s in, for 5 s, on the FIRST page of a
+         visit and on a RELOAD (a visitor who missed it gets another
+         chance) — not when moving between sections, where repeating
+         it on every page felt like a nag. Every page here is a full
+         load, so "reload" comes from the Navigation Timing API.
+         It hides after 5 s or a tap / click elsewhere (on a phone it
+         sits over content, e.g. the home Contact button). Scrolling
+         does NOT hide it: the first thing a visitor does is scroll,
+         many times. "click" (not pointerdown) because a touch-scroll
+         starts with a pointerdown but never fires a click.
+       - dots: the same bubble with three typing dots, 4 s each time:
+         first 6 s after the greeting (or 5 s into a page without it),
+         then every 15 s — "she still has something to say".
        - once the visitor has opened the chat (this tab session), both
          stop on every page: they already know she is there.
        Reduced motion: the greeting still shows (it is text), without
        the pop-in; the periodic dots do not (repeated attention-grabbing
        motion is exactly what that setting asks to avoid). */
-    var GREET_MS = 9000, DOTS_EVERY = 30000, DOTS_SHOW = 4000;
+    var GREET_MS = 5000, DOTS_FIRST = 6000, DOTS_NO_GREET = 5000;
+    var DOTS_EVERY = 15000, DOTS_SHOW = 4000;
+    function isReload() {
+      try {
+        var nav = performance.getEntriesByType("navigation")[0];
+        if (nav) return nav.type === "reload";
+        return performance.navigation && performance.navigation.type === 1;
+      } catch (e) { return false; }
+    }
     function stopListening() {
       document.removeEventListener("click", onOutsideClick, true);
     }
@@ -502,7 +513,7 @@
       clearTimeout(hintTimer);
       stopListening();
       hint.classList.remove("is-on");
-      if (!hasOpened && !reduced) scheduleDots(DOTS_EVERY);
+      if (!hasOpened && !reduced) scheduleDots(DOTS_FIRST);
     }
     function scheduleDots(delay) {
       hintTimer = setTimeout(function () {
@@ -515,12 +526,17 @@
       }, delay);
     }
     if (!sessionFlag("pfChatOpened")) {
-      hintTimer = setTimeout(function () {
-        if (hasOpened) return;
-        hint.classList.add("is-on");
-        document.addEventListener("click", onOutsideClick, true);
-        hintTimer = setTimeout(hideHint, GREET_MS);
-      }, reduced ? 1200 : 2600);
+      if (!sessionFlag("pfChatGreeted") || isReload()) {
+        hintTimer = setTimeout(function () {
+          if (hasOpened) return;
+          sessionFlag("pfChatGreeted", true);
+          hint.classList.add("is-on");
+          document.addEventListener("click", onOutsideClick, true);
+          hintTimer = setTimeout(hideHint, GREET_MS);
+        }, reduced ? 1200 : 2600);
+      } else if (!reduced) {
+        scheduleDots(DOTS_NO_GREET);
+      }
     }
 
     function open() {
