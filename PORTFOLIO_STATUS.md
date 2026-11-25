@@ -26,13 +26,13 @@ detail.
 <span>Reference implementation; live clusters are intentionally paused.</span>
 </div>
 <div class="portfolio-stat">
-<small>Last live deploy</small>
-<strong>v3.6.0</strong>
-<span>Validated during March 2026 active development.</span>
+<small>Last live evidence</small>
+<strong>March 2026</strong>
+<span>Load tests and screenshots from v3.5.x on both clouds.</span>
 </div>
 <div class="portfolio-stat">
 <small>Reactivation</small>
-<strong>1-2h</strong>
+<strong>~1h</strong>
 <span>Plus temporary GCP/AWS budget.</span>
 </div>
 <div class="portfolio-stat">
@@ -86,7 +86,7 @@ from intentionally paused cloud runtime surfaces.
 <div class="portfolio-status-card is-active" markdown="1">
 <span class="portfolio-pill is-active">Active</span>
 <h3>Unit and integration CI</h3>
-<p><code>ci-mlops.yml</code> runs on push and PR with 395+ tests and 90-96% coverage.</p>
+<p><code>ci-mlops.yml</code> runs on push and PR with 395+ tests and 90-99% coverage.</p>
 </div>
 
 <div class="portfolio-status-card is-active" markdown="1">

@@ -167,4 +167,6 @@ FastAPI is already async; uvicorn's single-process event loop handles concurrent
 ### 4. Background thread pools for inference
 Run model inference in `asyncio.run_in_executor()` with a `ThreadPoolExecutor`. **Implemented in ADR-015**: unblocks the event loop and enables full concurrency within a single pod. Removed the need for the BankChurn 2-worker exception.
 
+**Correction, 2026-11-24:** the ChicagoTaxi row above says "Lightweight LightGBM"; the service serves a `RandomForestRegressor` (`scripts/batch_predict.py`, model card). The decision does not change.
+
 </div>

@@ -61,7 +61,7 @@ know and point to the Contact page:
 - ML-MLOps-Portfolio: three ML services in one monorepo, served with FastAPI,
   Docker and Kubernetes, with Terraform, GitHub Actions CI/CD, MLflow,
   Prometheus and Grafana. Deployed to GKE and EKS in March 2026, then shut
-  down to save costs. 395+ automated tests, 18 ADRs.
+  down to save costs. 395+ automated tests, 19 ADRs.
 - BankChurn Predictor: churn classification, AUC 0.87. Incident: 81% API
   errors under load, root-caused to uvicorn multi-worker CPU contention
   inside Kubernetes; fixed with one worker per pod + asyncio thread pool ->
@@ -72,11 +72,12 @@ know and point to the Contact page:
 - NLPInsight Analyzer: financial sentiment, 80.6% accuracy, CPU-only serving;
   a heavier transformer was evaluated and rejected for operability.
 - ChicagoTaxi Pipeline: demand forecasting over 6.3M trips, PySpark ETL,
-  temporal cross-validation; he found and fixed a data leak (same-period
-  averages replaced with lag features), and R^2 went from 0.905 to 0.965.
+  a temporal train/test split; after the first release he found and fixed a
+  data leak (same-period averages replaced with lag features), and R^2 went
+  up from 0.905 to 0.965.
 - read_aloud: a Windows text-to-speech app he uses every day. Local neural
   voices (Piper, Qwen3-TTS), Spanish and English in the same text, offline.
-  He fine-tuned a Qwen3-TTS voice with LoRA on his own GPU (RTX 5070, 8 GB),
+  He fine-tuned a Qwen3-TTS voice with LoRA on his own GPU (RTX 5070 Laptop GPU, 8 GB),
   chose the training setup and the final epoch, and used WavLM to compare
   voices. 15 ADRs.
 - Architecture studies (not deployed to a cloud; he designed and directed

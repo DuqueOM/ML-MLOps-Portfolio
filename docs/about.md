@@ -48,8 +48,10 @@ Fourteen years running businesses, then AI and ML engineering.
 <span class="pf-tl-year">2026</span>
 <div>
 <h3>Deployed, then new projects</h3>
-<p>The three ML services deployed to GKE and EKS in March 2026, then shut down
-to save costs. TripleTen Data Science finished in March.
+<p>ChicagoTaxi added and its data leak fixed. The serving failure, the SHAP
+zeros and the HPA that could not scale down: I found them, measured them and
+fixed them. The three ML services deployed to GKE and EKS in March 2026, then
+shut down to save costs. TripleTen Data Science finished in March.
 <code>read_aloud</code>, a text-to-speech app with a voice I fine-tuned with
 LoRA, and a WhatsApp customer-service agent, in progress. Architecture studies:
 <code>ml-service-template</code>, <code>ml-platform</code> and
@@ -61,10 +63,9 @@ LoRA, and a WhatsApp customer-service agent, in progress. Architecture studies:
 <span class="pf-tl-year">2025</span>
 <div>
 <h3>The pivot: data science and ML</h3>
-<p>TripleTen Data Science program from June 2025. BankChurn, NLPInsight and
-ChicagoTaxi built and tested (395+ tests). The serving failure, the SHAP zeros
-and the HPA that could not scale down: I found them, measured them and fixed
-them.</p>
+<p>TripleTen Data Science program from June 2025. First version of the
+portfolio in September: BankChurn and NLPInsight served with FastAPI and
+tested.</p>
 </div>
 </li>
 <li>
@@ -150,7 +151,7 @@ fine-tuning) is in the WhatsApp agent and in `read_aloud`.
 </div>
 <p>Model training, evaluation and explainability — including original-space SHAP and promotion gates.</p>
 <div class="pf-toolbox-chips">
-<span class="pf-chip">Python 3.11+</span>
+<span class="pf-chip">Python 3.13</span>
 <span class="pf-chip">scikit-learn</span>
 <span class="pf-chip">XGBoost</span>
 <span class="pf-chip">LightGBM</span>
@@ -193,8 +194,6 @@ fine-tuning) is in the WhatsApp agent and in `read_aloud`.
 <span class="pf-chip pf-chip--cloud">IRSA</span>
 <span class="pf-chip">Terraform</span>
 <span class="pf-chip">Kustomize overlays</span>
-<span class="pf-chip">Cosign</span>
-<span class="pf-chip">SBOM</span>
 </div>
 </div>
 
@@ -207,7 +206,7 @@ fine-tuning) is in the WhatsApp agent and in `read_aloud`.
 <div class="pf-toolbox-chips">
 <span class="pf-chip">PySpark</span>
 <span class="pf-chip">Pandas</span>
-<span class="pf-chip">Temporal cross-validation</span>
+<span class="pf-chip">Temporal train/test split</span>
 <span class="pf-chip">PSI drift</span>
 <span class="pf-chip">Evidently</span>
 <span class="pf-chip">Leakage gates</span>

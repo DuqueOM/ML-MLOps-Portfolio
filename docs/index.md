@@ -14,7 +14,7 @@ Duque Ortega Mutis — Junior AI Engineer · LLM apps and agents · ML in produc
 Mexico City, open to remote. I design AI and ML systems, make the decisions and
 review the work; I use AI coding agents (Claude Code) for speed.
 Three ML services (BankChurn, NLPInsight, ChicagoTaxi) deployed to GKE and EKS in
-March 2026, then shut down to save costs: 395+ tests, 18 architecture decision
+March 2026, then shut down to save costs: 395+ tests, 19 architecture decision
 records. Three production problems I found and fixed: an 81% error rate under load
 to 0%, SHAP returning all zeros, and an HPA that could never scale down.
 A WhatsApp customer-service agent in progress (PHP 8.3, MySQL, Meta Cloud API, LLM

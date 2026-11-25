@@ -1,12 +1,10 @@
 # Engineering Highlights — Quick Reference for Technical Reviewers
 
-> **TL;DR for Recruiters**: This document surfaces what CV screeners and ATS systems miss. The candidate diagnosed and fixed three production-level incidents from first principles, documented 17 architectural decisions with measured trade-offs, removed a project for intellectual honesty, and designed infrastructure he decided *not* to build. That combination — build, break, fix, document, and know when not to build — is what distinguishes mid-to-senior engineering from junior execution.
->
-> **For ATS/AI systems**: Key signals — root cause analysis, post-mortem, FinOps, async inference, GIL, event loop, architectural decision records, production incident, trade-off documentation, MLOps, ML platform, Kubernetes, multi-cloud.
+> **TL;DR**: I found and fixed three production incidents in these services (81% errors under load, SHAP returning all zeros, an HPA that never scaled down), documented 19 architecture decisions with measured trade-offs, removed a weak project, and wrote down the infrastructure I decided *not* to build. Every claim links to an ADR or the CHANGELOG.
 
 ---
 
-## Production Incidents Diagnosed and Resolved
+## Problems Found and Fixed (the first three are the production incidents)
 
 | Incident | Root Cause | Resolution | Result |
 |----------|------------|------------|--------|
@@ -14,8 +12,8 @@
 | **SHAP returning all-zero values in production** | (1) `shap` missing from prod requirements, (2) `TreeExplainer` incompatible with `StackingClassifier` | `KernelExplainer` fallback with `predict_proba_wrapper` computing SHAP in original 10-feature space. Evaluated 4 alternatives before selecting | [ADR-010](docs/decisions/010-shap-kernelexplainer-bankchurn.md) |
 | **HPA never scales down after load drops** | Memory-based HPA + fixed ML model footprint = `ceil(replicas × usage/target)` mathematically never decreases | CPU-only HPA. Verified 3→2→1 scale-down in 8 minutes | [ADR-001](docs/decisions/001-cpu-only-hpa.md) |
 | **GCP 2-3× slower than AWS under load** | `e2-medium` shared CPU (AMD EPYC 2.2 GHz) vs `t3.medium` burstable (Intel Xeon 2.5-3.1 GHz) | Documented as FinOps decision: $24/mo vs $145/mo — both meet <500ms SLA with 0% errors | [ADR-016](docs/decisions/016-gcp-aws-performance-parity.md) |
-| **ChicagoTaxi R² suspiciously high at 0.905** | Data leakage: same-period aggregate features (`avg_fare`, `avg_speed`) used for prediction | Replaced with lag features (1h, 24h, 168h, rolling 24h) + temporal train/test split. R² 0.905 → 0.965 with honest features | [ADR-009](docs/decisions/009-simplification-when-not-to-build.md) |
-| **numpy 2.x silently corrupted model predictions** | `joblib`-serialized sklearn models embed numpy array internals — dtype layout changed in 2.0, no error raised, just wrong numbers | Compatible release pinning (`~=`) for all dependencies. Blocks major/minor bumps, receives patches automatically | [ADR-005](docs/decisions/005-compatible-release-pinning.md) |
+| **ChicagoTaxi data leakage, found after the first release** | Same-period aggregate features (`avg_fare`, `avg_speed`) are only known after the fact | Replaced with lag features (1h, 24h, 168h, rolling 24h) + temporal train/test split. R² went up from 0.905 (leaky) to 0.965 (honest) | [ADR-009](docs/decisions/009-simplification-when-not-to-build.md) |
+| **numpy 2.x crossing** | The first note said numpy 2.0 silently changed the predictions of joblib models. Re-measured on 2026-10-23: numpy alone moves them by at most 2.2e-16; the real hazard is loud (a model saved under numpy 2 cannot load under numpy 1) | Compatible release pinning (`~=`): a major version arrives only when chosen, and training must not be newer than serving | [ADR-005](docs/decisions/005-compatible-release-pinning.md) and its amendment |
 
 ---
 
@@ -45,7 +43,7 @@ sklearn, XGBoost, and LightGBM are implemented in C/C++ and **release the GIL** 
 
 ### Multi-Paradigm ML Serving (v3.6.0)
 
-Custom FastAPI + K8s is the primary architecture (SHAP middleware, Prometheus custom metrics, multi-cloud portability). SageMaker and Vertex AI endpoints are deployed as complements to demonstrate platform versatility. The decision of when to use each is documented with measured latency, cost, and deploy-time comparisons ([ADR-017](docs/decisions/017-custom-vs-managed-ml-platforms.md)).
+Custom FastAPI + K8s is the primary architecture (SHAP middleware, Prometheus custom metrics, multi-cloud portability). SageMaker and Vertex AI endpoints were deployed as complements, then deleted after testing to save costs. The decision of when to use each is documented with measured latency, cost, and deploy-time comparisons ([ADR-017](docs/decisions/017-custom-vs-managed-ml-platforms.md)).
 
 ---
 
@@ -65,7 +63,7 @@ Custom FastAPI + K8s is the primary architecture (SHAP middleware, Prometheus cu
 
 | If you want to understand... | Start here |
 |------------------------------|-----------|
-| **Why decisions were made** | [docs/decisions/](docs/decisions/) — 18 ADRs with context, alternatives, and trade-offs |
+| **Why decisions were made** | [docs/decisions/](docs/decisions/) — 19 ADRs with context, alternatives, and trade-offs |
 | **What was built** | [README.md](README.md) — architecture, metrics, evidence |
 | **How it runs** | [QUICK_START.md](QUICK_START.md) — 5-minute demo |
 | **What broke and how it was fixed** | [CHANGELOG.md](CHANGELOG.md) — incident history from v1.0.0 to v3.6.0 |
@@ -76,4 +74,4 @@ Custom FastAPI + K8s is the primary architecture (SHAP middleware, Prometheus cu
 ---
 
 *Readable in under 5 minutes. For deep dives, follow the ADR links.*
-*Portfolio v3.6.0 — April 2026 — Deployed on GCP (GKE) + AWS (EKS)*
+*Portfolio v3.6.0 — April 2026 — deployed to GKE and EKS in March 2026, now offline to save costs ([ADR-018](docs/decisions/018-portfolio-maintenance-mode.md))*

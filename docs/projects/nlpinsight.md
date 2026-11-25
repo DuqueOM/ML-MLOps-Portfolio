@@ -151,7 +151,7 @@ should be measured against runtime behavior, not only model score.
 
 ## Responsible AI
 
-- **Fairness**: Per-class F1 parity monitored; no class F1 below 0.90
+- **Fairness**: Per-class F1 is tracked; F1-macro is 0.748, so the minority negative class is the one to watch
 - **Drift**: Sentiment distribution monitored via Prometheus (`nlpinsight_predictions_total{sentiment}`); shift alerts calibrated as relative change from 7-day baseline (not absolute — a market crisis legitimately shifts the distribution)
 - **Validation**: Pandera schemas for input text and label format
 

@@ -240,7 +240,7 @@ manifests or supply chain, the template wins (ADR-003).
 | **LLM / GenAI** | Out of scope by decision | LiteLLM, prompt registry, semantic cache, guardrails, promptfoo gates |
 | **Governance model** | 38 anti-patterns (D-01→D-38) + 8 audit-standard (Q-01→Q-08) | Technology triage: core / demonstrated / studied / **rejected**, each with its reason |
 | **Agentic surface** | 19 rules · 27 skills · 20 workflows | 23 rules · 29 skills · 22 workflows |
-| **ADRs** | 52 | 12 |
+| **ADRs** | 54 | 12 |
 | **Entry cost** | Minutes — `copier copy` a service | Hours — a monorepo with a six-stage progression |
 | **Read it in** | An afternoon | Not in an afternoon, and that is the trade |
 
@@ -315,7 +315,7 @@ it by itself. The core itself is developed in `ml-platform`. The original shared
 ```
 ML-MLOps-Portfolio (this repo)
     │
-    │  Real deployments, 3 ML services, 18 ADRs,
+    │  Real deployments, 3 ML services, 19 ADRs,
     │  measured incidents, 395+ tests
     │  Where the lessons were paid for.
     │

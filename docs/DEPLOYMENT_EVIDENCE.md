@@ -78,21 +78,21 @@ graph TB
 | Pod Security Standards | baseline enforce, restricted warn | baseline enforce | Namespace labels applied |
 | Network Policies | default-deny + 3 allow rules | default-deny + 3 allow rules | Applied to cluster |
 | Pod Disruption Budgets | minAvailable=1 (3 services) | minAvailable=1 | Applied to cluster |
-| Test coverage | 90-98% (395+ tests) | 90-98% | Codecov integration, 85% CI threshold |
+| Test coverage | 90-99% (395+ tests) | 90-99% | Codecov integration, 85% CI threshold |
 | Adversarial testing | 43 robustness tests | 43 tests | SQL injection, XSS, boundary, Unicode |
 | Infra testing (Terraform) | tfsec + checkov | tfsec + checkov | GCP 51/71, AWS 84/116 |
 | Infra testing (K8s) | kube-linter + conftest | kube-linter + conftest | 9/9 passed, 0 OPA violations |
 
 ## Test Results (v3.5.3 — Verified 2026-03-13)
 
-### Unit Test Coverage (395+ total tests, 0 failures)
+### Unit Test Coverage (current `main`, re-measured 2026-11-24: 395+ tests, 0 failures)
 
 | Project | Tests | Coverage | CI Threshold |
 |---------|-------|----------|--------------|
 | BankChurn | 199 | **90%** | 85% |
 | NLPInsight | 74 | **98%** | 85% |
-| ChicagoTaxi | 122 | **91%** | 85% |
-| **Total** | **395+** | **90–98%** | 85% |
+| ChicagoTaxi | 122 | **99%** | 85% |
+| **Total** | **395+** | **90–99%** | 85% |
 
 ### Smoke & Integration Tests (Live GKE + EKS, 2026-03-13)
 

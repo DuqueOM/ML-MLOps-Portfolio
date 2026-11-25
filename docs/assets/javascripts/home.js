@@ -90,7 +90,7 @@
       project: "BankChurn Predictor",
       href: "projects/bankchurn-debugging/",
       title: "81% of requests failing. The model was fine.",
-      description: "A load test exposed an 81% error rate on the BankChurn API. Root cause: uvicorn --workers inside Kubernetes — multiple workers competing for one shared CPU budget produce thrashing, not parallelism. Redesigned the inference path with asyncio plus a ThreadPoolExecutor (GIL analysis documented), errors dropped to zero and the CPU request was halved.",
+      description: "A load test showed an 81% error rate on the BankChurn API. I found the root cause: uvicorn --workers inside Kubernetes — several workers competing for one shared CPU budget produce thrashing, not parallelism. I redesigned the inference path with asyncio plus a ThreadPoolExecutor (GIL analysis documented): errors dropped to zero and the CPU request was halved.",
       metrics: [
         ["errors under load", "81% → 0%"],
         ["cpu request", "2000m → 1000m"],
@@ -106,7 +106,7 @@
       tag: "trade-off // nlp serving",
       project: "NLPInsight Analyzer",
       href: "projects/nlpinsight/",
-      title: "The heavier model we chose not to ship",
+      title: "The heavier model I chose not to ship",
       description: "Financial sentiment classification where the production question mattered more than the leaderboard: a transformer would score higher and cost more to operate, explain and debug. NLPInsight ships a lightweight, explainable path — and documents the rejected alternative as an engineering decision, not an omission.",
       metrics: [
         ["accuracy", "80.6%"],
@@ -122,14 +122,14 @@
       tag: "leakage // forecasting",
       project: "ChicagoTaxi Pipeline",
       href: "projects/chicagotaxi/",
-      title: "A score too good to be true — until it was",
-      description: "Demand forecasting over 6.3M Chicago taxi trips. The first model looked perfect because a feature was leaking the future into training. Removed the leak, rebuilt validation as strictly temporal, and the R² of 0.96 that survived honest re-evaluation is the one published.",
+      title: "The leak I found — and the honest score that was higher",
+      description: "Demand forecasting over 6.3M Chicago taxi trips. The first model used same-period averages (fare, distance, speed) that are only known after the fact: data leakage. I replaced them with lag features from past hours and a strictly temporal split, and R² went from 0.905 to 0.965 with features that exist at prediction time.",
       metrics: [
         ["r²", "0.96 — honest"],
         ["volume", "6.3M trips"],
-        ["etl", "PySpark · temporal CV"]
+        ["etl", "PySpark · temporal split"]
       ],
-      diagram: '<svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="Forecasting pipeline: 6.3M trips through PySpark ETL and temporal cross-validation to forecast; leaky feature removed"><g class="mlh-d-node"><rect x="2" y="32" width="100" height="32" rx="3"/><text x="52" y="52">6.3M trips</text></g><path d="M102 48 H142" class="mlh-d-edge"/><g class="mlh-d-node mlh-d-accent"><rect x="142" y="32" width="120" height="32" rx="3"/><text x="202" y="52">pyspark etl</text></g><path d="M262 48 H302" class="mlh-d-edge"/><g class="mlh-d-node"><rect x="302" y="32" width="130" height="32" rx="3"/><text x="367" y="52">temporal cv</text></g><path d="M432 48 H472" class="mlh-d-edge"/><g class="mlh-d-node"><rect x="472" y="32" width="86" height="32" rx="3"/><text x="515" y="52">forecast</text></g><text x="202" y="86" class="mlh-d-note mlh-d-warn">leaky feature → removed before metrics</text></svg>',
+      diagram: '<svg viewBox="0 0 560 96" class="mlh-diagram" role="img" aria-label="Forecasting pipeline: 6.3M trips through PySpark ETL and a temporal split to forecast; leaky features replaced with lag features"><g class="mlh-d-node"><rect x="2" y="32" width="100" height="32" rx="3"/><text x="52" y="52">6.3M trips</text></g><path d="M102 48 H142" class="mlh-d-edge"/><g class="mlh-d-node mlh-d-accent"><rect x="142" y="32" width="120" height="32" rx="3"/><text x="202" y="52">pyspark etl</text></g><path d="M262 48 H302" class="mlh-d-edge"/><g class="mlh-d-node"><rect x="302" y="32" width="130" height="32" rx="3"/><text x="367" y="52">temporal split</text></g><path d="M432 48 H472" class="mlh-d-edge"/><g class="mlh-d-node"><rect x="472" y="32" width="86" height="32" rx="3"/><text x="515" y="52">forecast</text></g><text x="202" y="86" class="mlh-d-note mlh-d-warn">leaky features → lag features · R² 0.905 → 0.965</text></svg>',
       links: [
         ["See the ChicagoTaxi Pipeline service", "projects/chicagotaxi/"]
       ]

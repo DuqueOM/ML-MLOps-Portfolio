@@ -90,7 +90,7 @@ The dataset is 80/20 retained/churned. A model predicting "no churn" for everyon
 | **Precision** | 0.73 | 73% of flagged customers actually churn |
 | **Recall** | 0.54 | 54% of actual churners caught (at 0.50); **78% at production threshold 0.35** |
 
-**Production threshold: 0.35** — a missed churner costs ~$1,500 LTV; an unnecessary retention offer costs ~$50. At 30:1 cost ratio, we favor recall over precision.
+**Production threshold: 0.35** — a missed churner costs ~$1,500–$3,000 LTV; an unnecessary retention offer costs ~$50. At a 30:1 cost ratio, I favor recall over precision.
 
 ## Architecture
 
@@ -111,7 +111,7 @@ flowchart LR
     L --> M
 ```
 
-**Why StackingClassifier**: 4 diverse base learners capture complementary patterns (bagging + boosting + tree + gradient). AUC improved from 0.84 (best single model) to 0.87. CV variance is tight (±0.006), confirming generalization over memorization. See [ADR-003](../decisions/003-stacking-classifier-bankchurn.md).
+**Why StackingClassifier**: 4 diverse base learners capture complementary patterns (bagging + boosting + tree + gradient). AUC improved from 0.86 (best single model, LightGBM) to 0.87. CV variance is tight (±0.006), confirming generalization over memorization. See [ADR-003](../decisions/003-stacking-classifier-bankchurn.md).
 
 ## Engineering Trade-Off
 

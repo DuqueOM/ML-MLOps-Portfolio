@@ -2,7 +2,7 @@
 
 # 🚀 ML/MLOps Portfolio — Production ML Systems
 
-**3 ML services · deployed to GKE + EKS in March 2026, then shut down to save costs · 18 ADRs · 395+ tests**
+**3 ML services · deployed to GKE + EKS in March 2026, then shut down to save costs · 19 ADRs · 395+ tests**
 
 [![CI](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
 [![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)
@@ -20,7 +20,7 @@
 
 > **⚙️ Operational status:** Infrastructure (GKE + EKS) is **currently offline**.
 > The code, manifests, Terraform, and CI/CD are production-tested — the clusters
-> were deployed to during development (v3.6.0, March 2026) and torn down after.
+> were deployed to during development (March 2026) and torn down after.
 > See [**PORTFOLIO_STATUS.md**](PORTFOLIO_STATUS.md) for what is live, what is
 > paused, and how to reactivate in ~1 hour. See [**ADR-018**](docs/decisions/018-portfolio-maintenance-mode.md)
 > for the decision record.
@@ -59,7 +59,7 @@ The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0. Each entry
 
 | I want to understand... | Start here |
 |------------------------|-----------|
-| Why decisions were made (not just what) | [18 ADRs ↓](#-architectural-decision-records--18-documented) |
+| Why decisions were made (not just what) | [19 ADRs ↓](#-architectural-decision-records--19-documented) |
 | Incidents diagnosed in production | [ENGINEERING_HIGHLIGHTS.md →](ENGINEERING_HIGHLIGHTS.md) |
 | Agentic Development Configuration | [AGENTS.md ↓](#-agentic-development-configuration) |
 | What was built and how it performs | [Projects ↓](#production-style-projects) |
@@ -71,38 +71,15 @@ The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0. Each entry
 
 ## Template
 
-The MLOps patterns in this portfolio are available as a reusable, opinionated template:
-
-**[ml-service-template](https://github.com/DuqueOM/ml-service-template)** · [related-projects.md](docs/related-projects.md)
-
-**v1.12.0 highlights** — *audit Round-3 close + pre-commit hardened as mandatory first filter*:
-- **36 encoded anti-patterns** (D-01 → D-36) — runtime, data, EDA, security, closed-loop, lifecycle (warm-up, PDB, PSS), delivery (env gates, API contracts, SBOM, digest pin), placeholder hygiene (D-32: kebab-vs-snake path bug)
-- **Pre-commit as mandatory first filter** — 14 hooks (black, isort, flake8, mypy, bandit, gitleaks, trailing-whitespace, EOF, YAML, merge-conflict, large-files, validate-agentic, ci-autofix-policy-contract, scaffold-smoke); `default_install_hook_types: [pre-commit, pre-push]` so a single `pre-commit install` covers both stages; `make verify-hooks` audits any time; `scripts/dev-setup.sh` bootstraps idempotently and verifies hooks actually landed in `.git/hooks/`
-- **Closed-loop verification workflow** — `golden-path-extended.yml` re-deploys + posts 100 valid + 5 invalid `/predict` requests + asserts the prediction-log counter increments; new `test_closed_loop_workflow_contract.py` parses both schema and workflow and fails LOUD if they drift (R3 HIGH-1 fix)
-- **GCP ↔ AWS Terraform parity** (v1.11.0) — secrets / logging / KMS at the live layer + bootstrap split + 14 parity contract tests; cluster defaults (private endpoint opt-in, system/workload pool split with taint, deny-default NetworkPolicy)
-- **ADR-018 Operational Memory Plane + ADR-019 Agentic CI Self-Healing (Phase 0)** — policy YAMLs (`templates/config/{ci_autofix_policy,model_routing_policy}.yaml`) + 10-invariant contract test enforcing escalation-only semantics; runtime phases scoped as explicit follow-ons
-- **OSS package complete** (v1.11.0) — NOTICE (Apache-2.0 attribution) + DCO.md + `.github/CODEOWNERS` routing for AGENTS.md, ADRs, infra, governance YAMLs
-- **Two Behavior Protocols** — static AUTO/CONSULT/STOP mapping (AGENTS.md) PLUS dynamic risk escalation (ADR-010) based on live signals: `incident_active`, `drift_severe`, `error_budget_exhausted`, `off_hours`, `recent_rollback`
-- **6 environment overlays** (`gcp-{dev,staging,prod}` + `aws-{dev,staging,prod}`) with PSS-labeled namespaces (baseline for dev/staging, restricted for prod) and tier-scaled resources — closes the silent gap where the deploy workflows referenced names the repo never shipped
-- **Image digest pinning end-to-end** — build job captures `sha256:...`, `deploy-common.yml` runs `kustomize edit set image …@<digest>` BEFORE `kubectl apply`; the Kyverno digest gate finally has compliant manifests to admit
-- **Cosign + SBOM actually invoked** in `deploy-{gcp,aws}.yml` (was a silent gap until v1.10.0); SLSA L2 trust chain end-to-end
-- **6-phase EDA pipeline** with leakage hard gate + baseline distributions feeding drift detection
-- **Cloud-native secrets** — `common_utils/secrets.py` (AWS Secrets Manager / GCP Secret Manager via IRSA/WI); two bootstrap runbooks (GCP WIF + AWS IRSA) + `/secret-breach` emergency workflow
-- **Per-environment Terraform remote state** — partial backend configs under `templates/infra/terraform/{gcp,aws}/backend-configs/` with the `terraform-state-bootstrap.md` runbook
-- **Drift + retrain operationalized** — cloud-aware GCS/S3 adapters via OIDC, Prometheus Pushgateway integration, MLflow promotion hooks
-- **Typed inter-agent handoffs** — frozen dataclasses validating invariants at construction; `DeploymentRequest` refuses to construct when `env=production` + `audit.passed=False`; `SecurityAuditResult` blocks on any `trivy_high` finding
-- **Audit trail** — every agentic operation appends to `ops/audit.jsonl` with risk signals + base mode; CI calls `scripts/audit_record.py` on every deploy (success AND failure via `if: always()`) and mirrors a markdown summary to the GitHub Actions step summary
-- **Golden Path E2E workflow** — `.github/workflows/golden-path.yml` validates the full chain on every PR: scaffold → build + sign by digest → kind cluster + Kyverno admit + smoke → audit trail. **Trust anchor for the audit closure.**
-- **Tri-IDE full parity** — Windsurf (15 rules / 16 skills / 12 workflows) · Claude Code (14 rules / 12 commands / 16-skill index) · Cursor (12 rules / 12 commands / 16-skill index)
-- **Closed-loop monitoring** — prediction logger + ground truth ingestion + sliced performance (ADR-007) + Champion/Challenger McNemar + bootstrap ΔAUC gate (ADR-008) + 10-panel Grafana dashboard
-- **Governed delivery** — dev → staging → prod chain with GitHub Environment Protection, 2 reviewers + 15min soak + tag-only for prod (ADR-011); reusable `deploy-common.yml` single source of truth
-- **DORA metrics** — exporter script aggregates deployment_frequency, lead_time_for_changes, change_failure_rate, mttr from GitHub API + `ops/audit.jsonl`
-- **Incident playbooks** — `/rollback` (STOP-class 7-step), `/secret-breach`, `/incident`, `/drift-check`, `/performance-review` slash commands
-- **38 ADRs** — each records alternatives rejected AND measurable revisit triggers; ADR-015 publishes the productization roadmap (3 phases / 12 PRs); ADR-016 codifies the external-audit R2 remediation backlog; ADR-018/019 ratify the new agent capabilities at policy-only Phase 0
+The MLOps patterns in this portfolio became a separate architecture study:
+**[ml-service-template](https://github.com/DuqueOM/ml-service-template)**, a Copier template for one classical ML
+service on Kubernetes (GKE/EKS), with 38 anti-patterns and 54 ADRs. I designed and directed it; AI coding agents wrote
+most of the code. Not deployed to a cloud. Details: [template page](https://duqueom.github.io/ML-MLOps-Portfolio/template/)
+· [how the projects relate](docs/related-projects.md).
 
 ---
 
-## 📐 Architectural Decision Records — 18 Documented
+## 📐 Architectural Decision Records — 19 Documented
 
 Not explanations of what was built — records of what was **evaluated, rejected, and why**. Written for technical reviewers.
 
@@ -110,7 +87,7 @@ Not explanations of what was built — records of what was **evaluated, rejected
 |-----|----------|-------------------|
 | [001](docs/decisions/001-cpu-only-hpa.md) | CPU-only HPA | Proved mathematically that memory HPA cannot scale down ML pods |
 | [003](docs/decisions/003-stacking-classifier-bankchurn.md) | StackingClassifier | Acknowledged single LightGBM achieves comparable AUC at lower cost |
-| [005](docs/decisions/005-compatible-release-pinning.md) | Compatible release pinning | numpy 2.x silently broke serialized models — silent failure, worst category |
+| [005](docs/decisions/005-compatible-release-pinning.md) | Compatible release pinning | A major version (numpy 2.x) arrives only when chosen. The first incident note was re-measured in the 2026-10-23 amendment: numpy alone did not change predictions |
 | [006](docs/decisions/006-drift-triggered-retraining.md) | CronJob over Airflow | Documented why Airflow is over-engineering for a 3-model portfolio |
 | [007](docs/decisions/007-feature-store-decision.md) | No Feature Store | Designed full Feast architecture for when time-window features are needed |
 | [008](docs/decisions/008-argo-rollouts-canary.md) | Argo Rollouts canary | Progressive delivery with Prometheus analysis gates — not all-or-nothing rollout |
@@ -122,38 +99,26 @@ Not explanations of what was built — records of what was **evaluated, rejected
 | [017](docs/decisions/017-custom-vs-managed-ml-platforms.md) | Custom vs Managed ML | FastAPI+K8s primary, SageMaker/Vertex AI as documented complement |
 | [018](docs/decisions/018-portfolio-maintenance-mode.md) | Portfolio Maintenance Mode | $180–220/mo idle cost — documented teardown and reactivation path |
 
-[View all 18 ADRs with full context, alternatives considered, and trade-offs →](docs/decisions/)
+[View all 19 ADRs with full context, alternatives considered, and trade-offs →](docs/decisions/)
 
 ---
 
 ## 🤖 Agentic Development Configuration
 
-Those 18 ADRs don't just live in docs — they're encoded as behavioral constraints in the AI development environment itself.
+The ADRs don't just live in docs — they're encoded as behavioral constraints in the AI development environment itself.
 
 ```
 AGENTS.md           — Project identity, critical DO NOT VIOLATE patterns, HPA targets
-.windsurf/
-├── rules/          — 7 context-aware rules (glob-triggered per file type)
-│   ├── 01-mlops-conventions.md     always_on: core ADR constraints
-│   ├── 02-kubernetes.md            k8s/**/*.yaml: HPA 50/60/60%, single-worker
-│   ├── 03-terraform.md             **/*.tf: state management, tagging
-│   ├── 04-python-ml.md             **/*.py: async patterns, SHAP, pinning
-│   ├── 05-github-actions.md        .github/workflows/: CI standards
-│   ├── 06-documentation.md         docs/**/*.md: ADR format, content guidelines
-│   └── 07-docker.md                Dockerfile*: multi-stage, non-root, no model bake
-├── skills/         — 6 multi-step operational procedures with supplementary data
-│   ├── debug-ml-inference/         symptom → root cause → ADR cross-reference
-│   ├── deploy-gke/ deploy-aws/     pre/post-deploy checklists + rollback procedures
-│   ├── drift-detection/            per-service PSI thresholds + alert integration
-│   ├── model-retrain/              validation criteria + acceptance gates per service
-│   └── release-checklist/          full multi-cloud release + CHANGELOG template
-└── workflows/      — 6 structured prompt workflows
-    /incident · /retrain · /release · /load-test · /new-adr · /drift-check
+.devin/
+├── rules/          — 15 context-aware rules (Kubernetes, Terraform, Python serving and training, Docker, CI…)
+├── skills/         — 16 multi-step procedures (debug inference, deploy GKE/EKS, drift, retrain, release, rollback…)
+└── workflows/      — 12 prompt workflows
+    /incident · /retrain · /release · /load-test · /new-adr · /drift-check · /rollback …
 ```
 
 The agent knows: 50%/60%/60% CPU targets (not 70%), `KernelExplainer` for SHAP (not `TreeExplainer`), `workers=1` (never N) under K8s. Operational knowledge encoded as constraints — not just referenced as documentation.
 
-→ [AGENTS.md](AGENTS.md) &nbsp;|&nbsp; [.windsurf/](.windsurf/)
+→ [AGENTS.md](AGENTS.md) &nbsp;|&nbsp; [.devin/](.devin/)
 
 ---
 
@@ -163,7 +128,7 @@ The agent knows: 50%/60%/60% CPU targets (not 70%), `KernelExplainer` for SHAP (
 |---------|------|-------------|----------|-------------|--------------------------|
 | [🏦 BankChurn](BankChurn-Predictor/) | Classification | **AUC 0.87** | 90% | 200ms GCP / 110ms AWS | Async inference via ThreadPoolExecutor · threshold 0.35 (30:1 cost ratio) |
 | [📝 NLPInsight](NLPInsight-Analyzer/) | NLP Sentiment | **Acc 80.6%** | 98% | 78ms GCP / 100ms AWS | Upgraded to harder dataset (97% → 80.6%) for honest benchmark |
-| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96** | 91% | 100ms GCP / 120ms AWS | Data leakage found & fixed · lag features + temporal split |
+| [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96** | 99% | 100ms GCP / 120ms AWS | Data leakage found & fixed · lag features + temporal split |
 
 | Infrastructure | Status | Details |
 |----------------|--------|---------|
@@ -208,7 +173,7 @@ Financial sentiment analysis on **Twitter Financial News** — 11,931 real finan
 > **Why these metrics**: 80.6% on real financial tweets (vs 97% on the easier Financial PhraseBank) is the honest choice. The dataset upgrade — from 4,845 curated sentences to 11,931 noisy real tweets — deliberately lowered the metric to produce a more defensible benchmark. F1-macro (0.748) guards against ignoring the minority negative class.
 
 **Key engineering decisions:**
-- **ADR-009**: Chose harder dataset over better-looking number — intellectual honesty over portfolio optics
+- **Dataset upgrade** ([CHANGELOG 3.5.0](CHANGELOG.md)): chose the harder dataset over the better-looking number
 - Dual-backend design: TF-IDF+LogReg for CPU production (5ms p50), FinBERT for GPU environments — same API contract, different serving backend
 
 [📂 Project](NLPInsight-Analyzer/) · [📄 Model Card](NLPInsight-Analyzer/model_card.md) · [📺 Video](https://youtu.be/7dFFqq2ROPw)
@@ -223,7 +188,7 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 |----------|------------|----------------|----------|------|-----|-------------|
 | **6.36M** | 5.37M | 3,320 rows/sec | **0.96** | 7.87 | 2.85 | 97% (2.8GB→95MB) |
 
-> **Why this project**: The R² 0.96 is **leak-free** — same-period aggregate features (`avg_fare`, `avg_speed`) were identified as data leakage, removed, and replaced with lag features (1h, 24h, 168h, rolling 24h) and a temporal train/test split. R² improved from 0.905 → 0.965 with honest features. The initial high R² was a signal to investigate, not celebrate.
+> **Why this project**: The R² 0.96 is **leak-free** — same-period aggregate features (`avg_fare`, `avg_speed`) were identified as data leakage, removed, and replaced with lag features (1h, 24h, 168h, rolling 24h) and a temporal train/test split. R² improved from 0.905 → 0.965 with honest features. I found the leak after the first release (v3.4.0) and fixed it the next day (v3.5.0).
 
 **Key engineering decisions:**
 - **ADR-009 (data leakage)**: `avg_fare` was computed from the same trips being predicted — future information leaked into training. Documented, fixed, R² re-measured with honest features only
@@ -243,9 +208,9 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 | **Monitoring** | Prometheus (16 alert rules), Grafana (26-panel dashboard), Locust load testing, Evidently drift detection |
 | **CI/CD** | GitHub Actions (CI + deploy-gcp + deploy-aws + smoke tests), Codecov, pre-commit hooks |
 | **Security** | Gitleaks, Bandit, Trivy, pip-audit, non-root containers, Network Policies, Pod Disruption Budgets |
-| **Testing** | pytest (395+ tests, 90–98% coverage), Pandera data validation, 43 adversarial tests |
+| **Testing** | pytest (395+ tests, 90–99% coverage), Pandera data validation, 43 adversarial tests |
 | **Responsible AI** | Fairness audits (disparate impact + equal opportunity), SHAP explainability, drift detection (KS + PSI) |
-| **Agentic** | Windsurf Cascade, AGENTS.md, 7 glob-triggered rules + 6 operational skills + 6 structured workflows |
+| **Agentic** | AGENTS.md + `.devin/`: 15 rules, 16 skills, 12 workflows (built with Windsurf Cascade at the time) |
 | **Managed ML** | AWS SageMaker Endpoints, GCP Vertex AI ([ADR-017](docs/decisions/017-custom-vs-managed-ml-platforms.md)) |
 
 ---
@@ -256,7 +221,7 @@ Data engineering pipeline processing **6.3M taxi trips** (2.8 GB CSV) via PySpar
 graph TB
     subgraph "CI/CD Pipeline — GitHub Actions"
         GH[GitHub Actions] --> LINT[Lint + Security<br/>Bandit · Gitleaks · Trivy]
-        GH --> TEST[pytest · 395+ tests<br/>90-98% coverage]
+        GH --> TEST[pytest · 395+ tests<br/>90-99% coverage]
         GH --> BUILD[Docker Build]
         BUILD --> AR[GCP Artifact Registry]
         BUILD --> ECR[AWS ECR]
@@ -283,7 +248,7 @@ graph TB
 
     subgraph "AWS — EKS Cluster (us-east-1)"
         direction TB
-        AWS_ING[nginx Ingress<br/>NLB] --> BC2[BankChurn<br/>StackingClassifier]
+        AWS_ING[nginx Ingress<br/>Classic ELB] --> BC2[BankChurn<br/>StackingClassifier]
         AWS_ING --> NL2[NLPInsight<br/>TF-IDF+LogReg]
         AWS_ING --> CT2[ChicagoTaxi<br/>Batch Predictions]
         BC2 -.->|Init Container| S3
@@ -339,7 +304,7 @@ Same ML system deployed cloud-agnostically on **both GCP and AWS**:
 
 ![Multi-Cloud HERO: GKE vs EKS](docs/media/screenshots/aws-terminal/36-multicloud-side-by-side.png)
 
-*Same 6 services running on GCP (GKE, us-central1) and AWS (EKS, us-east-1) — simultaneously deployed and verified*
+*Same 6 pods running on GCP (GKE, us-central1) and AWS (EKS, us-east-1) — simultaneously deployed and verified*
 
 </div>
 
@@ -348,7 +313,7 @@ Same ML system deployed cloud-agnostically on **both GCP and AWS**:
 | **K8s Cluster** | GKE 1–5 nodes (`us-central1`) | EKS 1–5 nodes (`us-east-1`) |
 | **Container Registry** | Artifact Registry | ECR (3 private repos) |
 | **Model Storage** | GCS (versioned) | S3 (encrypted, versioned) |
-| **Load Balancer** | nginx Ingress (static IP) | nginx Ingress (NLB) |
+| **Load Balancer** | nginx Ingress (static IP) | nginx Ingress (Classic ELB) |
 | **IAM for Pods** | Workload Identity | IRSA |
 | **CI/CD** | `deploy-gcp.yml` | `deploy-aws.yml` |
 | **IaC** | `infra/terraform/gcp/` | `infra/terraform/aws/` |
@@ -357,18 +322,18 @@ Same ML system deployed cloud-agnostically on **both GCP and AWS**:
 
 > **Cloud-Agnostic Design**: Monitoring stack, K8s patterns (HPA, anti-affinity, health probes), and CI/CD structure are identical across clouds. Only the init container SDK and ingress annotations differ. See [ADR-013](docs/decisions/013-multicloud-parity-policy.md).
 
-> **💰 FinOps**: Infrastructure is provisioned on-demand via Terraform and decommissioned after validation. Re-deployable in <15 minutes with `terraform apply` — reproducibility over always-on cost. GCP ~$51/month · AWS ~$45/month when running. Performance difference documented in [ADR-016](docs/decisions/016-gcp-aws-performance-parity.md) — accepted as a cost trade-off, not hidden.
+> **💰 FinOps**: Infrastructure is provisioned on-demand via Terraform and decommissioned after validation. Re-deployable in about 1 hour ([ADR-018](docs/decisions/018-portfolio-maintenance-mode.md)) — reproducibility over always-on cost. Both clouds together cost about $180–220/month when running. Performance difference documented in [ADR-016](docs/decisions/016-gcp-aws-performance-parity.md) — accepted as a cost trade-off, not hidden.
 
 <div align="center">
 
-[![🎬 Full Demo — YouTube (3:30 min)](https://img.shields.io/badge/🎬_Full_Demo-YouTube_(3:30_min)-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
+[![🎬 Full Demo — YouTube (3 min)](https://img.shields.io/badge/🎬_Full_Demo-YouTube_(3_min)-red?style=for-the-badge&logo=youtube)](https://youtu.be/7dFFqq2ROPw)
 
 </div>
 
 <details>
 <summary><strong>📊 GCP Evidence — click to expand</strong></summary>
 
-#### GKE Workloads — 6 services running
+#### GKE Workloads — 6 pods running
 ![GKE Workloads](docs/media/screenshots/gcp-console/05-gke-workloads-running.png)
 
 #### Grafana ML Dashboard — 26 panels
@@ -412,7 +377,7 @@ Same ML system deployed cloud-agnostically on **both GCP and AWS**:
 | Document | Description |
 |----------|-------------|
 | **[⭐ Engineering Highlights](ENGINEERING_HIGHLIGHTS.md)** | **Start here** — incidents diagnosed, decisions made, trade-offs documented |
-| **[ADRs (18)](docs/decisions/)** | Every non-trivial architectural decision with context, alternatives, and trade-offs |
+| **[ADRs (19)](docs/decisions/)** | Every non-trivial architectural decision with context, alternatives, and trade-offs |
 | **[AGENTS.md](AGENTS.md)** | Agentic development configuration |
 | **[RUNBOOK.md](RUNBOOK.md)** | Copy-paste commands for common operations |
 | **[Quick Start](QUICK_START.md)** | 5-minute demo with API examples and health checks |
@@ -426,7 +391,7 @@ Same ML system deployed cloud-agnostically on **both GCP and AWS**:
 
 ## 🔧 AI Transparency
 
-I designed the architecture and made the decisions (18 ADRs); AI coding agents (Windsurf Cascade at the time) helped me build it faster. The system design, the trade-offs and the incident fixes are mine. The `.windsurf/` configuration sets the rules the agent had to follow: tests first, small reviewed changes, CI gates.
+I designed the architecture and made the decisions (19 ADRs); AI coding agents (Windsurf Cascade at the time) helped me build it faster. The system design, the trade-offs and the incident fixes are mine. The agent configuration (now in `.devin/`) sets the rules the agent had to follow: tests first, small reviewed changes, CI gates.
 
 ---
 

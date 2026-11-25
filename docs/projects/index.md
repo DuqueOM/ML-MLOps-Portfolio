@@ -35,7 +35,7 @@ Prometheus + Grafana monitoring, and the incident write-ups. Deployed to GKE
 and EKS in March 2026, then shut down to save costs. I designed the
 architecture and made the decisions; AI coding agents helped me build it faster.
 
-395+ automated tests and 18 architecture decision records hold it together —
+395+ automated tests and 19 architecture decision records hold it together —
 every non-trivial choice is documented with the alternatives it rejected.
 
 </div>
@@ -90,7 +90,7 @@ heavier transformer documented as a rejected trade-off.</p>
 <div class="portfolio-badge-row" markdown="1">
 <span class="portfolio-badge">R² 0.96</span>
 <span class="portfolio-badge">6.3M rows</span>
-<span class="portfolio-badge">PySpark · temporal CV</span>
+<span class="portfolio-badge">PySpark · temporal split</span>
 </div>
 <p>Demand forecasting at scale with strictly temporal validation — and the
 data leak I found and fixed: R² went from 0.905 to 0.965 with honest lag features.</p>
@@ -105,7 +105,7 @@ portfolio lives in one place:
 <div class="portfolio-actions" markdown="1">
 [:fontawesome-solid-flask: Evidence](../technical-evidence.md){ .portfolio-button .portfolio-button--primary }
 [:fontawesome-solid-cloud: Deployment](../DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
-[:fontawesome-solid-circle-check: Status](../DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
+[:fontawesome-solid-circle-check: Status](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/PORTFOLIO_STATUS.md){ .portfolio-button }
 [:fontawesome-solid-diagram-project: ADRs](../architecture/decisions.md){ .portfolio-button }
 [:fontawesome-brands-github: Repository](https://github.com/DuqueOM/ML-MLOps-Portfolio){ .portfolio-button }
 </div>
@@ -148,7 +148,7 @@ with local neural voices (Piper, Qwen3-TTS), in Spanish and English in the same
 text, offline.
 
 One of its voices I fine-tuned myself: a Qwen3-TTS voice trained with LoRA on
-my own GPU (RTX 5070, 8 GB). I chose the training setup and the final epoch,
+my own GPU (RTX 5070 Laptop GPU, 8 GB). I chose the training setup and the final epoch,
 and used WavLM to compare the voices. 15 ADRs record the decisions. Built with
 AI coding agents.
 

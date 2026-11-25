@@ -105,7 +105,7 @@ and <code>ThreadPoolExecutor</code>.</p>
 <p>The portfolio preserves deployment proof while pausing live clusters when
 the monthly cost is not justified for a public showcase.</p>
 
-[Portfolio status](DEPLOYMENT_EVIDENCE.md){ .portfolio-button }
+[Portfolio status](https://github.com/DuqueOM/ML-MLOps-Portfolio/blob/main/PORTFOLIO_STATUS.md){ .portfolio-button }
 </div>
 
 <div class="portfolio-card" markdown="1">
@@ -114,7 +114,7 @@ the monthly cost is not justified for a public showcase.</p>
 <p>The reusable template turns repeated failure modes into documented defaults,
 rules and reviewable workflows.</p>
 
-[Production template](template.md){ .portfolio-button }
+[ml-service-template](template.md){ .portfolio-button }
 </div>
 </div>
 

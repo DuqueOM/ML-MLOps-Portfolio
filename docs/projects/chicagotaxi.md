@@ -22,7 +22,7 @@ Process 6.3 million taxi trips into hourly demand predictions — the data engin
 <div class="portfolio-stat">
 <small>Model quality</small>
 <strong>R2 0.96</strong>
-<span>Temporal and spatial lag features explain most variance.</span>
+<span>Lag features (1 h, 24 h, 168 h) explain most variance.</span>
 </div>
 <div class="portfolio-stat">
 <small>Compression</small>
@@ -149,13 +149,13 @@ pattern to the workload instead of using one architecture everywhere.
 
 ## Why R² 0.96 Is Strong
 
-This is a regression problem on aggregated hourly counts. R² 0.9649 means 96.5% of demand variance is explained by temporal + spatial lag features alone — without weather, events, or holiday calendars. RMSE of 7.87 on hourly counts means predictions are off by ~8 trips per hour per area on average. The model benefits from strong temporal periodicity and leak-free lag features (historical counts only).
+This is a regression problem on aggregated hourly counts. R² 0.9649 means 96.5% of demand variance is explained by time features, the area and past-demand lag features alone — without weather, events, or holiday calendars. RMSE of 7.87 on hourly counts means predictions are off by ~8 trips per hour per area on average. The model benefits from strong temporal periodicity and leak-free lag features (historical counts only).
 
 ## Operational
 
 | Metric | Value |
 |--------|-------|
-| Test Coverage | 91% (122 tests) |
+| Test Coverage | 99% (122 tests) |
 | CI Threshold | 85% |
 | Docker Image | 154 MB (`chicagotaxi:v3.6.0`, python:3.11-slim-bookworm) |
 | Model Size | ~2 MB (RandomForest, joblib) |

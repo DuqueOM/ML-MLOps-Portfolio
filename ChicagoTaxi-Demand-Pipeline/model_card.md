@@ -67,7 +67,7 @@ ChicagoTaxi benefits from strong temporal periodicity (rush hours, weekends) tha
 | `trip_count_lag_168h` | float | Demand 1 week ago (same area) | Medium — weekly pattern |
 | `trip_count_rolling_24h` | float | Rolling 24h mean demand (same area) | High — trend indicator |
 
-**Removed (data leakage fix)**: `avg_fare`, `avg_distance_miles`, `avg_speed_mph` were previously used but are computed from the same group of trips that defines `trip_count`. At prediction time these values would not be available. Replacing them with lag features uses only historical information and improved R² to 0.9649 (from near-zero with same-period aggregates removed).
+**Removed (data leakage fix)**: `avg_fare`, `avg_distance_miles`, `avg_speed_mph` were previously used but are computed from the same group of trips that defines `trip_count`. At prediction time these values would not be available. Replacing them with lag features uses only historical information and improved R² from 0.905 (with the leaky same-period aggregates) to 0.9649.
 
 **Not included (intentional)**: weather, holidays, events. These would improve accuracy but add external data dependencies that complicate the batch pipeline.
 

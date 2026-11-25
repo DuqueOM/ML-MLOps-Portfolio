@@ -76,7 +76,6 @@ voice trained on my own GPU, compared with WavLM.
 - **Cloud evidence is from March 2026.** The services ran on GKE and EKS, then I
   shut them down to save costs. The load tests, dashboards and incident write-ups
   stay public.
-- **English B1.** Comfortable reading and writing; spoken English is improving.
 
 ## Useful Links
 
