@@ -26,6 +26,7 @@ curl localhost:8001/health           # API health
 | Gitleaks false positive | Non-secret string | Add to `.gitleaksignore` |
 | MLflow connection refused | Not running | `kubectl port-forward svc/mlflow-service 5000:5000` |
 | Docker build stuck | Cache/network | `docker builder prune -f && docker compose build --no-cache` |
+| Pages deploy: `No artifacts named "github-pages"` | Artifact uploaded and looked up in the same job ([deploy-pages#451](https://github.com/actions/deploy-pages/issues/451)) | Upload it in the build job (`docs.yml` does), then re-run only the failed deploy job |
 
 ## Kubernetes Debugging
 
