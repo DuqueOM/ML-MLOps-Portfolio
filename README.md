@@ -4,6 +4,8 @@
 
 **3 ML services · deployed to GKE + EKS in March 2026, then shut down to save costs · 19 ADRs · 395+ tests**
 
+English · [Español](README.es.md)
+
 [![CI](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml/badge.svg)](https://github.com/DuqueOM/ML-MLOps-Portfolio/actions/workflows/ci-mlops.yml)
 [![codecov](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio/branch/main/graph/badge.svg)](https://codecov.io/gh/DuqueOM/ML-MLOps-Portfolio)
 [![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)](https://python.org)
@@ -27,23 +29,22 @@
 
 ---
 
-## ⚡ Why This Portfolio Is Different
+## ⚡ What This Repo Shows
 
-Most ML portfolios show models that score well. This one shows what happens **after a model has to become a service**: APIs, tests, deployment artifacts, monitoring, cost trade-offs, and documented lessons.
+Three ML models turned into services: APIs, tests, deployment to two clouds, monitoring, cost trade-offs and
+documented incidents. I designed the system and made the decisions; AI coding agents helped me build it faster
+([how it was built ↓](#-how-it-was-built)).
 
-The GitHub Pages site is now the best entry point for recruiters and non-technical reviewers:
-[duqueom.github.io/ML-MLOps-Portfolio](https://duqueom.github.io/ML-MLOps-Portfolio/).
-This README remains the deeper technical record.
+Recruiters and non-technical reviewers: the [portfolio site](https://duqueom.github.io/ML-MLOps-Portfolio/) is the
+best entry point ([resumen en español](README.es.md)). This README is the technical record.
 
-### Three production incidents diagnosed — root cause to fix, documented with data:
+### Three production incidents — root cause to fix, documented with data
 
 | Incident | Root Cause | Fix | Outcome | ADR |
 |----------|------------|-----|---------|-----|
 | 81% error rate under load | `uvicorn --workers N` on K8s: workers share one CPU budget → thrashing, not parallelism | `asyncio.run_in_executor` + `ThreadPoolExecutor(4)` — sklearn C extensions release the GIL | Errors 81% → 0% · CPU 2000m → 1000m | [014](docs/decisions/014-single-worker-pod-ml-inference.md) / [015](docs/decisions/015-async-inference-threadpool.md) |
 | SHAP returning all zeros | `TreeExplainer` incompatible with `StackingClassifier` — evaluated 4 alternatives before deciding | `KernelExplainer` in original 10-feature space (interpretable by business, not 38 encoded cols) | Real SHAP values in production | [010](docs/decisions/010-shap-kernelexplainer-bankchurn.md) |
 | HPA never scaled down | Memory-based HPA + fixed ML footprint: `ceil(replicas × usage/target)` always ≥ current replicas | CPU-only HPA — CPU correlates with traffic; memory is a constant, not a signal | 3 → 1 pods in 8 minutes | [001](docs/decisions/001-cpu-only-hpa.md) |
-
-**This is not a tutorial project. It's an operational record.**
 
 The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0. Each entry has a root cause and a resolution.
 
@@ -61,21 +62,11 @@ The CHANGELOG traces the full incident history from v1.0.0 to v3.6.0. Each entry
 |------------------------|-----------|
 | Why decisions were made (not just what) | [19 ADRs ↓](#-architectural-decision-records--19-documented) |
 | Incidents diagnosed in production | [ENGINEERING_HIGHLIGHTS.md →](ENGINEERING_HIGHLIGHTS.md) |
-| Agentic Development Configuration | [AGENTS.md ↓](#-agentic-development-configuration) |
-| What was built and how it performs | [Projects ↓](#production-style-projects) |
-| How to run it locally in 5 minutes | [Quick Start ↓](#-quick-start) |
-| Multi-cloud deployment evidence | [Deployment ↓](#multi-cloud-production-deployment) |
+| What was built and how it performs | [Projects ↓](#-production-style-projects) |
+| How to run it locally | [Quick Start ↓](#-quick-start) |
+| Multi-cloud deployment evidence | [Deployment ↓](#️-multi-cloud-production-deployment) |
+| How it was built with AI coding agents | [How it was built ↓](#-how-it-was-built) |
 | What broke and when | [CHANGELOG.md →](CHANGELOG.md) |
-
----
-
-## Template
-
-The MLOps patterns in this portfolio became a separate architecture study:
-**[ml-service-template](https://github.com/DuqueOM/ml-service-template)**, a Copier template for one classical ML
-service on Kubernetes (GKE/EKS), with 38 anti-patterns and 54 ADRs. I designed and directed it; AI coding agents wrote
-most of the code. Not deployed to a cloud. Details: [template page](https://duqueom.github.io/ML-MLOps-Portfolio/template/)
-· [how the projects relate](docs/related-projects.md).
 
 ---
 
@@ -83,42 +74,24 @@ most of the code. Not deployed to a cloud. Details: [template page](https://duqu
 
 Not explanations of what was built — records of what was **evaluated, rejected, and why**. Written for technical reviewers.
 
-| ADR | Decision | The Harder Choice |
+| ADR | Decision | Why it matters |
 |-----|----------|-------------------|
-| [001](docs/decisions/001-cpu-only-hpa.md) | CPU-only HPA | Proved mathematically that memory HPA cannot scale down ML pods |
+| [001](docs/decisions/001-cpu-only-hpa.md) | CPU-only HPA | The HPA formula shows memory-based scaling can never scale ML pods down |
 | [003](docs/decisions/003-stacking-classifier-bankchurn.md) | StackingClassifier | Acknowledged single LightGBM achieves comparable AUC at lower cost |
 | [005](docs/decisions/005-compatible-release-pinning.md) | Compatible release pinning | A major version (numpy 2.x) arrives only when chosen. The first incident note was re-measured in the 2026-10-23 amendment: numpy alone did not change predictions |
 | [006](docs/decisions/006-drift-triggered-retraining.md) | CronJob over Airflow | Documented why Airflow is over-engineering for a 3-model portfolio |
 | [007](docs/decisions/007-feature-store-decision.md) | No Feature Store | Designed full Feast architecture for when time-window features are needed |
 | [008](docs/decisions/008-argo-rollouts-canary.md) | Argo Rollouts canary | Progressive delivery with Prometheus analysis gates — not all-or-nothing rollout |
-| [009](docs/decisions/009-simplification-when-not-to-build.md) | Removed CarVision | MAPE 32.9% not defensible — knowing when not to build is harder |
+| [009](docs/decisions/009-simplification-when-not-to-build.md) | Removed CarVision | MAPE 32.9% was not defensible, so the project was removed |
 | [010](docs/decisions/010-shap-kernelexplainer-bankchurn.md) | SHAP KernelExplainer | Diagnosed production bug, evaluated 4 alternatives before deciding |
-| [014](docs/decisions/014-single-worker-pod-ml-inference.md) | Single-worker pods | Found uvicorn --workers anti-pattern under K8s from first principles |
+| [014](docs/decisions/014-single-worker-pod-ml-inference.md) | Single-worker pods | Found the uvicorn --workers anti-pattern under Kubernetes |
 | [015](docs/decisions/015-async-inference-threadpool.md) | Async inference | GIL analysis → ThreadPoolExecutor → 81% errors → 0% |
-| [016](docs/decisions/016-gcp-aws-performance-parity.md) | GCP/AWS latency gap | $24/mo vs $145/mo — both meet SLA; chose FinOps over vanity metrics |
+| [016](docs/decisions/016-gcp-aws-performance-parity.md) | GCP/AWS latency gap | $24/mo vs $145/mo — both meet the SLA; chose the cheaper option and documented the gap |
 | [017](docs/decisions/017-custom-vs-managed-ml-platforms.md) | Custom vs Managed ML | FastAPI+K8s primary, SageMaker/Vertex AI as documented complement |
 | [018](docs/decisions/018-portfolio-maintenance-mode.md) | Portfolio Maintenance Mode | $180–220/mo idle cost — documented teardown and reactivation path |
+| [019](docs/decisions/019-uv-workspace-single-lock.md) | One uv lock for every environment | Training, tests and serving use the same package versions, by construction |
 
 [View all 19 ADRs with full context, alternatives considered, and trade-offs →](docs/decisions/)
-
----
-
-## 🤖 Agentic Development Configuration
-
-The ADRs don't just live in docs — they're encoded as behavioral constraints in the AI development environment itself.
-
-```
-AGENTS.md           — Project identity, critical DO NOT VIOLATE patterns, HPA targets
-.devin/
-├── rules/          — 15 context-aware rules (Kubernetes, Terraform, Python serving and training, Docker, CI…)
-├── skills/         — 16 multi-step procedures (debug inference, deploy GKE/EKS, drift, retrain, release, rollback…)
-└── workflows/      — 12 prompt workflows
-    /incident · /retrain · /release · /load-test · /new-adr · /drift-check · /rollback …
-```
-
-The agent knows: 50%/60%/60% CPU targets (not 70%), `KernelExplainer` for SHAP (not `TreeExplainer`), `workers=1` (never N) under K8s. Operational knowledge encoded as constraints — not just referenced as documentation.
-
-→ [AGENTS.md](AGENTS.md) &nbsp;|&nbsp; [.devin/](.devin/)
 
 ---
 
@@ -130,11 +103,11 @@ The agent knows: 50%/60%/60% CPU targets (not 70%), `KernelExplainer` for SHAP (
 | [📝 NLPInsight](NLPInsight-Analyzer/) | NLP Sentiment | **Acc 80.6%** | 98% | 78ms GCP / 100ms AWS | Upgraded to harder dataset (97% → 80.6%) for honest benchmark |
 | [🚕 ChicagoTaxi](ChicagoTaxi-Demand-Pipeline/) | Batch Pipeline | **R² 0.96** | 99% | 100ms GCP / 120ms AWS | Data leakage found & fixed · lag features + temporal split |
 
-| Infrastructure | Status | Details |
+| Infrastructure | Status (live in March 2026, now offline) | Details |
 |----------------|--------|---------|
 | **GCP Deployment** | ✅ Verified | GKE 1–5 nodes, 6 pods, 0% error rate under 100 concurrent users |
 | **AWS Deployment** | ✅ Verified | EKS 1–5 nodes, 6 pods, CI/CD via GitHub Actions |
-| **CI/CD** | ✅ Unified | 10-job matrix, security scanning (Trivy/Bandit/Gitleaks), automated deploy to both clouds |
+| **CI/CD** | ✅ Unified | 10-job matrix, security scanning (Trivy/Bandit/Gitleaks), automated deploy to both clouds (paused now, see [status](PORTFOLIO_STATUS.md)) |
 | **IaC** | ✅ Multi-Cloud | Terraform (GCP + AWS) · `terraform plan` = 0 drift |
 | **Monitoring** | ✅ Full Stack | Prometheus + Grafana (26 panels, 16 alert rules) + MLflow |
 | **Security** | ✅ Automated | Blocking on HIGH · non-root containers · Network Policies · IRSA/Workload Identity |
@@ -372,6 +345,27 @@ Same ML system deployed cloud-agnostically on **both GCP and AWS**:
 
 ---
 
+## 🤖 How It Was Built
+
+I designed the architecture and made the decisions (19 ADRs); AI coding agents (Windsurf Cascade at the time) helped me
+build it faster. The system design, the trade-offs and the incident fixes are mine. The ADRs are also encoded as rules
+the agent had to follow — tests first, small reviewed changes, CI gates:
+
+```
+AGENTS.md           — Project identity, critical DO NOT VIOLATE patterns, HPA targets
+.devin/
+├── rules/          — 15 context-aware rules (Kubernetes, Terraform, Python serving and training, Docker, CI…)
+├── skills/         — 16 multi-step procedures (debug inference, deploy GKE/EKS, drift, retrain, release, rollback…)
+└── workflows/      — 12 prompt workflows
+    /incident · /retrain · /release · /load-test · /new-adr · /drift-check · /rollback …
+```
+
+The agent knows: 50%/60%/60% CPU targets (not 70%), `KernelExplainer` for SHAP (not `TreeExplainer`), `workers=1` (never N) under K8s. Operational knowledge encoded as constraints — not just referenced as documentation.
+
+→ [AGENTS.md](AGENTS.md) &nbsp;|&nbsp; [.devin/](.devin/)
+
+---
+
 ## 📚 Documentation
 
 | Document | Description |
@@ -389,9 +383,15 @@ Same ML system deployed cloud-agnostically on **both GCP and AWS**:
 
 ---
 
-## 🔧 AI Transparency
+## 🔗 Related Projects
 
-I designed the architecture and made the decisions (19 ADRs); AI coding agents (Windsurf Cascade at the time) helped me build it faster. The system design, the trade-offs and the incident fixes are mine. The agent configuration (now in `.devin/`) sets the rules the agent had to follow: tests first, small reviewed changes, CI gates.
+- **[ml-service-template](https://github.com/DuqueOM/ml-service-template)** — the MLOps patterns of this portfolio as a
+  separate architecture study: a Copier template for one classical ML service on Kubernetes (GKE/EKS), with 38
+  anti-patterns and 54 ADRs. I designed and directed it; AI coding agents wrote most of the code. Not deployed to a
+  cloud. [Template page](https://duqueom.github.io/ML-MLOps-Portfolio/template/) ·
+  [how the projects relate](docs/related-projects.md)
+- **My other projects** — a WhatsApp customer-service agent with LLM tool calling (in progress) and `read_aloud`, a
+  text-to-speech app with a voice I fine-tuned with LoRA: see my [GitHub profile](https://github.com/DuqueOM).
 
 ---
 
@@ -399,7 +399,10 @@ I designed the architecture and made the decisions (19 ADRs); AI coding agents (
 
 **Duque Ortega Mutis** · Junior AI Engineer · LLM apps and agents · ML in production
 
-14 years running my own businesses taught me that systems fail silently when nobody monitors them, nobody documents decisions, and nobody thinks about what happens at 2am. That's the mindset I bring to ML infrastructure — not just deploying models, but building systems you can actually trust in production.
+Before tech, I spent 14 years running my own businesses. That taught me to measure before guessing, to write decisions
+down and to keep costs visible; this repo is where I applied it to ML systems.
+
+Open to junior AI Engineer, ML Engineer and MLOps roles · Remote or Mexico City.
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin)](https://linkedin.com/in/duqueom)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=flat&logo=github)](https://github.com/DuqueOM)
@@ -411,7 +414,5 @@ I designed the architecture and made the decisions (19 ADRs); AI coding agents (
 <div align="center">
 
 **Portfolio Version**: 3.6.0 · **License**: MIT · **Status**: deployed to GKE + EKS in March 2026, now offline to save costs
-
-*Building ML systems that work at 2am* 🌙
 
 </div>
