@@ -46,6 +46,6 @@ kubectl rollout undo deployment/<svc>         # Rollback
 
 ---
 
-*Last Updated: March 2026*
+*Last Updated: November 2026*
 
 </div>
