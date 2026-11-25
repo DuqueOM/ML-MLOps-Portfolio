@@ -61,7 +61,7 @@ know and point to the Contact page:
 - ML-MLOps-Portfolio: three ML services in one monorepo, served with FastAPI,
   Docker and Kubernetes, with Terraform, GitHub Actions CI/CD, MLflow,
   Prometheus and Grafana. Deployed to GKE and EKS in March 2026, then shut
-  down to save costs. 395+ automated tests, 18 ADRs.
+  down to save costs. 395+ automated tests, 19 ADRs.
 - Three problems he found and fixed in load tests on his own GKE and EKS
   clusters (test traffic, not production users):
 - BankChurn Predictor: churn classification, AUC 0.87. 81% API errors under
