@@ -388,13 +388,45 @@
 
   /* ---- 3) chat widget: neural-agent assistant + panel ----
      The launcher IS the agent figure above — no bubble, no circle.
-     A speech-bubble hint with three dots pulses in every so often
-     before the visitor has opened it once — a quiet nudge, not a
-     badge/counter. While open, a small ✕ chip appears by her shoulder
-     and she looks up toward the panel. */
+     On the first page of a visit she fades/rises in once, and a short
+     greeting bubble appears beside her head ONE time (then never again
+     in that tab session): clicking the bubble or the figure opens the
+     chat. Spanish pages get the Spanish greeting. While open, a small
+     ✕ chip appears by her shoulder and she looks up toward the panel. */
+
+  /* sessionStorage can throw (private mode, blocked site data) — the
+     widget must work the same without it, just less "once only" */
+  function sessionFlag(key, set) {
+    try {
+      if (set) { sessionStorage.setItem(key, "1"); return true; }
+      return sessionStorage.getItem(key) === "1";
+    } catch (e) { return false; }
+  }
+
+  /* the site is English (mkdocs language: en) with one Spanish page,
+     the recruiter summary, which marks "Español" as the current page
+     in its language switcher */
+  function pageIsSpanish() {
+    if (/^es\b/i.test(document.documentElement.lang || "")) return true;
+    var cur = document.querySelector('.portfolio-lang [aria-current="page"]');
+    return !!cur && /espa(ñ|n)ol/i.test(cur.textContent || "");
+  }
+
+  var CHAT_TEXT = {
+    en: {
+      greeting: "Hi, I'm Duque's assistant. What would you like to know about him?",
+      placeholder: "Ask about the projects, stack or availability…"
+    },
+    es: {
+      greeting: "Hola, soy el asistente de Duque. ¿Qué te gustaría saber de él?",
+      placeholder: "Pregunta por los proyectos, el stack o la disponibilidad…"
+    }
+  };
+
   function initChatWidget() {
     if (document.querySelector(".pf-chat-launcher")) return;
 
+    var T = pageIsSpanish() ? CHAT_TEXT.es : CHAT_TEXT.en;
     var history = [];
     var pending = false;
     var greeted = false;
@@ -404,6 +436,12 @@
     var launcher = document.createElement("button");
     launcher.type = "button";
     launcher.className = "pf-chat-launcher";
+    /* entrance only on the first page of a visit, not on every click
+       through the docs (each page is a full reload) */
+    if (!reduced && !sessionFlag("pfChatSeen")) {
+      launcher.classList.add("pf-chat-launcher--enter");
+    }
+    sessionFlag("pfChatSeen", true);
     launcher.setAttribute("aria-label", "Open portfolio assistant");
     launcher.setAttribute("aria-expanded", "false");
     launcher.innerHTML =
@@ -411,7 +449,7 @@
       '<span class="pf-chat-x" aria-hidden="true">' +
         '<svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>' +
       "</span>" +
-      '<span class="pf-chat-hint" aria-hidden="true"><span></span><span></span><span></span></span>';
+      '<span class="pf-chat-hint" aria-hidden="true"></span>';
 
     var panel = document.createElement("div");
     panel.className = "pf-chat-panel";
@@ -430,7 +468,7 @@
       "</div>" +
       '<div class="pf-chat-log" role="log" aria-live="polite"></div>' +
       '<form class="pf-chat-form">' +
-        '<input type="text" name="q" placeholder="Ask about the projects, stack or availability…" autocomplete="off" maxlength="500">' +
+        '<input type="text" name="q" autocomplete="off" maxlength="500">' +
         '<button type="submit" aria-label="Send">' +
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 12h16M13 5l7 7-7 7"/></svg>' +
         "</button>" +
@@ -446,6 +484,8 @@
     var input = panel.querySelector('input[name="q"]');
     var closeBtn = panel.querySelector(".pf-chat-close");
     var hint = launcher.querySelector(".pf-chat-hint");
+    input.placeholder = T.placeholder;
+    hint.textContent = T.greeting;
 
     function addBubble(role, text) {
       var bubble = document.createElement("div");
@@ -465,18 +505,31 @@
       return t;
     }
 
-    /* quiet periodic nudge: only before the first open, only with motion
-       allowed, stops for good the moment the visitor engages once */
-    function scheduleHint() {
-      if (reduced || hasOpened) return;
+    /* one greeting per visit: shown once, a few seconds after load,
+       hidden after 9 s or as soon as the chat opens. Not a loop. It is
+       text (information), so it also shows with reduced motion — CSS
+       just drops the pop-in transition there. */
+    function hideHint() {
+      clearTimeout(hintTimer);
+      hint.classList.remove("is-on");
+      window.removeEventListener("scroll", hideHint);
+      document.removeEventListener("pointerdown", onOutsidePointer, true);
+    }
+    /* on a phone the bubble sits over page content (e.g. the home
+       Contact button), so the first scroll or tap elsewhere hides it */
+    function onOutsidePointer(e) {
+      if (!launcher.contains(e.target)) hideHint();
+    }
+    if (!sessionFlag("pfChatGreeted")) {
       hintTimer = setTimeout(function () {
         if (hasOpened) return;
+        sessionFlag("pfChatGreeted", true);
         hint.classList.add("is-on");
-        setTimeout(function () { hint.classList.remove("is-on"); }, 3600);
-        scheduleHint();
-      }, hintTimer === null ? 6000 : 26000);
+        window.addEventListener("scroll", hideHint, { passive: true });
+        document.addEventListener("pointerdown", onOutsidePointer, true);
+        hintTimer = setTimeout(hideHint, 9000);
+      }, reduced ? 1200 : 2600);
     }
-    scheduleHint();
 
     function open() {
       panel.hidden = false;
@@ -485,13 +538,12 @@
       launcher.classList.add("is-open");
       if (!hasOpened) {
         hasOpened = true;
-        clearTimeout(hintTimer);
-        hint.classList.remove("is-on");
+        sessionFlag("pfChatGreeted", true);
+        hideHint();
       }
       if (!greeted) {
         greeted = true;
-        addBubble("assistant",
-          "Hi — ask me anything about this portfolio: the projects, the stack, incidents, or availability.");
+        addBubble("assistant", T.greeting);
       }
       input.focus();
     }
