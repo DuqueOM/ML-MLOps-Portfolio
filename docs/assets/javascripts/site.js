@@ -162,17 +162,18 @@
 
   /* ---- 3a) the neural agent figure --------------------------------
      The agent is the real reference artwork (docs/media/profile/
-     agent-figure.png — a woman rendered as a glowing neural network),
-     processed offline so her black background is fully transparent:
-     whatever the page shows behind her silhouette IS her backdrop.
-     The canvas brings her to life on top of that:
+     agent-figure.png — a woman rendered as a glowing neural network,
+     long hair made of light strands), processed offline so her black
+     background is fully transparent: whatever the page shows behind
+     her silhouette IS her backdrop. The hair is part of the artwork
+     (Nov 2026; procedural strands could not look like a real mane at
+     ~100 px). The canvas brings her to life on top of that:
      - gentle breathing + lean, idle glances to the sides, occasional
        cursor tracking, and a look up toward the panel while it's open
        (a flat artwork can't move its eyes, so the whole figure turns —
        reads as attention, not as a static sticker)
-     - procedural hair strands floating behind her mane
      - twinkling particles sampled from her own brightest pixels, so
-       the sparkle always sits ON her lines */
+       the sparkle always sits ON her lines (mostly her hair) */
   function mountChatAgent(canvas, launcher) {
     var ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -208,14 +209,14 @@
        bottom-anchored and centered (full shoulder span, so it fits by
        width and leaves hair headroom above) */
     var IMG = { x: 1, y: 22, w: 148, h: 168 };
-    var HEADC = { x: 73, y: 76 };  /* her head center, for hair anchors */
+    var HEADC = { x: 73, y: 76 };  /* her head center, for cursor tracking */
     var img = new Image();
     var imgReady = false;
     var particles = [];
     var sj = document.querySelector('script[src*="site.js"]');
     img.src = sj
-      ? sj.src.replace(/assets\/javascripts\/site\.js.*$/, "media/profile/agent-figure.png")
-      : "media/profile/agent-figure.png";
+      ? sj.src.replace(/assets\/javascripts\/site\.js.*$/, "media/profile/agent-figure.png?v=20261125b")
+      : "media/profile/agent-figure.png?v=20261125b";
     img.onload = function () {
       imgReady = true;
       sampleParticles();
@@ -252,23 +253,6 @@
           });
         }
       } catch (e) { /* tainted canvas etc. — she still renders fine */ }
-    }
-
-    /* ---- hair: strands floating from behind her mane ---- */
-    var hairs = [];
-    for (var h = 0; h < 18; h++) {
-      var a0 = -Math.PI * (0.08 + rnd() * 0.84); /* upper arc angles */
-      hairs.push({
-        ax: HEADC.x + Math.cos(a0) * (26 + rnd() * 8),
-        ay: HEADC.y + Math.sin(a0) * (24 + rnd() * 7),
-        dir: a0,
-        segs: 5 + (rnd() * 4 | 0),
-        len: 5 + rnd() * 3,
-        phase: rnd() * TAU,
-        omega: 0.0007 + rnd() * 0.0007,
-        amp: 0.11 + rnd() * 0.07,
-        color: rnd() < 0.6 ? CYAN : VIOLET
-      });
     }
 
     /* ---- gaze state machine: idle glances / cursor follow / panel ---- */
@@ -326,31 +310,6 @@
       ctx.scale(breathe, breathe);
       ctx.translate(-75, -190 + pitch * 3);
 
-      /* hair strands behind her, drifting like they are weightless */
-      ctx.lineWidth = 1;
-      hairs.forEach(function (hs) {
-        var ang = hs.dir + yaw * 0.35;
-        var drift = Math.sin(t / 5200 * TAU + hs.phase) * 0.15;
-        var px = hs.ax + yaw * 6, py = hs.ay;
-        for (var i = 0; i < hs.segs; i++) {
-          ang += Math.sin(t * hs.omega + hs.phase + i * 0.62) *
-                 hs.amp * (1 + i * 0.30) + drift * 0.12;
-          var nx = px + Math.cos(ang) * hs.len;
-          var ny = py + Math.sin(ang) * hs.len;
-          /* soft walls: steer back before any canvas edge, so hair
-             never gets shaved into a flat clipped line */
-          if (ny < 8) { ang = -ang * 0.5; ny = py + Math.sin(ang) * hs.len; }
-          if (nx < 6) { ang = Math.PI - ang; nx = px + Math.cos(ang) * hs.len; }
-          else if (nx > 144) { ang = Math.PI - ang; nx = px + Math.cos(ang) * hs.len; }
-          var fal = 0.42 * (1 - i / hs.segs);
-          ctx.strokeStyle = "rgba(" + hs.color + "," + fal.toFixed(3) + ")";
-          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(nx, ny); ctx.stroke();
-          ctx.fillStyle = "rgba(" + hs.color + "," + (fal * 0.9).toFixed(3) + ")";
-          ctx.beginPath(); ctx.arc(nx, ny, 1, 0, TAU); ctx.fill();
-          px = nx; py = ny;
-        }
-      });
-
       /* the reference artwork itself */
       if (imgReady) {
         ctx.drawImage(img, IMG.x, IMG.y, IMG.w, IMG.h);
@@ -377,20 +336,28 @@
     /* draw one frame immediately (visible even in background tabs /
        before the loop's first tick), then animate */
     step(performance.now());
+    /* ~30 fps: every motion here is slow (periods of seconds), so 60 fps
+       looks the same and just costs phones battery (the drop-shadow on
+       the launcher is re-filtered on every repaint) */
     if (!reduced) {
+      var lastFrame = -1e9;
       (function loop(t) {
         requestAnimationFrame(loop);
         if (document.hidden) return;
-        step(t || performance.now());
+        t = t || performance.now();
+        if (t - lastFrame < 31) return;
+        lastFrame = t;
+        step(t);
       })(performance.now());
     }
   }
 
   /* ---- 3) chat widget: neural-agent assistant + panel ----
      The launcher IS the agent figure above — no bubble, no circle.
-     On the first page of a visit she fades/rises in once, and a short
-     greeting bubble appears beside her head ONE time (then never again
-     in that tab session): clicking the bubble or the figure opens the
+     On the first page of a visit she fades/rises in once. A greeting
+     bubble appears beside her head once per page load, then turns into
+     periodic typing dots, until the visitor opens the chat (details at
+     the hint code below). Clicking the bubble or the figure opens the
      chat. Spanish pages get the Spanish greeting. While open, a small
      ✕ chip appears by her shoulder and she looks up toward the panel. */
 
@@ -449,7 +416,10 @@
       '<span class="pf-chat-x" aria-hidden="true">' +
         '<svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>' +
       "</span>" +
-      '<span class="pf-chat-hint" aria-hidden="true"></span>';
+      '<span class="pf-chat-hint" aria-hidden="true">' +
+        '<span class="pf-chat-hint-text"></span>' +
+        '<span class="pf-chat-hint-dots"><i></i><i></i><i></i></span>' +
+      "</span>";
 
     var panel = document.createElement("div");
     panel.className = "pf-chat-panel";
@@ -485,7 +455,7 @@
     var closeBtn = panel.querySelector(".pf-chat-close");
     var hint = launcher.querySelector(".pf-chat-hint");
     input.placeholder = T.placeholder;
-    hint.textContent = T.greeting;
+    hint.querySelector(".pf-chat-hint-text").textContent = T.greeting;
 
     function addBubble(role, text) {
       var bubble = document.createElement("div");
@@ -505,29 +475,49 @@
       return t;
     }
 
-    /* one greeting per visit: shown once, a few seconds after load,
-       hidden after 9 s or as soon as the chat opens. Not a loop. It is
-       text (information), so it also shows with reduced motion — CSS
-       just drops the pop-in transition there. */
-    function hideHint() {
-      clearTimeout(hintTimer);
-      hint.classList.remove("is-on");
+    /* Greeting, then dots:
+       - on every page load the greeting shows once, ~2.6 s in, for 9 s
+         (or until the first scroll / tap elsewhere — on a phone it sits
+         over content, e.g. the home Contact button). A reload gives a
+         visitor who missed it another chance.
+       - after it, the same bubble comes back every 30 s for 4 s with
+         three typing dots: "she still has something to say".
+       - once the visitor has opened the chat (this tab session), both
+         stop on every page: they already know she is there.
+       Reduced motion: the greeting still shows (it is text), without
+       the pop-in; the periodic dots do not (repeated attention-grabbing
+       motion is exactly what that setting asks to avoid). */
+    var GREET_MS = 9000, DOTS_EVERY = 30000, DOTS_SHOW = 4000;
+    function stopListening() {
       window.removeEventListener("scroll", hideHint);
       document.removeEventListener("pointerdown", onOutsidePointer, true);
     }
-    /* on a phone the bubble sits over page content (e.g. the home
-       Contact button), so the first scroll or tap elsewhere hides it */
     function onOutsidePointer(e) {
       if (!launcher.contains(e.target)) hideHint();
     }
-    if (!sessionFlag("pfChatGreeted")) {
+    function hideHint() {
+      clearTimeout(hintTimer);
+      stopListening();
+      hint.classList.remove("is-on");
+      if (!hasOpened && !reduced) scheduleDots(DOTS_EVERY);
+    }
+    function scheduleDots(delay) {
       hintTimer = setTimeout(function () {
         if (hasOpened) return;
-        sessionFlag("pfChatGreeted", true);
+        hint.classList.add("is-dots", "is-on");
+        hintTimer = setTimeout(function () {
+          hint.classList.remove("is-on");
+          scheduleDots(DOTS_EVERY);
+        }, DOTS_SHOW);
+      }, delay);
+    }
+    if (!sessionFlag("pfChatOpened")) {
+      hintTimer = setTimeout(function () {
+        if (hasOpened) return;
         hint.classList.add("is-on");
         window.addEventListener("scroll", hideHint, { passive: true });
         document.addEventListener("pointerdown", onOutsidePointer, true);
-        hintTimer = setTimeout(hideHint, 9000);
+        hintTimer = setTimeout(hideHint, GREET_MS);
       }, reduced ? 1200 : 2600);
     }
 
@@ -538,7 +528,7 @@
       launcher.classList.add("is-open");
       if (!hasOpened) {
         hasOpened = true;
-        sessionFlag("pfChatGreeted", true);
+        sessionFlag("pfChatOpened", true);
         hideHint();
       }
       if (!greeted) {
