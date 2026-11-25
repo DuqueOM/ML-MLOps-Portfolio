@@ -38,7 +38,7 @@ documented incidents. I designed the system and made the decisions; AI coding ag
 Recruiters and non-technical reviewers: the [portfolio site](https://duqueom.github.io/ML-MLOps-Portfolio/) is the
 best entry point ([resumen en español](README.es.md)). This README is the technical record.
 
-### Three production incidents — root cause to fix, documented with data
+### Three problems found in load tests on my own clusters — root cause to fix, documented with data
 
 | Incident | Root Cause | Fix | Outcome | ADR |
 |----------|------------|-----|---------|-----|

@@ -8,8 +8,8 @@
 
 # ML services in production, an LLM agent and a voice app
 
-Three ML services I deployed to GKE and EKS, with the production problems I
-found and fixed; a WhatsApp customer-service agent, in progress; and
+Three ML services I deployed to GKE and EKS, with the problems I
+found and fixed in load tests on my own clusters; a WhatsApp customer-service agent, in progress; and
 `read_aloud`, a text-to-speech app I use every day. I design the system and make
 the decisions; I use AI coding agents (Claude Code) for speed. Each section says
 which parts the agents wrote.

@@ -57,7 +57,7 @@ Most portfolios show tools used. This one shows **decisions made** — the trade
 
 ---
 
-## Production Incidents That Drove Decisions
+## Load-Test Incidents That Drove Decisions
 
 These weren't planned features — they were problems discovered in production that forced architectural changes.
 

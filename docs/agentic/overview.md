@@ -4,7 +4,7 @@
 
 **Last Updated**: April 2026 | **Portfolio Version**: 3.6.0
 
-> 18 ADRs and 3 production incidents encoded as behavioral constraints for AI-assisted development.
+> 18 ADRs and 3 load-test incidents encoded as behavioral constraints for AI-assisted development.
 > Not documentation the agent reads — rules the agent follows automatically.
 
 ---

@@ -31,7 +31,7 @@ despliegue, monitoreo y decisiones documentadas.
   periodo (pruebas de carga, capturas de pantalla y reportes de incidentes) siguen públicos.
 - Se puede volver a desplegar en cerca de 1 hora. Detalle: [PORTFOLIO_STATUS.md](PORTFOLIO_STATUS.md) (en inglés).
 
-## Tres incidentes de producción que encontré y resolví
+## Tres problemas que encontré y resolví en pruebas de carga en mis propios clústeres
 
 | Problema | Causa | Solución | Resultado |
 |----------|-------|----------|-----------|

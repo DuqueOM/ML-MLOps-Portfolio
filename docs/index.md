@@ -15,7 +15,7 @@ Mexico City, open to remote. I design AI and ML systems, make the decisions and
 review the work; I use AI coding agents (Claude Code) for speed.
 Three ML services (BankChurn, NLPInsight, ChicagoTaxi) deployed to GKE and EKS in
 March 2026, then shut down to save costs: 395+ tests, 19 architecture decision
-records. Three production problems I found and fixed: an 81% error rate under load
+records. Three problems I found and fixed in load tests on my own clusters: an 81% error rate under load
 to 0%, SHAP returning all zeros, and an HPA that could never scale down.
 A WhatsApp customer-service agent in progress (PHP 8.3, MySQL, Meta Cloud API, LLM
 tool calling, human handoff, evals). read_aloud, a text-to-speech app I use every
