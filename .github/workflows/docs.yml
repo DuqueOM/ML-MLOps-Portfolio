@@ -9,6 +9,9 @@ on:
       - 'mkdocs.yml'
       - 'requirements-docs.txt'
       - '.github/workflows/docs.yml'
+  # Manual redeploy without a commit: Actions → Documentation → Run workflow,
+  # or `gh workflow run docs.yml --ref main`.
+  workflow_dispatch:
   pull_request:
     branches: [main]
     paths:
@@ -67,7 +70,7 @@ jobs:
 
   deploy:
     name: Deploy to GitHub Pages
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     
